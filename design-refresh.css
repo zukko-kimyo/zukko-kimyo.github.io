@@ -211,3 +211,53 @@ footer { padding-block:26px; }
   .zk-dash-kpi { display:flex;flex-direction:column;align-items:flex-start; }
   .zk-quick-actions { grid-template-columns:1fr; }
 }
+
+
+/* Weekly monitoring in the administrator panel */
+.zk-weekly { min-width:0; }
+.zk-weekly-head { margin:4px 0 15px; }
+.zk-weekly-head h3 { color:#183e77;font-size:19px;font-weight:900;margin:0 0 4px; }
+.zk-weekly-head p { margin:0;color:#73839a;font-size:13px; }
+.zk-weekly .ad-grid>.panel { min-width:0; }
+.zk-weekly-caution { margin:12px 0 0;color:#9d6b26;background:#fff9ec;border:1px solid #f5dfb8;border-radius:11px;padding:11px 13px;font-size:12px;line-height:1.6; }
+
+/* Personal printable certificate — deliberately marked unofficial */
+.zk-cert-page { max-width:960px;margin:0 auto;padding-block:26px 48px; }
+.zk-cert-actions { display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px; }
+.zk-cert-print { position:relative;overflow:hidden;border:2px solid #b8cdeb;border-radius:22px;background:linear-gradient(145deg,#fff,#f7fbff);padding:clamp(24px,5vw,62px);text-align:center;box-shadow:0 14px 35px rgba(13,50,109,.08); }
+.zk-cert-print:before { content:'';position:absolute;inset:11px;border:1px solid #d4e0f2;border-radius:13px;pointer-events:none; }
+.zk-cert-ornament { margin:4px auto 9px;width:65px;height:65px;border-radius:17px;background:#edf4ff;display:grid;place-items:center;font-size:32px; }
+.zk-cert-school { text-transform:uppercase;color:#3164a7;letter-spacing:.22em;font-weight:900;font-size:12px; }
+.zk-cert-sub { color:#7989a2;font-weight:800;font-size:11px;letter-spacing:.13em;text-transform:uppercase;margin-top:6px; }
+.zk-cert-print h1 { color:#153c77;font-size:clamp(1.7rem,4vw,2.5rem);font-weight:900;margin:28px 0 26px; }
+.zk-cert-recipient { color:#7d8ea6;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:900; }
+.zk-cert-name { font-size:clamp(1.5rem,3.3vw,2.25rem);font-weight:900;color:#164787;margin:8px auto 24px;overflow-wrap:anywhere; }
+.zk-cert-metrics { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 24px; }
+.zk-cert-metrics div { background:#eff5fd;border-radius:13px;padding:14px 9px;display:flex;flex-direction:column;gap:6px; }
+.zk-cert-metrics strong { font-size:25px;color:#205eae;font-variant-numeric:tabular-nums;font-weight:900; }
+.zk-cert-metrics span { color:#617b9e;font-size:11px;font-weight:800;line-height:1.3; }
+.zk-cert-issued { color:#45678e;font-size:13px;font-weight:800; }
+.zk-cert-motto { margin-top:24px;color:#2c80a7;letter-spacing:.08em;font-weight:900; }
+.zk-cert-disclaimer { font-size:10.5px;color:#9f6d34;line-height:1.6;margin:22px 0 0; }
+.zk-cert-note { color:#8b6638;font-size:12px;line-height:1.6;margin:12px 2px; }
+.zk-cert-locked { border-radius:18px;border:1px solid #dee8f6;text-align:center;padding:55px 22px;background:white; }
+.zk-cert-locked>span { font-size:43px; }
+.zk-cert-locked h1 { color:#173d72;margin:12px 0; }
+.zk-cert-locked p { color:#66809f;font-size:14px; }
+.zk-cert-locked strong { display:block;font-size:12px;color:#49668c;margin-top:12px; }
+.zk-cert-progress { margin:20px auto 0;width:min(100%,380px);height:10px;border-radius:99px;background:#e5effd;overflow:hidden; }
+.zk-cert-progress>div { height:100%;border-radius:99px;background:#3b82cf; }
+@media (max-width:600px) {
+  .zk-cert-print { padding:30px 19px; }
+  .zk-cert-metrics { grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; }
+  .zk-cert-print:before { inset:7px; }
+}
+@media print {
+  @page { size:A4 landscape; margin:12mm; }
+  body { background:white!important;padding:0!important; }
+  body>*:not(main) { display:none!important; }
+  main#app { display:block!important;animation:none!important; }
+  .zk-cert-page { margin:0!important;padding:0!important;max-width:none!important; }
+  .zk-cert-actions,.zk-cert-note { display:none!important; }
+  .zk-cert-print { box-shadow:none!important;border:2px solid #b8cdeb!important;break-inside:avoid!important;print-color-adjust:exact;-webkit-print-color-adjust:exact; }
+}
