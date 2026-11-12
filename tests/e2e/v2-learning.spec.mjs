@@ -71,3 +71,37 @@ test('3D experiment provides selectable animation steps when WebGL is available'
   await expect(steps.nth(1)).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#zkLabCounter')).toContainText(/2/);
 });
+
+
+// Simulated renderer validates timeline wiring even if CI has no GPU/WebGL.
+test('3D walkthrough lets students select a step on mobile and desktop', async ({ page }) => {
+  await bootstrapAdmin(page);
+  const supported = await page.evaluate(() => {
+    const id = window.Lab?.list?.find(e => e.id)?.id;
+    if (!id) return false;
+    const captions = [
+      { uz: 'Boshlanish', en: 'Start' },
+      { uz: 'Kimyoviy reaksiya', en: 'Reaction' }
+    ];
+    window.Lab.open = () => {
+      let current = 0;
+      return {
+        steps: [{ start: 0, dur: 2, cap: captions[0] }, { start: 2, dur: 3, cap: captions[1], eq: 'H₂ + O₂ → H₂O' }],
+        seek(v) { current = v >= 2 ? 1 : 0; },
+        play() {},
+        get stepIndex() { return current; },
+        destroy() {}
+      };
+    };
+    location.hash = '#lab-' + id;
+    return true;
+  });
+  test.skip(!supported, 'No chemistry experiment is registered');
+  await expect(page.locator('.zk-lab-guide')).toBeVisible();
+  const steps = page.locator('.zk-lab-guide .zk-step');
+  await expect(steps).toHaveCount(2);
+  await steps.nth(1).click();
+  await expect(steps.nth(1)).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#zkLabCaption')).toContainText(/reaksiya|reaction/i);
+  await expect(page.locator('#zkLabEquation')).toContainText('H₂');
+});
