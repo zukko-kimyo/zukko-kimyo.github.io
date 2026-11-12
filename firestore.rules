@@ -100,16 +100,3 @@ service cloud.firestore {
     match /{document=**} { allow read, write: if false; }
   }
 }
-)
-        && request.resource.data.cls is string
-        && request.resource.data.cls.size() > 0
-        && request.resource.data.cls.size() <= 80
-        && request.resource.data.entries is map
-        && request.resource.data.updated is int
-        && request.resource.data.by == request.auth.uid;
-      allow delete: if isAdmin();
-    }
-
-    match /{document=**} { allow read, write: if false; }
-  }
-}
