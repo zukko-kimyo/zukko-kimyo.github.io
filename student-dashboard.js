@@ -49,8 +49,9 @@
     const todayLessons = Array.isArray(today.ls) ? today.ls.length : 0;
     const goal = Math.max(1, Number(state.goal) || 2);
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const labToday = Object.values(state.labs || {}).some((ts) => typeof ts === 'number' && ts >= todayStart);
-    const doneToday = Object.values(state.L || {}).some((record) => record && record.done && Number(record.done) >= todayStart);
+    // Kunlik vazifalarda takror ishlangan test/tajriba ham hisobga olinadi.
+    const labToday = (Array.isArray(today.labAttempts) && today.labAttempts.length > 0) || Object.values(state.labs || {}).some((ts) => typeof ts === 'number' && ts >= todayStart);
+    const doneToday = (Array.isArray(today.quizAttempts) && today.quizAttempts.length > 0) || Object.values(state.L || {}).some((record) => record && record.done && Number(record.done) >= todayStart);
     const done = Object.values(state.L || {}).filter((v) => v && v.done).length;
     const labs = Object.keys(state.labs || {}).length;
     const level = xp.level(safeNum(state.xp));
