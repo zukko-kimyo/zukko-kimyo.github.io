@@ -137,3 +137,15 @@ test('new application scripts remain parseable and are loaded by index.html', ()
   }
   assert.ok(index.includes("'ptable-3d.js'"), 'existing 3D periodic table integration is preserved');
 });
+
+
+test('3D experiment page includes exactly one guide mount point', () => {
+  const src = read('app.js');
+  const begin = src.indexOf('function labPage(id)');
+  const end = src.indexOf('function openModal(id)', begin);
+  assert.ok(begin >= 0 && end > begin, '3D experiment router should exist');
+  const page = src.slice(begin, end);
+  assert.match(page, /id="zkLabGuide"/);
+  assert.match(page, /ZKLabGuide\.mount/);
+  assert.equal((src.match(/id="zkLabGuide"/g) || []).length, 1, 'guide host must not be accidentally placed in lesson viewer');
+});
