@@ -1,0 +1,167 @@
+/* Zukko Xalqaro Maktabi — branded loading and account entry.
+ * Actual school identity remains the existing assets/zukko-school-logo.webp.
+ * CSS loading orbit animates independently and works offline.
+ * Scopes all styles to the authentication gate; teacher/admin tools are unaffected.
+ */
+body.zk-v3 .zk-gate {
+  background:
+    radial-gradient(circle at 9% 5%,rgba(161,233,221,.25),transparent 37%),
+    radial-gradient(circle at 97% 91%,rgba(60,147,170,.17),transparent 38%),
+    linear-gradient(154deg,#f7fcfa 0%,#eff7f7 56%,#eaf4f6 100%);
+  color:#18354c;
+  font-family:Manrope,Nunito,system-ui,sans-serif;
+  padding:max(20px,env(safe-area-inset-top)) 16px max(20px,env(safe-area-inset-bottom));
+  min-height:100dvh;
+  overscroll-behavior:contain;
+}
+body.zk-v3 .zk-gate .card {
+  width:min(466px,100%);
+  border:1px solid #dce9e8;
+  border-radius:27px;
+  background:#fff;
+  box-shadow:0 22px 65px rgba(14,59,67,.115),0 2px 8px rgba(14,59,67,.045);
+  padding:36px 35px 28px;
+  margin:auto;
+  box-sizing:border-box;
+}
+body.zk-v3 .zk-gate .lg {
+  display:flex;align-items:center;gap:17px;
+  margin-bottom:27px;padding-right:65px;
+}
+body.zk-v3 .zk-gate .mk {
+  width:63px;height:63px;flex:none;
+  padding:0;border:0;box-shadow:none;background:transparent;
+  display:grid;place-items:center;border-radius:16px;overflow:hidden;
+}
+body.zk-v3 .zk-gate .mk img {
+  width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;
+}
+body.zk-v3 .zk-gate .zk-brand-kicker {
+  display:block;font-weight:900;letter-spacing:.10em;font-size:10px;
+  color:#137b7a;text-transform:uppercase;line-height:1.5;margin-bottom:5px;
+}
+body.zk-v3 .zk-gate h1 {
+  font-size:clamp(23px,4.2vw,30px);line-height:1.15;
+  font-weight:900;letter-spacing:-.04em;color:#12374b;
+}
+body.zk-v3 .zk-gate .sb {color:#667f89;font-weight:600;font-size:12.3px;line-height:1.5;margin-top:7px;}
+body.zk-v3 .zk-gate label {font-size:13px;font-weight:850;color:#365268;margin:16px 0 7px;}
+body.zk-v3 .zk-gate input[type=text],
+body.zk-v3 .zk-gate input[type=password],
+body.zk-v3 .zk-gate input[type=search] {
+  width:100%;min-height:49px;
+  border-radius:12px;border:1px solid #cfdee1;
+  background:#f8fbfc;color:#193c51;
+  font-family:inherit;font-size:16px;font-weight:650;
+  padding:11px 45px 11px 14px;
+  box-shadow:none;outline:none;transition:border-color .17s,box-shadow .17s,background .17s;
+}
+body.zk-v3 .zk-gate input:is([type=text],[type=password]):focus {
+  background:#fff;border-color:#319e9d;
+  box-shadow:0 0 0 3px rgba(55,176,164,.17);
+}
+body.zk-v3 .zk-gate :where(button,a,input):focus-visible {
+  outline:3px solid #4dbbb5;outline-offset:3px;
+}
+body.zk-v3 .zk-gate .eye {
+  color:#356a70;opacity:1;min-width:40px;min-height:42px;
+  display:grid;place-items:center;border-radius:10px;
+}
+body.zk-v3 .zk-gate .eye:hover {background:#eaf5f4}
+body.zk-v3 .zk-gate .rm {font-size:12.5px;font-weight:650;color:#567080;margin:15px 0 0;}
+body.zk-v3 .zk-gate .rm input {accent-color:#11847e;width:18px;height:18px;}
+body.zk-v3 .zk-gate .go {
+  margin-top:22px;min-height:51px;
+  color:#fff;background:linear-gradient(110deg,#087d7d,#0c696b);
+  border:0;border-radius:13px;
+  box-shadow:0 10px 22px rgba(8,109,107,.19);
+  font-size:15px;font-weight:900;transition:filter .16s,transform .16s;
+}
+body.zk-v3 .zk-gate .go:hover {filter:brightness(1.09)}
+body.zk-v3 .zk-gate .go:active {transform:translateY(1px);box-shadow:0 5px 12px rgba(8,109,107,.22);}
+body.zk-v3 .zk-gate .go[disabled] {opacity:.55;cursor:wait}
+body.zk-v3 .zk-gate .alt {
+  background:#eff9f6;border:1px solid #b8ddd5;color:#126e68;
+  border-radius:12px;box-shadow:none;font-size:13px;
+}
+body.zk-v3 .zk-gate .er {
+  background:#fff4f3;border:1px solid #eac1bc;
+  color:#a22d2f;border-radius:11px;box-shadow:none;font-weight:750;font-size:13px;
+}
+body.zk-v3 .zk-gate .ht,.zk-gate .nt {color:#718593;font-size:12px;font-weight:600;line-height:1.55;}
+body.zk-v3 .zk-gate .ht {margin-top:17px}
+body.zk-v3 .zk-gate .lng {
+  top:23px;right:23px;background:#f0f6f6;padding:3px;
+  border:1px solid #e1eceb;border-radius:11px;
+}
+body.zk-v3 .zk-gate .lng button {color:#607a84;border-radius:8px;min-height:32px;font-size:12px}
+body.zk-v3 .zk-gate .lng button.on {
+  color:#fff;background:#106e70;box-shadow:0 2px 5px rgba(0,57,60,.14);
+}
+body.zk-v3 .zk-gate .sw {margin-top:18px;color:#5e7883;font-size:13px;font-weight:650;}
+body.zk-v3 .zk-gate .lnk {color:#087b7d;font-size:13px;font-weight:900;text-decoration:none;}
+body.zk-v3 .zk-gate .lnk:hover {text-decoration:underline}
+body.zk-v3 .zk-gate .rh {color:#1b3c50;font-size:19px}
+body.zk-v3 .zk-gate .kv {background:#edf7f7;color:#194b5b}
+body.zk-v3 .zk-gate .sent p {color:#516e7e}
+body.zk-v3 .zk-gate .mockb {color:#226f71;background:#e9f9f4}
+body.zk-v3 .zk-gate .ann {
+  background:#f4f9eb;border:1px solid #c9e4aa;color:#3e682b;
+}
+body.zk-v3 .zk-gate.boot {
+  text-align:center;z-index:250;background:
+    radial-gradient(circle at center,rgba(192,242,222,.45),transparent 63%),#f3faf7;
+}
+body.zk-v3 .zk-gate.boot .card {
+  border:0;background:transparent;box-shadow:none;padding:22px;
+  width:min(390px,100%);display:flex;flex-direction:column;align-items:center;
+}
+body.zk-v3 .zk-gate.boot b {
+  font-size:15px;font-weight:900;color:#28515c;letter-spacing:.015em;margin-top:3px;
+}
+body.zk-v3 .zk-gate.boot .zk-boot-sub {
+  color:#678b8b;margin:5px 0 0;font-size:12px;font-weight:650;
+}
+body.zk-v3 .zk-brand-loader {
+  position:relative;isolation:isolate;
+  width:172px;height:172px;display:grid;place-items:center;
+  margin:0 auto 22px;flex:none;
+}
+body.zk-v3 .zk-brand-loader img {
+  display:block;width:133px;height:133px;object-fit:cover;
+  border-radius:31px;box-shadow:0 16px 40px rgba(5,90,89,.20);
+  animation:zkBrandPulse 2.7s ease-in-out infinite;
+}
+body.zk-v3 .zk-brand-loader::before {
+  content:"";position:absolute;inset:1px;border-radius:50%;
+  border:3px solid rgba(27,158,151,.12);
+  border-top-color:#35c6be;border-right-color:rgba(30,186,168,.65);
+  box-shadow:0 0 22px rgba(46,215,190,.20);
+  animation:zkBrandOrbit 1.55s linear infinite;
+}
+body.zk-v3 .zk-brand-loader::after {
+  content:"";position:absolute;top:0;left:50%;width:12px;height:12px;
+  margin-left:-6px;border-radius:50%;background:#6be7d3;
+  box-shadow:0 0 13px #5addcc;
+  transform-origin:6px 86px;animation:zkBrandOrbit 1.55s linear infinite;
+}
+@keyframes zkBrandPulse {50%{transform:scale(1.035);filter:brightness(1.075)}}
+@keyframes zkBrandOrbit {to{transform:rotate(360deg)}}
+@media(max-width:480px){
+ body.zk-v3 .zk-gate {padding:16px 13px}
+ body.zk-v3 .zk-gate .card {padding:31px 21px 24px;border-radius:23px}
+ body.zk-v3 .zk-gate .lg {gap:12px;margin-bottom:21px;padding-right:65px}
+ body.zk-v3 .zk-gate .mk{width:53px;height:53px;border-radius:13px}
+ body.zk-v3 .zk-gate h1{font-size:23px}
+ body.zk-v3 .zk-gate .zk-brand-kicker{font-size:9px}
+ body.zk-v3 .zk-gate .lng{top:18px;right:16px}
+}
+@media(max-height:670px){
+ body.zk-v3 .zk-gate{place-items:start center}
+ body.zk-v3 .zk-gate .card{margin:auto}
+}
+@media(prefers-reduced-motion:reduce) {
+ body.zk-v3 .zk-brand-loader img,body.zk-v3 .zk-brand-loader::before,body.zk-v3 .zk-brand-loader::after{
+  animation:none!important;
+ }
+}
