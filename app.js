@@ -114,7 +114,7 @@
       </div>
       <div class="hero-art"><span class="badge3d">${t('hero_badge')}</span><div class="lab-host" id="heroLab"></div></div>
     </div></section>
-    ${XPok() ? `<section class="blk xpsec"><div class="wrap">${XP.homeCard({ t, tr, B })}</div></section>` : ''}
+    ${XPok() && window.ZKDashboard ? ZKDashboard.render({ lang, tr, B }) : (XPok() ? `<section class="blk xpsec"><div class="wrap">${XP.homeCard({ t, tr, B })}</div></section>` : '')}
     <section class="blk"><div class="wrap">
       <div class="sec-h"><div><h2>${t('books_h')}</h2><p>${t('books_p')}</p></div></div>
       <div class="grades">
@@ -193,7 +193,8 @@
       } else body += `<div class="panel"><div class="note">${t(g === 'g6' ? 'pages_note_uz' : 'pages_note_en')}</div>${imgs}</div>`;
     } else if (tab === 'lab') {
       if (ex.length) {
-        body += `<div class="panel" style="padding:14px"><div class="seg" style="margin-bottom:12px;flex-wrap:wrap" id="exSel">${ex.map((e, i) => `<button data-x="${e.id}" class="${i ? '' : 'on'}">${e.icon} ${tr(e.title)}</button>`).join('')}</div><div class="labpage"><div class="lab-host" id="lessonLab"></div></div><div class="safety">⚠️ ${t('safety')}</div></div>`;
+        body += `<div class="panel" style="padding:14px"><div class="seg" style="margin-bottom:12px;flex-wrap:wrap" id="exSel">${ex.map((e, i) => `<button data-x="${e.id}" class="${i ? '' : 'on'}">${e.icon} ${tr(e.title)}</button>`).join('')}</div><div class="labpage"><div class="lab-host" id="lessonLab"></div></div><div class="safety">⚠️ ${t('safety')}</div>
+       <div id="zkLabGuide"></div></div>`;
       } else if (toolsOf(g, n).length) body += `<div class="panel">${toolsOf(g, n).map(toolCard).join('')}</div>`;
       else body += `<div class="panel"><p>${t('no_lab')}</p><div class="xgrid">${Lab.list.slice(0, 3).map(xcard).join('')}</div></div>`;
     } else if (tab === 'quiz') {
@@ -357,6 +358,7 @@
       <div class="panel" style="margin-top:18px"><h3>📚 ${t('related')}</h3>${ls.map((x) => `<a href="#${x.g}-${x.n}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span class="lnum" style="width:32px;height:32px;font-size:13px;background:${GC[x.g]}">${x.n}</span><span><b>${tr(x.L.t)}</b><br><small style="color:var(--muted)">${GN[x.g]}-${t('grade')}</small></span></a>`).join('')}</div>
     </div>`;
     labHandle = Lab.open(document.getElementById('bigLab'), id, { autoplay: true });
+    if (window.ZKLabGuide && labHandle) ZKLabGuide.mount(document.getElementById('zkLabGuide'), labHandle, { lang });
   }
   function openModal(id) {
     const e = Lab.exps[id]; if (!e) return; destroyLab();
@@ -461,6 +463,7 @@
     else if (h === 'tests') { testsPage(); navKey = 'tests'; }
     else if ((m = h.match(/^ptable(?:-(\d+))?$/))) { if (window.PT) PT.render(app, { lang, t, tr, B, z: m[1] ? +m[1] : null }); else home(); navKey = 'pt'; }
     else if (h === 'me') { if (XPok()) XP.page(app, { t, tr, B }); else home(); navKey = 'me'; }
+    else if (h === 'certificate') { if (window.ZKCertificate && XPok()) ZKCertificate.render(app, { lang, B }); else home(); navKey = 'me'; }
     else if (h === 'admin' && window.ZKA && window.ZKAuth && ZKAuth.isAdmin()) { ZKA.render(app, { t, tr, B, lang, GC }); navKey = 'admin'; }
     else if (h === 'teacher' && window.ZKT && window.ZKAuth && ZKAuth.isStaff()) { ZKT.render(app, { t, tr, B, lang, GC }); navKey = 'teacher'; }
     else if (h === 'lab') { labList(); navKey = 'lab'; }
