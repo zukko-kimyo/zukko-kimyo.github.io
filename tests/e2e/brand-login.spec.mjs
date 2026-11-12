@@ -97,3 +97,22 @@ test('admin login keeps original authentication and shows authenticated site log
   await expect(page.locator('header.top .logo .mark img')).toBeVisible();
   await expect(page.locator('#uchip')).toBeVisible();
 });
+
+
+test('PWA icon paints the white school emblem, not only a green background', async ({ page }) => {
+  await page.goto('/index.html?mock#home');
+  const pixel=await page.evaluate(async () => {
+    const img=new Image();img.src='assets/zukko-school-app-icon.svg';
+    await img.decode();
+    const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(img,0,0,128,128);
+    // Top centre of the school's white upright centre pillar (source image y=~40px).
+    const d=ctx.getImageData(64,42,1,1).data;
+    return [...d];
+  });
+  expect(pixel[3]).toBeGreaterThan(200);
+  expect(pixel[0], 'The school icon should contain a visible white emblem').toBeGreaterThan(155);
+  expect(pixel[1]).toBeGreaterThan(155);
+  expect(pixel[2]).toBeGreaterThan(155);
+});
