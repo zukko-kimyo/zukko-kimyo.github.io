@@ -86,10 +86,7 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['date', 'cls', 'entries', 'updated', 'by'])
         && request.resource.data.keys().hasAll(['date', 'cls', 'entries', 'updated', 'by'])
         && request.resource.data.date is string
-        && request.resource.data.date.matches('^\\d{4}-\\d{2}-\\d{2}
-  }
-}
-)
+        && request.resource.data.date.size() == 10
         && request.resource.data.cls is string
         && request.resource.data.cls.size() > 0
         && request.resource.data.cls.size() <= 80
