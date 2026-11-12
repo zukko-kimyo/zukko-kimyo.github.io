@@ -78,6 +78,24 @@ service cloud.firestore {
                    && (!('announce' in request.resource.data) || (request.resource.data.announce is string && request.resource.data.announce.size() <= 300));
     }
 
+    // Davomat hujjatlari: har sinf uchun har kunga bitta yozuv.
+    // Faqat roli tekshirilgan maktab xodimlari o'qishi va yozishi mumkin.
+    match /attendance/{id} {
+      allow read: if isStaff();
+      allow create, update: if isStaff()
+        && request.resource.data.keys().hasOnly(['date', 'cls', 'entries', 'updated', 'by'])
+        && request.resource.data.keys().hasAll(['date', 'cls', 'entries', 'updated', 'by'])
+        && request.resource.data.date is string
+        && request.resource.data.date.size() == 10
+        && request.resource.data.cls is string
+        && request.resource.data.cls.size() > 0
+        && request.resource.data.cls.size() <= 80
+        && request.resource.data.entries is map
+        && request.resource.data.updated is int
+        && request.resource.data.by == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
     match /{document=**} { allow read, write: if false; }
   }
 }
