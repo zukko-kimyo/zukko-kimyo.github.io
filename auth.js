@@ -223,7 +223,7 @@
     const el = document.createElement('div'); el.className = 'zk-gate'; document.body.appendChild(el);
     let mode = 'login';
     const langBar = (L) => `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
-    const head = () => `<div class="lg"><div class="mk">⚗️</div><div><h1>${t('title')}</h1><div class="sb">${t('sub')}</div></div></div>`;
+    const head = () => `<div class="lg"><span class="mk"><img src="assets/zukko-school-logo.webp" alt="" width="133" height="135" decoding="async"></span><div><span class="zk-brand-kicker">${lang() === 'en' ? 'ZUKKO INTERNATIONAL SCHOOL' : 'ZUKKO XALQARO MAKTABI'}</span><h1>${lang() === 'en' ? 'Welcome back' : 'Xush kelibsiz!'}</h1><div class="sb">${t('sub')}</div></div></div>`;
     const render = (keep) => {
       const L = lang(); const v = keep || {};
       if (mode === 'reg') return renderReg(v);
@@ -231,10 +231,10 @@
       el.innerHTML = `<form class="card" autocomplete="on" novalidate>
         ${langBar(L)}${head()}${annHtml()}
         <label for="zkL">${t('login')}</label><div class="in"><input id="zkL" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="email" value="${esc(v.l || '')}"></div>
-        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="password" autocomplete="current-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="show">👁</button></div>
+        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="password" autocomplete="current-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="${lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish'}" aria-pressed="false">◉</button></div>
         <label class="rm"><input type="checkbox" id="zkR" ${v.r === false ? '' : 'checked'}> ${t('remember')}</label>
         <button class="go" type="submit">${t('enter')}</button>
-        <div class="er" id="zkE"></div><div id="zkX"></div>
+        <div class="er" id="zkE" role="alert" aria-live="polite"></div><div id="zkX"></div>
         <div class="ht">${t('hint')}</div>
         ${SITE.regOpen === false ? '' : `<div class="sw">${t('no_acc')} <button type="button" class="lnk" data-reg>${t('reg_go')}</button></div>`}
         ${MOCK ? `<div class="mockb">🧪 ${t('mock')}</div>` : ''}
@@ -242,7 +242,7 @@
       const f = el.querySelector('form'), iL = el.querySelector('#zkL'), iP = el.querySelector('#zkP'), iR = el.querySelector('#zkR'), E = el.querySelector('#zkE'), X = el.querySelector('#zkX'), go = el.querySelector('.go');
       const showErr = (m) => { E.textContent = m; E.classList.toggle('on', !!m); };
       el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } render({ l: iL.value, p: iP.value, r: iR.checked }); }));
-      el.querySelector('.eye').onclick = () => { iP.type = iP.type === 'password' ? 'text' : 'password'; };
+      el.querySelector('.eye').onclick = (e) => { iP.type = iP.type === 'password' ? 'text' : 'password'; e.currentTarget.setAttribute('aria-pressed', String(iP.type === 'text')); e.currentTarget.setAttribute('aria-label', iP.type === 'text' ? (lang() === 'en' ? 'Hide password' : 'Parolni yashirish') : (lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish')); };
       const rg = el.querySelector('[data-reg]'); if (rg) rg.onclick = () => { mode = 'reg'; render(); };
       (v.l ? iP : iL).focus();
       const busy = (b) => { go.disabled = b; go.textContent = b ? t('loading') : t('enter'); };
@@ -284,7 +284,7 @@
         <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="new-password" autocomplete="new-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="show">👁</button></div>
         <label for="zkP2">${t('r_pass2')}</label><div class="in"><input id="zkP2" type="password" autocomplete="new-password" value="${esc(v.p2 || '')}"></div>
         <button class="go" type="submit">${t('reg_btn')}</button>
-        <div class="er" id="zkE"></div>
+        <div class="er" id="zkE" role="alert" aria-live="polite"></div>
         <div class="sw">${t('have_acc')} <button type="button" class="lnk" data-login>${t('enter')}</button></div>
         ${MOCK ? `<div class="mockb">🧪 ${t('mock')}</div>` : ''}
       </form>`;
@@ -293,7 +293,7 @@
       const keepV = () => ({ n: iN.value, c: iC.value, l: iL.value, p: iP.value, p2: iP2.value });
       const showErr = (m) => { E.textContent = m; E.classList.toggle('on', !!m); };
       el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } renderReg(keepV()); }));
-      q('.eye').onclick = () => { iP.type = iP2.type = iP.type === 'password' ? 'text' : 'password'; };
+      q('.eye').onclick = (e) => { iP.type = iP2.type = iP.type === 'password' ? 'text' : 'password'; e.currentTarget.setAttribute('aria-pressed', String(iP.type === 'text')); e.currentTarget.setAttribute('aria-label', iP.type === 'text' ? (lang() === 'en' ? 'Hide password' : 'Parolni yashirish') : (lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish')); };
       q('[data-login]').onclick = () => { mode = 'login'; render({ l: iL.value }); };
       iN.focus();
       const busy = (b) => { go.disabled = b; go.textContent = b ? t('loading') : t('reg_btn'); };
@@ -369,7 +369,7 @@
     if (!ON) return (readyP = Promise.resolve(null));
     readyP = new Promise(async (resolve) => {
       css();
-      const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card"><div class="spin"></div><b>${t('loading')}</b></div>`; document.body.appendChild(boot);
+      const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="zk-brand-loader" aria-hidden="true"><img src="assets/zukko-school-logo.webp" width="133" height="135" alt="" decoding="sync"><span class="zk-brand-orbit"></span></div><b>${t('loading')}</b><p class="zk-boot-sub">${lang() === 'en' ? 'Zukko International School · Chemistry' : 'Zukko Xalqaro Maktabi · Kimyo'}</p></div>`; document.body.appendChild(boot);
       let u = null;
       try { u = await B.init(); await loadSettings(); } catch (e) { boot.querySelector('.card').innerHTML = `<b>${t('e_cfg')}</b><div class="nt">${esc(e.message || e)}</div>`; return; }
       if (u) { try { await startSession(u); boot.remove(); return resolve(me); } catch (e) { /* login ekraniga */ } }
