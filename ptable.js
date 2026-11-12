@@ -384,7 +384,7 @@ Og|Oganesson|Oganesson|[294]`;
         const target = cells[next-1];
         if (target) target.focus({preventScroll:false});
       };
-      c.onclick = () => { const z = +c.dataset.z; if (st.game) answer(z); else show(z); if (det.classList.contains('mob')) { const r = det.getBoundingClientRect(); if (r.top < 70 || r.bottom > innerHeight) det.scrollIntoView({ block: 'start', behavior: 'smooth' }); } };
+      c.onclick = () => { const z = +c.dataset.z; if (st.game) answer(z); else show(z); if (!st.game) { const r = det.getBoundingClientRect(); if (r.bottom < 95 || r.top > window.innerHeight - 110) det.scrollIntoView({ block: 'start', behavior: window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } };
       c.onmouseenter = () => { const e = EL[c.dataset.z - 1]; grid.querySelectorAll('.ptgh,.ptph').forEach((h) => h.classList.remove('hov')); if (e.row <= 7) { const gh = grid.querySelector(`.ptgh[style*="grid-column:${e.col + 1};"], .ptgh[style$="grid-column:${e.col + 1}"]`); if (gh) gh.classList.add('hov'); const ph = grid.querySelectorAll('.ptph')[e.row - 1]; if (ph) ph.classList.add('hov'); } };
     });
     grid.onmouseleave = () => grid.querySelectorAll('.hov').forEach((h) => h.classList.remove('hov'));
