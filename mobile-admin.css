@@ -47,7 +47,7 @@
     text-transform:uppercase;padding:8px 8px 10px;
   }
   body.zk-v3 .zk-mnav-menu a {
-    display:flex;align-items:center;gap:12px;padding:10px 9px;
+    display:flex;flex-direction:row;flex:initial;justify-content:flex-start;align-items:center;gap:12px;padding:10px 9px;
     border-top:1px solid #eff4f7;border-radius:9px;
     font:900 15px var(--f);color:#17394d;text-decoration:none;
     min-height:48px;background:#fff;
