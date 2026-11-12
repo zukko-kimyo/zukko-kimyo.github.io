@@ -10,6 +10,7 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - Testlar: unit (`node:test`), e2e (Playwright, desktop + mobil), Firestore qoidalari (emulyator); GitHub Actions `Testlar` workflow; PR shabloni.
 
 ### Tuzatildi
+- PR #2 (administrator paneli) `main` o'rniga oraliq `chore/collaboration-setup` branchiga birlashgan edi — sayt yangilanmadi. PR #3 orqali `main`ga yetkazildi; COLLABORATION.md ga ketma-ket PR'lar qoidasi qo'shildi.
 - O'qituvchi paneli: yuklanish paytida bo'lim almashtirilsa ma'lumot ikki marta so'ralar va yozilayotgan forma (masalan, o'quvchilar ro'yxati) o'chib ketardi.
 
 ## 2026-11-12 — 1.x (`main`ga to'g'ridan-to'g'ri, hamkorlik tartibidan oldin)
