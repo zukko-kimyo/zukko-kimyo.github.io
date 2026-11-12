@@ -99,3 +99,29 @@ test('desktop administration keeps student directory in right column', async ({ 
   });
   expect(coordinates.right).toBeGreaterThan(coordinates.left);
 });
+
+
+test('admin page and 5-button mobile bar fit narrow 320, 360 and 390 pixel screens', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'Mobile viewport-only test');
+  await bootstrapAdmin(page);
+  await page.evaluate(() => { location.hash = '#admin'; });
+  await expect(page.locator('#adBody .ad-kpi [data-k]')).toHaveCount(10);
+  for (const width of [320, 360, 390]) {
+    await page.setViewportSize({ width, height: 720 });
+    const layout = await page.evaluate(() => {
+      const nav = document.querySelector('#bnav');
+      const rect = nav.getBoundingClientRect();
+      return {
+        scrollWidth: document.documentElement.scrollWidth,
+        viewport: innerWidth,
+        navWidth: rect.width,
+        buttons: [...nav.children].filter(el => el.matches('a,button')).length,
+        panelVisible: !!document.querySelector('#adStudentsOpen')?.getClientRects().length
+      };
+    });
+    expect(layout.scrollWidth - layout.viewport, 'no horizontal page overflow at ' + width + 'px').toBeLessThanOrEqual(1);
+    expect(layout.navWidth, 'bottom bar fills the viewport').toBeGreaterThanOrEqual(width - 2);
+    expect(layout.buttons).toBe(5);
+    expect(layout.panelVisible).toBe(true);
+  }
+});
