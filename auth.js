@@ -244,7 +244,8 @@
       el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } render({ l: iL.value, p: iP.value, r: iR.checked }); }));
       el.querySelector('.eye').onclick = (e) => { iP.type = iP.type === 'password' ? 'text' : 'password'; e.currentTarget.setAttribute('aria-pressed', String(iP.type === 'text')); e.currentTarget.setAttribute('aria-label', iP.type === 'text' ? (lang() === 'en' ? 'Hide password' : 'Parolni yashirish') : (lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish')); };
       const rg = el.querySelector('[data-reg]'); if (rg) rg.onclick = () => { mode = 'reg'; render(); };
-      (v.l ? iP : iL).focus();
+      // Avoid opening the on-screen keyboard automatically on phones.
+      if (!matchMedia('(pointer:coarse)').matches) (v.l ? iP : iL).focus();
       const busy = (b) => { go.disabled = b; go.textContent = b ? t('loading') : t('enter'); };
       f.onsubmit = async (ev) => {
         ev.preventDefault(); showErr(''); X.innerHTML = '';
@@ -295,7 +296,7 @@
       el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } renderReg(keepV()); }));
       q('.eye').onclick = (e) => { iP.type = iP2.type = iP.type === 'password' ? 'text' : 'password'; e.currentTarget.setAttribute('aria-pressed', String(iP.type === 'text')); e.currentTarget.setAttribute('aria-label', iP.type === 'text' ? (lang() === 'en' ? 'Hide password' : 'Parolni yashirish') : (lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish')); };
       q('[data-login]').onclick = () => { mode = 'login'; render({ l: iL.value }); };
-      iN.focus();
+      if (!matchMedia('(pointer:coarse)').matches) iN.focus();
       const busy = (b) => { go.disabled = b; go.textContent = b ? t('loading') : t('reg_btn'); };
       q('form').onsubmit = async (ev) => {
         ev.preventDefault(); showErr('');
