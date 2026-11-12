@@ -27,6 +27,7 @@
       e_r_login: "Login faqat lotin harflari, raqam, nuqta va chiziqchadan iborat bo'lsin (kamida 3 belgi).", e_r_pass2: 'Parollar bir xil emas.', e_r_taken: 'Bu login band. Boshqasini tanlang.',
       sent_h: 'Arizangiz yuborildi!', sent_p: "{n}, siz {c} sinfiga ro'yxatdan o'tdingiz. O'qituvchingiz tasdiqlagach, shu login va parol bilan kirasiz.", sent_back: 'Kirish sahifasiga qaytish',
       e_pending: "Hisobingiz hali tasdiqlanmagan. O'qituvchingiz tasdiqlashini kuting.",
+      adm_panel: 'Administrator paneli', ann_close: 'Yopish', reg_closed: "Hozircha ro'yxatdan o'tish yopiq. Login va parolni o'qituvchingizdan oling.",
       mock: 'Sinov rejimi — maʼlumotlar faqat shu brauzerda', saved: 'Saqlandi', offline: 'Internet yo‘q — natijalar keyin saqlanadi', cls: 'Sinf',
     },
     en: {
@@ -44,6 +45,7 @@
       e_r_login: 'Login may contain only Latin letters, digits, dot and dash (at least 3 characters).', e_r_pass2: 'Passwords do not match.', e_r_taken: 'This login is taken. Choose another one.',
       sent_h: 'Request sent!', sent_p: '{n}, you signed up for class {c}. You can sign in with this login and password once your teacher approves you.', sent_back: 'Back to sign in',
       e_pending: 'Your account is not approved yet. Please wait for your teacher.',
+      adm_panel: 'Admin panel', ann_close: 'Close', reg_closed: 'Sign-up is closed for now. Get your login and password from your teacher.',
       mock: 'Test mode — data stays in this browser', saved: 'Saved', offline: 'Offline — results will be saved later', cls: 'Class',
     },
   };
@@ -68,6 +70,7 @@
       async signIn(email, pw, remember) { const d = db(); const u = uidOf(d, email); if (!u || d.auth[u].pw !== pw) throw err('auth/invalid-credential'); (remember ? localStorage : sessionStorage).setItem(SK, u); return wait({ uid: u, email }); },
       async signOut() { localStorage.removeItem(SK); sessionStorage.removeItem(SK); },
       async createSelf(email, pw) { const d = db(); if (uidOf(d, email)) throw err('auth/email-already-in-use'); if (pw.length < 6) throw err('auth/weak-password'); const u = 'u' + Math.random().toString(36).slice(2, 10); d.auth[u] = { email, pw }; put(d); localStorage.setItem(SK, u); return wait({ uid: u, email }); },
+      async changeOwnPassword(oldPw, newPw) { const d = db(); const u = sessionStorage.getItem(SK) || localStorage.getItem(SK); if (!u || !d.auth[u]) throw err('auth/requires-recent-login'); if (d.auth[u].pw !== oldPw) throw err('auth/invalid-credential'); if (newPw.length < 6) throw err('auth/weak-password'); d.auth[u].pw = newPw; put(d); return wait(true); },
       async deleteSelf() { const d = db(); const u = sessionStorage.getItem(SK) || localStorage.getItem(SK); if (u) { delete d.auth[u]; put(d); } localStorage.removeItem(SK); sessionStorage.removeItem(SK); return wait(true); },
       async createAccount(email, pw) { const d = db(); if (uidOf(d, email)) throw err('auth/email-already-in-use'); if (pw.length < 6) throw err('auth/weak-password'); const u = 'u' + Math.random().toString(36).slice(2, 10); d.auth[u] = { email, pw }; put(d); return wait(u); },
       async changePassword(email, oldPw, newPw) { const d = db(); const u = uidOf(d, email); if (!u || d.auth[u].pw !== oldPw) throw err('auth/invalid-credential'); d.auth[u].pw = newPw; put(d); return wait(true); },
@@ -98,6 +101,7 @@
       async signIn(email, pw, remember) { await load(); await A.setPersistence(auth, remember ? A.browserLocalPersistence : A.browserSessionPersistence); const c = await A.signInWithEmailAndPassword(auth, email, pw); return user(c.user); },
       async signOut() { await load(); await A.signOut(auth); },
       async createSelf(email, pw) { await load(); const c = await A.createUserWithEmailAndPassword(auth, email, pw); return user(c.user); },
+      async changeOwnPassword(oldPw, newPw) { await load(); const u = auth.currentUser; if (!u) throw Object.assign(new Error('not signed in'), { code: 'auth/requires-recent-login' }); await A.reauthenticateWithCredential(u, A.EmailAuthProvider.credential(u.email, oldPw)); await A.updatePassword(u, newPw); return true; },
       async deleteSelf() { await load(); if (auth.currentUser) await A.deleteUser(auth.currentUser); },
       async createAccount(email, pw) { await load(); return withSecondary(async () => (await A.createUserWithEmailAndPassword(secAuth, email, pw)).user.uid); },
       async changePassword(email, oldPw, newPw) { await load(); return withSecondary(async () => { const c = await A.signInWithEmailAndPassword(secAuth, email, oldPw); await A.updatePassword(c.user, newPw); return true; }); },
@@ -154,6 +158,23 @@
     return me;
   }
 
+  /* ================= SAYT SOZLAMALARI (settings/site) ================= */
+  // { announce, announceOn, regOpen } — administrator panelidan o'zgartiriladi, hamma (kirmaganlar ham) o'qiy oladi.
+  let SITE = {};
+  async function loadSettings() { try { SITE = (await B.get('settings', 'site')) || {}; } catch (e) { SITE = {}; } return SITE; }
+  const annText = () => (SITE.announceOn && SITE.announce ? String(SITE.announce) : '');
+  const annHtml = () => (annText() ? `<div class="ann">📢 ${esc(annText())}</div>` : '');
+  function applySettings(s) {
+    if (s) SITE = Object.assign({}, SITE, s);
+    css();
+    let b = document.getElementById('zkAnn'); const txt = annText();
+    const key = 'zk_ann_hide_' + txt.length + '_' + txt.slice(0, 20);
+    if (!txt || sessionStorage.getItem(key)) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('div'); b.id = 'zkAnn'; const h = document.querySelector('header.top'); if (h) h.after(b); else document.body.prepend(b); }
+    b.innerHTML = `<div class="wrap"><span>📢 ${esc(txt)}</span><button type="button" aria-label="${t('ann_close')}">✕</button></div>`;
+    b.querySelector('button').onclick = () => { sessionStorage.setItem(key, '1'); b.remove(); };
+  }
+
   /* ================= LOGIN SCREEN ================= */
   function css() {
     if (document.getElementById('zkAuthCss')) return;
@@ -177,6 +198,8 @@
 .zk-gate .lng{position:absolute;top:18px;right:18px;display:flex;background:#fff3e6;border-radius:11px;padding:3px}.zk-gate .lng button{border:0;background:none;padding:5px 9px;border-radius:8px;font:800 12.5px var(--f,Nunito);color:#8a7f73;cursor:pointer}.zk-gate .lng button.on{background:#fff;color:#d9560b;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .zk-gate .sw{margin-top:12px;text-align:center;font-weight:800;font-size:14px;color:#5b5266}.zk-gate .lnk{border:0;background:none;color:#d9560b;font:900 14px var(--f,Nunito);cursor:pointer;text-decoration:underline;padding:2px}
 .zk-gate .rh{margin:6px 0 0;font-size:20px;font-weight:900;color:#1f1a2e}.zk-gate .sent{text-align:center;padding:6px 0 4px}.zk-gate .sent .big{font-size:52px}.zk-gate .sent p{color:#5b5266;font-weight:700;line-height:1.5}.zk-gate .kv{background:#fff7ec;border-radius:12px;padding:10px;font-weight:800}.zk-gate .kv code{font-size:16px}
+.zk-gate .ann{background:#fff7e0;border:2px solid #fde68a;color:#854d0e;border-radius:14px;padding:10px 12px;font-weight:800;font-size:13.5px;margin:4px 0 6px;line-height:1.45}
+#zkAnn{background:#fff7e0;border-bottom:2px solid #fde68a;color:#854d0e;font-weight:800;font-size:14px}#zkAnn .wrap{display:flex;gap:10px;align-items:center;padding-top:9px;padding-bottom:9px}#zkAnn span{flex:1;line-height:1.4}#zkAnn button{border:0;background:none;color:#854d0e;font-size:16px;cursor:pointer;padding:4px 8px}
 .zk-gate .mockb{margin-top:14px;text-align:center;font-size:12px;font-weight:800;color:#6d28d9;background:#f3ecff;border-radius:10px;padding:6px}
 .zk-gate.boot .card{text-align:center;padding:40px 26px}.zk-gate .spin{width:34px;height:34px;border:4px solid #ffe0c2;border-top-color:#ff7a1a;border-radius:50%;margin:0 auto 12px;animation:zkspin .8s linear infinite}@keyframes zkspin{to{transform:rotate(360deg)}}
 .uchip{position:relative}.uchip>button{display:flex;align-items:center;gap:8px;border:2px solid var(--line,#f1e4d3);background:#fff;border-radius:14px;padding:4px 10px 4px 4px;font:800 13.5px var(--f,Nunito);color:#1f1a2e;cursor:pointer;max-width:190px}
@@ -206,21 +229,21 @@
       if (mode === 'reg') return renderReg(v);
       if (mode === 'sent') return renderSent(v);
       el.innerHTML = `<form class="card" autocomplete="on" novalidate>
-        ${langBar(L)}${head()}
+        ${langBar(L)}${head()}${annHtml()}
         <label for="zkL">${t('login')}</label><div class="in"><input id="zkL" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="email" value="${esc(v.l || '')}"></div>
         <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="password" autocomplete="current-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="show">👁</button></div>
         <label class="rm"><input type="checkbox" id="zkR" ${v.r === false ? '' : 'checked'}> ${t('remember')}</label>
         <button class="go" type="submit">${t('enter')}</button>
         <div class="er" id="zkE"></div><div id="zkX"></div>
         <div class="ht">${t('hint')}</div>
-        <div class="sw">${t('no_acc')} <button type="button" class="lnk" data-reg>${t('reg_go')}</button></div>
+        ${SITE.regOpen === false ? '' : `<div class="sw">${t('no_acc')} <button type="button" class="lnk" data-reg>${t('reg_go')}</button></div>`}
         ${MOCK ? `<div class="mockb">🧪 ${t('mock')}</div>` : ''}
       </form>`;
       const f = el.querySelector('form'), iL = el.querySelector('#zkL'), iP = el.querySelector('#zkP'), iR = el.querySelector('#zkR'), E = el.querySelector('#zkE'), X = el.querySelector('#zkX'), go = el.querySelector('.go');
       const showErr = (m) => { E.textContent = m; E.classList.toggle('on', !!m); };
       el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } render({ l: iL.value, p: iP.value, r: iR.checked }); }));
       el.querySelector('.eye').onclick = () => { iP.type = iP.type === 'password' ? 'text' : 'password'; };
-      el.querySelector('[data-reg]').onclick = () => { mode = 'reg'; render(); };
+      const rg = el.querySelector('[data-reg]'); if (rg) rg.onclick = () => { mode = 'reg'; render(); };
       (v.l ? iP : iL).focus();
       const busy = (b) => { go.disabled = b; go.textContent = b ? t('loading') : t('enter'); };
       f.onsubmit = async (ev) => {
@@ -250,6 +273,7 @@
     };
     function renderReg(v) {
       const L = lang();
+      if (SITE.regOpen === false) { mode = 'login'; return render({ l: v.l }); }
       el.innerHTML = `<form class="card" autocomplete="on" novalidate>
         ${langBar(L)}${head()}
         <h2 class="rh">${t('reg_h')}</h2><div class="nt" style="margin-top:2px">${t('reg_p')}</div>
@@ -321,12 +345,13 @@
     const nm = me.name || me.login;
     c.innerHTML = `<button type="button" aria-haspopup="true"><span class="av">${esc(nm.trim()[0] || '?').toUpperCase()}</span><span class="nm">${esc(nm)}</span></button>
       <div class="mn"><div class="who"><b>${esc(nm)}</b><small>${esc(me.login)} · ${t(me.role)}${me.cls ? ' · ' + esc(me.cls) : ''}</small></div>
-      ${staff ? `<a href="#teacher">👩‍🏫 ${t('panel')}</a>` : ''}<a href="#me">🏆 ${lang() === 'en' ? 'My progress' : 'Mening yutuqlarim'}</a>
+      ${me.role === 'admin' ? `<a href="#admin">🛡 ${t('adm_panel')}</a>` : ''}${staff ? `<a href="#teacher">👩‍🏫 ${t('panel')}</a>` : ''}<a href="#me">🏆 ${lang() === 'en' ? 'My progress' : 'Mening yutuqlarim'}</a>
       <button type="button" data-out>🚪 ${t('logout')}</button></div>`;
     c.querySelector('button').onclick = (e) => { e.stopPropagation(); c.classList.toggle('open'); };
     c.querySelector('[data-out]').onclick = logout;
     c.querySelectorAll('.mn a').forEach((a) => (a.onclick = () => c.classList.remove('open')));
     if (!chip._doc) { chip._doc = true; document.addEventListener('click', (e) => { const cc = document.getElementById('uchip'); if (cc && !cc.contains(e.target)) cc.classList.remove('open'); }); }
+    applySettings();
     if (MOCK && !document.querySelector('.zk-mockbar')) { const m = document.createElement('div'); m.className = 'zk-mockbar'; m.textContent = '🧪 ' + t('mock'); document.body.appendChild(m); }
   }
 
@@ -346,14 +371,14 @@
       css();
       const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card"><div class="spin"></div><b>${t('loading')}</b></div>`; document.body.appendChild(boot);
       let u = null;
-      try { u = await B.init(); } catch (e) { boot.querySelector('.card').innerHTML = `<b>${t('e_cfg')}</b><div class="nt">${esc(e.message || e)}</div>`; return; }
+      try { u = await B.init(); await loadSettings(); } catch (e) { boot.querySelector('.card').innerHTML = `<b>${t('e_cfg')}</b><div class="nt">${esc(e.message || e)}</div>`; return; }
       if (u) { try { await startSession(u); boot.remove(); return resolve(me); } catch (e) { /* login ekraniga */ } }
       boot.remove(); gate(resolve);
     });
     return readyP;
   }
   window.ZKAuth = {
-    enabled: ON, mock: MOCK, domain: DOMAIN, ready, chip, logout, push, t, esc, normLogin, emailOf, errMsg,
+    enabled: ON, mock: MOCK, domain: DOMAIN, ready, chip, logout, push, t, esc, normLogin, emailOf, errMsg, applySettings, get site() { return SITE; },
     get user() { return me; }, get backend() { return B; },
     isStaff: () => !!me && (me.role === 'teacher' || me.role === 'admin'), isAdmin: () => !!me && me.role === 'admin',
   };

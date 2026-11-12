@@ -461,6 +461,7 @@
     else if (h === 'tests') { testsPage(); navKey = 'tests'; }
     else if ((m = h.match(/^ptable(?:-(\d+))?$/))) { if (window.PT) PT.render(app, { lang, t, tr, B, z: m[1] ? +m[1] : null }); else home(); navKey = 'pt'; }
     else if (h === 'me') { if (XPok()) XP.page(app, { t, tr, B }); else home(); navKey = 'me'; }
+    else if (h === 'admin' && window.ZKA && window.ZKAuth && ZKAuth.isAdmin()) { ZKA.render(app, { t, tr, B, lang, GC }); navKey = 'admin'; }
     else if (h === 'teacher' && window.ZKT && window.ZKAuth && ZKAuth.isStaff()) { ZKT.render(app, { t, tr, B, lang, GC }); navKey = 'teacher'; }
     else if (h === 'lab') { labList(); navKey = 'lab'; }
     else if ((m = h.match(/^lab-(.+)$/))) { labPage(m[1]); navKey = 'lab'; }
