@@ -282,7 +282,7 @@
         <label for="zkC">${t('r_code')}</label><div class="in"><input id="zkC" type="text" autocapitalize="characters" spellcheck="false" placeholder="K4M9Q2" value="${esc(v.c || '')}" style="text-transform:uppercase;letter-spacing:.12em"></div>
         <label for="zkL">${t('r_login')}</label><div class="in"><input id="zkL" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="vali.a" value="${esc(v.l || '')}"></div>
         <div class="nt" style="margin-top:4px">${t('r_login_h')}</div>
-        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="new-password" autocomplete="new-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="show">👁</button></div>
+        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="new-password" autocomplete="new-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="${lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish'}" aria-pressed="false">◉</button></div>
         <label for="zkP2">${t('r_pass2')}</label><div class="in"><input id="zkP2" type="password" autocomplete="new-password" value="${esc(v.p2 || '')}"></div>
         <button class="go" type="submit">${t('reg_btn')}</button>
         <div class="er" id="zkE" role="alert" aria-live="polite"></div>
