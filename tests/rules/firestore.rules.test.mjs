@@ -158,3 +158,34 @@ test('ro\'yxatdan o\'tish yopilganda faol kod bilan ham ro\'yxatdan o\'tib bo\'l
   await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'settings/site'), { regOpen: true }); });
   await assertSucceeds(setDoc(doc(as('n1', 'laylo.s'), 'users/n1'), signup()));
 });
+
+
+// ---------- attendance (Zukko Kimyo 2.0) ----------
+const attendance = (over = {}) => ({
+  date: '2026-11-12',
+  cls: '7A',
+  entries: { stu1: 'present', stu2: 'absent' },
+  updated: Date.now(),
+  by: 'admin1',
+  ...over
+});
+
+test('davomatni faqat administrator o‘qiydi va yozadi', async () => {
+  const key = '2026-11-12_7A';
+  await assertFails(getDoc(doc(anon(), 'attendance/' + key)));
+  await assertFails(getDoc(doc(student(), 'attendance/' + key)));
+  await assertFails(setDoc(doc(student(), 'attendance/' + key), attendance({ by: 'stu1' })));
+  await assertFails(setDoc(doc(teacher(), 'attendance/' + key), attendance({ by: 'teach1' })));
+  await assertSucceeds(setDoc(doc(admin(), 'attendance/' + key), attendance()));
+  await assertSucceeds(getDoc(doc(admin(), 'attendance/' + key)));
+  await assertFails(getDoc(doc(teacher(), 'attendance/' + key)));
+  await assertFails(deleteDoc(doc(teacher(), 'attendance/' + key)));
+  await assertSucceeds(deleteDoc(doc(admin(), 'attendance/' + key)));
+});
+
+test('davomatga soxta sana, ortiqcha maydon va boshqa uid orqali yozib bo‘lmaydi', async () => {
+  await assertFails(setDoc(doc(admin(), 'attendance/bad1'), attendance({ date: '12-11-2026' })));
+  await assertFails(setDoc(doc(admin(), 'attendance/bad2'), attendance({ hack: true })));
+  await assertFails(setDoc(doc(admin(), 'attendance/bad3'), attendance({ by: 'teach1' })));
+  await assertSucceeds(setDoc(doc(admin(), 'attendance/2026-11-12_7A'), attendance()));
+});
