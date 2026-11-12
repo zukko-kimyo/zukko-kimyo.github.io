@@ -257,3 +257,26 @@ body.zk-v3 footer b{color:#d8ffae}
   html{scroll-behavior:auto}
   body.zk-v3 :where(.btn,.gcard,.xcard,.fcard,.zk-quick-item){transition:none!important;transform:none!important}
 }
+
+/* Accessible mobile search remains available; original input expands on focus. */
+@media (max-width:760px) {
+  body.zk-v3 .top .search {display:block;flex:none;order:0}
+  body.zk-v3 .top .search input {width:38px!important;height:37px!important;padding:6px 4px 6px 30px!important;cursor:pointer;color:transparent}
+  body.zk-v3 .top .search input:focus {color:#122b46;cursor:text}
+}
+@media (max-width:600px) {
+  body.zk-v3 .top .search input:focus {
+    width:auto!important;height:43px!important;
+    position:fixed;top:12px;left:12px;right:12px;z-index:70;
+    background:#fff;box-shadow:0 0 0 3px #d9eaff,0 12px 42px rgba(0,23,49,.15);
+  }
+}
+@media (max-width:440px) {
+  body.zk-v3 .top .wrap{flex-wrap:wrap;min-height:88px;justify-content:space-between;column-gap:7px;row-gap:4px}
+  body.zk-v3 .top .logo{order:1;min-width:0}
+  body.zk-v3 .top .search{order:2}
+  body.zk-v3 .top .lang{order:3}
+  body.zk-v3 .top .burger{order:4}
+  body.zk-v3 .top .zk-subject{order:5;display:flex;flex:1 0 100%;justify-content:center;margin:0;height:17px;letter-spacing:.19em}
+  body.zk-v3 .top .zk-school-name{display:flex!important}
+}
