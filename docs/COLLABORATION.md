@@ -33,6 +33,8 @@ Rollar qat'iy emas: ChatGPT ham funksiya yozishi, Claude ham ChatGPT ishini ko'r
 
 Bir PR = bitta mavzu. Katta funksiya bir nechta kichik PR'ga bo'linadi.
 
+**Ketma-ket PR'lar (stacked).** Agar PR boshqa ochiq PR'ning branchiga qaratilgan bo'lsa (masalan, `feature/x` → `chore/y`): birinchi PR birlashgach, ikkinchisining asosi (base) **`main`ga o'zgartiriladi**, keyin birlashtiriladi. Aks holda kod `main`ga emas, oraliq branchga tushadi va saytga chiqmaydi (2026-11-12 da PR #2 bilan shunday bo'ldi, PR #3 bilan tuzatildi). Muallif PR ochishdan oldin asos branch hali birlashmaganini tekshiradi; birlashgan bo'lsa — to'g'ridan-to'g'ri `main`ga ochadi.
+
 ## Commit xabarlari
 
 Birinchi qator qisqa va aniq, o'zbek tilida (inglizcha ham bo'ladi), keyin bo'sh qator va kerak bo'lsa tafsilot. Qaysi AI yozganini `Co-Authored-By:` qatori ko'rsatadi.

@@ -14,7 +14,7 @@
 | S2 | O'quvchi o'z natijasini (`progress`) o'zi yozadi — soxtalashtirish mumkin | Faqat o'z hujjati, roli o'zgarmaydi | Reyting, baho va sertifikatlar uchun test serverda baholanadi (`gradeQuiz`), `progress` faqat shaxsiy statistika bo'lib qoladi |
 | S3 | Administratorda ikki bosqichli himoya (MFA) yo'q | Faqat parol | 2-bosqich: admin uchun MFA (Identity Platform) yoki qo'shimcha tasdiq |
 | S4 | Firebase'ga bot so'rovlari | Faqat qoidalar | 2-bosqich: App Check (reCAPTCHA Enterprise) |
-| S5 | Administrator paroli chat suhbatida yuborilgan | — | Loyiha egasi parolni almashtirishi kerak (admin panelda "Parolni o'zgartirish" — `feature/admin-panel`) |
+| S5 | Administrator paroli chat suhbatida yuborilgan | `feature/admin-panel`: administrator panelida "Parolni o'zgartirish" (qayta autentifikatsiya bilan, kamida 8 belgi) | Loyiha egasi PR birlashtirilgach parolni darhol almashtirishi kerak |
 
 ## Har PR'da
 

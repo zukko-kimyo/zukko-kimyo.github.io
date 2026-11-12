@@ -21,7 +21,13 @@ service cloud.firestore {
         && d.role == 'student' && d.status == 'pending' && d.self == true
         && request.auth.token.email == d.login + '@zukko-kimyo.uz'
         && exists(/databases/$(db)/documents/classes/$(d.code))
-        && codeDoc(d.code).active == true && codeDoc(d.code).cls == d.cls;
+        && codeDoc(d.code).active == true && codeDoc(d.code).cls == d.cls
+        && regOpen();
+    }
+    // Administrator ro'yxatdan o'tishni yopgan bo'lsa (settings/site.regOpen == false), o'zi ro'yxatdan o'tib bo'lmaydi
+    function regOpen() {
+      return !exists(/databases/$(db)/documents/settings/site)
+        || get(/databases/$(db)/documents/settings/site).data.get('regOpen', true) != false;
     }
 
     // Foydalanuvchi profillari: ism, login, sinf, rol
@@ -61,6 +67,15 @@ service cloud.firestore {
     match /classes/{code} {
       allow get: if true;
       allow list, create, update, delete: if isStaff();
+    }
+
+    // Sayt sozlamalari: e'lon va ro'yxatdan o'tish holati. Hamma o'qiydi (kirish oynasida kerak), faqat administrator yozadi
+    match /settings/{id} {
+      allow get: if id == 'site';
+      allow list: if false;
+      allow write: if isAdmin() && id == 'site'
+                   && request.resource.data.keys().hasOnly(['announce', 'announceOn', 'regOpen', 'updated', 'by'])
+                   && (!('announce' in request.resource.data) || (request.resource.data.announce is string && request.resource.data.announce.size() <= 300));
     }
 
     match /{document=**} { allow read, write: if false; }
