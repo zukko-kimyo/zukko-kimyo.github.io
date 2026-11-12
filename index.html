@@ -648,6 +648,7 @@ button,a,.ptcell{touch-action:manipulation}
 <link rel="stylesheet" href="design-refresh.css?v=20261112-2" />
 <link rel="stylesheet" href="ptable-v2.css?v=20261112-3d" />
 <link rel="stylesheet" href="visual-v3.css?v=20261112-premium-01" />
+<link rel="stylesheet" href="mobile-admin.css?v=20261112-mobile-01" />
 </head>
 <body class="zk-v3">
 <header class="top">
@@ -671,14 +672,26 @@ button,a,.ptcell{touch-action:manipulation}
   </div>
 </header>
 <main id="app"></main>
-<nav class="bnav" id="bnav"><a href="#home" data-nav="home"><i>🏠</i><span data-i="b_home"></span></a><a href="#g6" data-nav="g6"><i>📗</i><span data-i="nav_g6"></span></a><a href="#g7" data-nav="g7"><i>📘</i><span data-i="nav_g7"></span></a><a href="#g8" data-nav="g8"><i>📙</i><span data-i="nav_g8"></span></a><a href="#tests" data-nav="tests"><i>✅</i><span data-i="b_tests"></span></a><a href="#me" data-nav="me"><i>🏆</i><span data-i="nav_me"></span></a></nav>
+<nav class="bnav zk-mnav" id="bnav" aria-label="Mobil navigatsiya">
+  <a href="#home" data-nav="home"><i aria-hidden="true">🏠</i><span data-i="b_home"></span></a>
+  <button type="button" id="mobileGradesToggle" aria-controls="mobileGradesMenu" aria-expanded="false" aria-haspopup="true"><i aria-hidden="true">📚</i><span id="mobileGradesLabel">Sinflar</span></button>
+  <a href="#lab" data-nav="lab"><i aria-hidden="true">🧪</i><span data-i="nav_lab"></span></a>
+  <a href="#tests" data-nav="tests"><i aria-hidden="true">✅</i><span data-i="b_tests"></span></a>
+  <a href="#me" data-nav="me" id="mobilePanelLink"><i id="mobilePanelIcon" aria-hidden="true">👤</i><span id="mobilePanelLabel">Profil</span></a>
+  <div class="zk-mnav-menu" id="mobileGradesMenu" hidden role="group" aria-label="Sinflar">
+    <div class="zk-mnav-menu-title" id="mobileGradesTitle">Sinflar</div>
+    <a href="#g6" data-nav="g6"><span class="zk-grade-pill">06</span><span>6-sinf</span><span class="zk-arrow">›</span></a>
+    <a href="#g7" data-nav="g7"><span class="zk-grade-pill">07</span><span>7-sinf</span><span class="zk-arrow">›</span></a>
+    <a href="#g8" data-nav="g8"><span class="zk-grade-pill">08</span><span>8-sinf</span><span class="zk-arrow">›</span></a>
+  </div>
+</nav>
 <div class="zoom" id="zoom"><img alt=""></div>
 <div class="lab-modal" id="labModal"><div class="box"><div class="mh"><span id="lmIcon" style="font-size:22px"></span><h3 id="lmTitle"></h3><button id="lmClose">✕</button></div><div class="lab-host" id="lmHost"></div></div></div>
 <footer><div class="wrap"><div><b>Zukko Xalqaro Maktabi · Kimyo</b> — <span data-i="foot"></span></div><div data-i="foot2"></div></div></footer>
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261112-premium-01';
+const VER = '20261112-mobile-01';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 await load('firebase-config.js').catch(() => {});
 await load('auth.js').catch(() => {});
