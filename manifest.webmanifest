@@ -1,0 +1,16 @@
+{
+  "name": "Zukko Kimyo — 6–8-sinf",
+  "short_name": "Zukko Kimyo",
+  "description": "Zukko Xalqaro Maktabi kimyo darsliklari: darslar, 3D tajribalar, testlar",
+  "start_url": "./index.html#home",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff8ef",
+  "theme_color": "#ffffff",
+  "lang": "uz",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

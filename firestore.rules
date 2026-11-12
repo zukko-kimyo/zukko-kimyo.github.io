@@ -1,0 +1,45 @@
+rules_version = '2';
+// Zukko Kimyo — Firestore xavfsizlik qoidalari
+// Firebase Console → Firestore Database → Rules bo'limiga to'liq ko'chirib, "Publish" bosing.
+// MUHIM: quyidagi admin email firebase-config.js dagi loginDomain bilan bir xil bo'lsin.
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function profile() { return get(/databases/$(db)/documents/users/$(request.auth.uid)).data; }
+    function hasProfile() { return signedIn() && exists(/databases/$(db)/documents/users/$(request.auth.uid)); }
+    function role() { return hasProfile() ? profile().role : ''; }
+    function isStaff() { return role() == 'teacher' || role() == 'admin'; }
+    function isAdmin() { return role() == 'admin'; }
+    function isAdminEmail() { return signedIn() && request.auth.token.email == 'admin@zukko-kimyo.uz'; }
+
+    // Foydalanuvchi profillari: ism, login, sinf, rol
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isStaff());
+      allow create: if (isStaff() && request.resource.data.role == 'student')
+                    || (isAdmin() && request.resource.data.role == 'teacher')
+                    || (isAdminEmail() && request.auth.uid == uid && request.resource.data.role == 'admin'
+                        && !exists(/databases/$(db)/documents/users/$(uid)));
+      allow update: if (isStaff() && resource.data.role == 'student' && request.resource.data.role == 'student')
+                    || (isAdmin() && resource.data.role != 'admin');
+      allow delete: if (isStaff() && resource.data.role == 'student') || (isAdmin() && resource.data.role == 'teacher');
+    }
+
+    // O'quvchining natijalari (XP, darslar, testlar)
+    match /progress/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isStaff());
+      allow create, update: if hasProfile() && request.auth.uid == uid
+                            && request.resource.data.role == role();
+      allow delete: if isStaff();
+    }
+
+    // Parollar: o'quvchilarnikini o'qituvchilar, o'qituvchilarnikini faqat administrator ko'radi
+    match /secrets/{uid} {
+      allow read: if isAdmin() || (isStaff() && resource.data.role == 'student');
+      allow create, update: if isAdmin() || (isStaff() && request.resource.data.role == 'student');
+      allow delete: if isAdmin() || (isStaff() && resource.data.role == 'student');
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}
