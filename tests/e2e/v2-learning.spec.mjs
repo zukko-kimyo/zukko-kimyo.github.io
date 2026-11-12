@@ -55,6 +55,14 @@ test('3D experiment provides selectable animation steps when WebGL is available'
   const id = await page.evaluate(() => window.Lab?.list?.find((e) => e.id && e.build)?.id || '');
   test.skip(!id, '3D modules are unavailable in this environment');
   await page.evaluate((experimentId) => { location.hash = '#lab-' + experimentId; }, id);
+  // Headless CI can expose Three.js data while denying WebGL context creation.
+  // Only skip that explicitly unsupported renderer state, not any missing guide.
+  await page.waitForFunction(() => {
+    const lab = document.getElementById('bigLab');
+    return lab && (lab.querySelector('.lab-err') || document.querySelector('.zk-lab-guide'));
+  }, null, { timeout: 20_000 });
+  const noRenderer = await page.locator('#bigLab .lab-err').count() > 0;
+  test.skip(noRenderer, 'WebGL renderer is not supported by this CI browser');
   await expect(page.locator('.zk-lab-guide')).toBeVisible();
   const steps = page.locator('.zk-lab-guide .zk-step');
   const count = await steps.count();
