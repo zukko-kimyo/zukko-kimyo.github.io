@@ -3,7 +3,7 @@
   function mount(host, element, shells, lang) {
     const T = window.THREE;
     if (!T || !T.WebGLRenderer || !T.OrbitControls || !host || !host.isConnected) return null;
-    let renderer, controls, observer, frame = 0, disposed = false;
+    let renderer, controls, observer, frame = 0, disposed = false, motionPaused = false;
     const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     const scene = new T.Scene();
     scene.background = new T.Color('#111a35');
@@ -81,7 +81,7 @@
         if(!host.isConnected){dispose();return;}
         const delta=Math.min(45,Math.max(0,now-(last||now)));last=now;
         if(!document.hidden) {
-          if(!reduced) rotating.forEach(o=>o.group.rotation.z+=o.speed*delta);
+          if(!reduced && !motionPaused) rotating.forEach(o=>o.group.rotation.z+=o.speed*delta);
           controls.update();
           renderer.render(scene,camera);
         }
@@ -96,7 +96,7 @@
         disposables.forEach(o=>o.dispose());
         if(renderer){renderer.dispose();renderer.forceContextLoss();renderer.domElement.remove();}
       }
-      return {dispose, pause(value){controls.autoRotate=!value&&!reduced;}, reset(){camera.position.set(distance*.36,distance*.24,distance);controls.target.set(0,0,0);controls.update();}};
+      return {dispose, pause(value){motionPaused=!!value;controls.autoRotate=!value&&!reduced;}, reset(){camera.position.set(distance*.36,distance*.24,distance);controls.target.set(0,0,0);controls.update();}};
     } catch(err){
       if(frame)cancelAnimationFrame(frame);
       if(observer)observer.disconnect();
