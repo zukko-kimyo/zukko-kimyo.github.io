@@ -176,6 +176,7 @@ table.ad td{padding:8px;border-bottom:1px solid #f4ece1}table.ad tr:last-child t
     wire();
     if (window.ZKWeekly) ZKWeekly.mount(APP.querySelector('#adWeekly'), st.users, st.prog, L);
     if (window.ZKAttendance) ZKAttendance.mount(APP.querySelector('#adAttendance'), st.users, L);
+    if (window.ZKAdminMobile) ZKAdminMobile.mount(APP, st.users, st.prog, L);
   }
 
   function download(name, text, type) {
