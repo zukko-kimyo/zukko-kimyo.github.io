@@ -132,6 +132,23 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
 @media print{body *{visibility:hidden}#tcPrint,#tcPrint *{visibility:visible}#tcPrint{position:absolute;left:0;top:0;width:100%}}
 #tcPrint{display:none}
 .tc-cards{display:grid;grid-template-columns:1fr 1fr;gap:0}.tc-card{border:1.5px dashed #999;padding:14px 16px;font-family:Arial,sans-serif;break-inside:avoid;page-break-inside:avoid}.tc-card h4{margin:0 0 4px;font-size:13px;color:#555}.tc-card b{font-size:17px}.tc-card table{margin-top:6px;font-size:15px}.tc-card td{padding:2px 10px 2px 0}.tc-card code{font-size:17px;font-weight:700}
+
+/* Zukko Kimyo 2.0 — teacher student dashboard */
+.page-h.tch{background:radial-gradient(circle at 90% 10%,rgba(255,255,255,.19),transparent 25%),linear-gradient(115deg,#23347e,#6a37bf 65%,#c45fab);padding:44px 0}
+.page-h.tch h1{font-size:clamp(27px,3.5vw,40px)}
+.page-h.tch p{color:#f1eaff;font-weight:700}
+#tcBody .tc-overview{gap:14px;margin:20px 0 25px}
+#tcBody .tc-metric{border:1px solid #e8e2fb;border-top:4px solid #7551d6;padding:19px 18px;border-radius:20px;background:linear-gradient(155deg,#fff,#f8f6ff);box-shadow:0 10px 28px rgba(49,35,104,.09)}
+#tcBody .tc-metric:nth-child(2){border-top-color:#14b6a6}
+#tcBody .tc-metric:nth-child(3){border-top-color:#eaa03d}
+#tcBody .tc-metric:nth-child(4){border-top-color:#d85b99}
+#tcBody .tc-metric b{display:block;margin-top:8px;font-size:clamp(26px,3vw,37px);color:#2b1a61}
+#tcBody .tc-metric span{color:#685a83}
+#tcBody .tc-chips button.on{background:#5c35b1;color:white;border-color:#5c35b1}
+#tcBody .tc-wrap{border-radius:18px;box-shadow:0 10px 30px rgba(45,26,90,.07)}
+.tc-tabs button.on{background:#4f2a9e;border-color:#4f2a9e;box-shadow:0 3px 0 #351873}
+@media(max-width:760px){#tcBody .tc-overview{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#tcBody .tc-metric{padding:14px}.page-h.tch{padding:30px 0}}
+
 `;
     document.head.appendChild(s);
   }
