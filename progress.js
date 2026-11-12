@@ -150,7 +150,7 @@
           <h3 style="margin-top:18px">💡 ${t('how')}</h3><ul class="xrules">
             <li><b>+5</b>${t('r_visit')}</li><li><b>+15</b>${t('r_lab')}</li><li><b>+2</b>${t('r_quiz')}</li><li><b>+20</b>${t('r_pass')}</li><li><b>+10</b>${t('r_goal')}</li><li><b>+1</b>${t('r_test')}</li></ul>
           <button class="btn sec sm" id="xpReset" style="margin-top:10px">🗑 ${t('reset')}</button></div>
-        <div class="panel"><h3>🎖 ${t('ach')} <small style="color:var(--muted)">${Object.keys(st.ach).length}/${ACH.length}</small></h3><div class="achs">${ACH.map((a) => `<div class="achv ${st.ach[a.id] ? 'on' : ''}" title="${st.ach[a.id] ? '' : t('locked')}"><span>${a.ic}</span><b>${a[lang()][0]}</b><small>${a[lang()][1]}</small></div>`).join('')}</div></div>
+        <div class="panel"><h3>🎖 ${t('ach')} <small style="color:var(--muted)">${Object.keys(st.ach).length}/${ACH.length}</small></h3><div class="achs">${ACH.map((a) => `<div class="achv ${st.ach[a.id] ? 'on' : ''}" title="${st.ach[a.id] ? '' : t('locked')}"><span>${a.ic}</span><b>${a[lang()][0]}</b><small>${a[lang()][1]}</small></div>`).join('')}</div><a href="#certificate" class="btn sec sm" style="margin-top:16px">📜 ${lang() === 'en' ? 'Personal certificate' : 'Shaxsiy sertifikat'}</a></div>
       </div>
     </div>`;
     app.querySelectorAll('.goalseg button').forEach((b) => (b.onclick = () => { st.goal = +b.dataset.g; save(); const d = st.days[day()]; if (d && d.ls.length >= st.goal && !st.goalDone[day()]) { st.goalDone[day()] = 1; save(); add(10, t('goal_done')); confetti(120); } page(app, ctx); refresh(); }));
