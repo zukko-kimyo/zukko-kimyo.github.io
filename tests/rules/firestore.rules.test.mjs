@@ -137,3 +137,24 @@ test('noma\'lum kolleksiyalar yopiq', async () => {
   await assertFails(getDoc(doc(admin(), 'boshqa/x')));
   await assertFails(setDoc(doc(admin(), 'boshqa/x'), { a: 1 }));
 });
+
+// ---------- settings (administrator paneli) ----------
+test('sayt sozlamalarini hamma o\'qiydi, faqat administrator yozadi', async () => {
+  await assertSucceeds(getDoc(doc(anon(), 'settings/site')));
+  await assertFails(getDocs(collection(anon(), 'settings')));
+  await assertFails(getDoc(doc(anon(), 'settings/boshqa')));
+  await assertFails(setDoc(doc(teacher(), 'settings/site'), { announce: 'x', announceOn: true }));
+  await assertFails(setDoc(doc(student(), 'settings/site'), { regOpen: false }));
+  await assertSucceeds(setDoc(doc(admin(), 'settings/site'), { announce: 'Ertaga test', announceOn: true, regOpen: true, updated: 1, by: 'admin1' }));
+});
+test('sozlamalarga ortiqcha maydon yoki juda uzun e\'lon yozib bo\'lmaydi', async () => {
+  await assertFails(setDoc(doc(admin(), 'settings/site'), { announce: 'x', hack: true }));
+  await assertFails(setDoc(doc(admin(), 'settings/site'), { announce: 'x'.repeat(301) }));
+  await assertFails(setDoc(doc(admin(), 'settings/boshqa'), { announce: 'x' }));
+});
+test('ro\'yxatdan o\'tish yopilganda faol kod bilan ham ro\'yxatdan o\'tib bo\'lmaydi', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'settings/site'), { regOpen: false }); });
+  await assertFails(setDoc(doc(as('n1', 'laylo.s'), 'users/n1'), signup()));
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'settings/site'), { regOpen: true }); });
+  await assertSucceeds(setDoc(doc(as('n1', 'laylo.s'), 'users/n1'), signup()));
+});

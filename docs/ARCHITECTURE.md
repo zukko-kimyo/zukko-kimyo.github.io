@@ -9,6 +9,8 @@ Zukko Kimyo — build bosqichi yo'q statik sayt (oddiy HTML + JavaScript), GitHu
 | `index.html` | Butun dizayn (CSS) va skript yuklovchi. Skriptlar `?v=VER` bilan yuklanadi — yangi relizda `VER` o'zgartiriladi (kesh) |
 | `firebase-config.js` | Firebase web sozlamalari (maxfiy emas). Bo'sh bo'lsa — sayt loginsiz ishlaydi |
 | `auth.js` | Login, ro'yxatdan o'tish, chiqish, natijani serverga sinxronlash, `ZKAuth` API. Ikki backend: Firebase va `mock` (sinov) |
+| `admin.js` | Administrator paneli (`#admin`, faqat admin): statistika, faollik grafigi, sinflar, eng faol o'quvchilar, qiyin darslar, sayt sozlamalari, eksport, parolni o'zgartirish |
+| `lib/stats.js` | Administrator paneli statistikasi — sof funksiyalar (DOM'siz), `window.ZKStats`; Node'da unit testlanadi |
 | `teacher.js` | O'qituvchi paneli (`#teacher`): natijalar, o'quvchi qo'shish, arizalar, sinf kodlari, o'qituvchilar (admin) |
 | `app.js` | Asosiy SPA: marshrutlar (`#home`, `#g6`…`#g8-12`, `#tests`, `#lab`, `#ptable`, `#book-g7`, `#me`, `#teacher`), dars sahifalari, test markazi |
 | `progress.js` | XP, darajalar, kunlik maqsad, yutuqlar. `localStorage['zk_prog']` ga yozadi va `zk:save` hodisasini chiqaradi |
@@ -24,7 +26,7 @@ Zukko Kimyo — build bosqichi yo'q statik sayt (oddiy HTML + JavaScript), GitHu
 
 1. `firebase-config.js` → `auth.js` → `ZKAuth.ready()` (login oynasi yoki sessiyani tiklash; natija `localStorage`ga yoziladi)
 2. Three.js (CDN, import map) → `lab-*.js`
-3. `data-*.js`, `tests*.js`, `pages-tr.js`, `ptable.js`, `progress.js`, `tilt.js`, `teacher.js`, `app.js`, `mobile.js`
+3. `data-*.js`, `tests*.js`, `pages-tr.js`, `ptable.js`, `progress.js`, `tilt.js`, `lib/stats.js`, `teacher.js`, `admin.js`, `app.js`, `mobile.js`
 4. `ZKAuth.chip()` — sarlavhadagi foydalanuvchi menyusi
 
 ## Rejimlar
@@ -51,6 +53,7 @@ Haqiqiy config bo'lganda `?mock` ishlamaydi — loginni chetlab o'tib bo'lmaydi.
 | `progress/{uid}` | `data` (progress.js JSON), `xp, done6, done7, done8, quizAvg, quizN, labs, visited, last, updated, login, name, cls, role` | o'zi; o'qituvchi va admin | faqat o'zi (`pending` emas) |
 | `secrets/{uid}` | `pw, role, login` — **vaqtinchalik**, qarang [ADR-0002](adr/0002-temporary-password-storage.md) | admin (hammasi), o'qituvchi (faqat o'quvchilar) | admin, o'qituvchi, o'zi (ro'yxatdan o'tishda) |
 | `classes/{CODE}` | `cls, active, by, created` | aniq kod bo'yicha — hamma; ro'yxat — o'qituvchi | o'qituvchi, admin |
+| `settings/site` | `announce` (≤300 belgi), `announceOn`, `regOpen`, `updated`, `by` | hamma (kirish oynasida kerak) | faqat admin; `regOpen == false` bo'lsa qoidalar o'zi ro'yxatdan o'tishni ham bloklaydi |
 
 Qolgan barcha yo'llar yopiq (`match /{document=**} { allow read, write: if false; }`).
 

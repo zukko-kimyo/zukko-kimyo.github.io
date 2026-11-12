@@ -5,7 +5,7 @@ ChatGPT'ning texnik rejasi (2026-11-12) va loyiha egasining tanlovi asosida. Har
 | Bosqich | Mazmun | Branch | Holat |
 | --- | --- | --- | --- |
 | 0. Poydevor | Hamkorlik qoidalari, hujjatlar, unit/e2e/qoidalar testlari, CI, PR shabloni | `chore/collaboration-setup` | PR ochildi |
-| 1. Administrator paneli | Umumiy statistika, faollik grafigi, sinflar taqqoslash, eng faol o'quvchilar, qiyin darslar, sayt e'loni, ro'yxatdan o'tishni yoqish/o'chirish, eksport, admin parolini o'zgartirish | `feature/admin-panel` | PR ochildi |
+| 1. Administrator paneli | Umumiy statistika, faollik grafigi, sinflar taqqoslash, eng faol o'quvchilar, qiyin darslar, sayt e'loni, ro'yxatdan o'tishni yoqish/o'chirish, eksport, admin parolini o'zgartirish | `feature/admin-panel` | PR ochildi (asosi: 0-bosqich) |
 | 2. Xavfsizlik va server | Firebase Blaze; Cloud Functions: `manageUsers` (parolni tiklash/o'chirish Admin SDK bilan), `secrets` kolleksiyasini olib tashlash, admin MFA, App Check, emulyatorda testlar | `security/cloud-functions` | Rejada — Blaze yoqilishi kerak |
 | 3. Testlar va sertifikatlar | Bo'lim yakuniy testlari, vaqtli test, xatolar ustida takrorlash, serverda baholash (`gradeQuiz`), sinf reytingi, QR kod bilan tekshiriladigan sertifikat (`certificates`) | `feature/certificates` | Rejada |
 | 4. Mobil dizayn | Dizayn tizimi (CSS o'zgaruvchilari), liquid glass sarlavha va menyu, yangi bosh sahifa/dashboard, tungi rejim, accessibility, PWA offline | `feature/mobile-design` | Rejada (namuna tayyor) |
