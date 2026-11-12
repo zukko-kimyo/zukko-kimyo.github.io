@@ -280,3 +280,32 @@ body.zk-v3 footer b{color:#d8ffae}
   body.zk-v3 .top .zk-subject{order:5;display:flex;flex:1 0 100%;justify-content:center;margin:0;height:17px;letter-spacing:.19em}
   body.zk-v3 .top .zk-school-name{display:flex!important}
 }
+
+
+/* Original Zukko Xalqaro Maktabi symbol; keep it visible on every screen. */
+body.zk-v3 .top .logo .mark {
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:hidden;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+}
+body.zk-v3 .top .logo .mark img {
+  display:block;
+  width:100%;
+  height:100%;
+  border-radius:inherit;
+  object-fit:cover;
+  object-position:center;
+}
+@media (max-width:760px) {
+  body.zk-v3 .top .logo .mark { border-radius:12px; }
+}
+@media (max-width:480px) {
+  body.zk-v3 .top .logo .mark { border-radius:10px; }
+}
+/* Older mobile rules hide the school name; do not hide the image logo. */
+body.zk-v3 .top .logo .mark { visibility:visible!important; }
