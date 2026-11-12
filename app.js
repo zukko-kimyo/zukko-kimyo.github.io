@@ -193,8 +193,7 @@
       } else body += `<div class="panel"><div class="note">${t(g === 'g6' ? 'pages_note_uz' : 'pages_note_en')}</div>${imgs}</div>`;
     } else if (tab === 'lab') {
       if (ex.length) {
-        body += `<div class="panel" style="padding:14px"><div class="seg" style="margin-bottom:12px;flex-wrap:wrap" id="exSel">${ex.map((e, i) => `<button data-x="${e.id}" class="${i ? '' : 'on'}">${e.icon} ${tr(e.title)}</button>`).join('')}</div><div class="labpage"><div class="lab-host" id="lessonLab"></div></div><div class="safety">⚠️ ${t('safety')}</div>
-       <div id="zkLabGuide"></div></div>`;
+        body += `<div class="panel" style="padding:14px"><div class="seg" style="margin-bottom:12px;flex-wrap:wrap" id="exSel">${ex.map((e, i) => `<button data-x="${e.id}" class="${i ? '' : 'on'}">${e.icon} ${tr(e.title)}</button>`).join('')}</div><div class="labpage"><div class="lab-host" id="lessonLab"></div></div><div class="safety">⚠️ ${t('safety')}</div></div>`;
       } else if (toolsOf(g, n).length) body += `<div class="panel">${toolsOf(g, n).map(toolCard).join('')}</div>`;
       else body += `<div class="panel"><p>${t('no_lab')}</p><div class="xgrid">${Lab.list.slice(0, 3).map(xcard).join('')}</div></div>`;
     } else if (tab === 'quiz') {
@@ -355,6 +354,7 @@
       <h1 style="font-size:28px;color:var(--navy);margin-bottom:6px">${e.icon} ${tr(e.title)}</h1><p style="margin:0 0 16px;color:var(--muted)">${tr(e.desc)}</p>
       <div class="labpage"><div class="lab-host" id="bigLab"></div></div>
       <div class="safety">⚠️ ${t('safety')}</div>
+      <div id="zkLabGuide"></div>
       <div class="panel" style="margin-top:18px"><h3>📚 ${t('related')}</h3>${ls.map((x) => `<a href="#${x.g}-${x.n}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span class="lnum" style="width:32px;height:32px;font-size:13px;background:${GC[x.g]}">${x.n}</span><span><b>${tr(x.L.t)}</b><br><small style="color:var(--muted)">${GN[x.g]}-${t('grade')}</small></span></a>`).join('')}</div>
     </div>`;
     labHandle = Lab.open(document.getElementById('bigLab'), id, { autoplay: true });
