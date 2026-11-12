@@ -1,0 +1,91 @@
+
+/* Zukko Kimyo 2.0 — periodic table, dedicated progressive enhancement */
+.page-h.pt{background:radial-gradient(circle at 87% 10%,rgba(69,232,229,.2),transparent 35%),linear-gradient(120deg,#132455 0%,#43319b 58%,#6936b1 100%);padding:38px 0 40px}
+.page-h.pt h1{font-size:clamp(28px,4vw,43px);letter-spacing:-.03em;line-height:1.17}
+.page-h.pt p{color:#e3e6ff;opacity:1;font-size:15px;max-width:780px}
+.ptwrap{padding-block:24px 46px}
+.pt-overview{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:18px}
+.pt-overview .pt-stat{display:inline-flex;align-items:center;gap:9px;padding:8px 14px;background:white;border:1px solid #e6e9f4;border-radius:13px;font:800 13px var(--f);color:#33456b;box-shadow:0 4px 15px rgba(28,44,90,.04)}
+.pt-overview .pt-stat b{font-size:17px;color:#422f99}
+.ptbar{background:#fff;padding:14px;border-radius:20px;border:1px solid #e5e8f4;box-shadow:0 8px 28px rgba(17,32,73,.07);gap:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(195px,.6fr) auto}
+#ptMode{background:#f4f4fb;border-radius:13px;display:flex;flex-wrap:wrap;gap:3px;padding:4px;align-items:center}
+#ptMode .ptlbl{font-weight:800;color:#595575}
+#ptMode button{border-radius:10px;min-height:36px;padding:8px 10px}
+#ptMode button.on{background:#5737b0;box-shadow:0 3px 9px rgba(87,55,176,.22)}
+.ptfind{min-width:0;width:100%;border:2px solid #e8e7f5;background:#fbfaff;border-radius:13px;padding:12px 14px;font-size:14px}
+.ptfind:focus{outline:3px solid #d9d1ff;outline-offset:1px;border-color:#7d5ed3}
+#ptGame{background:#efeaff;color:#51309c;border:1px solid #daceff;box-shadow:none;min-height:46px}
+#ptGame:hover{background:#e5dcff}
+.pt-selected{display:block!important;position:relative;min-height:205px;margin:20px 0!important;padding:0!important;scroll-margin-top:90px}
+.pt-selected .ptcard{display:grid;grid-template-columns:minmax(260px,.9fr) minmax(0,1.15fr) minmax(0,.9fr);align-items:stretch;gap:22px;max-height:none;overflow:visible;border:1px solid #dfe4f4;border-radius:24px;padding:22px;background:linear-gradient(130deg,#fff 60%,#f7f7ff);box-shadow:0 15px 48px rgba(29,39,94,.09)}
+.pt-selected .ptc1{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;align-items:start;justify-content:center}
+.pt-selected .ptbig{width:100px;height:122px}
+.pt-selected .ptinfo h3{font-size:clamp(20px,2.3vw,29px);margin:0 0 12px;letter-spacing:-.02em}
+.pt-selected .ptinfo h3 small{display:block;margin-top:4px;font-size:13px}
+.pt-selected .ptkv{grid-template-columns:minmax(90px,1fr) minmax(0,1fr);gap:9px 12px;font-size:13px;line-height:1.35}
+.pt-selected .ptkv span{font-weight:600;color:#72778d}
+.pt-selected .ptkv b{font-weight:800;color:#22315b}
+.pt-selected .ptx{padding:0;border-left:1px solid #e8e8f4;padding-left:20px;min-width:0}
+.pt-selected .ptpne,.pt-selected .ptconf,.pt-selected .ptuse{line-height:1.6;font-size:13px;margin-bottom:11px;color:#374262}
+.pt-selected .ptconf code{display:inline-block;margin-top:5px;word-break:break-word;white-space:normal;background:#f0eeff;color:#3e2a8b;padding:7px 9px}
+.pt-selected .ptuse{padding:10px;background:#effbf7;border:1px solid #cfefe5;border-radius:12px}
+.pt-selected .pt3d{grid-column:1/-1;min-height:224px;border-radius:18px;overflow:hidden;background:radial-gradient(circle at 45% 40%,#263b78,#111932 75%);position:relative;isolation:isolate}
+.pt-selected .pt3d canvas{display:block;width:100%;height:224px;touch-action:pan-y}
+.pt-selected .pt3d-note{position:absolute;bottom:10px;left:12px;right:12px;pointer-events:none;color:#d3dcff;font:600 11px/1.4 var(--f);background:rgba(14,22,48,.75);border:1px solid rgba(255,255,255,.09);padding:6px 9px;border-radius:9px;max-width:480px}
+.pt-selected .pt3d-fallback{display:flex;align-items:center;justify-content:center;gap:18px;color:white;height:224px;padding:18px}
+.pt-selected .pt3d-fallback .bohr{width:146px;height:146px}
+.pt-selected .pt3d-fallback .bohr text{fill:#fff}
+.pt-selected .pt3d-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pt-selected .pt3d-controls button{border:1px solid #d7d9ec;border-radius:11px;background:#fff;padding:8px 12px;color:#4a3a8b;font:800 12px var(--f);min-height:36px}
+.pt-selected .pt3d-controls button:hover{background:#f2f0ff}
+.pt-selected .pt3d-controls button:focus-visible,.ptcell:focus-visible{outline:3px solid #4b36a8;outline-offset:3px}
+.pt-selected .ptempty{display:grid;place-items:center;min-height:192px;border:2px dashed #d3d9ee;border-radius:20px;background:#fcfbff;font-size:15px}
+.pt-selected .ptgame{min-height:210px;border-radius:20px;border:1px solid #dcd8f2;box-shadow:0 10px 35px rgba(46,31,112,.07);padding:26px}
+.pt-selected .ptscore{color:#5b38b2}
+.pt-selected .ptprog i{background:#5b38b2}
+.ptscroll{border:1px solid #e7e7f4;background:#fff;padding:14px 10px 12px;border-radius:22px;box-shadow:0 10px 38px rgba(18,32,70,.06);scrollbar-color:#b4a9df #f5f4fb;scrollbar-width:thin}
+.ptscroll:focus-within{border-color:#c5b9f1}
+.ptgrid{gap:4px;min-width:960px}
+.ptcell{border:1px solid rgba(29,50,85,.08);border-radius:9px;min-height:53px;padding:4px;background:color-mix(in srgb,var(--c) 76%,white);box-shadow:0 2px 0 rgba(45,49,82,.08)}
+.ptcell b{font-size:18px;color:#102044}
+.ptcell i{font-size:10px}
+.ptcell span{font-size:9px;font-weight:700}
+.ptcell em{font-size:8.5px}
+.ptcell.sel{outline:3px solid #5030aa;outline-offset:0;box-shadow:0 0 0 2px white,0 7px 16px rgba(55,40,105,.28)}
+.ptcell:hover{box-shadow:0 6px 18px rgba(18,25,60,.22)}
+.ptleg{margin:18px 0;gap:8px}
+.ptleg button{background:#fff;border:1px solid #dfe3f0;border-radius:12px;padding:9px 12px;font-weight:700}
+.ptleg button.on{background:#ece8ff;border-color:#7a61ca}
+.ptleg i{width:16px;height:16px}
+.ptles{border-radius:22px!important;border:1px solid #e6e6f1!important;box-shadow:0 9px 25px rgba(20,37,80,.05)}
+.pthint{display:block;margin:8px 4px 10px;font:700 12px var(--f);color:#5d6080}
+.pt-dim-note{font-size:11px;color:#69718e}
+@media(max-width:1160px){
+  .ptbar{grid-template-columns:minmax(0,1fr) auto}
+  #ptMode{grid-column:1/-1}
+  .pt-selected .ptcard{grid-template-columns:minmax(220px,1fr) minmax(0,1.25fr)}
+  .pt-selected .ptx{grid-column:1/-1;border-left:0;border-top:1px solid #e9eaf5;padding:14px 0 0}
+}
+@media(max-width:700px){
+  .page-h.pt{padding:26px 0}
+  .ptbar{grid-template-columns:1fr;padding:12px;gap:9px}
+  #ptMode{grid-column:auto;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+  #ptMode .ptlbl{white-space:nowrap;flex:none}
+  #ptMode button{flex:none;white-space:nowrap}
+  #ptGame{width:100%;justify-content:center}
+  .pt-selected{margin:14px 0!important;scroll-margin-top:72px}
+  .pt-selected .ptcard{grid-template-columns:1fr;gap:16px;padding:16px;border-radius:19px}
+  .pt-selected .ptc1{grid-template-columns:91px minmax(0,1fr)}
+  .pt-selected .ptbig{width:91px;height:110px}
+  .pt-selected .ptinfo h3{font-size:22px}
+  .pt-selected .ptinfo{grid-column:1/-1}
+  .pt-selected .ptx{grid-column:1/-1;padding:14px 0 0}
+  .pt-selected .pt3d{min-height:214px}
+  .pt-selected .pt3d canvas{height:214px}
+  .ptscroll{padding:12px 6px;border-radius:16px}
+  .ptgrid{min-width:840px;gap:3px}
+  .ptcell{min-height:46px}
+  .pt-overview{gap:7px}
+  .pt-overview .pt-stat{padding:7px 10px;font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.ptcell,.pt-selected .pt3d *{animation:none!important;transition:none!important}}
