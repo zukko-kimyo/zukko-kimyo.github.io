@@ -1,0 +1,144 @@
+/* Mobile usability correction — navigation and school administration only.
+   The full site theme and home layout are intentionally left unchanged. */
+:root { --zk-mobile-nav-h: 67px; }
+[hidden].zk-mnav-menu,[hidden].ad-students-shade,[hidden].ad-students-drawer { display:none!important; }
+
+@media (max-width:760px) {
+  /* Five meaningful actions instead of grade 6 / 7 / 8 occupying the entire bar */
+  body.zk-v3 nav.bnav.zk-mnav {
+    position:fixed;left:0;right:0;bottom:0;
+    z-index:55;display:flex;gap:2px;align-items:stretch;
+    width:100%;max-width:100%;min-height:var(--zk-mobile-nav-h);
+    padding:5px max(7px,env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left));
+    box-sizing:border-box;background:rgba(255,255,255,.97);
+    border-top:1px solid #d9e4ed;box-shadow:0 -12px 32px rgba(15,50,77,.11);
+    backdrop-filter:blur(16px);
+  }
+  body.zk-v3 .zk-mnav > a,body.zk-v3 .zk-mnav > button {
+    font:800 10.5px/1.18 var(--f,system-ui);
+    color:#65788b;background:transparent;border:0;
+    flex:1 1 0;min-width:0;min-height:48px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:5px;padding:4px 2px;border-radius:12px;
+    white-space:nowrap;text-align:center;cursor:pointer;text-decoration:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body.zk-v3 .zk-mnav > a i,body.zk-v3 .zk-mnav > button i {
+    font-style:normal;font-size:22px;line-height:1.1;transform:none;
+  }
+  body.zk-v3 .zk-mnav > a.on,body.zk-v3 .zk-mnav > button.on {
+    background:#e9f3f9;color:#0b6371;
+  }
+  body.zk-v3 .zk-mnav-menu {
+    display:block;position:absolute;bottom:calc(100% + 10px);
+    left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));
+    z-index:70;background:#fff;color:#17384e;
+    border:1px solid #cfe0e7;border-radius:20px;
+    box-shadow:0 18px 48px rgba(12,42,71,.22);
+    padding:11px 14px 12px;max-height:min(55vh,350px);overflow-y:auto;
+  }
+  body.zk-v3 .zk-mnav-menu:after {
+    content:"";width:12px;height:12px;background:#fff;border:solid #cfe0e7;
+    border-width:0 1px 1px 0;position:absolute;bottom:-7px;left:28%;
+    transform:rotate(45deg);
+  }
+  body.zk-v3 .zk-mnav-menu-title {
+    font:900 12px var(--f);color:#477282;letter-spacing:.12em;
+    text-transform:uppercase;padding:8px 8px 10px;
+  }
+  body.zk-v3 .zk-mnav-menu a {
+    display:flex;flex-direction:row;flex:initial;justify-content:flex-start;align-items:center;gap:12px;padding:10px 9px;
+    border-top:1px solid #eff4f7;border-radius:9px;
+    font:900 15px var(--f);color:#17394d;text-decoration:none;
+    min-height:48px;background:#fff;
+  }
+  body.zk-v3 .zk-mnav-menu a:focus-visible,
+  body.zk-v3 .zk-mnav-menu a:hover {background:#eff8f8;color:#086b70;}
+  body.zk-v3 .zk-grade-pill {
+    width:38px;height:38px;display:grid;place-items:center;flex:none;
+    font-weight:900;font-size:15px;border-radius:10px;background:#e3f3f1;color:#095f65;
+  }
+  body.zk-v3 .zk-arrow {margin-left:auto;font-size:24px;color:#698a93;}
+  body.zk-v3 #app {max-width:100%;min-width:0}
+  body.zk-v3 #app .wrap {min-width:0}
+  body.zk-v3 .fnav {bottom:calc(78px + env(safe-area-inset-bottom))}
+  body.zk-v3 #xpToasts {bottom:calc(83px + env(safe-area-inset-bottom));}
+  body.zk-v3 footer {padding-bottom:calc(76px + env(safe-area-inset-bottom));}
+
+  /* Admin — KPI cards, charts, filters and attendance must never overflow the viewport */
+  body.zk-v3 #adBody {min-width:0;max-width:100%;overflow-wrap:anywhere}
+  body.zk-v3 #adBody .ad-kpi {grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  body.zk-v3 #adBody .ad-kpi > div {min-width:0;padding:12px 11px;border-radius:14px}
+  body.zk-v3 #adBody .ad-kpi b {font-size:clamp(20px,6.5vw,29px)}
+  body.zk-v3 #adBody .ad-kpi span{font-size:11px}
+  body.zk-v3 #adBody .ad-grid {display:grid;grid-template-columns:minmax(0,1fr)!important;gap:13px}
+  body.zk-v3 #adBody .ad-grid > *,body.zk-v3 #adBody .panel {min-width:0;max-width:100%;overflow-wrap:anywhere}
+  body.zk-v3 #adBody .ad-directory .ad-students-panel{display:none}
+  body.zk-v3 #adBody .ad-chart {display:block;max-width:100%;width:100%;height:auto;overflow:visible}
+  body.zk-v3 #adBody .ad-tw {display:block;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  body.zk-v3 #adBody .ad-tw #adCls {min-width:570px}
+  body.zk-v3 #adBody .ad-tw #adTop {min-width:380px}
+  body.zk-v3 #adBody .ad-tw #adHard {min-width:375px}
+  body.zk-v3 #adBody table.ad th,body.zk-v3 #adBody table.ad td {white-space:nowrap}
+  body.zk-v3 #adBody .ad-bar-row{grid-template-columns:minmax(45px,70px) minmax(0,1fr) 50px;gap:7px}
+  body.zk-v3 #adBody .ad-bar-track {min-width:0}
+  body.zk-v3 .ad-top {display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+  body.zk-v3 .ad-top .sp {flex:1}
+  body.zk-v3 .ad-top .ad-students-open {display:inline-flex;align-items:center;margin-left:auto;min-height:42px;white-space:nowrap}
+  body.zk-v3 .ad-top a[href="#teacher"]{display:none}
+  body.zk-v3 #adBody .ad-form input,body.zk-v3 #adBody .ad-form textarea{max-width:100%}
+  body.zk-v3 #adBody .zk-att {min-width:0;max-width:100%}
+  body.zk-v3 #adBody .zk-att-table{max-width:100%;overflow-x:auto}
+  body.zk-v3 #adBody .zk-att-bottom{flex-wrap:wrap}
+
+  /* Teacher/student account management: scroll tabs, fit forms, keep actions tappable */
+  body.zk-v3 #tcBody{min-width:0;max-width:100%;overflow-wrap:anywhere}
+  body.zk-v3 .tc-tabs {display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;max-width:100%;padding-bottom:6px;gap:7px;scrollbar-width:thin;overscroll-behavior-x:contain}
+  body.zk-v3 .tc-tabs button{flex:0 0 auto!important;white-space:nowrap;min-height:42px;padding:9px 12px!important;font-size:12.5px!important}
+  body.zk-v3 #tcBody .tc-chips{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:5px;max-width:100%}
+  body.zk-v3 #tcBody .tc-chips button{white-space:nowrap;flex:none;min-height:40px}
+  body.zk-v3 #tcBody .tc-form{grid-template-columns:minmax(0,1fr)!important}
+  body.zk-v3 #tcBody .tc-form > * {min-width:0}
+  body.zk-v3 #tcBody input,body.zk-v3 #tcBody textarea{max-width:100%;min-width:0;box-sizing:border-box}
+  body.zk-v3 #tcBody .tc-tools{gap:7px;flex-wrap:wrap}
+  body.zk-v3 #tcBody .tc-tools .btn{min-height:40px;font-size:12px}
+  body.zk-v3 #tcBody table.tc.resp tr{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.zk-v3 #tcBody table.tc.resp td{min-width:0;overflow-wrap:anywhere}
+  body.zk-v3 #tcBody .tc-wrap:not(:has(.resp)){max-width:100%;overflow-x:auto}
+  body.zk-v3 #tcBody .tc-codes{grid-template-columns:minmax(0,1fr)}
+}
+.ad-students-open {display:none}
+.ad-students-shade {position:fixed;inset:0;background:rgba(6,25,43,.48);z-index:110;backdrop-filter:blur(2px)}
+.ad-students-drawer {
+  position:fixed;top:0;right:0;bottom:0;z-index:111;
+  width:min(92vw,435px);max-width:100%;
+  background:#fff;box-shadow:-15px 0 42px rgba(0,28,52,.24);
+  display:flex;flex-direction:column;box-sizing:border-box;
+  padding:calc(18px + env(safe-area-inset-top)) 18px calc(17px + env(safe-area-inset-bottom));
+  overflow:hidden;color:#17364f;
+}
+.ad-students-drawer-head {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:20px}
+.ad-students-drawer-head h2{font-size:24px;font-weight:900;margin:5px 0 0}
+.ad-drawer-tag {font-size:10px;letter-spacing:.15em;font-weight:900;color:#438b90}
+.ad-students-close{height:41px;width:41px;border-radius:12px;background:#edf5f8;border:1px solid #d9e5ee;color:#153d53;font-size:19px;flex:none}
+.ad-drawer-search-label{font-size:12px;font-weight:800;color:#5c7689;margin-bottom:7px}
+#adStudentsSearch{display:block;width:100%;max-width:100%;min-height:46px;border-radius:12px;padding:10px 12px;background:#f5f9fb;color:#15364b;border:1px solid #d7e5ec;box-sizing:border-box;font:500 15px var(--f,system-ui)}
+#adStudentsSearch:focus{outline:3px solid #addde1;outline-offset:1px}
+.ad-students-summary{font-size:11px;font-weight:900;color:#688497;padding:14px 2px 9px}
+.ad-students-drawer-list{overflow-y:auto;flex:1;min-height:0;overscroll-behavior-y:contain;padding-bottom:12px}
+.ad-student-row{display:flex;gap:12px;align-items:flex-start;padding:13px 6px;border-bottom:1px solid #e8eff4}
+.ad-student-avatar{flex:none;width:42px;height:42px;border-radius:12px;background:#e4f3f0;color:#09696c;display:grid;place-items:center;font-weight:900}
+.ad-student-info{min-width:0;overflow-wrap:anywhere;display:flex;flex-direction:column;gap:4px}
+.ad-student-info b{font-size:13px;color:#17384b;font-weight:900}
+.ad-student-info small{color:#71899a;font-size:11px;font-weight:650}
+.ad-student-info>span{font-size:11.5px;font-weight:800;color:#237888}
+.ad-students-none{padding:28px 6px;color:#738c9d;font-size:13px}
+.ad-drawer-manage{min-height:46px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#0f5061;color:#fff;padding:12px 15px;font:900 13px var(--f,system-ui);margin-top:12px}
+.ad-drawer-manage:hover{background:#0d6670;color:#fff}
+body.ad-students-opened {overflow:hidden}
+@media(min-width:761px){.ad-students-shade,.ad-students-drawer{display:none!important}}
+@media(max-width:360px){
+  body.zk-v3 .zk-mnav > a,body.zk-v3 .zk-mnav > button {font-size:9.5px}
+  body.zk-v3 #adBody .ad-kpi > div{padding:10px 8px}
+  .ad-students-drawer{width:96vw;padding-inline:13px}
+}

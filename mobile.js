@@ -1,5 +1,60 @@
 /* Telefon uchun: pastki tugmani scroll'da yashirish, darslar orasida surish (swipe) */
 (function () {
+  // Role-aware mobile navigation: no grade labels in the bottom bar.
+  // Only the owner of an admin/teacher account sees the staff panel link.
+  const gradesToggle = document.getElementById('mobileGradesToggle');
+  const gradesMenu = document.getElementById('mobileGradesMenu');
+  const panelLink = document.getElementById('mobilePanelLink');
+  function closeGrades(restoreFocus) {
+    if (!gradesToggle || !gradesMenu) return;
+    const wasOpen = !gradesMenu.hidden;
+    gradesMenu.hidden = true;
+    gradesToggle.setAttribute('aria-expanded', 'false');
+    if (restoreFocus && wasOpen) gradesToggle.focus();
+  }
+  function refreshMobileNav() {
+    if (!gradesToggle || !gradesMenu || !panelLink) return;
+    const en = document.documentElement.lang === 'en';
+    const h = (location.hash || '#home').slice(1);
+    const isAdmin = Boolean(window.ZKAuth && ZKAuth.isAdmin && ZKAuth.isAdmin());
+    const isTeacher = !isAdmin && Boolean(window.ZKAuth && ZKAuth.isStaff && ZKAuth.isStaff());
+    const target = isAdmin ? 'admin' : isTeacher ? 'teacher' : 'me';
+    panelLink.href = '#' + target;
+    panelLink.dataset.nav = target;
+    document.getElementById('mobilePanelIcon').textContent = isAdmin ? '🛡️' : isTeacher ? '👩‍🏫' : '👤';
+    document.getElementById('mobilePanelLabel').textContent = (isAdmin || isTeacher) ? (en ? 'Panel' : 'Panel') : (en ? 'Profile' : 'Profil');
+    document.getElementById('mobileGradesLabel').textContent = en ? 'Classes' : 'Sinflar';
+    document.getElementById('mobileGradesTitle').textContent = en ? 'Choose a class' : 'Sinfni tanlang';
+    gradesMenu.setAttribute('aria-label', en ? 'Classes' : 'Sinflar');
+    gradesToggle.setAttribute('aria-label', en ? 'Choose a class' : 'Sinfni tanlang');
+    gradesMenu.querySelectorAll('a[href^="#g"]').forEach((link) => {
+      const number = link.hash.replace('#g', '');
+      const text = link.querySelector('span:nth-child(2)');
+      if (text) text.textContent = en ? 'Grade ' + number : number + '-sinf';
+    });
+    gradesToggle.classList.toggle('on', /^(?:g[678](?:-|$)|book-g[678]$)/.test(h));
+    panelLink.classList.toggle('on', h === target || (target === 'me' && h === 'certificate'));
+  }
+  if (gradesToggle && gradesMenu) {
+    gradesToggle.addEventListener('click', () => {
+      const open = gradesMenu.hidden;
+      gradesMenu.hidden = !open;
+      gradesToggle.setAttribute('aria-expanded', String(open));
+      if (open) gradesMenu.querySelector('a')?.focus();
+    });
+    gradesMenu.addEventListener('click', (e) => {
+      if (e.target.closest('a[href]')) closeGrades(false);
+    });
+    document.addEventListener('click', (e) => {
+      if (!gradesMenu.hidden && !gradesMenu.contains(e.target) && !gradesToggle.contains(e.target)) closeGrades(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !gradesMenu.hidden) { e.preventDefault(); closeGrades(true); }
+    });
+    window.addEventListener('hashchange', () => { closeGrades(false); refreshMobileNav(); });
+    if (window.MutationObserver) new MutationObserver(refreshMobileNav).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    refreshMobileNav();
+  }
   const coarse = matchMedia('(pointer:coarse)').matches;
   if (coarse) document.documentElement.classList.add('touch');
   // scroll pastga -> fnav yashirinadi, yuqoriga -> chiqadi
