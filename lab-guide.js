@@ -18,6 +18,7 @@
     if(!host || !handle || !Array.isArray(handle.steps) || !handle.steps.length)return;
     const L=opts.lang==='en'?'en':'uz', S=STR[L],steps=handle.steps;
     let last=-1;
+    const tok=(host.__zkGuideTok=(host.__zkGuideTok||0)+1); // qayta mount bo'lsa eski kuzatuv sikli to'xtaydi
     host.innerHTML=`<section class="zk-lab-guide" aria-label="${esc(S.title)}">
       <div class="zk-lab-guide-head"><div><h2>${S.title}</h2><p>${S.sub}</p></div><button class="btn sec sm" id="zkLabReplay">${S.replay}</button></div>
       <div class="zk-lab-guide-grid">
@@ -52,8 +53,8 @@
     };
     host.querySelector('#zkLabReplay').onclick=()=>{handle.seek(0);handle.play();show(0);};
     function watch(){
-      if(!host.isConnected)return;
-      show(handle.stepIndex);
+      if(!host.isConnected||host.__zkGuideTok!==tok)return;
+      if(handle.stepIndex>=0)show(handle.stepIndex);
       requestAnimationFrame(watch);
     }
     show(0);requestAnimationFrame(watch);

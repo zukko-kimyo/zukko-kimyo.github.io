@@ -33,7 +33,7 @@
     const date=new Intl.DateTimeFormat(lang==='en'?'en-US':'uz-UZ',{year:'numeric',month:'long',day:'numeric'}).format(new Date());
     const level=xp.level(Math.max(0,Number(s.xp)||0)).L;
     const labs=Object.keys(s.labs||{}).length;
-    const escName=esc(username).slice(0,160);
+    const escName=esc(String(username).slice(0,160));
     app.innerHTML=`<div class="wrap zk-cert-page">
       <div class="zk-cert-actions"><a class="btn sec sm" href="#me">${t.back}</a>${eligible?`<button type="button" class="btn pri sm" id="zkCertPrint">${t.print}</button>`:''}</div>
       ${eligible?`<article class="zk-cert-print" aria-label="${t.head}">

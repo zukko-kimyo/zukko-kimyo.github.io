@@ -51,6 +51,7 @@ test('failed attendance read blocks save, preventing an accidental overwrite', a
 });
 
 test('3D experiment provides selectable animation steps when WebGL is available', async ({ page }) => {
+  test.slow(); // dasturiy WebGL (GPU'siz) parallel ishlaganda rAF sekinlashadi
   await bootstrapAdmin(page);
   const id = await page.evaluate(() => window.Lab?.list?.find((e) => e.id && e.build)?.id || '');
   test.skip(!id, '3D modules are unavailable in this environment');
