@@ -91,6 +91,7 @@
     const s = document.createElement('style'); s.id = 'zkTchCss';
     s.textContent = `
 .page-h.tch{background:linear-gradient(135deg,#4c1d95,#db2777)}
+.tc-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 20px}.tc-metric{padding:16px;background:linear-gradient(160deg,#fff,#f5f1ff);border:1px solid #e7dcfd;border-radius:18px;box-shadow:0 4px 16px rgba(80,45,160,.06)}.tc-metric span{display:block;font-size:12px;color:#615776;font-weight:800}.tc-metric b{font-size:clamp(22px,2.6vw,30px);color:#332052;font-weight:900}@media(max-width:800px){.tc-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.tc-overview{gap:8px}.tc-metric{padding:12px}}
 .tc-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 16px}.tc-tabs button{border:2px solid var(--line);background:#fff;border-radius:14px;padding:10px 16px;font:800 14.5px var(--f);color:#4b4256;cursor:pointer;box-shadow:0 3px 0 var(--line)}
 .tc-tabs button.on{background:#7c3aed;border-color:#7c3aed;color:#fff;box-shadow:0 3px 0 #5b21b6}
 .tc-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.tc-chips button{border:2px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px;font:800 13.5px var(--f);color:#4b4256;cursor:pointer}.tc-chips button.on{background:#fdf2ff;border-color:#c026d3;color:#a21caf}.tc-chips small{opacity:.6;margin-left:4px}
@@ -225,7 +226,18 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     const all = students();
     const list = all.filter((u) => !st.cls || (u.cls || '—') === st.cls).sort((a, b) => sortCls(a.cls || '', b.cls || '') || String(a.name).localeCompare(String(b.name)));
     if (!all.length) { body().innerHTML = `<div class="panel tc-empty">${t('none')}</div>`; return; }
-    body().innerHTML = `<div class="tc-chips"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
+    const summaries = list.map(u => st.prog[u.id] || {});
+    const avgQuizList = summaries.map(p => Number(p.quizAvg)).filter((n,i) => summaries[i].quizAvg != null && Number.isFinite(n));
+    const avgQuiz = avgQuizList.length ? (avgQuizList.reduce((a,b)=>a+b,0)/avgQuizList.length).toFixed(1) : '—';
+    const active7 = summaries.filter(p => p.updated && Date.now()-Number(p.updated) < 7*86400000).length;
+    const totalXp = summaries.reduce((n,p)=>n+(Number(p.xp)||0),0);
+    const summaryHtml = `<section class="tc-overview" aria-label="${L === 'en' ? 'Student summary' : 'O‘quvchilar statistikasi'}">
+       <div class="tc-metric"><span>👥 ${L === 'en' ? 'Students' : 'O‘quvchilar'}</span><b>${list.length}</b></div>
+       <div class="tc-metric"><span>📈 ${L === 'en' ? 'Average quiz' : 'O‘rtacha test'}</span><b>${avgQuiz}${avgQuiz === '—' ? '' : '/10'}</b></div>
+       <div class="tc-metric"><span>✅ ${L === 'en' ? 'Active in 7 days' : '7 kunda faol'}</span><b>${active7}</b></div>
+       <div class="tc-metric"><span>⭐ ${L === 'en' ? 'Total XP' : 'Jami XP'}</span><b>${totalXp}</b></div>
+    </section>`;
+    body().innerHTML = summaryHtml + `<div class="tc-chips"<button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
       <div class="tc-tools"><button class="btn sec sm" id="tcRe">${t('reload')}</button><button class="btn sec sm" id="tcPw">${st.showPw ? t('hide_pw') : t('show_pw')}</button><div class="sp"></div><button class="btn sec sm" id="tcCsv">${t('csv')}</button><button class="btn sec sm" id="tcCards">${t('print_cards')}</button></div>
       <div class="tc-wrap"><table class="tc resp"><thead><tr><th>${t('c_n')}</th><th>${t('c_name')}</th><th>${t('c_login')}</th><th>${t('c_xp')}</th><th>${t('c_quiz')}</th><th>${t('c_g6')}</th><th>${t('c_g7')}</th><th>${t('c_g8')}</th><th>${t('c_last')}</th><th></th></tr></thead><tbody>${rows(list)}</tbody></table></div>`;
     body().querySelectorAll('.tc-chips button').forEach((b) => (b.onclick = () => { st.cls = b.dataset.c; results(); }));
