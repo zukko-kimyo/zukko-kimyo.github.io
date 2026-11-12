@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b2137">
+<meta name="theme-color" content="#0b4d53">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Zukko Kimyo">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest?v=20261112-brand-02">
+<link rel="icon" type="image/svg+xml" href="assets/zukko-school-app-icon.svg?v=20261112-brand-02">
+<link rel="alternate icon" type="image/webp" href="assets/zukko-school-logo.webp">
+<link rel="apple-touch-icon" href="assets/zukko-school-logo.webp">
 <title>Zukko Xalqaro Maktabi — Kimyo | 6–8-sinf</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -649,6 +650,7 @@ button,a,.ptcell{touch-action:manipulation}
 <link rel="stylesheet" href="ptable-v2.css?v=20261112-3d" />
 <link rel="stylesheet" href="visual-v3.css?v=20261112-logo-01" />
 <link rel="stylesheet" href="mobile-admin.css?v=20261112-mobile-01" />
+<link rel="stylesheet" href="brand-entry.css?v=20261112-brand-02" />
 </head>
 <body class="zk-v3">
 <header class="top">
@@ -691,7 +693,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261112-logo-01';
+const VER = '20261112-brand-02';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 await load('firebase-config.js').catch(() => {});
 await load('auth.js').catch(() => {});
