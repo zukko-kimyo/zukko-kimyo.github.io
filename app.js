@@ -114,8 +114,7 @@
       </div>
       <div class="hero-art"><span class="badge3d">${t('hero_badge')}</span><div class="lab-host" id="heroLab"></div></div>
     </div></section>
-    ${XPok() ? `<section class="blk xpsec"><div class="wrap">${XP.homeCard({ t, tr, B })}</div></section>` : ''}
-    ${XPok() && window.ZKDashboard ? ZKDashboard.render({ lang, tr, B }) : ''}
+    ${XPok() && window.ZKDashboard ? ZKDashboard.render({ lang, tr, B }) : (XPok() ? `<section class="blk xpsec"><div class="wrap">${XP.homeCard({ t, tr, B })}</div></section>` : '')}
     <section class="blk"><div class="wrap">
       <div class="sec-h"><div><h2>${t('books_h')}</h2><p>${t('books_p')}</p></div></div>
       <div class="grades">
@@ -464,6 +463,7 @@
     else if (h === 'tests') { testsPage(); navKey = 'tests'; }
     else if ((m = h.match(/^ptable(?:-(\d+))?$/))) { if (window.PT) PT.render(app, { lang, t, tr, B, z: m[1] ? +m[1] : null }); else home(); navKey = 'pt'; }
     else if (h === 'me') { if (XPok()) XP.page(app, { t, tr, B }); else home(); navKey = 'me'; }
+    else if (h === 'certificate') { if (window.ZKCertificate && XPok()) ZKCertificate.render(app, { lang, B }); else home(); navKey = 'me'; }
     else if (h === 'admin' && window.ZKA && window.ZKAuth && ZKAuth.isAdmin()) { ZKA.render(app, { t, tr, B, lang, GC }); navKey = 'admin'; }
     else if (h === 'teacher' && window.ZKT && window.ZKAuth && ZKAuth.isStaff()) { ZKT.render(app, { t, tr, B, lang, GC }); navKey = 'teacher'; }
     else if (h === 'lab') { labList(); navKey = 'lab'; }
