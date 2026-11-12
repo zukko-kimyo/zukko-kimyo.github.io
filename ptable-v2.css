@@ -89,3 +89,11 @@
   .pt-overview .pt-stat{padding:7px 10px;font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){.ptcell,.pt-selected .pt3d *{animation:none!important;transition:none!important}}
+
+.pt-selected .pt-shell-summary{align-self:center;min-width:0;color:#2c3c6a;line-height:1.55;font-size:14px}
+.pt-selected .pt-shell-summary b{display:block;color:#6248b2;font-size:12px;margin-bottom:3px}
+.pt-selected .pt-shell-summary div{font:900 18px/1.35 var(--f);word-break:break-word}
+.pt-selected .pt-shell-summary small{font:600 11px/1.5 var(--f);color:#6b7290}
+.pt-selected .pt3d-controls{grid-column:1/-1}
+.pt-selected .pt3d-controls button[hidden]{display:none!important}
+@media(max-width:700px){.pt-selected .pt-shell-summary div{font-size:16px}}
