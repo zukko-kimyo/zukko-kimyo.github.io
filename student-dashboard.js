@@ -12,7 +12,7 @@
       tasks: "Bugungi vazifalar", task1: "Bitta dars testini ishlash", task2: "Bitta 3D tajribani yakunlash",
       task3: "Kunlik dars maqsadiga yetish", ready: "Bajarildi", later: "Bajarilmagan",
       quick: "Tezkor kirish", qtest: "Test ishlash", qlab: "3D laboratoriya", qtable: "Davriy jadval",
-      qbadge: "Yutuqlarim", qadmin: "Boshqaruv", qteacher: "O‘qituvchi paneli",
+      qbadge: "Yutuqlarim", qcert: "Sertifikat", qadmin: "Boshqaruv", qteacher: "O‘qituvchi paneli",
       caution: "Statistika shaxsiy o‘qish tarixingizdan hisoblangan."
     },
     en: {
@@ -24,7 +24,7 @@
       tasks: "Today's goals", task1: "Practise one lesson quiz", task2: "Complete one 3D experiment",
       task3: "Reach the daily lesson goal", ready: "Done", later: "Not yet",
       quick: "Quick actions", qtest: "Take a quiz", qlab: "3D laboratory", qtable: "Periodic table",
-      qbadge: "My progress", qadmin: "Administration", qteacher: "Teacher panel",
+      qbadge: "My progress", qcert: "Certificate", qadmin: "Administration", qteacher: "Teacher panel",
       caution: "The figures come from your personal learning history."
     }
   };
@@ -65,7 +65,7 @@
     const grades = ['g6', 'g7', 'g8'].filter((g) => ctx.B[g]);
     const quicks = [
       ['#tests', '✅', L.qtest], ['#lab', '🧪', L.qlab],
-      ['#ptable', '🧩', L.qtable], ['#me', '🏆', L.qbadge]
+      ['#ptable', '🧩', L.qtable], ['#me', '🏆', L.qbadge], ['#certificate', '📜', L.qcert]
     ];
     if (window.ZKAuth && ZKAuth.isAdmin && ZKAuth.isAdmin()) quicks.push(['#admin', '🛡️', L.qadmin]);
     if (window.ZKAuth && ZKAuth.isStaff && ZKAuth.isStaff()) quicks.push(['#teacher', '👩‍🏫', L.qteacher]);
