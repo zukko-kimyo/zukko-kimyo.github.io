@@ -71,6 +71,10 @@
   const sortCls = (a, b) => a.localeCompare(b, undefined, { numeric: true });
 
   /* ---------- maʼlumot ---------- */
+  // Bir vaqtda faqat bitta yuklash: yuklanish paytida bo'lim almashtirilsa, ma'lumot qayta so'ralmaydi
+  // va keyin kelgan javob foydalanuvchi yozayotgan formani qayta chizib yubormaydi.
+  let loading = null;
+  function ensureLoaded() { return st.users ? Promise.resolve() : (loading || (loading = loadAll().finally(() => { loading = null; }))); }
   async function loadAll() {
     const Bk = ZKAuth.backend;
     const [users, prog, secrets, codes] = await Promise.all([Bk.list('users'), Bk.list('progress'), (ZKAuth.isAdmin() ? Bk.list('secrets') : Bk.list('secrets', 'role', 'student')).catch(() => []), Bk.list('classes').catch(() => [])]);
@@ -142,8 +146,9 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
         <div id="tcBody"><div class="tc-empty">${t('loading')}</div></div>
       </div><div id="tcPrint"></div>`;
     tabs();
-    const go = () => { tabs(); return st.tab === 'res' ? (st.detail ? detail() : results()) : st.tab === 'add' ? addView() : st.tab === 'req' ? requests() : st.tab === 'codes' ? codesView() : teachers(); };
-    if (!st.users) loadAll().then(go).catch((e) => { body().innerHTML = `<div class="tc-empty">⚠ ${esc(ZKAuth.errMsg(e))}</div>`; });
+    const token = (render.n = (render.n || 0) + 1);
+    const go = () => { if (token !== render.n) return; tabs(); return st.tab === 'res' ? (st.detail ? detail() : results()) : st.tab === 'add' ? addView() : st.tab === 'req' ? requests() : st.tab === 'codes' ? codesView() : teachers(); };
+    if (!st.users) ensureLoaded().then(go).catch((e) => { body().innerHTML = `<div class="tc-empty">⚠ ${esc(ZKAuth.errMsg(e))}</div>`; });
     else go();
   }
   const body = () => document.getElementById('tcBody');

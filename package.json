@@ -1,0 +1,20 @@
+{
+  "name": "zukko-kimyo",
+  "version": "2.0.0-dev",
+  "private": true,
+  "description": "Zukko Kimyo — 6–8-sinf kimyo o'quv sayti (Zukko Xalqaro Maktabi)",
+  "scripts": {
+    "serve": "node tests/serve.mjs",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node --test \"tests/unit/*.test.mjs\"",
+    "test:e2e": "playwright test",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-zukko \"node --test tests/rules/*.test.mjs\""
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.0.0",
+    "firebase-tools": "^14.0.0"
+  },
+  "engines": { "node": ">=20" }
+}

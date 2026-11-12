@@ -1,0 +1,27 @@
+# Paketlar va test natijalari
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+.cache/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+functions/node_modules/
+functions/.secret.local
+.runtimeconfig.json
+
+# Maxfiy fayllar — HECH QACHON git'ga qo'shilmaydi
+.env
+.env.*
+*.pem
+*.key
+serviceAccount*.json
+*-service-account*.json
+
+# Tizim
+.DS_Store
+Thumbs.db

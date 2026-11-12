@@ -1,5 +1,7 @@
 # Zukko Kimyo — 6–8-sinf
 
+Sayt: **https://zukko-kimyo.github.io/** · Loyiha 2.0 bosqichida Claude va ChatGPT tomonidan GitHub orqali birgalikda rivojlantirilmoqda — qoidalar: [docs/COLLABORATION.md](docs/COLLABORATION.md).
+
 Zukko Xalqaro Maktabi kimyo darsliklari asosidagi o'quv sayti: darslar (o'zbek/ingliz), darslik sahifalari, 3D tajribalar, testlar, davriy jadval, XP va yutuqlar, o'qituvchi paneli.
 
 ## Tuzilishi
@@ -27,3 +29,17 @@ Zukko Xalqaro Maktabi kimyo darsliklari asosidagi o'quv sayti: darslar (o'zbek/i
 3. Menyudagi **O'qituvchi paneli** → o'qituvchilar va o'quvchilarni qo'shing.
 
 To'liq qo'llanma: sozlash hujjatida (GitHub + Firebase, qadamma-qadam).
+
+## Ishlab chiquvchilar uchun
+
+```bash
+npm ci
+npx playwright install chromium
+npm test            # unit + e2e
+npm run test:rules  # Firestore qoidalari (Java kerak)
+npm run serve       # http://localhost:8090
+```
+
+- Hamkorlik tartibi: [docs/COLLABORATION.md](docs/COLLABORATION.md) — `main`ga faqat PR orqali, maxfiy kalitlar git'ga tushmaydi.
+- Arxitektura va ma'lumotlar tuzilmasi: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Testlar: [docs/TESTING.md](docs/TESTING.md) · Xavfsizlik: [docs/SECURITY.md](docs/SECURITY.md) · Reja: [docs/ROADMAP.md](docs/ROADMAP.md) · Qarorlar: [docs/adr/](docs/adr/)
