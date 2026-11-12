@@ -17,7 +17,9 @@
       renderer = new T.WebGLRenderer({ alpha:false, antialias:true, powerPreference:'low-power' });
       renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
       renderer.outputColorSpace = T.SRGBColorSpace;
-      host.appendChild(renderer.domElement);
+      host.insertBefore(renderer.domElement, host.firstChild);
+      const placeholder = host.querySelector('.pt3d-fallback');
+      if (placeholder) placeholder.remove();
       renderer.domElement.setAttribute('aria-label', lang === 'en' ? 'Rotatable schematic atom with electrons on shells' : 'Elektron qavatlari aks etgan aylantiriladigan sxematik atom');
       renderer.domElement.setAttribute('role','img');
       controls = new T.OrbitControls(camera, renderer.domElement);
