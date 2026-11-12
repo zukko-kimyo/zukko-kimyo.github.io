@@ -104,27 +104,69 @@
   function home() {
     const nL = GRADES.reduce((a, g) => a + (B[g] ? B[g].lessons.length : 0), 0);
     app.innerHTML = `
-    <section class="hero"><div class="wrap">
-      <div>
-        <span class="pill">${t('hero_pill')}</span>
-        <h1>${t('hero_h')}</h1>
-        <p class="lead">${t('hero_p')}</p>
-        <div class="btns"><a class="btn pri" href="#g6">${t('start6')} →</a><a class="btn grn" href="#g7">${t('start7')} →</a><a class="btn pri" style="background:#0ea5e9;--sh:#0369a1" href="#g8">${t('start8')} →</a><a class="btn sec" href="#lab">🧪 ${t('open_lab')}</a><a class="btn sec" href="#tests">✅ ${t('nav_tests')}</a><a class="btn sec" href="#ptable">🧩 ${t('nav_pt')}</a></div>
-        <div class="stats"><div><b>${nL}</b><span>${t('st_lessons')}</span></div><div><b>${Lab.list.length}</b><span>${t('st_exps')}</span></div><div><b>367</b><span>${t('st_pages')}</span></div></div>
+    <section class="hero zk-hero-v3"><div class="wrap">
+      <div class="zk-hero-content">
+        <div class="zk-hero-kicker"><span class="zk-live-dot"></span>${lang === 'uz' ? 'ZUKKO XALQARO MAKTABI · RAQAMLI KIMYO' : 'ZUKKO INTERNATIONAL SCHOOL · CHEMISTRY'}</div>
+        <h1>${lang === 'uz' ? 'Kimyoni ko‘r.' : 'See chemistry.'} <em>${lang === 'uz' ? 'Tajribada kashf et.' : 'Discover it in action.'}</em></h1>
+        <p class="lead">${lang === 'uz' ? 'Oddiy darslikdan ko‘proq: tushunarli mavzular, interaktiv 3D tajribalar va bilimni mustahkamlaydigan testlar — barchasi bir joyda.' : 'More than a textbook: clear lessons, interactive 3D experiments and practice tests, all in one modern learning space.'}</p>
+        <div class="btns">
+          <a class="btn pri" href="#g6">${lang === 'uz' ? '📚 Darslarni boshlash' : '📚 Explore lessons'} <span aria-hidden="true">↗</span></a>
+          <a class="btn sec" href="#lab">${lang === 'uz' ? '🧪 3D laboratoriyani ochish' : '🧪 Explore the 3D laboratory'}</a>
+        </div>
+        <div class="zk-hero-stats">
+          <div><b>${nL}</b><span>${t('st_lessons')}</span></div>
+          <div><b>${Lab.list.length}</b><span>${t('st_exps')}</span></div>
+          <div><b>6–8</b><span>${lang === 'uz' ? 'Sinflar' : 'Grades'}</span></div>
+        </div>
       </div>
-      <div class="hero-art"><span class="badge3d">${t('hero_badge')}</span><div class="lab-host" id="heroLab"></div></div>
+      <div class="zk-hero-scene">
+        <div class="zk-scene-top"><span>${lang === 'uz' ? 'MOLEKULYAR LABORATORIYA' : 'MOLECULAR LABORATORY'}</span><span class="zk-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <div class="hero-art"><span class="badge3d">✦ ${lang === 'uz' ? 'INTERAKTIV 3D' : 'INTERACTIVE 3D'}</span><div class="lab-host" id="heroLab"></div></div>
+        <div class="zk-scene-bottom"><span>LAB / 001 — ATOM MODEL</span><span class="zk-scene-active">${lang === 'uz' ? 'TADQIQ ETING' : 'EXPLORE'}</span></div>
+      </div>
     </div></section>
+    <section class="zk-quickstrip" aria-label="${lang === 'uz' ? 'Tezkor bo‘limlar' : 'Quick links'}">
+      <div class="wrap">
+        <a href="#g6" class="zk-quick-item"><span class="zk-quick-ic">📘</span><span><strong>${lang === 'uz' ? 'Sinf bo‘yicha darslar' : 'Lessons by grade'}</strong><small>${lang === 'uz' ? '6-, 7- va 8-sinf mavzulari' : 'Grades 6, 7 and 8'}</small></span><span class="zk-quick-arrow">↗</span></a>
+        <a href="#tests" class="zk-quick-item"><span class="zk-quick-ic">✅</span><span><strong>${lang === 'uz' ? 'Bilimingizni sinang' : 'Test your knowledge'}</strong><small>${lang === 'uz' ? 'Interaktiv test va natijalar' : 'Interactive quizzes and results'}</small></span><span class="zk-quick-arrow">↗</span></a>
+        <a href="#ptable" class="zk-quick-item"><span class="zk-quick-ic">⚛️</span><span><strong>${lang === 'uz' ? 'Davriy jadval' : 'Periodic table'}</strong><small>${lang === 'uz' ? 'Elementlarni yaqinroq o‘rganing' : 'Explore the elements'}</small></span><span class="zk-quick-arrow">↗</span></a>
+      </div>
+    </section>
     ${XPok() && window.ZKDashboard ? ZKDashboard.render({ lang, tr, B }) : (XPok() ? `<section class="blk xpsec"><div class="wrap">${XP.homeCard({ t, tr, B })}</div></section>` : '')}
     <section class="blk"><div class="wrap">
-      <div class="sec-h"><div><h2>${t('books_h')}</h2><p>${t('books_p')}</p></div></div>
+      <div class="sec-h"><div><span class="zk-section-kicker">LEARNING PATHS / SINF BO‘LIMLARI</span><h2>${t('books_h')}</h2><p>${t('books_p')}</p></div></div>
       <div class="grades">
-        <a class="gcard g6" href="#g6">${pimg('g6', 0, false, 'alt=""')}<div><h3>${t('g6_t')}</h3><div class="meta"><span class="chip">${B.g6.lessons.length} ${t('st_lessons')}</span><span class="chip p">${countExps(6)} ${t('st_exps')}</span><span class="chip g">${t('both_ed')}</span></div><p>${t('g6_d')}</p>${gp('g6')}</div></a>
-        <a class="gcard g7" href="#g7">${pimg('g7', 0, false, 'alt=""')}<div><h3>${t('g7_t')}</h3><div class="meta"><span class="chip">${B.g7.lessons.length} ${t('st_lessons')}</span><span class="chip p">${countExps(7)} ${t('st_exps')}</span><span class="chip g">${t('both_ed')}</span></div><p>${t('g7_d')}</p>${gp('g7')}</div></a>
-        ${B.g8 ? `<a class="gcard g8" href="#g8">${pimg('g8', 0, false, 'alt=""')}<div><h3>${t('g8_t')}</h3><div class="meta"><span class="chip">${B.g8.lessons.length} ${t('st_lessons')}</span><span class="chip p">${countExps(8)} ${t('st_exps')}</span><span class="chip g">${t('both_ed')}</span></div><p>${t('g8_d')}</p>${gp('g8')}</div></a>` : ''}
+        <a class="gcard g6" href="#g6">
+          <div class="zk-grade-top"><span class="zk-grade-number">06</span>${pimg('g6', 0, false, 'alt=""')}</div>
+          <div class="zk-grade-copy">
+            <span class="zk-grade-eyebrow">${lang === 'uz' ? 'BOSHLANG‘ICH BOSQICH' : 'FOUNDATION'}</span>
+            <h3>${t('g6_t')}</h3><p>${t('g6_d')}</p>
+            <div class="meta"><span class="chip">${B.g6.lessons.length} ${t('st_lessons')}</span><span class="chip p">${countExps(6)} 3D</span></div>
+            <div class="zk-grade-footer"><span>${lang === 'uz' ? 'Darslarni ko‘rish' : 'Explore lessons'}</span><span>↗</span></div>${gp('g6')}
+          </div>
+        </a>
+        <a class="gcard g7" href="#g7">
+          <div class="zk-grade-top"><span class="zk-grade-number">07</span>${pimg('g7', 0, false, 'alt=""')}</div>
+          <div class="zk-grade-copy">
+            <span class="zk-grade-eyebrow">${lang === 'uz' ? 'KEYINGI BOSQICH' : 'INTERMEDIATE'}</span>
+            <h3>${t('g7_t')}</h3><p>${t('g7_d')}</p>
+            <div class="meta"><span class="chip">${B.g7.lessons.length} ${t('st_lessons')}</span><span class="chip p">${countExps(7)} 3D</span></div>
+            <div class="zk-grade-footer"><span>${lang === 'uz' ? 'Darslarni ko‘rish' : 'Explore lessons'}</span><span>↗</span></div>${gp('g7')}
+          </div>
+        </a>
+        <a class="gcard g8" href="#g8">
+          <div class="zk-grade-top"><span class="zk-grade-number">08</span>${pimg('g8', 0, false, 'alt=""')}</div>
+          <div class="zk-grade-copy">
+            <span class="zk-grade-eyebrow">${lang === 'uz' ? 'CHUQURLASHTIRISH' : 'ADVANCED'}</span>
+            <h3>${t('g8_t')}</h3><p>${t('g8_d')}</p>
+            <div class="meta"><span class="chip">${B.g8.lessons.length} ${t('st_lessons')}</span><span class="chip p">${countExps(8)} 3D</span></div>
+            <div class="zk-grade-footer"><span>${lang === 'uz' ? 'Darslarni ko‘rish' : 'Explore lessons'}</span><span>↗</span></div>${gp('g8')}
+          </div>
+        </a>
       </div>
     </div></section>
     <section class="blk" style="padding-top:0"><div class="wrap">
-      <div class="sec-h"><h2>${t('feat_h')}</h2></div>
+      <div class="sec-h"><div><span class="zk-section-kicker">WHY ZUKKO / IMKONIYATLAR</span><h2>${t('feat_h')}</h2></div></div>
       <div class="feat">
         <div class="fcard"><div class="ic">📘</div><h4>${t('f1')}</h4><p>${t('f1d')}</p></div>
         <div class="fcard"><div class="ic" style="background:#f1e9ff">🧪</div><h4>${t('f2')}</h4><p>${t('f2d')}</p></div>
@@ -133,7 +175,7 @@
       </div>
     </div></section>
     <section class="blk" style="padding-top:0"><div class="wrap">
-      <div class="sec-h"><div><h2>${t('lab_h')}</h2><p>${t('lab_p')}</p></div><a class="btn sec" href="#lab">${t('open')} →</a></div>
+      <div class="sec-h"><div><span class="zk-section-kicker">EXPERIMENTS / TAJRIBALAR</span><h2>${t('lab_h')}</h2><p>${t('lab_p')}</p></div><a class="btn sec" href="#lab">${t('open')} →</a></div>
       <div class="xgrid">${Lab.list.slice(0, 8).map(xcard).join('')}</div>
     </div></section>`;
     const host = document.getElementById('heroLab');
