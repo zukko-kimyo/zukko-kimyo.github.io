@@ -257,7 +257,10 @@ Og|Oganesson|Oganesson|[294]`;
     q_name: ['{x} elementini toping', 'Find the element {x}'], q_z: ['Tartib raqami {x} bo\'lgan elementni toping', 'Find the element with atomic number {x}'], q_pg: ['{p}-davr, {g}-guruh elementini toping', 'Find the element in period {p}, group {g}'], q_sym: ['Belgisi «{x}» bo\'lgan elementni toping', 'Find the element whose symbol is “{x}”'],
     right: ['To\'g\'ri! ✅', 'Correct! ✅'], wrong: ['Afsus, bu {x}. To\'g\'ri javob ko\'rsatildi.', 'Not quite — that is {x}. The right answer is highlighted.'], score: ['Natija', 'Score'], again: ['Qaytadan o\'ynash', 'Play again'], round: ['Savol', 'Question'],
     done: ['O\'yin tugadi!', 'Game over!'], lnf: ['f-elementlar pastda', 'f-block below'],
-    p_count: ['protonlar', 'protons'], n_count: ['neytronlar', 'neutrons'], e_count: ['elektronlar', 'electrons'],
+    p_count: ['protonlar', 'protons'], n_count: ['neytronlar (taxminiy)', 'neutrons (approx.)'], e_count: ['elektronlar', 'electrons'],
+    pause3d: ['Animatsiyani to‘xtatish', 'Pause animation'], play3d: ['Animatsiyani yoqish', 'Resume animation'], reset3d: ['3D ko‘rinishni tiklash', 'Reset 3D view'],
+    atomNote: ['Bohr sxemasi — elektronlar haqiqiy doiraviy orbitalarda harakatlanmaydi. Neytron soni yumaloqlangan massaga asoslangan taxmin.', 'Bohr schematic — electrons do not move in actual circular orbits. Neutron count is an estimate from rounded mass.'],
+    noUse: ['Batafsil ma’lumot uchun tegishli dars mavzularini ko‘ring.', 'See the related lessons for further details.'],
   };
   const LESSONS = [['g7', 17], ['g7', 18], ['g7', 26], ['g7', 27], ['g7', 35], ['g7', 36], ['g7', 37], ['g7', 38]];
 
@@ -270,25 +273,26 @@ Og|Oganesson|Oganesson|[294]`;
 
     host.innerHTML = `<div class="page-h pt"><div class="wrap"><div class="crumbs"><a href="#home">${ctx.t('nav_home')}</a> / ${tt('title')}</div><h1>🧩 ${tt('title')}</h1><p>${tt('sub')}</p></div></div>
       <div class="wrap ptwrap">
+        <div class="pt-overview"><span class="pt-stat">⚛️ <b>118</b> ${lang === 'uz' ? 'element' : 'elements'}</span><span class="pt-stat">🧪 <b>10</b> ${lang === 'uz' ? 'element oilasi' : 'element families'}</span><span class="pt-stat">🎮 <b>10</b> ${lang === 'uz' ? 'savollik o‘yin' : 'game questions'}</span></div>
         <div class="ptbar">
           <div class="seg" id="ptMode"><span class="ptlbl">${tt('color')}</span>${['cat', 'met', 'state', 'block'].map((m) => `<button data-m="${m}" class="${st.mode === m ? 'on' : ''}">${tt('m_' + m)}</button>`).join('')}</div>
-          <input id="ptFind" class="ptfind" placeholder="${tt('find')}" autocomplete="off">
+          <input id="ptFind" class="ptfind" type="search" aria-label="${tt('find')}" placeholder="${tt('find')}" autocomplete="off">
           <button class="btn ${st.game ? 'sec' : ''}" id="ptGame">${st.game ? tt('explore') : tt('game')}</button>
         </div>
+        <section class="ptdet pt-selected" id="ptDet" aria-live="polite"></section>
         <div class="pthint">${tt('swipe')}</div><div class="ptscroll"><div class="ptgrid" id="ptGrid">
           ${Array.from({ length: 18 }, (_, i) => `<div class="ptgh" style="grid-row:1;grid-column:${i + 2}">${i + 1}<small>${groupLabel(i + 1).replace(/^\d+ /, '')}</small></div>`).join('')}
           ${Array.from({ length: 7 }, (_, i) => `<div class="ptph" style="grid-row:${i + 2};grid-column:1">${i + 1}</div>`).join('')}
           <div class="ptcell ptph2" style="grid-row:7;grid-column:4"><b>57–71</b></div><div class="ptcell ptph2" style="grid-row:8;grid-column:4"><b>89–103</b></div>
           ${EL.map((e) => `<button class="ptcell" data-z="${e.z}" style="grid-row:${e.row + 1};grid-column:${e.col + 1};--c:${colOf(e)}" title="${nm(e)}"><i>${e.z}</i><b>${e.s}</b><span>${nm(e)}</span><em>${e.m.replace('.', ',')}</em></button>`).join('')}
           <div class="ptgap" style="grid-row:9;grid-column:1/-1"></div>
-          <div class="ptdet" id="ptDet" style="grid-row:2/5;grid-column:4/14"></div>
         </div></div>
         <div class="ptleg" id="ptLeg"></div>
         <div class="panel ptles"><h4>📚 ${tt('lessons')}</h4><div class="ptlinks">${LESSONS.map(([g, n]) => { const L = ctx.B[g].lessons[n - 1]; return L ? `<a href="#${g}-${n}"><span class="snum ${g}">${n}</span>${ctx.tr(L.t)}</a>` : ''; }).join('')}</div></div>
       </div>`;
     const grid = host.querySelector('#ptGrid'), det = host.querySelector('#ptDet');
-    if (window.innerWidth < 1200) { det.removeAttribute('style'); det.classList.add('mob'); host.querySelector('.ptscroll').before(det); }
     const cells = [...grid.querySelectorAll('button.ptcell')];
+    let active3d = null;
 
     function legend() {
       const L = legendOf();
@@ -305,19 +309,35 @@ Og|Oganesson|Oganesson|[294]`;
       return s + '</svg>';
     }
     function show(z) {
+      if (active3d) { active3d.dispose(); active3d = null; }
       const e = EL[z - 1]; st.sel = z; paint();
       if (!e) { det.innerHTML = `<div class="ptempty">${tt('hint')}</div>`; return; }
       const sh = shells(z); const A = Math.round(e.mass); const u = USE[e.s]; const v = VAL[e.s];
-      det.innerHTML = `<div class="ptcard"><div class="ptc1"><div class="ptbig" style="--c:${CAT[e.cat].c}"><i>${e.z}</i><b>${e.s}</b><span>${nm(e)}</span><em>${e.m.replace('.', ',')}</em></div>${bohr(e)}</div>
+      det.innerHTML = `<div class="ptcard"><div class="ptc1"><div class="ptbig" style="--c:${CAT[e.cat].c}"><i>${e.z}</i><b>${e.s}</b><span>${nm(e)}</span><em>${e.m.replace('.', ',')}</em></div><div class="pt-shell-summary"><b>${tt('shells')}</b><div>${sh.join(' · ')}</div><small>${e.z} ${tt('p_count')} · ${e.z} ${tt('e_count')}</small></div>
+          <div class="pt3d" id="pt3d"><div class="pt3d-fallback">⚛️ ${nm(e)}</div><div class="pt3d-note">${tt('atomNote')}</div></div>
+          <div class="pt3d-controls"><button type="button" id="pt3dPause">⏸ ${tt('pause3d')}</button><button type="button" id="pt3dReset">↺ ${tt('reset3d')}</button></div></div>
         <div class="ptinfo"><h3>${nm(e)} <small>${lang === 'uz' ? e.en : e.uz}</small></h3>
           <div class="ptkv"><span>${tt('z')}</span><b>${e.z}</b><span>${tt('ar')}</span><b>${e.m.replace('.', ',')}</b><span>${tt('period')} / ${tt('group')}</span><b>${e.period} / ${e.row >= 9 ? (lang === 'uz' ? (e.row === 9 ? 'lantanoid' : 'aktinoid') : (e.row === 9 ? 'lanthanide' : 'actinide')) : groupLabel(e.group)}</b>
           <span>${tt('family')}</span><b><i class="dot" style="background:${CAT[e.cat].c}"></i>${CAT[e.cat][lang]}</b><span>${tt('state')}</span><b>${STATE[e.state][lang]}</b>
           <span>${tt('shells')}</span><b>${sh.join(', ')}</b>${v ? `<span>${tt('val')}</span><b>${v}</b>` : ''}</div></div>
-        <div class="ptx">${e.z <= 103 ? `<div class="ptpne">${tt('pne')}:<br><b>${e.z}</b> ${tt('p_count')} · <b>${A - e.z}</b> ${tt('n_count')} · <b>${e.z}</b> ${tt('e_count')}</div>` : ''}
+        <div class="ptx"><div class="ptpne"><b>${e.z}</b> ${tt('p_count')} · <b>${e.z}</b> ${tt('e_count')}${e.z <= 103 ? ` · <b>${A - e.z}</b> ${tt('n_count')}` : ''}</div>
           <div class="ptconf">${tt('conf')}:<br><code>${confStr(z)}</code></div>
-          ${u ? `<div class="ptuse"><b>${tt('use')}:</b> ${u[lang === 'uz' ? 0 : 1]}</div>` : ''}
+          ${u ? `<div class="ptuse"><b>${tt('use')}:</b> ${u[lang === 'uz' ? 0 : 1]}</div>` : `<div class="ptuse"><b>${tt('use')}:</b> ${tt('noUse')}</div>`}
           ${e.radio ? `<div class="ptradio">${tt('radio')}</div>` : ''}
           ${z <= 20 && window.Lab && Lab.exps['atom-model'] ? `<a class="btn sec ptbtn" href="#lab-atom-model">${tt('open3d')}</a>` : ''}</div></div>`;
+      const sceneHost = det.querySelector('#pt3d');
+      if (window.PTAtom3D && window.THREE) active3d = window.PTAtom3D.mount(sceneHost, e, sh, lang);
+      const pauseBtn = det.querySelector('#pt3dPause');
+      const resetBtn = det.querySelector('#pt3dReset');
+      if (active3d) {
+        let paused = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+        if (paused) { pauseBtn.textContent = '▶ ' + tt('play3d'); active3d.pause(true); }
+        pauseBtn.onclick = () => { paused = !paused; active3d.pause(paused); pauseBtn.textContent = (paused ? '▶ ' + tt('play3d') : '⏸ ' + tt('pause3d')); };
+        resetBtn.onclick = () => active3d.reset();
+      } else {
+        sceneHost.innerHTML = `<div class="pt3d-fallback">${bohr(e)}<span>${lang === 'uz' ? '2D atom sxemasi' : '2D atom schematic'}</span></div><div class="pt3d-note">${tt('atomNote')}</div>`;
+        pauseBtn.hidden = true; resetBtn.hidden = true;
+      }
     }
 
     // game
@@ -333,7 +353,16 @@ Og|Oganesson|Oganesson|[294]`;
     }
     function showGame(msg) {
       const g = st.game; if (!g) return;
-      if (g.i >= g.qs.length) { det.innerHTML = `<div class="ptgame"><h3>${tt('done')}</h3><div class="ptscore">${g.score} / ${g.qs.length}</div><button class="btn" id="ptAgain">${tt('again')}</button></div>`; host.querySelector('#ptAgain').onclick = () => { newGame(); clearMarks(); showGame(); }; return; }
+      if (g.i >= g.qs.length) {
+        if (!g.credited) {
+          g.credited = true;
+          if (window.XP && XP.s && typeof XP.test === 'function') {
+            const best = Math.max(0, Number(XP.s.ptBest) || 0);
+            const earned = Math.max(0, g.score - best);
+            if (earned) { XP.s.ptBest = g.score; XP.test(earned); }
+          }
+        }
+        det.innerHTML = `<div class="ptgame"><h3>${tt('done')}</h3><div class="ptscore">${g.score} / ${g.qs.length}</div><button class="btn" id="ptAgain">${tt('again')}</button></div>`; host.querySelector('#ptAgain').onclick = () => { newGame(); clearMarks(); showGame(); }; return; }
       det.innerHTML = `<div class="ptgame"><div class="ptgq"><small>${tt('round')} ${g.i + 1} / ${g.qs.length} · ${tt('score')}: ${g.score}</small><div>${qText(g.qs[g.i])}</div></div>${msg ? `<div class="ptmsg">${msg}</div>` : ''}<div class="ptprog"><i style="width:${(g.i / g.qs.length) * 100}%"></i></div></div>`;
     }
     const clearMarks = () => cells.forEach((c) => c.classList.remove('ok', 'bad'));
@@ -346,6 +375,15 @@ Og|Oganesson|Oganesson|[294]`;
     }
 
     cells.forEach((c) => {
+      c.setAttribute('aria-label', `${c.dataset.z} — ${nm(EL[+c.dataset.z - 1])}, ${EL[+c.dataset.z - 1].s}`);
+      c.onkeydown = (event) => {
+        const jump = {ArrowRight:1,ArrowLeft:-1,ArrowDown:18,ArrowUp:-18}[event.key];
+        if (!jump) return;
+        event.preventDefault();
+        const next = Math.max(1,Math.min(118,+c.dataset.z+jump));
+        const target = cells[next-1];
+        if (target) target.focus({preventScroll:false});
+      };
       c.onclick = () => { const z = +c.dataset.z; if (st.game) answer(z); else show(z); if (det.classList.contains('mob')) { const r = det.getBoundingClientRect(); if (r.top < 70 || r.bottom > innerHeight) det.scrollIntoView({ block: 'start', behavior: 'smooth' }); } };
       c.onmouseenter = () => { const e = EL[c.dataset.z - 1]; grid.querySelectorAll('.ptgh,.ptph').forEach((h) => h.classList.remove('hov')); if (e.row <= 7) { const gh = grid.querySelector(`.ptgh[style*="grid-column:${e.col + 1};"], .ptgh[style$="grid-column:${e.col + 1}"]`); if (gh) gh.classList.add('hov'); const ph = grid.querySelectorAll('.ptph')[e.row - 1]; if (ph) ph.classList.add('hov'); } };
     });
@@ -356,12 +394,12 @@ Og|Oganesson|Oganesson|[294]`;
     find.oninput = () => {
       const s = find.value.trim().toLowerCase(); if (!s) { st.hl = null; cells.forEach((c) => c.classList.remove('dim')); paint(); return; }
       const hits = EL.filter((e) => String(e.z) === s || e.s.toLowerCase() === s || e.uz.toLowerCase().startsWith(s) || e.en.toLowerCase().startsWith(s));
-      cells.forEach((c) => c.classList.toggle('dim', !hits.some((h) => h.z === +c.dataset.z)));
       if (hits.length === 1 && !st.game) show(hits[0].z);
+      cells.forEach((c) => c.classList.toggle('dim', !hits.some((h) => h.z === +c.dataset.z)));
     };
     find.onkeydown = (ev) => { if (ev.key === 'Enter') { const s = find.value.trim().toLowerCase(); const e = EL.find((x) => String(x.z) === s || x.s.toLowerCase() === s || x.uz.toLowerCase().startsWith(s) || x.en.toLowerCase().startsWith(s)); if (e) { st.game ? answer(e.z) : show(e.z); } } };
     legend(); paint();
-    if (st.game) showGame(); else if (ctx.z) show(ctx.z); else show(st.sel);
+    if (st.game) showGame(); else if (ctx.z) show(ctx.z); else show(st.sel || 1);
   }
   window.PT = { render, EL, BY, shells, config, confStr };
 })();
