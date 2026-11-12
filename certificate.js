@@ -27,11 +27,11 @@
   const esc=(s)=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function render(app,ctx){
     if(!app||!window.XP)return;
-    const lang=ctx.lang==='en'?'en':'uz', t=S[lang],s=XP.s;
+    const xp=window.XP,lang=ctx.lang==='en'?'en':'uz', t=S[lang],s=xp.s;
     const finished=Object.values(s.L||{}).filter(x=>x&&x.done).length;
-    const eligible=finished>=10, username=(window.ZKAuth&&ZKAuth.user&&(ZKAuth.user.name||ZKAuth.user.login))||t.anon;
+    const eligible=finished>=10, username=(window.ZKAuth&&window.ZKAuth.user&&(window.ZKAuth.user.name||window.ZKAuth.user.login))||t.anon;
     const date=new Intl.DateTimeFormat(lang==='en'?'en-US':'uz-UZ',{year:'numeric',month:'long',day:'numeric'}).format(new Date());
-    const level=XP.level(Math.max(0,Number(s.xp)||0)).L;
+    const level=xp.level(Math.max(0,Number(s.xp)||0)).L;
     const labs=Object.keys(s.labs||{}).length;
     const escName=esc(username).slice(0,160);
     app.innerHTML=`<div class="wrap zk-cert-page">
