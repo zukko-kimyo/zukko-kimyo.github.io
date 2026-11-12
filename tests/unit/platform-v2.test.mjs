@@ -69,7 +69,7 @@ function mockProgress() {
   return context;
 }
 
-test('repeat quiz and repeat 3D experiment count for today's goals without farming XP', () => {
+test("repeat quiz and repeat 3D experiment count for today's goals without farming XP", () => {
   const win = mockProgress();
   const before = win.XP.s.xp;
   win.XP.lab('soda-vinegar');
