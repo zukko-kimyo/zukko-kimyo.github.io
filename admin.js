@@ -65,6 +65,35 @@ table.ad td{padding:8px;border-bottom:1px solid #f4ece1}table.ad tr:last-child t
 .ad-mut{color:#a59a8e;font-weight:700}
 @media (max-width:860px){.ad-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:600px){.ad-kpi{grid-template-columns:1fr 1fr}.ad-kpi b{font-size:22px}table.ad{font-size:13px}table.ad th,table.ad td{padding:6px 4px}}
+
+/* Zukko Kimyo 2.0 — distinctly redesigned dashboard */
+.page-h.adm{background:radial-gradient(circle at 85% 15%,rgba(88,211,239,.24),transparent 28%),linear-gradient(115deg,#21105d,#5124a6 60%,#8056e9);padding:46px 0 42px}
+.page-h.adm h1{font-size:clamp(27px,3.5vw,41px);letter-spacing:-.025em}
+.page-h.adm p{color:#e9e0ff;max-width:700px;font-weight:700}
+#adBody{--admin-accent:#6938c9}
+#adBody .ad-kpi{grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:18px 0 26px}
+#adBody .ad-kpi>div{min-width:0;padding:19px 18px;border:1px solid #e7e2fa;border-radius:20px;background:linear-gradient(145deg,#fff,#f8f6ff);box-shadow:0 10px 30px rgba(45,26,90,.07),0 2px 0 #e9e4fc}
+#adBody .ad-kpi>div:nth-child(5n+1){border-top:4px solid #7545d1}
+#adBody .ad-kpi>div:nth-child(5n+2){border-top:4px solid #10b8a6}
+#adBody .ad-kpi>div:nth-child(5n+3){border-top:4px solid #ef9f3a}
+#adBody .ad-kpi>div:nth-child(5n+4){border-top:4px solid #ea70a4}
+#adBody .ad-kpi>div:nth-child(5n){border-top:4px solid #4399e8}
+#adBody .ad-kpi b{font-size:clamp(25px,2.7vw,36px);color:#26134f;letter-spacing:-.03em}
+#adBody .ad-kpi span{font-size:12px;color:#6e6680}
+#adBody .panel{border:1px solid #ece7fa;border-radius:24px;background:#fff;box-shadow:0 8px 32px rgba(45,26,90,.07);padding:22px}
+#adBody .panel h3{font-size:19px;color:#2b195a;margin-bottom:12px}
+#adBody .ad-directory{gap:18px}
+#adBody .ad-directory .panel{max-height:460px}
+#adBody .ad-directory table.ad tbody tr:hover{background:#f8f6ff}
+#adBody table.ad th{background:#f7f5fd;color:#5c5081;position:sticky;top:0}
+#adBody table.ad td{border-bottom-color:#f0edfa}
+#adBody .ad-bar-track{height:15px;background:#eee9f9}
+#adBody .ad-bar-track i{background:linear-gradient(90deg,#7654de,#34c6c0)}
+.ad-top .btn{border-radius:13px}
+@media(max-width:1100px){#adBody .ad-kpi{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){#adBody .ad-kpi{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#adBody .panel{padding:15px;border-radius:18px}.page-h.adm{padding:30px 0}#adBody .ad-directory{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:360px){#adBody .ad-kpi>div{padding:12px}}
+
 `;
     document.head.appendChild(s);
   }
