@@ -1,0 +1,92 @@
+/* Zukko Kimyo 2.0 – responsive visual refinement.
+   Additive stylesheet: preserves existing routes, lessons and Firebase logic. */
+:root {
+  --zk-brand:#174a91;
+  --zk-brand-hover:#113c79;
+  --zk-radius:18px;
+  --zk-focus:#2563eb;
+}
+html { scroll-behavior:smooth; }
+body { text-rendering:optimizeLegibility; }
+:where(a,button,input,select,textarea):focus-visible {
+  outline:3px solid var(--zk-focus);
+  outline-offset:3px;
+}
+:where(button,a) { -webkit-tap-highlight-color:transparent; }
+header.top {
+  box-shadow:0 5px 26px rgba(23,43,79,.07);
+}
+.top .wrap { min-height:68px; }
+.logo .mark { flex:none; }
+.logo { letter-spacing:-.025em; }
+nav.main a { transition:background-color .18s,color .18s; }
+nav.main a.on { box-shadow:inset 0 -2px 0 currentColor; }
+.btn, .gcard, .fcard, .lcard, .xcard, .panel, .toolcard, .xpcard {
+  transition:box-shadow .18s ease,border-color .18s ease,transform .18s ease;
+}
+.hero .wrap { gap:clamp(20px,4vw,60px); }
+.hero h1 { font-size:clamp(2.15rem,4vw,3.45rem); line-height:1.12; }
+.hero p.lead { font-size:clamp(1rem,1.4vw,1.14rem); }
+.hero-art { isolation:isolate; }
+.gcard,.fcard,.xcard,.lcard,.panel,.xpcard {
+  overflow-wrap:anywhere;
+}
+.gcard img { max-width:35%;height:auto;object-fit:cover; }
+.lab-stage canvas.gl { max-width:100%; }
+.lab-modal .mh button, .lab-bar button { min-width:40px;min-height:40px; }
+footer { padding-block:26px; }
+@media (hover:hover) and (pointer:fine) {
+  .btn:hover,.gcard:hover,.fcard:hover,.xcard:hover { filter:brightness(1.01); }
+}
+@media (max-width:1100px) {
+  .wrap { max-width:100%; }
+  .feat { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hero .wrap { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .hero-art { height:310px; }
+}
+@media (max-width:760px) {
+  body { min-width:0; }
+  .top .wrap { min-height:60px;height:auto; }
+  .hero .wrap { grid-template-columns:minmax(0,1fr);padding-block:36px 30px; }
+  .hero-art { height:280px; width:100%; }
+  .hero h1 { max-width:20ch; }
+  .stats { flex-wrap:wrap;gap:14px 22px; }
+  .grades { grid-template-columns:minmax(0,1fr); }
+  .gcard { padding:18px;gap:16px; }
+  .gcard img { width:90px;max-width:30%; }
+  .feat { grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+  .fcard { padding:16px; }
+  .bnav {
+    box-shadow:0 -8px 30px rgba(23,43,79,.08);
+    padding-bottom:calc(8px + env(safe-area-inset-bottom));
+  }
+  .bnav a { min-height:50px;justify-content:center; }
+  .labpage .lab-host { height:min(65vh,570px); }
+  .lab-bar { flex-wrap:wrap; }
+  .lab-bar select { max-width:100%; }
+  .lab-modal { padding:8px; }
+  .lab-modal .box { height:min(92dvh,800px); }
+  .reader .spread img { height:auto; }
+}
+@media (max-width:480px) {
+  .hero h1 { font-size:clamp(1.95rem,8vw,2.4rem); }
+  .hero-art { height:230px; }
+  .hero .wrap { padding-block:28px; }
+  .gcard { align-items:flex-start; }
+  .gcard h3 { font-size:20px; }
+  .gcard img { width:72px; }
+  .feat { grid-template-columns:1fr; }
+  .stats b { font-size:22px; }
+  .btns .btn { justify-content:center; }
+  .lab-picker { max-height:85px;overflow-y:auto; }
+  .lab-cap { padding:12px; }
+  .lc-text { font-size:14px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  *,*::before,*::after { animation-duration:.01ms!important;transition-duration:.01ms!important; }
+}
+@media print {
+  .bnav,header.top .search,.fnav { display:none!important; }
+  body { padding-bottom:0; }
+}
