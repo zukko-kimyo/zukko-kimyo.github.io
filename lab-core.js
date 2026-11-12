@@ -542,7 +542,7 @@
         envRT && envRT.dispose(); pmrem.dispose();
         renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss(); host.innerHTML = '';
       },
-      play: () => setPlaying(true), seek, get t() { return t; }, total
+      play: () => setPlaying(true), seek, get stepIndex() { return curStep; }, steps: steps.map((s, i) => ({ start: starts[i], dur: s.dur, cap: s.cap, eq: s.eq || '' })), get t() { return t; }, total
     };
     window.__lab = handle; return handle;
   };
