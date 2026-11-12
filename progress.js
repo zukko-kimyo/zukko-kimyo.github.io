@@ -101,9 +101,19 @@
     const h = (location.hash.match(/^#(g[678])-(\d+)/) || []); const cur = h[1] ? [h[1], +h[2]] : null;
     const tgt = cur && ls.some((x) => x[0] === cur[0] && x[1] === cur[1]) ? [cur] : ls.slice(0, 1);
     tgt.forEach(([g, n]) => { rec(g, n).lab = 1; studied(lk(g, n)); });
+    // Takroriy tajriba ham bugungi vazifani bajaradi; mukofot XP takror berilmaydi.
+    const labDay = (st.days[day()] = st.days[day()] || { xp: 0, ls: [] });
+    labDay.labAttempts = labDay.labAttempts || [];
+    if (!labDay.labAttempts.includes(id)) labDay.labAttempts.push(id);
+    save();
     if (!st.labs[id]) { st.labs[id] = Date.now(); save(); add(15, t('lab') + ' 🧪'); } else { save(); refresh(); }
   }
   function quiz(g, n, score, total) {
+    if (!Number.isFinite(score) || !Number.isFinite(total) || total <= 0 || score < 0 || score > total) return 0;
+    const qDay = (st.days[day()] = st.days[day()] || { xp: 0, ls: [] });
+    qDay.quizAttempts = qDay.quizAttempts || [];
+    if (!qDay.quizAttempts.includes(lk(g, n))) qDay.quizAttempts.push(lk(g, n));
+    save();
     const r = rec(g, n); const sc = Math.round((10 * score) / total);
     const gain = Math.max(0, sc - r.best) * 2; r.best = Math.max(r.best, sc); save();
     studied(lk(g, n));
