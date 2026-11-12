@@ -24,7 +24,7 @@
     const T=i18n[lang==='en'?'en':'uz'], B=ZKAuth.backend;
     const students=(users||[]).filter(u=>u.role==='student' && u.status!=='pending' && u.status!=='inactive' && u.id);
     const classes=[...new Set(students.map(u=>u.cls || '—'))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-    const state={cls:classes[0]||'',date:localDate(new Date()),entries:{},dirty:false,loading:false,request:0};
+    const state={cls:classes[0]||'',date:localDate(new Date()),entries:{},dirty:false,loading:false,loadError:false,request:0};
     const q=(id)=>host.querySelector('#'+id);
     host.innerHTML=`<div class="zk-att">
       <div class="zk-att-top"><div><h3>${T.title}</h3><p>${T.sub}</p></div><span class="zk-att-label">${esc(T.security)}</span></div>
@@ -46,17 +46,20 @@
       const count=(key)=>arr.filter(u=>state.entries[u.id]===key).length;
       q('zkAttSummary').innerHTML=`<span>${T.total}: <b>${arr.length}</b></span>${[...statuses,'unknown'].map(s=>`<span>${T[s]}: <b>${s==='unknown'?arr.length-statuses.reduce((a,k)=>a+count(k),0):count(s)}</b></span>`).join('')}`;
       q('zkAttRows').innerHTML=arr.length?`<table><thead><tr><th scope="col">${T.name}</th><th scope="col">${T.present}</th><th scope="col">${T.late}</th><th scope="col">${T.absent}</th><th scope="col">${T.unknown}</th></tr></thead><tbody>${arr.map(u=>`<tr data-uid="${esc(u.id)}"><th scope="row"><b>${esc(u.name||u.login)}</b><small>${esc(u.login||'')}</small></th>${[...statuses,'unknown'].map(s=>`<td><button class="zk-att-choice ${(state.entries[u.id]||'unknown')===s?'selected':''}" data-value="${s}" type="button" aria-label="${esc(T[s])}: ${esc(u.name||u.login)}" aria-pressed="${String((state.entries[u.id]||'unknown')===s)}">${s==='present'?'✓':s==='late'?'◷':s==='absent'?'✕':'—'}</button></td>`).join('')}</tr>`).join('')}</tbody></table>`:`<p class="zk-att-empty">${state.cls?T.empty:T.choose}</p>`;
-      q('zkAttSave').disabled=!arr.length||state.loading||!state.dirty;
+      q('zkAttSave').disabled=!arr.length||state.loading||state.loadError||!state.dirty;
+      q('zkAttClass').disabled=state.loading;
+      q('zkAttDate').disabled=state.loading;
       q('zkAttCsv').disabled=!arr.length;
     }
     async function load() {
       const token=++state.request;
-      state.loading=true;state.entries={};state.dirty=false;message(T.loading);draw();
+      state.loading=true;state.loadError=true;state.entries={};state.dirty=false;message(T.loading);draw();
       if(!state.cls){state.loading=false;message('');draw();return;}
       try {
         const doc=await B.get('attendance',docId());
         if(token!==state.request)return;
         state.entries=(doc&&doc.entries&&typeof doc.entries==='object')?{...doc.entries}:{};
+        state.loadError=false;
         message('');
       }catch(e){
         if(token!==state.request)return;
@@ -64,7 +67,7 @@
       }finally{if(token===state.request){state.loading=false;draw();}}
     }
     function selectChanged(next){
-      if(state.dirty&&!confirm(T.unsaved))return false;
+      if(state.loading || (state.dirty&&!confirm(T.unsaved)))return false;
       state.cls=next.cls;state.date=next.date;load();return true;
     }
     q('zkAttClass').onchange=(ev)=>{if(!selectChanged({cls:ev.target.value,date:state.date}))ev.target.value=state.cls;};
@@ -83,7 +86,7 @@
       state.dirty=true;message('');draw();
     };
     q('zkAttSave').onclick=async()=>{
-      if(!state.dirty||state.loading)return;
+      if(!state.dirty||state.loading||state.loadError)return;
       state.loading=true;draw();message(T.loading);
       try {
         await B.set('attendance',docId(),{date:state.date,cls:state.cls,entries:state.entries,updated:Date.now(),by:ZKAuth.user.uid});
@@ -93,7 +96,13 @@
     };
     q('zkAttCsv').onclick=()=>{
       const rows=[[T.date,T.cls,T.name,'Login','Status'],...classStudents().map(u=>[state.date,state.cls,u.name||'',u.login||'',T[state.entries[u.id]||'unknown']])];
-      const csv='\uFEFF'+rows.map(row=>row.map(cell=>'"'+String(cell).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+      // CSV formula injectiondan himoya: Excel formulasi bo'lib ko'rinadigan matn oldiga apostrof.
+      const safeCell=(value)=>{
+        let text=String(value==null?'':value);
+        if (/^[\s]*[=+@\-]/.test(text)) text="'"+text;
+        return '"'+text.replace(/"/g,'""')+'"';
+      };
+      const csv='\uFEFF'+rows.map(row=>row.map(safeCell).join(';')).join('\r\n');
       const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
       const a=document.createElement('a');a.href=url;a.download='davomat-'+state.date+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
