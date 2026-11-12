@@ -129,8 +129,9 @@ table.ad td{padding:8px;border-bottom:1px solid #f4ece1}table.ad tr:last-child t
         <label for="adOld">${t('old_pw')}</label><input type="password" id="adOld" autocomplete="current-password">
         <label for="adNew">${t('new_pw')}</label><input type="password" id="adNew" autocomplete="new-password">
         <label for="adNew2">${t('new_pw2')}</label><input type="password" id="adNew2" autocomplete="new-password">
-        <button class="btn pri sm" id="adPwGo" style="margin-top:14px">${t('change')}</button><div class="ad-msg" id="adPwMsg"></div></form></div><div class="panel" id="adAttendance" style="margin-top:18px"></div>`;
+        <button class="btn pri sm" id="adPwGo" style="margin-top:14px">${t('change')}</button><div class="ad-msg" id="adPwMsg"></div></form></div><div id="adWeekly" style="margin-top:18px"></div><div class="panel" id="adAttendance" style="margin-top:18px"></div>`;
     wire();
+    if (window.ZKWeekly) ZKWeekly.mount(APP.querySelector('#adWeekly'), st.users, st.prog, L);
     if (window.ZKAttendance) ZKAttendance.mount(APP.querySelector('#adAttendance'), st.users, L);
   }
 
