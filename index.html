@@ -675,7 +675,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261112d';
+const VER = '20261112e';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 await load('firebase-config.js').catch(() => {});
 await load('auth.js').catch(() => {});
@@ -689,7 +689,7 @@ try {
 } catch (e) { console.warn('3D unavailable', e); }
 if (three) { for (const s of ['lab-core.js', 'lab-exps1.js', 'lab-exps2.js', 'lab-exps3.js', 'lab-exps4.js', 'lab-exps5.js', 'lab-exps6.js', 'lab-exps7.js']) await load(s); }
 else window.Lab = { lang: 'uz', list: [], exps: {}, tr: (o) => (typeof o === 'string' ? o : o.uz), open: () => null };
-for (const s of ['data-g6.js', 'data-g7.js', 'data-g8.js', 'tests.js', 'tests-g8.js', 'pages-tr.js', 'ptable.js', 'progress.js', 'tilt.js', 'lib/stats.js', 'teacher.js', 'admin.js', 'app.js', 'mobile.js']) await load(s).catch(() => {});
+for (const s of ['data-g6.js', 'data-g7.js', 'data-g8.js', 'tests.js', 'tests-g8.js', 'pages-tr.js', 'ptable.js', 'progress.js', 'student-dashboard.js', 'lab-guide.js', 'attendance.js', 'tilt.js', 'lib/stats.js', 'teacher.js', 'admin.js', 'app.js', 'mobile.js']) await load(s).catch(() => {});
 if (window.ZKAuth && ZKAuth.user) ZKAuth.chip();
 </script>
 </body>
