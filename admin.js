@@ -47,6 +47,7 @@
 .ad-kpi div{background:#fff;border:2px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:0 3px 0 var(--line)}
 .ad-kpi b{display:block;font-size:26px;font-weight:900;color:#1f1a2e;line-height:1.1}.ad-kpi span{font-size:12.5px;color:#8a7f73;font-weight:800}
 .ad-kpi div.warn b{color:#dc2626}
+.ad-directory{margin:18px 0}.ad-directory .panel{max-height:410px;overflow:auto}.ad-muted-login{display:block;font-size:11px;color:var(--muted);font-weight:600}.ad-insights{margin:18px 0}.ad-bars{display:grid;gap:12px;margin-top:16px}.ad-bar-row{display:grid;grid-template-columns:minmax(48px,90px) minmax(0,1fr) 55px;align-items:center;gap:10px;font-size:13px;font-weight:800}.ad-bar-track{height:12px;border-radius:99px;background:#f1ecfb;overflow:hidden}.ad-bar-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#20bfc7)}
 .ad-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.ad-grid>.panel{margin:0;min-width:0}
 .ad-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media (min-width:900px){.ad-kpi{grid-template-columns:repeat(5,1fr)}}
@@ -106,6 +107,19 @@ table.ad td{padding:8px;border-bottom:1px solid #f4ece1}table.ad tr:last-child t
     const kp = [['k_students', K.students], ['k_classes', K.classes], ['k_teachers', K.teachers], ['k_pending', K.pending, K.pending > 0], ['k_today', K.activeToday], ['k_week', K.active7], ['k_never', K.neverLoggedIn], ['k_mastered', K.mastered], ['k_quiz', fmt(K.avgQuiz)], ['k_xp', K.totalXp]];
     APP.querySelector('#adBody').innerHTML = `
       <div class="ad-kpi">${kp.map(([k, v, warn]) => `<div class="${warn ? 'warn' : ''}" data-k="${k}"><b>${esc(v)}</b><span>${t(k)}</span></div>`).join('')}</div>
+      <div class="ad-grid ad-directory">
+        <section class="panel"><h3>👩‍🏫 ${L === "en" ? "Teachers directory" : "O‘qituvchilar ma’lumotlari"}</h3>
+          <div class="ad-sub">${L === "en" ? "Registered teacher accounts (no passwords)" : "Ro‘yxatdan o‘tgan o‘qituvchilar (parollarsiz)"}</div>
+          ${st.users.filter(u => u.role === "teacher").length ? `<div class="ad-tw"><table class="ad"><thead><tr><th>${L === "en" ? "Teacher" : "O‘qituvchi"}</th><th>Login</th><th>${L === "en" ? "Status" : "Holat"}</th></tr></thead><tbody>${st.users.filter(u => u.role === "teacher").sort((a,b) => String(a.name||a.login).localeCompare(String(b.name||b.login))).map(u => `<tr><td><b>${esc(u.name || u.login)}</b></td><td>${esc(u.login)}</td><td>${u.disabled ? (L === "en" ? "Disabled" : "O‘chirilgan") : (L === "en" ? "Active" : "Faol")}</td></tr>`).join("")}</tbody></table></div>` : `<div class="ad-mut">—</div>`}
+        </section>
+        <section class="panel"><h3>🎓 ${L === "en" ? "Students directory" : "O‘quvchilar ma’lumotlari"}</h3>
+          <div class="ad-sub">${L === "en" ? "Registered students and learning progress" : "Ro‘yxatdagi o‘quvchilar va o‘zlashtirish ko‘rsatkichlari"}</div>
+          ${st.users.filter(u => u.role === "student").length ? `<div class="ad-tw"><table class="ad"><thead><tr><th>${L === "en" ? "Student" : "O‘quvchi"}</th><th>${t("c_cls")}</th><th>XP</th><th>${t("c_quiz")}</th></tr></thead><tbody>${st.users.filter(u => u.role === "student").sort((a,b) => String(a.cls||"").localeCompare(String(b.cls||""),undefined,{numeric:true}) || String(a.name||a.login).localeCompare(String(b.name||b.login))).map(u => { const p=st.prog[u.id]||{};return `<tr><td><b>${esc(u.name || u.login)}</b><small class="ad-muted-login">${esc(u.login)}</small></td><td>${esc(u.cls||"—")}</td><td>${Number(p.xp)||0}</td><td>${p.quizAvg == null ? "—" : esc(p.quizAvg)}</td></tr>`; }).join("")}</tbody></table></div>` : `<div class="ad-mut">—</div>`}
+        </section>
+      </div>
+      <section class="panel ad-insights"><h3>📊 ${L === "en" ? "Class performance" : "Sinflar natijalari"}</h3>
+        <div class="ad-bars">${cls.map(c => `<div class="ad-bar-row"><span>${esc(c.cls)}</span><div class="ad-bar-track" role="img" aria-label="${esc(c.cls)}: ${c.avgQuiz == null ? "—" : c.avgQuiz + "/10"}"><i style="width:${Math.max(0,Math.min(100,(c.avgQuiz||0)*10))}%"></i></div><b>${c.avgQuiz == null ? "—" : c.avgQuiz + "/10"}</b></div>`).join("") || `<div class="ad-mut">—</div>`}</div>
+      </section>
       <div class="panel"><h3>📈 ${t('act_h')}</h3><div class="ad-sub">${t('act_p')}</div>${act.some((d) => d.active) ? chart(act) : `<div class="ad-mut">${t('act_none')}</div>`}</div>
       <div class="ad-grid">
         <div class="panel"><h3>🏫 ${t('cls_h')}</h3>${cls.length ? `<div class="ad-tw"><table class="ad" id="adCls"><thead><tr><th>${t('c_cls')}</th><th>${t('c_n')}</th><th>${t('c_xp')}</th><th>${t('c_done')}</th><th>${t('c_quiz')}</th><th>${t('c_act')}</th></tr></thead><tbody>
