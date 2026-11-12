@@ -12,6 +12,17 @@ service cloud.firestore {
     function isStaff() { return role() == 'teacher' || role() == 'admin'; }
     function isAdmin() { return role() == 'admin'; }
     function isAdminEmail() { return signedIn() && request.auth.token.email == 'admin@zukko-kimyo.uz'; }
+    function codeDoc(code) { return get(/databases/$(db)/documents/classes/$(code)).data; }
+    // O'quvchi o'zi ro'yxatdan o'tishi: faol sinf kodi bilan, "pending" holatda
+    function selfSignup(uid) {
+      let d = request.resource.data;
+      return signedIn() && request.auth.uid == uid
+        && d.keys().hasOnly(['login', 'name', 'role', 'cls', 'status', 'code', 'created', 'self'])
+        && d.role == 'student' && d.status == 'pending' && d.self == true
+        && request.auth.token.email == d.login + '@zukko-kimyo.uz'
+        && exists(/databases/$(db)/documents/classes/$(d.code))
+        && codeDoc(d.code).active == true && codeDoc(d.code).cls == d.cls;
+    }
 
     // Foydalanuvchi profillari: ism, login, sinf, rol
     match /users/{uid} {
@@ -19,7 +30,8 @@ service cloud.firestore {
       allow create: if (isStaff() && request.resource.data.role == 'student')
                     || (isAdmin() && request.resource.data.role == 'teacher')
                     || (isAdminEmail() && request.auth.uid == uid && request.resource.data.role == 'admin'
-                        && !exists(/databases/$(db)/documents/users/$(uid)));
+                        && !exists(/databases/$(db)/documents/users/$(uid)))
+                    || selfSignup(uid);
       allow update: if (isStaff() && resource.data.role == 'student' && request.resource.data.role == 'student')
                     || (isAdmin() && resource.data.role != 'admin');
       allow delete: if (isStaff() && resource.data.role == 'student') || (isAdmin() && resource.data.role == 'teacher');
@@ -29,7 +41,8 @@ service cloud.firestore {
     match /progress/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isStaff());
       allow create, update: if hasProfile() && request.auth.uid == uid
-                            && request.resource.data.role == role();
+                            && request.resource.data.role == role()
+                            && profile().get('status', 'active') != 'pending';
       allow delete: if isStaff();
     }
 
@@ -37,7 +50,17 @@ service cloud.firestore {
     match /secrets/{uid} {
       allow read: if isAdmin() || (isStaff() && resource.data.role == 'student');
       allow create, update: if isAdmin() || (isStaff() && request.resource.data.role == 'student');
+      allow create: if signedIn() && request.auth.uid == uid && request.resource.data.role == 'student'
+                    && request.resource.data.keys().hasOnly(['pw', 'role', 'login'])
+                    && exists(/databases/$(db)/documents/users/$(uid))
+                    && get(/databases/$(db)/documents/users/$(uid)).data.status == 'pending';
       allow delete: if isAdmin() || (isStaff() && resource.data.role == 'student');
+    }
+
+    // Sinf kodlari: kodni bilgan odam faqat o'sha bitta kodni tekshira oladi, ro'yxatni faqat o'qituvchilar ko'radi
+    match /classes/{code} {
+      allow get: if true;
+      allow list, create, update, delete: if isStaff();
     }
 
     match /{document=**} { allow read, write: if false; }

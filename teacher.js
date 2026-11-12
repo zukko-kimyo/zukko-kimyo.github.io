@@ -5,7 +5,9 @@
 (function () {
   const S = {
     uz: {
-      h: "👩‍🏫 O'qituvchi paneli", p: "O'quvchilar natijalari, hisoblar va parollar.", tab_res: '📊 Natijalar', tab_add: "➕ O'quvchi qo'shish", tab_tch: "🧑‍🏫 O'qituvchilar",
+      h: "👩‍🏫 O'qituvchi paneli", p: "O'quvchilar natijalari, hisoblar va parollar.", tab_res: '📊 Natijalar', tab_add: "➕ O'quvchi qo'shish", tab_tch: "🧑‍🏫 O'qituvchilar", tab_req: '📥 Arizalar', tab_codes: '🔑 Sinf kodlari',
+      rq_none: "Yangi ariza yo'q. O'quvchilar «Sinf kodlari» bo'limidagi kod bilan ro'yxatdan o'tganda shu yerda chiqadi.", rq_ok: '✓ Tasdiqlash', rq_no: '✕ Rad etish', rq_all: '✓ Hammasini tasdiqlash', rq_date: 'Sana', rq_no_q: '{n} arizasini rad etasizmi? Hisob o\'chiriladi.', rq_done: 'Tasdiqlandi',
+      cd_h: 'Sinf kodlari', cd_p: "O'quvchilar saytdagi «Ro'yxatdan o'tish» tugmasi orqali shu kod bilan ro'yxatdan o'tadi, so'ng siz «Arizalar» bo'limida tasdiqlaysiz.", cd_new: 'Yangi kod yaratish', cd_cls: 'Sinf', cd_code: 'Kod', cd_state: 'Holati', cd_on: 'faol', cd_off: "to'xtatilgan", cd_dis: "⏸ To'xtatish", cd_en: '▶ Yoqish', cd_del: "🗑 O'chirish", cd_none: "Hali kod yo'q. Sinf nomini yozib, kod yarating.", cd_used: 'ro\'yxatdan o\'tgan', cd_copy: '📋 Nusxa', cd_copied: 'Nusxa olindi', cd_how: "O'quvchilarga ayting: saytga kiring → «Ro'yxatdan o'tish» → sinf kodi: ",
       all: 'Hammasi', students: "o'quvchi", none: "Hali o'quvchi yo'q. «O'quvchi qo'shish» bo'limidan boshlang.", loading: 'Yuklanmoqda…', reload: '↻ Yangilash',
       c_n: '№', c_name: 'Ism', c_login: 'Login', c_xp: 'XP / daraja', c_g6: '6-sinf', c_g7: '7-sinf', c_g8: '8-sinf', c_quiz: "O'rtacha test", c_last: 'Oxirgi faollik', c_act: '',
       never: 'kirmagan', today: 'bugun', yday: 'kecha', days: 'kun oldin', lessons: 'dars',
@@ -21,7 +23,9 @@
       self: '(siz)', grade: 'sinf',
     },
     en: {
-      h: '👩‍🏫 Teacher panel', p: 'Student results, accounts and passwords.', tab_res: '📊 Results', tab_add: '➕ Add students', tab_tch: '🧑‍🏫 Teachers',
+      h: '👩‍🏫 Teacher panel', p: 'Student results, accounts and passwords.', tab_res: '📊 Results', tab_add: '➕ Add students', tab_tch: '🧑‍🏫 Teachers', tab_req: '📥 Requests', tab_codes: '🔑 Class codes',
+      rq_none: 'No new requests. Students who sign up with a code from “Class codes” appear here.', rq_ok: '✓ Approve', rq_no: '✕ Reject', rq_all: '✓ Approve all', rq_date: 'Date', rq_no_q: 'Reject the request of {n}? The account will be deleted.', rq_done: 'Approved',
+      cd_h: 'Class codes', cd_p: 'Students sign up on the site with “Sign up” and this code; then you approve them under “Requests”.', cd_new: 'Create new code', cd_cls: 'Class', cd_code: 'Code', cd_state: 'Status', cd_on: 'active', cd_off: 'disabled', cd_dis: '⏸ Disable', cd_en: '▶ Enable', cd_del: '🗑 Delete', cd_none: 'No codes yet. Type a class name and create a code.', cd_used: 'signed up', cd_copy: '📋 Copy', cd_copied: 'Copied', cd_how: 'Tell students: open the site → “Sign up” → class code: ',
       all: 'All', students: 'students', none: 'No students yet. Start with “Add students”.', loading: 'Loading…', reload: '↻ Refresh',
       c_n: '#', c_name: 'Name', c_login: 'Login', c_xp: 'XP / level', c_g6: 'Grade 6', c_g7: 'Grade 7', c_g8: 'Grade 8', c_quiz: 'Avg quiz', c_last: 'Last active', c_act: '',
       never: 'never', today: 'today', yday: 'yesterday', days: 'days ago', lessons: 'lessons',
@@ -69,10 +73,12 @@
   /* ---------- maʼlumot ---------- */
   async function loadAll() {
     const Bk = ZKAuth.backend;
-    const [users, prog, secrets] = await Promise.all([Bk.list('users'), Bk.list('progress'), (ZKAuth.isAdmin() ? Bk.list('secrets') : Bk.list('secrets', 'role', 'student')).catch(() => [])]);
+    const [users, prog, secrets, codes] = await Promise.all([Bk.list('users'), Bk.list('progress'), (ZKAuth.isAdmin() ? Bk.list('secrets') : Bk.list('secrets', 'role', 'student')).catch(() => []), Bk.list('classes').catch(() => [])]);
+    st.codes = codes;
     st.users = users; st.prog = {}; prog.forEach((p) => (st.prog[p.id] = p)); st.secrets = {}; secrets.forEach((s) => (st.secrets[s.id] = s));
   }
-  const students = () => (st.users || []).filter((u) => u.role === 'student');
+  const students = () => (st.users || []).filter((u) => u.role === 'student' && u.status !== 'pending');
+  const pending = () => (st.users || []).filter((u) => u.role === 'student' && u.status === 'pending').sort((a, b) => (a.created || 0) - (b.created || 0));
   const classes = () => [...new Set(students().map((u) => u.cls || '—'))].sort(sortCls);
 
   /* ---------- CSS ---------- */
@@ -108,6 +114,9 @@ table.tc tr:hover td{background:#fffcf7}
 .tc-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0 18px}.tc-kpi div{background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px}.tc-kpi b{display:block;font-size:22px;font-weight:900;color:#1f1a2e}.tc-kpi span{font-size:12.5px;color:#8a7f73;font-weight:800}
 .tc-ls{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px}.tc-ls div{display:flex;gap:8px;align-items:center;background:#fff;border:1.5px solid #f1e8dc;border-radius:11px;padding:7px 10px;font-size:13px;font-weight:700}
 .tc-ls .n{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:12px;flex:none}.tc-ls .s{margin-left:auto;font-weight:900}.tc-ls div.off{opacity:.45}
+.tc-badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:99px;background:#ef4444;color:#fff;font-size:12px;line-height:20px;margin-left:4px}.tc-tabs button.on .tc-badge{background:#fff;color:#7c3aed}
+.tc-act button.ok{background:#dcfce7;color:#15803d}
+.tc-codes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}.tc-code{background:#fff;border:2px solid var(--line);border-radius:18px;padding:16px;text-align:center;box-shadow:0 3px 0 var(--line)}.tc-code.off{opacity:.55}.tc-code .cl{font-weight:900;color:#7c3aed;font-size:15px}.tc-code .cd{font:900 28px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.14em;color:#1f1a2e;margin:4px 0}
 .tc-ok{background:#ecfdf3;border:2px solid #bbf7d0;color:#166534;border-radius:14px;padding:12px 14px;font-weight:800;margin:10px 0}
 @media (max-width:760px){.tc-wrap:has(.resp){border:0;background:none;overflow:visible}table.tc.resp{min-width:0}table.tc.resp thead{display:none}
 table.tc.resp tr{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:10px;box-shadow:0 3px 0 var(--line)}
@@ -129,15 +138,68 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     const admin = ZKAuth.isAdmin();
     app.innerHTML = `<div class="page-h tch"><div class="wrap"><div class="crumbs"><a href="#home">${ctx.t('nav_home')}</a> / ${t('h').replace(/^\S+\s/, '')}</div><h1>${t('h')}</h1><p>${t('p')}</p></div></div>
       <div class="wrap" style="padding-bottom:40px">
-        <div class="tc-tabs">${['res', 'add'].concat(admin ? ['tch'] : []).map((k) => `<button data-t="${k}" class="${st.tab === k ? 'on' : ''}">${t('tab_' + k)}</button>`).join('')}</div>
+        <div class="tc-tabs" id="tcTabs"></div>
         <div id="tcBody"><div class="tc-empty">${t('loading')}</div></div>
       </div><div id="tcPrint"></div>`;
-    app.querySelectorAll('.tc-tabs button').forEach((b) => (b.onclick = () => { st.tab = b.dataset.t; st.detail = null; render(APP, CTX); }));
-    const go = () => (st.tab === 'res' ? (st.detail ? detail() : results()) : st.tab === 'add' ? addView() : teachers());
+    tabs();
+    const go = () => { tabs(); return st.tab === 'res' ? (st.detail ? detail() : results()) : st.tab === 'add' ? addView() : st.tab === 'req' ? requests() : st.tab === 'codes' ? codesView() : teachers(); };
     if (!st.users) loadAll().then(go).catch((e) => { body().innerHTML = `<div class="tc-empty">⚠ ${esc(ZKAuth.errMsg(e))}</div>`; });
     else go();
   }
   const body = () => document.getElementById('tcBody');
+  function tabs() {
+    const el = document.getElementById('tcTabs'); if (!el) return;
+    const n = st.users ? pending().length : 0;
+    el.innerHTML = ['res', 'req', 'add', 'codes'].concat(ZKAuth.isAdmin() ? ['tch'] : []).map((k) => `<button data-t="${k}" class="${st.tab === k ? 'on' : ''}">${t('tab_' + k)}${k === 'req' && n ? ` <span class="tc-badge">${n}</span>` : ''}</button>`).join('');
+    el.querySelectorAll('button').forEach((b) => (b.onclick = () => { st.tab = b.dataset.t; st.detail = null; render(APP, CTX); }));
+  }
+
+  /* ---------- arizalar ---------- */
+  function requests() {
+    const list = pending();
+    if (!list.length) { body().innerHTML = `<div class="panel tc-empty">📭 ${t('rq_none')}</div>`; return; }
+    body().innerHTML = `<div class="tc-tools"><button class="btn sec sm" id="tcRe2">${t('reload')}</button><div class="sp"></div><button class="btn pri sm" id="tcAll">${t('rq_all')} (${list.length})</button></div>
+      <div class="tc-wrap"><table class="tc resp" style="min-width:640px"><thead><tr><th>${t('c_n')}</th><th>${t('c_name')}</th><th>${t('c_login')}</th><th>${t('add_cls')}</th><th>${t('rq_date')}</th><th></th></tr></thead><tbody>
+      ${list.map((u, i) => `<tr><td class="tc-mut">${i + 1}</td><td class="nm"><b>${esc(u.name)}</b></td><td class="lg"><code>${esc(u.login)}</code></td><td data-l="${t('add_cls')}"><b>${esc(u.cls)}</b></td><td data-l="${t('rq_date')}">${u.created ? new Date(u.created).toLocaleString(L === 'en' ? 'en-GB' : 'uz-UZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</td>
+        <td class="act"><div class="tc-act"><button class="ok" data-ok="${u.id}">${t('rq_ok')}</button><button data-no="${u.id}">${t('rq_no')}</button></div></td></tr>`).join('')}
+      </tbody></table></div>`;
+    document.getElementById('tcRe2').onclick = async () => { body().style.opacity = 0.5; try { await loadAll(); } finally { body().style.opacity = 1; } tabs(); requests(); };
+    const approve = async (id) => { await ZKAuth.backend.set('users', id, { status: 'active', approvedBy: ZKAuth.user.uid, approvedAt: Date.now() }, true); const u = st.users.find((x) => x.id === id); if (u) { u.status = 'active'; } };
+    body().querySelectorAll('[data-ok]').forEach((b) => (b.onclick = async () => { b.disabled = true; try { await approve(b.dataset.ok); tabs(); requests(); } catch (e) { alert('⚠ ' + ZKAuth.errMsg(e)); b.disabled = false; } }));
+    body().querySelectorAll('[data-no]').forEach((b) => (b.onclick = async () => { const u = st.users.find((x) => x.id === b.dataset.no); if (!u || !confirm(t('rq_no_q', { n: u.name || u.login }))) return; b.disabled = true; try { await removeAccount(u); tabs(); requests(); } catch (e) { alert('⚠ ' + ZKAuth.errMsg(e)); b.disabled = false; } }));
+    document.getElementById('tcAll').onclick = async (ev) => { ev.target.disabled = true; for (const u of list) { try { await approve(u.id); } catch (e) { alert('⚠ ' + u.login + ': ' + ZKAuth.errMsg(e)); break; } } tabs(); requests(); };
+  }
+  async function removeAccount(u) {
+    const Bk = ZKAuth.backend; const sec = st.secrets[u.id];
+    if (sec) await Bk.deleteAccount(ZKAuth.emailOf(u.login), sec.pw);
+    await Promise.all([Bk.del('progress', u.id).catch(() => {}), Bk.del('secrets', u.id).catch(() => {})]);
+    await Bk.del('users', u.id);
+    st.users = st.users.filter((x) => x.id !== u.id); delete st.prog[u.id]; delete st.secrets[u.id];
+  }
+
+  /* ---------- sinf kodlari ---------- */
+  function mkCode() { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const r = crypto.getRandomValues(new Uint32Array(6)); return [...r].map((x) => a[x % a.length]).join(''); }
+  function codesView() {
+    const list = (st.codes || []).slice().sort((a, b) => sortCls(a.cls || '', b.cls || '') || (b.created || 0) - (a.created || 0));
+    const used = (code) => (st.users || []).filter((u) => u.code === code).length;
+    const cs = [...new Set((st.users || []).filter((u) => u.role === 'student').map((u) => u.cls).filter(Boolean))].sort(sortCls);
+    body().innerHTML = `<div class="panel"><h3>🔑 ${t('cd_h')}</h3><div class="tc-note">${t('cd_p')}</div>
+        <div class="tc-tools" style="margin-top:12px"><input id="tcCdCls" list="tcCdL" placeholder="${t('add_cls_ph')}" style="border:2px solid #eadfce;border-radius:12px;padding:10px 12px;font:700 15px var(--f);width:160px;background:#fffdf9"><datalist id="tcCdL">${cs.map((c) => `<option value="${esc(c)}">`).join('')}</datalist><button class="btn pri sm" id="tcCdGo">${t('cd_new')}</button><span class="tc-err" id="tcCdE"></span></div></div>
+      ${list.length ? `<div class="tc-codes">${list.map((c) => `<div class="tc-code ${c.active ? '' : 'off'}"><div class="cl">${esc(c.cls)}</div><div class="cd">${esc(c.id)}</div>
+        <div class="tc-mut" style="font-size:12.5px">${c.active ? t('cd_on') : t('cd_off')} · ${used(c.id)} ${t('cd_used')}</div>
+        <div class="tc-act" style="justify-content:center;margin-top:8px"><button data-cp="${esc(c.id)}">${t('cd_copy')}</button><button data-tg="${esc(c.id)}">${c.active ? t('cd_dis') : t('cd_en')}</button><button data-dl="${esc(c.id)}">${t('cd_del')}</button></div></div>`).join('')}</div>` : `<div class="panel tc-empty">${t('cd_none')}</div>`}`;
+    const E = document.getElementById('tcCdE');
+    document.getElementById('tcCdGo').onclick = async (ev) => {
+      const cls = document.getElementById('tcCdCls').value.trim().toUpperCase().replace(/\s+/g, '');
+      if (!cls) { E.textContent = t('e_cls'); return; }
+      ev.target.disabled = true; const code = mkCode();
+      try { const doc = { cls, active: true, by: ZKAuth.user.uid, created: Date.now() }; await ZKAuth.backend.set('classes', code, doc); st.codes = (st.codes || []).concat([Object.assign({ id: code }, doc)]); codesView(); }
+      catch (e) { E.textContent = '⚠ ' + ZKAuth.errMsg(e); ev.target.disabled = false; }
+    };
+    body().querySelectorAll('[data-cp]').forEach((b) => (b.onclick = async () => { const c = (st.codes || []).find((x) => x.id === b.dataset.cp); const txt = t('cd_how') + b.dataset.cp + (c ? ` (${c.cls})` : ''); try { await navigator.clipboard.writeText(txt); b.textContent = '✓ ' + t('cd_copied'); } catch (e) { prompt('', txt); } }));
+    body().querySelectorAll('[data-tg]').forEach((b) => (b.onclick = async () => { const c = st.codes.find((x) => x.id === b.dataset.tg); b.disabled = true; try { await ZKAuth.backend.set('classes', c.id, { active: !c.active }, true); c.active = !c.active; codesView(); } catch (e) { alert('⚠ ' + ZKAuth.errMsg(e)); b.disabled = false; } }));
+    body().querySelectorAll('[data-dl]').forEach((b) => (b.onclick = async () => { b.disabled = true; try { await ZKAuth.backend.del('classes', b.dataset.dl); st.codes = st.codes.filter((x) => x.id !== b.dataset.dl); codesView(); } catch (e) { alert('⚠ ' + ZKAuth.errMsg(e)); b.disabled = false; } }));
+  }
 
   function qcls(q) { return q == null ? '' : q >= 7 ? 'g' : q >= 5 ? 'm' : 'b'; }
   function rows(list) {

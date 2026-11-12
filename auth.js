@@ -20,6 +20,13 @@
       mk_admin: 'Administrator hisobini yaratish', mk_admin_q: "Hali administrator yo'qmi? Shu parol bilan administrator hisobini yaratish mumkin (faqat birinchi marta).",
       e_weak: "Parol kamida 6 belgidan iborat bo'lsin.", e_exists: "Administrator allaqachon bor — parol noto'g'ri.",
       loading: 'Yuklanmoqda…', logout: 'Chiqish', panel: "O'qituvchi paneli", student: "o'quvchi", teacher: "o'qituvchi", admin: 'administrator',
+      no_acc: "Hisobingiz yo'qmi?", reg_go: "Ro'yxatdan o'tish", have_acc: 'Hisobingiz bormi?', reg_h: "Ro'yxatdan o'tish",
+      reg_p: "Sinf kodini o'qituvchingizdan oling. O'qituvchi tasdiqlagach, saytga kira olasiz.", r_name: 'Familiya va ism', r_name_ph: 'Aliyev Vali',
+      r_code: 'Sinf kodi', r_login: "O'zingiz uchun login", r_login_h: "Lotin harflari, raqam, nuqta. Kamida 3 belgi, masalan vali.a", r_pass2: 'Parolni takrorlang',
+      reg_btn: "Ro'yxatdan o'tish", e_r_name: 'Familiya va ismingizni to\'liq yozing.', e_r_code: "Sinf kodi noto'g'ri yoki eskirgan. O'qituvchingizdan so'rang.",
+      e_r_login: "Login faqat lotin harflari, raqam, nuqta va chiziqchadan iborat bo'lsin (kamida 3 belgi).", e_r_pass2: 'Parollar bir xil emas.', e_r_taken: 'Bu login band. Boshqasini tanlang.',
+      sent_h: 'Arizangiz yuborildi!', sent_p: "{n}, siz {c} sinfiga ro'yxatdan o'tdingiz. O'qituvchingiz tasdiqlagach, shu login va parol bilan kirasiz.", sent_back: 'Kirish sahifasiga qaytish',
+      e_pending: "Hisobingiz hali tasdiqlanmagan. O'qituvchingiz tasdiqlashini kuting.",
       mock: 'Sinov rejimi — maʼlumotlar faqat shu brauzerda', saved: 'Saqlandi', offline: 'Internet yo‘q — natijalar keyin saqlanadi', cls: 'Sinf',
     },
     en: {
@@ -30,6 +37,13 @@
       mk_admin: 'Create administrator account', mk_admin_q: 'No administrator yet? You can create one with this password (first time only).',
       e_weak: 'Password must be at least 6 characters.', e_exists: 'An administrator already exists — wrong password.',
       loading: 'Loading…', logout: 'Sign out', panel: 'Teacher panel', student: 'student', teacher: 'teacher', admin: 'administrator',
+      no_acc: "Don't have an account?", reg_go: 'Sign up', have_acc: 'Already have an account?', reg_h: 'Sign up',
+      reg_p: 'Get the class code from your teacher. You can sign in after your teacher approves you.', r_name: 'Full name', r_name_ph: 'Aliyev Vali',
+      r_code: 'Class code', r_login: 'Choose a login', r_login_h: 'Latin letters, digits, dot. At least 3 characters, e.g. vali.a', r_pass2: 'Repeat password',
+      reg_btn: 'Sign up', e_r_name: 'Enter your full name (surname and first name).', e_r_code: 'The class code is wrong or expired. Ask your teacher.',
+      e_r_login: 'Login may contain only Latin letters, digits, dot and dash (at least 3 characters).', e_r_pass2: 'Passwords do not match.', e_r_taken: 'This login is taken. Choose another one.',
+      sent_h: 'Request sent!', sent_p: '{n}, you signed up for class {c}. You can sign in with this login and password once your teacher approves you.', sent_back: 'Back to sign in',
+      e_pending: 'Your account is not approved yet. Please wait for your teacher.',
       mock: 'Test mode — data stays in this browser', saved: 'Saved', offline: 'Offline — results will be saved later', cls: 'Class',
     },
   };
@@ -54,6 +68,7 @@
       async signIn(email, pw, remember) { const d = db(); const u = uidOf(d, email); if (!u || d.auth[u].pw !== pw) throw err('auth/invalid-credential'); (remember ? localStorage : sessionStorage).setItem(SK, u); return wait({ uid: u, email }); },
       async signOut() { localStorage.removeItem(SK); sessionStorage.removeItem(SK); },
       async createSelf(email, pw) { const d = db(); if (uidOf(d, email)) throw err('auth/email-already-in-use'); if (pw.length < 6) throw err('auth/weak-password'); const u = 'u' + Math.random().toString(36).slice(2, 10); d.auth[u] = { email, pw }; put(d); localStorage.setItem(SK, u); return wait({ uid: u, email }); },
+      async deleteSelf() { const d = db(); const u = sessionStorage.getItem(SK) || localStorage.getItem(SK); if (u) { delete d.auth[u]; put(d); } localStorage.removeItem(SK); sessionStorage.removeItem(SK); return wait(true); },
       async createAccount(email, pw) { const d = db(); if (uidOf(d, email)) throw err('auth/email-already-in-use'); if (pw.length < 6) throw err('auth/weak-password'); const u = 'u' + Math.random().toString(36).slice(2, 10); d.auth[u] = { email, pw }; put(d); return wait(u); },
       async changePassword(email, oldPw, newPw) { const d = db(); const u = uidOf(d, email); if (!u || d.auth[u].pw !== oldPw) throw err('auth/invalid-credential'); d.auth[u].pw = newPw; put(d); return wait(true); },
       async deleteAccount(email, pw) { const d = db(); const u = uidOf(d, email); if (u && d.auth[u].pw === pw) { delete d.auth[u]; put(d); } return wait(true); },
@@ -83,6 +98,7 @@
       async signIn(email, pw, remember) { await load(); await A.setPersistence(auth, remember ? A.browserLocalPersistence : A.browserSessionPersistence); const c = await A.signInWithEmailAndPassword(auth, email, pw); return user(c.user); },
       async signOut() { await load(); await A.signOut(auth); },
       async createSelf(email, pw) { await load(); const c = await A.createUserWithEmailAndPassword(auth, email, pw); return user(c.user); },
+      async deleteSelf() { await load(); if (auth.currentUser) await A.deleteUser(auth.currentUser); },
       async createAccount(email, pw) { await load(); return withSecondary(async () => (await A.createUserWithEmailAndPassword(secAuth, email, pw)).user.uid); },
       async changePassword(email, oldPw, newPw) { await load(); return withSecondary(async () => { const c = await A.signInWithEmailAndPassword(secAuth, email, oldPw); await A.updatePassword(c.user, newPw); return true; }); },
       async deleteAccount(email, pw) { await load(); return withSecondary(async () => { try { const c = await A.signInWithEmailAndPassword(secAuth, email, pw); await A.deleteUser(c.user); } catch (e) { if (!/user-not-found|invalid-credential/.test(e.code || '')) throw e; } return true; }); },
@@ -128,6 +144,7 @@
   async function startSession(u) {
     const prof = await B.get('users', u.uid);
     if (!prof || prof.disabled) { await B.signOut(); throw Object.assign(new Error(t('e_inactive')), { code: 'inactive' }); }
+    if (prof.status === 'pending') { await B.signOut(); throw Object.assign(new Error(t('e_pending')), { code: 'pending' }); }
     me = { uid: u.uid, login: prof.login || u.email.split('@')[0], name: prof.name || '', role: prof.role || 'student', cls: prof.cls || '' };
     let remote = null; try { remote = await B.get('progress', u.uid); } catch (e) { }
     const prevOwner = localStorage.getItem('zk_prog_owner');
@@ -144,7 +161,7 @@
     st.textContent = `
 .zk-gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;overflow:auto;background:radial-gradient(1200px 600px at 10% -10%,#ffe0c2 0,transparent 60%),radial-gradient(900px 600px at 110% 110%,#e7dcff 0,transparent 55%),#fff8ef;font-family:var(--f,Nunito,system-ui,sans-serif)}
 .zk-gate .card{width:min(420px,100%);background:#fff;border:2px solid #f1e4d3;border-radius:26px;box-shadow:0 6px 0 #f1e4d3,0 30px 60px -30px rgba(120,60,0,.25);padding:28px 26px 24px;position:relative}
-.zk-gate .lg{display:flex;align-items:center;gap:12px;margin-bottom:18px}.zk-gate .mk{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,#ff7a1a,#ff4d8d);box-shadow:0 4px 0 #d9560b}
+.zk-gate .lg{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-right:78px}.zk-gate .mk{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,#ff7a1a,#ff4d8d);box-shadow:0 4px 0 #d9560b}
 .zk-gate h1{margin:0;font-size:24px;font-weight:900;color:#1f1a2e;line-height:1.1}.zk-gate .sb{font-size:13px;color:#8a7f73;font-weight:700;margin-top:3px}
 .zk-gate label{display:block;font-weight:800;font-size:13.5px;color:#4b4256;margin:14px 0 6px}
 .zk-gate .in{position:relative}.zk-gate input[type=text],.zk-gate input[type=password]{width:100%;box-sizing:border-box;border:2px solid #eadfce;border-radius:14px;padding:13px 44px 13px 14px;font:700 16px var(--f,Nunito,system-ui);background:#fffdf9;color:#1f1a2e;outline:none;transition:border-color .15s,box-shadow .15s}
@@ -158,6 +175,8 @@
 .zk-gate .nt{margin-top:10px;font-size:12.5px;color:#7a6f66;font-weight:700}
 .zk-gate .ht{margin-top:16px;text-align:center;font-size:13px;color:#8a7f73;font-weight:700}
 .zk-gate .lng{position:absolute;top:18px;right:18px;display:flex;background:#fff3e6;border-radius:11px;padding:3px}.zk-gate .lng button{border:0;background:none;padding:5px 9px;border-radius:8px;font:800 12.5px var(--f,Nunito);color:#8a7f73;cursor:pointer}.zk-gate .lng button.on{background:#fff;color:#d9560b;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.zk-gate .sw{margin-top:12px;text-align:center;font-weight:800;font-size:14px;color:#5b5266}.zk-gate .lnk{border:0;background:none;color:#d9560b;font:900 14px var(--f,Nunito);cursor:pointer;text-decoration:underline;padding:2px}
+.zk-gate .rh{margin:6px 0 0;font-size:20px;font-weight:900;color:#1f1a2e}.zk-gate .sent{text-align:center;padding:6px 0 4px}.zk-gate .sent .big{font-size:52px}.zk-gate .sent p{color:#5b5266;font-weight:700;line-height:1.5}.zk-gate .kv{background:#fff7ec;border-radius:12px;padding:10px;font-weight:800}.zk-gate .kv code{font-size:16px}
 .zk-gate .mockb{margin-top:14px;text-align:center;font-size:12px;font-weight:800;color:#6d28d9;background:#f3ecff;border-radius:10px;padding:6px}
 .zk-gate.boot .card{text-align:center;padding:40px 26px}.zk-gate .spin{width:34px;height:34px;border:4px solid #ffe0c2;border-top-color:#ff7a1a;border-radius:50%;margin:0 auto 12px;animation:zkspin .8s linear infinite}@keyframes zkspin{to{transform:rotate(360deg)}}
 .uchip{position:relative}.uchip>button{display:flex;align-items:center;gap:8px;border:2px solid var(--line,#f1e4d3);background:#fff;border-radius:14px;padding:4px 10px 4px 4px;font:800 13.5px var(--f,Nunito);color:#1f1a2e;cursor:pointer;max-width:190px}
@@ -179,23 +198,29 @@
   function gate(resolve) {
     css();
     const el = document.createElement('div'); el.className = 'zk-gate'; document.body.appendChild(el);
+    let mode = 'login';
+    const langBar = (L) => `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
+    const head = () => `<div class="lg"><div class="mk">⚗️</div><div><h1>${t('title')}</h1><div class="sb">${t('sub')}</div></div></div>`;
     const render = (keep) => {
       const L = lang(); const v = keep || {};
+      if (mode === 'reg') return renderReg(v);
+      if (mode === 'sent') return renderSent(v);
       el.innerHTML = `<form class="card" autocomplete="on" novalidate>
-        <div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>
-        <div class="lg"><div class="mk">⚗️</div><div><h1>${t('title')}</h1><div class="sb">${t('sub')}</div></div></div>
+        ${langBar(L)}${head()}
         <label for="zkL">${t('login')}</label><div class="in"><input id="zkL" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="email" value="${esc(v.l || '')}"></div>
         <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="password" autocomplete="current-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="show">👁</button></div>
         <label class="rm"><input type="checkbox" id="zkR" ${v.r === false ? '' : 'checked'}> ${t('remember')}</label>
         <button class="go" type="submit">${t('enter')}</button>
         <div class="er" id="zkE"></div><div id="zkX"></div>
         <div class="ht">${t('hint')}</div>
+        <div class="sw">${t('no_acc')} <button type="button" class="lnk" data-reg>${t('reg_go')}</button></div>
         ${MOCK ? `<div class="mockb">🧪 ${t('mock')}</div>` : ''}
       </form>`;
       const f = el.querySelector('form'), iL = el.querySelector('#zkL'), iP = el.querySelector('#zkP'), iR = el.querySelector('#zkR'), E = el.querySelector('#zkE'), X = el.querySelector('#zkX'), go = el.querySelector('.go');
       const showErr = (m) => { E.textContent = m; E.classList.toggle('on', !!m); };
       el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } render({ l: iL.value, p: iP.value, r: iR.checked }); }));
       el.querySelector('.eye').onclick = () => { iP.type = iP.type === 'password' ? 'text' : 'password'; };
+      el.querySelector('[data-reg]').onclick = () => { mode = 'reg'; render(); };
       (v.l ? iP : iL).focus();
       const busy = (b) => { go.disabled = b; go.textContent = b ? t('loading') : t('enter'); };
       f.onsubmit = async (ev) => {
@@ -207,7 +232,7 @@
           const u = await B.signIn(emailOf(login), pw, iR.checked);
           await startSession(u); el.remove(); resolve(me);
         } catch (e) {
-          busy(false); showErr(e.code === 'inactive' ? e.message : errMsg(e));
+          busy(false); showErr(e.code === 'inactive' || e.code === 'pending' ? e.message : errMsg(e));
           if (login === 'admin' && /invalid-credential|user-not-found|wrong-password/.test(e.code || '')) {
             X.innerHTML = `<div class="nt">${t('mk_admin_q')}</div><button type="button" class="alt">🛡 ${t('mk_admin')}</button>`;
             X.querySelector('.alt').onclick = async () => {
@@ -223,6 +248,65 @@
         }
       };
     };
+    function renderReg(v) {
+      const L = lang();
+      el.innerHTML = `<form class="card" autocomplete="on" novalidate>
+        ${langBar(L)}${head()}
+        <h2 class="rh">${t('reg_h')}</h2><div class="nt" style="margin-top:2px">${t('reg_p')}</div>
+        <label for="zkN">${t('r_name')}</label><div class="in"><input id="zkN" type="text" autocomplete="name" placeholder="${t('r_name_ph')}" value="${esc(v.n || '')}"></div>
+        <label for="zkC">${t('r_code')}</label><div class="in"><input id="zkC" type="text" autocapitalize="characters" spellcheck="false" placeholder="K4M9Q2" value="${esc(v.c || '')}" style="text-transform:uppercase;letter-spacing:.12em"></div>
+        <label for="zkL">${t('r_login')}</label><div class="in"><input id="zkL" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="vali.a" value="${esc(v.l || '')}"></div>
+        <div class="nt" style="margin-top:4px">${t('r_login_h')}</div>
+        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="new-password" autocomplete="new-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="show">👁</button></div>
+        <label for="zkP2">${t('r_pass2')}</label><div class="in"><input id="zkP2" type="password" autocomplete="new-password" value="${esc(v.p2 || '')}"></div>
+        <button class="go" type="submit">${t('reg_btn')}</button>
+        <div class="er" id="zkE"></div>
+        <div class="sw">${t('have_acc')} <button type="button" class="lnk" data-login>${t('enter')}</button></div>
+        ${MOCK ? `<div class="mockb">🧪 ${t('mock')}</div>` : ''}
+      </form>`;
+      const q = (s) => el.querySelector(s);
+      const iN = q('#zkN'), iC = q('#zkC'), iL = q('#zkL'), iP = q('#zkP'), iP2 = q('#zkP2'), E = q('#zkE'), go = q('.go');
+      const keepV = () => ({ n: iN.value, c: iC.value, l: iL.value, p: iP.value, p2: iP2.value });
+      const showErr = (m) => { E.textContent = m; E.classList.toggle('on', !!m); };
+      el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } renderReg(keepV()); }));
+      q('.eye').onclick = () => { iP.type = iP2.type = iP.type === 'password' ? 'text' : 'password'; };
+      q('[data-login]').onclick = () => { mode = 'login'; render({ l: iL.value }); };
+      iN.focus();
+      const busy = (b) => { go.disabled = b; go.textContent = b ? t('loading') : t('reg_btn'); };
+      q('form').onsubmit = async (ev) => {
+        ev.preventDefault(); showErr('');
+        const name = iN.value.trim().replace(/\s+/g, ' '), code = iC.value.toUpperCase().replace(/[^A-Z0-9]/g, ''), login = normLogin(iL.value), pw = iP.value;
+        if (name.length < 3 || !/\s/.test(name)) return showErr(t('e_r_name'));
+        if (code.length < 4) return showErr(t('e_r_code'));
+        if (!/^[a-z0-9][a-z0-9._-]{2,29}$/.test(login) || login === 'admin') return showErr(t('e_r_login'));
+        if (pw.length < 6) return showErr(t('e_weak'));
+        if (pw !== iP2.value) return showErr(t('e_r_pass2'));
+        busy(true);
+        let created = null;
+        try {
+          const c = await B.get('classes', code);
+          if (!c || !c.active) { busy(false); return showErr(t('e_r_code')); }
+          try { created = await B.createSelf(emailOf(login), pw); }
+          catch (e) { busy(false); return showErr(/email-already-in-use/.test(e.code || '') ? t('e_r_taken') : errMsg(e)); }
+          await B.set('users', created.uid, { login, name, role: 'student', cls: c.cls, status: 'pending', code, created: Date.now(), self: true });
+          await B.set('secrets', created.uid, { pw, role: 'student', login });
+          await B.signOut();
+          mode = 'sent'; render({ l: login, cls: c.cls, n: name });
+        } catch (e) {
+          if (created) { try { await B.deleteSelf(); } catch (e2) { } try { await B.signOut(); } catch (e3) { } }
+          busy(false); showErr(errMsg(e));
+        }
+      };
+    }
+    function renderSent(v) {
+      el.innerHTML = `<div class="card">${langBar(lang())}${head()}
+        <div class="sent"><div class="big">📨</div><h2 class="rh">${t('sent_h')}</h2>
+        <p>${t('sent_p').replace('{n}', esc(v.n || '')).replace('{c}', esc(v.cls || ''))}</p>
+        <div class="kv"><span>${t('login')}:</span> <code>${esc(v.l || '')}</code></div></div>
+        <button class="go" type="button" data-back>${t('sent_back')}</button></div>`;
+      el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } renderSent(v); }));
+      el.querySelector('[data-back]').onclick = () => { mode = 'login'; render({ l: v.l }); };
+    }
     render();
   }
 
