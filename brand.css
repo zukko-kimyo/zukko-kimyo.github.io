@@ -460,3 +460,26 @@ body.zk-v3 .zk-school-name small {display:block!important;color:var(--zk-teal-80
   body.zk-v3 .top .zk-subject {justify-self:center;text-align:center}
 }
 @media (max-width:360px) { body.zk-v3 .zk-school-name strong, body.zk-v3 .zk-school-name small {font-size:9.5px;letter-spacing:.04em} }
+
+/* =====================================================================
+   Kompyuterda to'liq ekran (foydalanuvchi talabi, 2026-11-13):
+   kontent 1290px bilan cheklanmaydi — butun ekran kengligida, chetlarda
+   moslashuvchan bo'shliq. Kartalar tarmog'i keng ekranda ko'proq ustunga bo'linadi.
+   ===================================================================== */
+body.zk-v3 .wrap {max-width:none;padding-left:clamp(16px,3.2vw,72px);padding-right:clamp(16px,3.2vw,72px)}
+body.zk-v3 .wrap.lesson-body {padding-left:clamp(16px,3.2vw,72px);padding-right:clamp(16px,3.2vw,72px)}
+@media (min-width:1500px) {
+  body.zk-v3 .lesson-body {grid-template-columns:minmax(0,1fr) 360px;gap:32px}
+  body.zk-v3 .lgrid {grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  body.zk-v3 .xgrid {grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  body.zk-v3 .zk-hero-v3>.wrap {gap:clamp(40px,6vw,120px)}
+  body.zk-v3 .zk-hero-v3 .hero-art {height:clamp(380px,26vw,560px)}
+  body.zk-v3 .zk-hero-v3 p.lead {font-size:clamp(17px,1.05vw,20px)}
+}
+@media (min-width:2200px) {
+  body.zk-v3 {font-size:17px}
+  body.zk-v3 .zk-hero-v3 h1 {font-size:clamp(4.9rem,4.2vw,6.4rem)}
+  body.zk-v3 .lesson-body {grid-template-columns:minmax(0,1fr) 400px}
+}
+/* Uzun matn qatorlari o'qish uchun juda cho'zilib ketmasin */
+body.zk-v3 .lesson-body .panel > p {max-width:120ch}

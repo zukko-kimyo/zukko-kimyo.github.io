@@ -12,6 +12,7 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - O'qituvchi paneli tablari telefonda ekrandan chiqmaydi.
 - Telefonda avatar ("A") va uning menyusi pastki menyuning o'ng chetida; menyu yuqoriga ochiladi.
 - Darslik bo'lim ranglari oldingidek qaytdi va dars sahifasida ham ishlatiladi; darslik tuzilishi o'zgarmadi.
+- Kompyuterda sayt ekranni to'liq egallaydi (1290px cheklov olib tashlandi); keng ekranda kartalar ko'proq ustunga bo'linadi.
 - "Liquid glass": shaffof header, telefonda suzuvchi shisha pastki menyu, shisha menyular va xabarlar.
 - Telefonda maktab nomi to'liq: "ZUKKO XALQARO / MAKTABI / Kimyo"; "MAKTABI" o'rtada va "ZUKKO XALQARO" bilan bir xil o'lchamda; qidiruv belgisi ikonka bo'ldi.
 

@@ -186,3 +186,17 @@ test('"MAKTABI" is centred under "ZUKKO XALQARO" and uses the same letter size',
     expect(m.below).toBe(true);
   }
 });
+
+test('desktop: content uses the full screen width (1440 / 1920 / 2560)', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop-only layout');
+  await page.goto('/index.html#home'); await waitReady(page);
+  for (const width of [1440, 1920, 2560]) {
+    await page.setViewportSize({ width, height: Math.round(width * 0.5625) });
+    const r = await page.evaluate(() => {
+      const w = document.querySelector('#app .zk-hero-v3 > .wrap').getBoundingClientRect();
+      return { width: w.width, left: w.left, sw: document.documentElement.scrollWidth - innerWidth };
+    });
+    expect(r.width, 'hero container spans the screen at ' + width).toBeGreaterThanOrEqual(width - 1);
+    expect(r.sw).toBeLessThanOrEqual(1);
+  }
+});
