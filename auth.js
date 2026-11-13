@@ -223,7 +223,7 @@
     const el = document.createElement('div'); el.className = 'zk-gate'; document.body.appendChild(el);
     let mode = 'login';
     const langBar = (L) => `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
-    const head = () => `<div class="lg"><span class="mk"><img src="assets/zukko-school-logo.webp" alt="" width="133" height="135" decoding="async"></span><div><span class="zk-brand-kicker">${lang() === 'en' ? 'ZUKKO INTERNATIONAL SCHOOL' : 'ZUKKO XALQARO MAKTABI'}</span><h1>${lang() === 'en' ? 'Welcome back' : 'Xush kelibsiz!'}</h1><div class="sb">${t('sub')}</div></div></div>`;
+    const head = () => `<div class="lg"><span class="mk zk-mk-full"><img src="assets/zukko-logo.svg" alt="Zukko International School" width="659" height="576" decoding="async"></span><div><span class="zk-brand-kicker">${lang() === 'en' ? 'ZUKKO INTERNATIONAL SCHOOL' : 'ZUKKO XALQARO MAKTABI'}</span><h1>${lang() === 'en' ? 'Welcome back' : 'Xush kelibsiz!'}</h1><div class="sb">${t('sub')}</div></div></div>`;
     const render = (keep) => {
       const L = lang(); const v = keep || {};
       if (mode === 'reg') return renderReg(v);
@@ -370,7 +370,7 @@
     if (!ON) return (readyP = Promise.resolve(null));
     readyP = new Promise(async (resolve) => {
       css();
-      const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="zk-brand-loader" aria-hidden="true"><img src="assets/zukko-school-logo.webp" width="133" height="135" alt="" decoding="sync"><span class="zk-brand-orbit"></span></div><b>${t('loading')}</b><p class="zk-boot-sub">${lang() === 'en' ? 'Zukko International School · Chemistry' : 'Zukko Xalqaro Maktabi · Kimyo'}</p></div>`; document.body.appendChild(boot);
+      const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="zk-brand-loader" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="sync"><span class="zk-brand-orbit"></span></div><b>${t('loading')}</b><p class="zk-boot-sub">${lang() === 'en' ? 'Zukko International School · Chemistry' : 'Zukko Xalqaro Maktabi · Kimyo'}</p></div>`; document.body.appendChild(boot);
       let u = null;
       try { u = await B.init(); await loadSettings(); } catch (e) { boot.querySelector('.card').innerHTML = `<b>${t('e_cfg')}</b><div class="nt">${esc(e.message || e)}</div>`; return; }
       if (u) { try { await startSession(u); boot.remove(); return resolve(me); } catch (e) { /* login ekraniga */ } }

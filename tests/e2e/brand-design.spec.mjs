@@ -6,7 +6,7 @@ const EMOJI_UI = /[🏠📚📘📖📄🧪✅🛡⚡🔥⭐📊🎯🚀🧩📜
 test('brand layer is loaded: teal hero, serif headings; login (brand-entry.css) keeps school logo', async ({ page }) => {
   await gotoMock(page);
   const gate = page.locator('.zk-gate');
-  await expect(gate.locator('.mk img')).toHaveAttribute('src', /zukko-school-logo\.webp/);
+  await expect(gate.locator('.mk img')).toHaveAttribute('src', /zukko-logo\.svg/);
   await page.goto('/index.html#home'); await waitReady(page);
   const s = await page.evaluate(() => ({
     hero: getComputedStyle(document.querySelector('.zk-hero-v3')).backgroundColor,
@@ -269,4 +269,24 @@ test('home: molecular lab card is level (not rotated)', async ({ page, isMobile 
   test.skip(isMobile, 'Desktop shows the card open');
   await page.goto('/index.html#home'); await waitReady(page);
   expect(await page.locator('.zk-hero-scene').evaluate((e) => getComputedStyle(e).transform)).toBe('none');
+});
+
+test('new official logo: header mark, full logo on login, white logo in footer, app icons', async ({ page }) => {
+  await gotoMock(page);
+  const full = page.locator('.zk-gate .mk img');
+  await expect(full).toHaveAttribute('src', /assets\/zukko-logo\.svg/);
+  const box = await full.boundingBox(); expect(box.width).toBeGreaterThan(120);
+  await page.goto('/index.html#home'); await waitReady(page);
+  await expect(page.locator('header.top .logo .mark img')).toHaveAttribute('src', /zukko-mark\.svg/);
+  await expect(page.locator('footer .zk-foot-logo')).toHaveAttribute('src', /zukko-logo-white\.svg/);
+  const r = await page.evaluate(async () => {
+    const m = await (await fetch('manifest.webmanifest')).json();
+    const st = await Promise.all(m.icons.map((i) => fetch(i.src).then((x) => x.status)));
+    const apple = document.querySelector('link[rel="apple-touch-icon"]').getAttribute('href');
+    return { st, srcs: m.icons.map((i) => i.src), apple, appleSt: (await fetch(apple)).status, mark: await (await fetch('assets/zukko-mark.svg')).text() };
+  });
+  expect(r.st.every((x) => x === 200)).toBe(true);
+  expect(r.srcs.join(' ')).toContain('zukko-app-512.png');
+  expect(r.apple).toContain('zukko-apple-180.png'); expect(r.appleSt).toBe(200);
+  expect(r.mark).toContain('#075860');
 });
