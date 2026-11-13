@@ -236,3 +236,18 @@ test('narrow desktop (burger): "Sinflar" expands inside the menu', async ({ page
   await page.locator('#navGradesMenu a[href="#g8"]').click();
   await expect(page).toHaveURL(/#g8$/);
 });
+
+test('page transitions: one smooth transition, instant scroll to top, header stays in place', async ({ page }) => {
+  await page.goto('/index.html#home'); await waitReady(page);
+  const info = await page.evaluate(() => ({ vt: typeof document.startViewTransition === 'function',
+    hdr: getComputedStyle(document.querySelector('header.top')).viewTransitionName }));
+  if (info.vt) expect(info.hdr).toBe('zk-header');
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, 1500); document.documentElement.style.scrollBehavior = ''; });
+  expect(await page.evaluate(() => scrollY)).toBeGreaterThan(500);
+  await page.evaluate(() => { location.hash = '#g7'; });
+  await expect(page.locator('#app .page-h.g7')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => scrollY), { message: 'jumps to top instead of smooth-scrolling', timeout: 3000 }).toBeLessThanOrEqual(2);
+  // stagger kaskadi yo'q: dars kartalari alohida kechikmaydi
+  const lcAnim = await page.locator('.lcard').first().evaluate((e) => getComputedStyle(e).animationName);
+  expect(lcAnim).toBe('none');
+});

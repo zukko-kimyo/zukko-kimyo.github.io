@@ -513,8 +513,28 @@
 
   /* ---------- router ---------- */
   let lastRoute = '';
+  // Sahifalar orasida silliq o'tish: View Transitions API (Chrome/Edge 111+, Safari 18+) bilan
+  // eski sahifa tez so'nadi, yangisi yumshoq paydo bo'ladi; header va pastki menyu joyida qoladi.
+  // Qo'llamaydigan brauzerda — oddiy qisqa fade (brand.css). "Harakatni kamaytirish" yoqilgan bo'lsa — animatsiyasiz.
   function route() {
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (document.startViewTransition && !reduce && lastRoute !== '' && document.visibilityState === 'visible') {
+      const root = document.documentElement, sw = document.body.dataset.swipe; // telefonda surish yo'nalishi
+      const cls = ['zk-vt'].concat(sw === 'l' || sw === 'r' ? ['zk-vt-' + sw] : []);
+      root.classList.add(...cls);
+      try {
+        const vt = document.startViewTransition(() => renderRoute());
+        vt.finished.finally(() => root.classList.remove(...cls));
+        return;
+      } catch (e) { root.classList.remove('zk-vt'); }
+    }
+    renderRoute();
+  }
+  function toTop() { const st = document.documentElement.style; const prev = st.scrollBehavior; st.scrollBehavior = 'auto'; window.scrollTo(0, 0); st.scrollBehavior = prev; }
+  function renderRoute() {
     const h = (location.hash || '#home').slice(1);
+    const newPage = h !== lastRoute && !(h.match(/-\d+$/) && lastRoute === h);
+    if (newPage) toTop();
     destroyLab(); closeModal(); document.getElementById('nav').classList.remove('open');
     let m, navKey = 'home';
     if (h === 'home' || h === '') home();
@@ -530,12 +550,12 @@
     else if ((m = h.match(/^lab-(.+)$/))) { labPage(m[1]); navKey = 'lab'; }
     else if ((m = h.match(/^book-(g[678])$/))) { book(m[1], bookPos[m[1]]); navKey = 'book'; }
     else home();
-    if (h !== lastRoute && !(h.match(/-\d+$/) && lastRoute === h)) window.scrollTo({ top: 0 });
+    if (newPage) { toTop(); requestAnimationFrame(toTop); } // silliq scroll emas — darhol yuqoriga (rasmlar yuklansa ham)
     lastRoute = h;
     document.querySelectorAll('nav.main a, .bnav a').forEach((a) => a.classList.toggle('on', a.dataset.nav === navKey));
     const gBtn = document.getElementById('navGradesBtn'); if (gBtn) { gBtn.classList.toggle('on', /^g[678]$/.test(navKey)); gradesMenu(false); }
     if (XPok()) XP.refresh();
-    app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
+    app.classList.remove('enter'); if (!document.documentElement.classList.contains('zk-vt')) { void app.offsetWidth; app.classList.add('enter'); }
   }
   window.addEventListener('hashchange', route);
   document.querySelectorAll('.lang button').forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));

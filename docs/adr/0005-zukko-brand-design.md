@@ -44,6 +44,10 @@ Maktab dizayn tizimi: logotip rangi teal `#00555a`, yashil + ko'k + oq, sarlavha
   (`#navGradesBtn` / `#navGradesMenu`, `app.js` → `gradesMenu()`); burger menyusida joyida ochiladi.
 - **Kompyuterda to'liq ekran:** `.wrap` 1290px cheklovisiz, chetlarda `clamp(16px,3.2vw,72px)`.
 
+- **Sahifa o'tishlari:** `app.js` `route()` → `document.startViewTransition()` (qo'llanmasa — 280ms fade).
+  Header (`zk-header`) va pastki menyu (`zk-bnav`) o'tishda qotib turadi; sahifa darhol yuqoriga qaytadi
+  (`scroll-behavior:smooth` chetlab o'tiladi). `prefers-reduced-motion` da animatsiya yo'q.
+
 ## Oqibatlar
 - `+` Bitta brend, barqaror ikonkalar, telefonda kamroq yuklama (3D bosh sahifada so'ralganda).
 - `−` Yana bitta override qatlami (`brand.css`). Keyinchalik `index.html` dagi eski inline CSS va
