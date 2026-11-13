@@ -4,6 +4,12 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### 3D laboratoriya: kuchsiz videokartalar uchun yengil rejim (2026-11-13)
+- Kuchsiz (o'rnatilgan/mobil/dasturiy) videokartada shisha va suyuqlikning "nur o'tkazish" effekti oddiy shaffoflikka, yumshoq soyalar oddiy soyaga almashadi; `?gfx=hq` / `?gfx=lite` bilan majburlash mumkin.
+- Kadrlar sekin bo'lsa chizish o'lchami avtomatik pasayadi (moslashuvchan sifat).
+- Shaderlar fonda kompilyatsiya qilinadi (`compileAsync`) — tajriba ochilganda sahifa qotib qolmaydi.
+- Juda keng ekranda 3D sahna 1320px gacha.
+
 ### Tezlashtirildi (2026-11-13, foydalanuvchi: "sayt sekin ishlayapti")
 O'lchov (foydalanuvchining Chrome'i, 1920px): bosh sahifada scroll 8–14 kadr/s, bo'sh turganda 34 kadr/s, sahifa ishga tushishi ~3,5 s.
 - `background-attachment:fixed` o'rniga alohida qotirilgan qatlam (`body::before`) — scrollda butun ekran qayta chizilmaydi.
