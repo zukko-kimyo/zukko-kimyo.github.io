@@ -526,8 +526,9 @@ body.zk-v3 .zk-ngrp-menu, body.zk-v3 nav.main.open {background:rgba(255,255,255,
   body.zk-v3 header.top {view-transition-name:zk-header}
   body.zk-v3 #bnav {view-transition-name:zk-bnav}
   ::view-transition-group(zk-header), ::view-transition-group(zk-bnav),
-  ::view-transition-old(zk-header), ::view-transition-new(zk-header),
-  ::view-transition-old(zk-bnav), ::view-transition-new(zk-bnav) {animation:none}
+  ::view-transition-new(zk-header), ::view-transition-new(zk-bnav) {animation:none}
+  /* header va menyu shaffof (shisha) — eski surati yangisining ostidan ko'rinmasin */
+  ::view-transition-old(zk-header), ::view-transition-old(zk-bnav) {display:none}
   ::view-transition-old(root) {animation:zkVtOut .15s cubic-bezier(.4,0,1,1) both}
   ::view-transition-new(root) {animation:zkVtIn .28s cubic-bezier(.16,1,.3,1) both}
   /* telefonda chapga/o'ngga surib dars almashtirilganda — yo'nalishga mos siljish */
@@ -548,3 +549,14 @@ body.zk-v3 #app.enter>* {animation:zkFadeUp .28s cubic-bezier(.16,1,.3,1) backwa
 body.zk-v3 #app.enter .lcard {animation:none!important}
 @keyframes zkFadeUp {from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce) { body.zk-v3 #app.enter>* {animation:none!important} }
+
+/* ---------- Davriy jadval: butun jadval bir ekranda (birinchi versiyadagidek ixcham) ----------
+   To'liq ekran kengligida katakchalar 100px gacha kattalashib ketgan edi. Endi jadval kengligi
+   ekran balandligiga qarab cheklanadi va markazda turadi; telefonda avvalgidek suriladi. */
+body.zk-v3 .ptscroll {max-width:min(100%,1240px);margin-inline:auto}
+body.zk-v3 .ptgrid {max-width:min(100%,1200px,calc((100svh - 150px) * 1.62));margin-inline:auto}
+@media (min-width:1000px) { body.zk-v3 .pthint {display:none} }
+body.zk-v3 .ptleg {max-width:1240px;margin-inline:auto}
+
+/* ---------- Bosh sahifa: "Molekulyar laboratoriya" kartasi tekis turadi ---------- */
+body.zk-v3 .zk-hero-scene {transform:none}

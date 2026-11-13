@@ -251,3 +251,22 @@ test('page transitions: one smooth transition, instant scroll to top, header sta
   const lcAnim = await page.locator('.lcard').first().evaluate((e) => getComputedStyle(e).animationName);
   expect(lcAnim).toBe('none');
 });
+
+test('periodic table fits on one screen on laptops and desktops', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Phones scroll the table sideways by design');
+  for (const [w, h] of [[1920, 991], [1366, 657]]) {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto('/index.html#ptable'); await waitReady(page);
+    await expect(page.locator('.ptcell[data-z="118"]')).toBeAttached();
+    const r = await page.evaluate(() => { const g = document.querySelector('.ptgrid').getBoundingClientRect(); return { gh: g.height, gw: g.width, sw: document.querySelector('.ptscroll').scrollWidth - document.querySelector('.ptscroll').clientWidth }; });
+    expect(r.gh, 'whole table height fits the viewport at ' + w).toBeLessThanOrEqual(h - 72);
+    expect(r.gw).toBeLessThanOrEqual(1200);
+    expect(r.sw, 'no sideways scroll needed on desktop').toBeLessThanOrEqual(1);
+  }
+});
+
+test('home: molecular lab card is level (not rotated)', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop shows the card open');
+  await page.goto('/index.html#home'); await waitReady(page);
+  expect(await page.locator('.zk-hero-scene').evaluate((e) => getComputedStyle(e).transform)).toBe('none');
+});

@@ -12,6 +12,7 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - O'qituvchi paneli tablari telefonda ekrandan chiqmaydi.
 - Telefonda avatar ("A") va uning menyusi pastki menyuning o'ng chetida; menyu yuqoriga ochiladi.
 - Darslik bo'lim ranglari oldingidek qaytdi va dars sahifasida ham ishlatiladi; darslik tuzilishi o'zgarmadi.
+- Davriy jadval kompyuterda bir ekranga sig'adi (to'liq ekran rejimida katakchalar 100px gacha kattalashgan edi); "Molekulyar laboratoriya" kartasi tekis.
 - Sahifalar orasida silliq o'tish: View Transitions (eski sahifa so'nadi, yangisi yumshoq paydo bo'ladi; header va pastki menyu joyida); bo'laklab kechikadigan kaskad va sekin "silliq scroll" olib tashlandi; telefonda surishda yo'nalishga mos siljish.
 - Header: "Sinflar" tugmasi — bosganda 6-, 7-, 8-sinf pastga ochiladi (klaviatura: ↓ ↑ Esc). Telefonda pastki menyudagi "Sinflar" shu ranglarda.
 - Kompyuterda sayt ekranni to'liq egallaydi (1290px cheklov olib tashlandi); keng ekranda kartalar ko'proq ustunga bo'linadi.
