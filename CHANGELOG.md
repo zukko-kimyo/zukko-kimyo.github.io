@@ -13,7 +13,7 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - Telefonda avatar ("A") va uning menyusi pastki menyuning o'ng chetida; menyu yuqoriga ochiladi.
 - Darslik bo'lim ranglari oldingidek qaytdi va dars sahifasida ham ishlatiladi; darslik tuzilishi o'zgarmadi.
 - "Liquid glass": shaffof header, telefonda suzuvchi shisha pastki menyu, shisha menyular va xabarlar.
-- Telefonda maktab nomi to'liq: "ZUKKO XALQARO / MAKTABI / Kimyo"; qidiruv belgisi ikonka bo'ldi.
+- Telefonda maktab nomi to'liq: "ZUKKO XALQARO / MAKTABI / Kimyo"; "MAKTABI" o'rtada va "ZUKKO XALQARO" bilan bir xil o'lchamda; qidiruv belgisi ikonka bo'ldi.
 
 ### Qo'shildi
 - Administrator paneli (`#admin`): 10 ta ko'rsatkich, 14 kunlik faollik grafigi, sinflar taqqoslanishi, eng faol o'quvchilar, eng qiyin darslar, sayt e'loni, ro'yxatdan o'tishni yoqish/o'chirish, CSV/JSON eksport (parollarsiz), administrator parolini o'zgartirish. `lib/stats.js` + testlar; `settings/site` uchun Firestore qoidalari va testlari.

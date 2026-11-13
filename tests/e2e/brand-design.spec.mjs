@@ -171,3 +171,18 @@ test('school name is shown in full ("ZUKKO XALQARO MAKTABI") together with "Kimy
     expect(ov.sw).toBeLessThanOrEqual(1);
   }
 });
+
+test('"MAKTABI" is centred under "ZUKKO XALQARO" and uses the same letter size', async ({ page }) => {
+  await page.goto('/index.html#home'); await waitReady(page);
+  for (const width of [320, 390, 1300]) {
+    await page.setViewportSize({ width, height: 760 });
+    const m = await page.evaluate(() => {
+      const a = document.querySelector('header.top .zk-school-name strong'), b = document.querySelector('header.top .zk-school-name small');
+      const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      return { fa: getComputedStyle(a).fontSize, fb: getComputedStyle(b).fontSize, ca: ra.left + ra.width / 2, cb: rb.left + rb.width / 2, below: rb.top >= ra.bottom - 1 };
+    });
+    expect(m.fb, 'same size at ' + width).toBe(m.fa);
+    expect(Math.abs(m.ca - m.cb), 'centred at ' + width).toBeLessThanOrEqual(1.5);
+    expect(m.below).toBe(true);
+  }
+});
