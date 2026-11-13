@@ -69,8 +69,9 @@
   let labHandle = null, modalHandle = null;
   const GC = { g6: '#2563c9', g7: '#2e9e6a', g8: '#00555a' }; // sinf ranglari — brend palitrasi
   const GN = { g6: 6, g7: 7, g8: 8 }; const GRADES = ['g6', 'g7', 'g8'];
-  // Bo'lim ranglari — Zukko brend palitrasi (teal / ko'k / yashil tuslari).
-  const UC = ['#00555a', '#2563c9', '#2e9e6a', '#0f7c86', '#3b6fb6', '#23845a', '#00676d', '#1d4f9e', '#3a8f75', '#1f6f8b'];
+  // Darslik bo'limlari ranglari — oldingi versiyadagidek (foydalanuvchi talabi, 2026-11-13).
+  // Dars sahifasida ham shu bo'lim rangi ishlatiladi (--uc).
+  const UC = ['#ff7a1a', '#8b5cf6', '#22c55e', '#ec4899', '#0ea5e9', '#f59e0b', '#14b8a6', '#ef4444', '#6366f1', '#84cc16'];
   const unitIdx = (g, n) => Math.max(0, (B[g].units || []).filter((u) => u.from <= n).length - 1);
   const XPok = () => !!window.XP;
   const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -261,13 +262,13 @@
     }
     const navl = bk.lessons.map((x, i) => `<a href="#${g}-${i + 1}" class="${i + 1 === n ? 'on' : ''}"><i>${i + 1}</i>${tr(x.t)}</a>`).join('');
     const prev = bk.lessons[n - 2], next = bk.lessons[n];
-    app.innerHTML = `<div class="lesson-top"><div class="wrap">
+    app.innerHTML = `<div class="lesson-top" style="--uc:${col}"><div class="wrap">
         <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#${g}">${t('nav_' + g)}</a> / ${t('lesson')} ${n}</div>
         <div class="lhead"><h1><span class="lnum" style="background:${col}">${n}</span>${tr(L.t)}${lst === 'done' ? `<span class="lstat done">⭐ ${XP.t('st_done')}</span>` : ''}</h1>
           <div class="lnav" title="${t('kb_hint')}">${prev ? `<a class="lnb" href="#${g}-${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${n}</b> / ${bk.lessons.length}</span>${next ? `<a class="lnb" href="#${g}-${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
         <div class="tabs">${['content', 'pages', 'lab', 'quiz'].map((k) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}"><i class="ti">${{ content: '📘', pages: '📄', lab: '🧪', quiz: '✅' }[k]}</i><span class="tlong">${t('t_' + k)}</span><span class="tsh">${t('ts_' + k)}</span>${k === 'lab' && (ex.length || toolsOf(g, n).length) ? `<span class="cnt">${ex.length + toolsOf(g, n).length}</span>` : ''}${k === 'quiz' ? `<span class="cnt q">10</span>` : ''}</button>`).join('')}</div>
       </div></div>
-      <div class="wrap lesson-body">
+      <div class="wrap lesson-body" style="--uc:${col}">
         <div>${body}
           <div class="pn">${prev ? `<a href="#${g}-${n - 1}"><small>${t('prev')}</small>${tr(prev.t)}</a>` : '<span style="flex:1"></span>'}${next ? `<a class="r" href="#${g}-${n + 1}"><small>${t('next')}</small>${tr(next.t)}</a>` : '<span style="flex:1"></span>'}</div>
         </div>
