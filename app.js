@@ -67,9 +67,10 @@
   const tr = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || o.uz || ''));
   const app = document.getElementById('app');
   let labHandle = null, modalHandle = null;
-  const GC = { g6: '#ff7a1a', g7: '#8b5cf6', g8: '#0ea5e9' };
+  const GC = { g6: '#2563c9', g7: '#2e9e6a', g8: '#00555a' }; // sinf ranglari — brend palitrasi
   const GN = { g6: 6, g7: 7, g8: 8 }; const GRADES = ['g6', 'g7', 'g8'];
-  const UC = ['#ff7a1a', '#8b5cf6', '#22c55e', '#ec4899', '#0ea5e9', '#f59e0b', '#14b8a6', '#ef4444', '#6366f1', '#84cc16'];
+  // Bo'lim ranglari — Zukko brend palitrasi (teal / ko'k / yashil tuslari).
+  const UC = ['#00555a', '#2563c9', '#2e9e6a', '#0f7c86', '#3b6fb6', '#23845a', '#00676d', '#1d4f9e', '#3a8f75', '#1f6f8b'];
   const unitIdx = (g, n) => Math.max(0, (B[g].units || []).filter((u) => u.from <= n).length - 1);
   const XPok = () => !!window.XP;
   const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -119,7 +120,8 @@
           <div><b>6–8</b><span>${lang === 'uz' ? 'Sinflar' : 'Grades'}</span></div>
         </div>
       </div>
-      <div class="zk-hero-scene">
+      <button type="button" class="zk-scene-toggle" id="zkSceneToggle" aria-expanded="false" aria-controls="zkScene"><span class="zk-scene-toggle-ic">⚛️</span><span class="zk-scene-toggle-t"><b>${lang === 'uz' ? 'Molekulyar laboratoriya' : 'Molecular laboratory'}</b><small>${lang === 'uz' ? '3D atom modeli — ochish uchun bosing' : '3D atom model — tap to open'}</small></span><span class="zk-scene-toggle-ch" aria-hidden="true">⌄</span></button>
+      <div class="zk-hero-scene" id="zkScene">
         <div class="zk-scene-top"><span>${lang === 'uz' ? 'MOLEKULYAR LABORATORIYA' : 'MOLECULAR LABORATORY'}</span><span class="zk-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
         <div class="hero-art"><span class="badge3d">✦ ${lang === 'uz' ? 'INTERAKTIV 3D' : 'INTERACTIVE 3D'}</span><div class="lab-host" id="heroLab"></div></div>
         <div class="zk-scene-bottom"><span>LAB / 001 — ATOM MODEL</span><span class="zk-scene-active">${lang === 'uz' ? 'TADQIQ ETING' : 'EXPLORE'}</span></div>
@@ -134,7 +136,7 @@
     </section>
     ${XPok() && window.ZKDashboard ? ZKDashboard.render({ lang, tr, B }) : (XPok() ? `<section class="blk xpsec"><div class="wrap">${XP.homeCard({ t, tr, B })}</div></section>` : '')}
     <section class="blk"><div class="wrap">
-      <div class="sec-h"><div><span class="zk-section-kicker">LEARNING PATHS / SINF BO‘LIMLARI</span><h2>${t('books_h')}</h2><p>${t('books_p')}</p></div></div>
+      <div class="sec-h"><div><span class="zk-section-kicker">${lang === 'uz' ? 'SINF BO‘LIMLARI' : 'LEARNING PATHS'}</span><h2>${t('books_h')}</h2><p>${t('books_p')}</p></div></div>
       <div class="grades">
         <a class="gcard g6" href="#g6">
           <div class="zk-grade-top"><span class="zk-grade-number">06</span>${pimg('g6', 0, false, 'alt=""')}</div>
@@ -166,27 +168,42 @@
       </div>
     </div></section>
     <section class="blk" style="padding-top:0"><div class="wrap">
-      <div class="sec-h"><div><span class="zk-section-kicker">WHY ZUKKO / IMKONIYATLAR</span><h2>${t('feat_h')}</h2></div></div>
+      <div class="sec-h"><div><span class="zk-section-kicker">${lang === 'uz' ? 'IMKONIYATLAR' : 'FEATURES'}</span><h2>${t('feat_h')}</h2></div></div>
       <div class="feat">
         <div class="fcard"><div class="ic">📘</div><h4>${t('f1')}</h4><p>${t('f1d')}</p></div>
-        <div class="fcard"><div class="ic" style="background:#f1e9ff">🧪</div><h4>${t('f2')}</h4><p>${t('f2d')}</p></div>
-        <div class="fcard"><div class="ic" style="background:#e7f8ee">📖</div><h4>${t('f3')}</h4><p>${t('f3d')}</p></div>
-        <a class="fcard" href="#tests"><div class="ic" style="background:#fff4e0">✅</div><h4>${t('f4')}</h4><p>${t('f4d')}</p></a>
+        <div class="fcard"><div class="ic">🧪</div><h4>${t('f2')}</h4><p>${t('f2d')}</p></div>
+        <div class="fcard"><div class="ic">📖</div><h4>${t('f3')}</h4><p>${t('f3d')}</p></div>
+        <a class="fcard" href="#tests"><div class="ic">✅</div><h4>${t('f4')}</h4><p>${t('f4d')}</p></a>
       </div>
     </div></section>
     <section class="blk" style="padding-top:0"><div class="wrap">
-      <div class="sec-h"><div><span class="zk-section-kicker">EXPERIMENTS / TAJRIBALAR</span><h2>${t('lab_h')}</h2><p>${t('lab_p')}</p></div><a class="btn sec" href="#lab">${t('open')} →</a></div>
+      <div class="sec-h"><div><span class="zk-section-kicker">${lang === 'uz' ? 'TAJRIBALAR' : 'EXPERIMENTS'}</span><h2>${t('lab_h')}</h2><p>${t('lab_p')}</p></div><a class="btn sec" href="#lab">${t('open')} →</a></div>
       <div class="xgrid">${Lab.list.slice(0, 8).map(xcard).join('')}</div>
     </div></section>`;
+    // Molekulyar laboratoriya: telefonda yig'ilgan holda turadi va 3D faqat ochilganda yuklanadi
+    // (kompyuterda bosh blok yonida doim ko'rinadi).
     const host = document.getElementById('heroLab');
-    if (window.THREE) labHandle = Lab.open(host, 'atom-model', { autoplay: true, quiet: true });
-    if (labHandle) setTimeout(() => labHandle && labHandle.seek(9), 50);
+    const scene = document.getElementById('zkScene'), tog = document.getElementById('zkSceneToggle');
+    const startHero = () => {
+      if (labHandle || !window.THREE || !host.isConnected) return;
+      labHandle = Lab.open(host, 'atom-model', { autoplay: true, quiet: true });
+      if (labHandle) setTimeout(() => labHandle && labHandle.seek(9), 50);
+    };
+    const compact = window.matchMedia && matchMedia('(max-width: 760px)').matches;
+    if (!compact) startHero();
+    tog.onclick = () => {
+      const open = !scene.classList.contains('open');
+      scene.classList.toggle('open', open); tog.setAttribute('aria-expanded', String(open)); tog.classList.toggle('open', open);
+      if (open) startHero(); else if (labHandle) { destroyLab(); host.innerHTML = ''; }
+    };
   }
   function gp(g) { if (!XPok()) return ''; const o = XP.grade(g, B[g].lessons.length); return `<div class="gpmini"><div class="xbar"><div style="width:${o.p}%"></div></div><small>⭐ ${o.done}/${o.total} • ${o.p}%</small></div>`; }
   function countExps(gr) { return Lab.list.filter((e) => (e.lessons || []).some((l) => l[0] === gr)).length; }
   function xcard(e) {
-    const ls = lessonsOfExp(e).map((x) => `<span class="chip ${x.g === 'g7' ? 'g' : x.g === 'g8' ? 'p' : ''}">${GN[x.g]}-${lang === 'uz' ? 'sinf' : 'gr'} • ${x.n}</span>`).join(' ');
-    return `<a class="xcard" href="#lab-${e.id}"><div class="th">${e.icon || '🧪'}</div><div class="bd"><h4>${tr(e.title)}</h4><p>${tr(e.desc)}</p><div class="tags" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">${ls}</div><span class="go">${t('watch')}</span></div></a>`;
+    const all = lessonsOfExp(e), MAXC = 3;
+    const ls = all.slice(0, MAXC).map((x) => `<span class="chip ${x.g === 'g7' ? 'g' : x.g === 'g8' ? 'p' : ''}">${GN[x.g]}-${lang === 'uz' ? 'sinf' : 'gr'} • ${x.n}</span>`).join(' ')
+      + (all.length > MAXC ? ` <span class="chip more" title="${esc(all.slice(MAXC).map((x) => GN[x.g] + '-' + x.n).join(', '))}">+${all.length - MAXC}</span>` : '');
+    return `<a class="xcard" href="#lab-${e.id}"><div class="th">${e.icon || '🧪'}</div><div class="bd"><h4>${tr(e.title)}</h4><p>${tr(e.desc)}</p><div class="tags">${ls}</div><span class="go">${t('watch')}</span></div></a>`;
   }
 
   let filter3d = false;
@@ -340,7 +357,7 @@
       return html;
     }).join('');
     const seg = (name, val, opts) => `<div class="seg" data-seg="${name}">${opts.map(([v, l]) => `<button data-v="${v}" class="${String(TS[name]) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;
-    app.innerHTML = `<div class="page-h tests"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_tests')}</div><h1>✅ ${t('t_h')}</h1><p>${t('t_p')}</p><div class="stats" style="margin-top:14px"><div><b style="color:#fff">${bankTotal}+</b><span style="color:#fde68a">${t('t_bank')}</span></div><div><b style="color:#fff">${GRADES.reduce((a, g) => a + B[g].lessons.length, 0)}</b><span style="color:#fde68a">${t('t_topics')}</span></div><div><b style="color:#fff">3 : 4 : 3</b><span style="color:#fde68a">${t('easy')} : ${t('medium')} : ${t('hard')}</span></div></div></div></div>
+    app.innerHTML = `<div class="page-h tests"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_tests')}</div><h1>✅ ${t('t_h')}</h1><p>${t('t_p')}</p><div class="stats" style="margin-top:14px"><div><b style="color:#fff">${bankTotal}+</b><span style="color:#9de6c2">${t('t_bank')}</span></div><div><b style="color:#fff">${GRADES.reduce((a, g) => a + B[g].lessons.length, 0)}</b><span style="color:#9de6c2">${t('t_topics')}</span></div><div><b style="color:#fff">3 : 4 : 3</b><span style="color:#9de6c2">${t('easy')} : ${t('medium')} : ${t('hard')}</span></div></div></div></div>
     <div class="wrap" id="tWrap"><div class="tsetup">
       <div class="panel ts-l"><h3>📚 ${t('t_topics')} <small id="selc" style="font-weight:600;color:var(--muted);font-size:13px"></small></h3>
         <div class="ts-row">${seg('grade', TS.grade, [['both', t('t_both')], ['g6', t('nav_g6')], ['g7', t('nav_g7')], ['g8', t('nav_g8')]])}<button class="btn sec sm" id="sa">${t('t_all')}</button><button class="btn sec sm" id="sn">${t('t_none')}</button></div>

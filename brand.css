@@ -1,0 +1,350 @@
+/* Zukko Xalqaro Maktabi — Kimyo | Brend qatlami (2026-11-13).
+   Maktab dizayn tizimi: logotip rangi (teal #00555a) + yashil + ko'k + oq,
+   serif sarlavhalar (Fraunces) va sans matn (Manrope).
+   Eng oxirida yuklanadi: eski o'yinli (to'q sariq/binafsha) va v3 qatlamlarini
+   bitta uslubga keltiradi. Mantiq va tuzilma o'zgarmaydi — faqat ko'rinish. */
+
+:root {
+  --zk-teal:#00555a; --zk-teal-700:#00474b; --zk-teal-800:#003a3e; --zk-teal-900:#022b2e;
+  --zk-teal-600:#0b6b70; --zk-teal-100:#d5eae8; --zk-teal-50:#ebf5f4;
+  --zk-green:#2e9e6a; --zk-green-700:#217a51; --zk-green-50:#e6f5ee; --zk-mint:#9de6c2;
+  --zk-blue:#2563c9; --zk-blue-700:#1c4d9e; --zk-blue-50:#e9f0fc;
+  --zk-amber:#c98a12; --zk-amber-50:#fbf3e1;
+  --zk-ink:#0f2a2c; --zk-text:#2c4547; --zk-muted:#5f7476; --zk-line:#d9e6e4; --zk-bg:#f4f8f7;
+  --fh:'Fraunces','Iowan Old Style','Georgia',serif;
+  --f:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  /* eski tokenlar ham brendga ulanadi */
+  --navy:var(--zk-teal-800); --ink:var(--zk-ink); --muted:var(--zk-muted); --line:var(--zk-line); --bg:var(--zk-bg);
+  --blue:var(--zk-blue); --sky:var(--zk-blue-50); --green:var(--zk-green); --mint:var(--zk-green-50);
+  --orange:var(--zk-amber); --purple:var(--zk-teal); --pri:var(--zk-teal); --pri-d:var(--zk-teal-800);
+  --shadow:0 1px 2px rgba(2,43,46,.05),0 10px 30px rgba(2,43,46,.07);
+}
+
+/* ---------- Asoslar ---------- */
+body.zk-v3 {background:var(--zk-bg);color:var(--zk-ink);font-family:var(--f)}
+body.zk-v3 :where(h1,h2,h3) {font-family:var(--fh);font-weight:650;letter-spacing:-.015em;font-optical-sizing:auto}
+body.zk-v3 h4 {font-family:var(--f);letter-spacing:-.01em}
+body.zk-v3 :where(a,button,input,select,textarea):focus-visible {outline:3px solid var(--zk-mint);outline-offset:2px}
+body.zk-v3 ::selection {background:var(--zk-teal-100)}
+
+/* SVG ikonkalar (icons.js) */
+.zi {width:1.15em;height:1.15em;flex:none;display:inline-block;vertical-align:-.2em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+:where(h1,h2,h3,h4) > .zi:first-child {color:var(--zk-teal);margin-right:.35em;width:.95em;height:.95em;vertical-align:-.1em}
+body.zk-v3 .page-h h1 > .zi:first-child {color:var(--zk-mint)}
+body.zk-v3 .btn .zi, body.zk-v3 button .zi {margin-right:.25em}
+body.zk-v3 .chip .zi {width:1em;height:1em;margin-right:.15em;vertical-align:-.15em}
+
+/* ---------- Header: bitta qator, maktab logotipi + "Kimyo" ---------- */
+body.zk-v3 header.top {background:rgba(255,255,255,.94);border-bottom:1px solid var(--zk-line);box-shadow:0 6px 24px rgba(2,43,46,.06)}
+body.zk-v3 .top .wrap {min-height:72px;flex-wrap:nowrap;padding-top:10px;padding-bottom:10px;gap:14px}
+body.zk-v3 .logo {min-width:0;gap:11px}
+body.zk-v3 .top .logo .mark {width:44px;height:44px;border-radius:12px}
+body.zk-v3 .zk-school-name {color:var(--zk-teal-800)}
+body.zk-v3 .zk-school-name strong {font-size:12px;letter-spacing:.09em}
+body.zk-v3 .zk-school-name small {color:var(--zk-muted);letter-spacing:.22em}
+body.zk-v3 .zk-subject {position:static;transform:none;margin-left:2px;padding:6px 10px 6px 12px;border-left:1px solid var(--zk-line);font-family:var(--fh);font-weight:650;font-size:21px;letter-spacing:.01em;text-transform:none;color:var(--zk-teal);gap:0;font-variant:all-small-caps}
+body.zk-v3 .zk-subject:before {display:none}
+body.zk-v3 nav.main {order:0;flex:0 1 auto;flex-basis:auto;margin:0 0 0 6px;padding:0;border-top:0;justify-content:flex-start;gap:2px}
+body.zk-v3 nav.main a {font-size:13.5px;font-weight:700;color:var(--zk-text);padding:8px 12px;border-radius:10px}
+body.zk-v3 nav.main a:hover {background:var(--zk-teal-50);color:var(--zk-teal)}
+body.zk-v3 nav.main a.on {background:var(--zk-teal);color:#fff}
+body.zk-v3 .top .spacer {flex:1 1 8px}
+body.zk-v3 .search input {width:150px;height:40px;border-radius:11px;background:var(--zk-bg);border:1px solid var(--zk-line)}
+body.zk-v3 .search input:focus {width:200px;box-shadow:0 0 0 3px var(--zk-teal-100);border-color:var(--zk-teal-600)}
+body.zk-v3 .lang {background:var(--zk-teal-50)}
+body.zk-v3 .lang button {color:var(--zk-muted)}
+body.zk-v3 .lang button.on {background:var(--zk-teal);color:#fff}
+body.zk-v3 .xpw {border:1px solid var(--zk-line);background:#fff;color:var(--zk-ink)}
+body.zk-v3 .xpw .xl {background:conic-gradient(var(--zk-green) calc(var(--p)*1%),var(--zk-green-50) 0)}
+body.zk-v3 .xpw .xl b {color:var(--zk-green-700)}
+body.zk-v3 .xpw .xs .zi {color:#d9822b}
+body.zk-v3 .xpw .xx .zi {color:var(--zk-amber)}
+body.zk-v3 .burger {background:var(--zk-teal);color:#fff;border-radius:11px;padding:8px 10px;line-height:0}
+body.zk-v3 .burger .zi {width:22px;height:22px;margin:0;vertical-align:0}
+/* foydalanuvchi menyusi */
+body.zk-v3 .uchip>button {border:1px solid var(--zk-line);border-radius:12px;color:var(--zk-ink)}
+body.zk-v3 .uchip .av {background:var(--zk-teal);border-radius:10px}
+body.zk-v3 .uchip .mn {border:1px solid var(--zk-line);border-radius:14px;box-shadow:0 18px 40px -16px rgba(2,43,46,.3)}
+body.zk-v3 .uchip .mn a, body.zk-v3 .uchip .mn button {display:flex;align-items:center;gap:8px}
+body.zk-v3 .uchip .mn .zi {color:var(--zk-teal)}
+
+/* Keng bo'lmagan kompyuter ekranlari: nav "burger" menyuga o'tadi, header baribir bitta qator */
+@media (max-width:1180px) {
+  body.zk-v3 nav.main {display:none;position:absolute;top:calc(100% + 6px);left:auto;right:16px;width:260px;margin:0;z-index:52;background:#fff;padding:10px;border:1px solid var(--zk-line);border-radius:14px;box-shadow:0 20px 40px rgba(2,43,46,.16);flex-direction:column;align-items:stretch}
+  body.zk-v3 nav.main.open {display:flex}
+  body.zk-v3 nav.main a {padding:11px 14px}
+  body.zk-v3 .burger {display:block}
+}
+@media (max-width:760px) {
+  body.zk-v3 .top .wrap {min-height:60px;padding-top:8px;padding-bottom:8px;gap:8px;flex-wrap:nowrap}
+  body.zk-v3 .top .logo .mark {width:38px;height:38px;border-radius:10px}
+  /* "MAKTABI" o'rnida "Kimyo" — lockup ikki qatorli, header bitta qatorli */
+  body.zk-v3 .top .logo {display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;column-gap:8px;row-gap:0;align-items:center}
+  body.zk-v3 .top .logo .mark {grid-row:1/3}
+  body.zk-v3 .zk-school-name {align-self:end}
+  body.zk-v3 .zk-school-name small {display:none!important}
+  body.zk-v3 .zk-school-name strong {font-size:10.5px;letter-spacing:.07em}
+  body.zk-v3 .top .zk-subject {grid-column:2;grid-row:2;align-self:start;position:static;display:block;padding:0;border:0;margin:1px 0 0;font-size:16px;line-height:1;order:0;flex:none;height:auto;justify-content:flex-start}
+  body.zk-v3 .lang button {padding:6px 7px;font-size:10.5px}
+  body.zk-v3 .burger {padding:7px 8px}
+  body.zk-v3 .burger .zi {width:20px;height:20px}
+}
+@media (max-width:440px) {
+  body.zk-v3 .top .wrap {flex-wrap:nowrap;min-height:60px;row-gap:0}
+  body.zk-v3 .top .zk-subject {letter-spacing:.01em}
+}
+@media (max-width:360px) {
+  body.zk-v3 .zk-school-name strong {font-size:9.5px;letter-spacing:.04em}
+  body.zk-v3 .lang button {padding:5px 5px}
+}
+
+/* ---------- Bosh sahifa ---------- */
+body.zk-v3 .zk-hero-v3 {background:var(--zk-teal-900)}
+body.zk-v3 .zk-hero-v3:before {background:radial-gradient(ellipse 700px 460px at 92% 8%,rgba(46,158,106,.26),transparent 70%),radial-gradient(ellipse 760px 520px at 0% 115%,rgba(37,99,201,.22),transparent 70%),linear-gradient(135deg,#022b2e 0%,#00474b 55%,#00555a 100%)}
+body.zk-v3 .zk-hero-v3 h1 {font-family:var(--fh);font-weight:650;letter-spacing:-.025em;line-height:1.04;max-width:16ch}
+@media (min-width:761px) { body.zk-v3 .zk-hero-v3 h1 {font-size:clamp(2.6rem,4.6vw,4.9rem)} }
+@media (max-width:760px) { body.zk-v3 .zk-hero-v3 h1 {font-size:clamp(2.3rem,10.5vw,3.1rem);max-width:none} }
+body.zk-v3 .zk-hero-v3 h1 em {font-style:italic;font-weight:600;color:var(--zk-mint);letter-spacing:-.02em}
+body.zk-v3 .zk-hero-kicker {border-color:rgba(157,230,194,.28);background:rgba(157,230,194,.08);color:#cdeee0}
+body.zk-v3 .zk-live-dot {background:var(--zk-mint);box-shadow:0 0 0 4px rgba(157,230,194,.18)}
+body.zk-v3 .zk-hero-v3 p.lead {color:#cfe3e1}
+body.zk-v3 .zk-hero-v3 .btn.pri {background:#fff;color:var(--zk-teal-800);box-shadow:0 12px 28px rgba(0,0,0,.18)}
+body.zk-v3 .zk-hero-v3 .btn.pri:hover {background:var(--zk-mint)}
+body.zk-v3 .zk-hero-v3 .btn.sec {border-color:rgba(213,234,232,.35)}
+body.zk-v3 .zk-hero-stats b {font-family:var(--fh);font-weight:650;letter-spacing:-.01em}
+body.zk-v3 .zk-hero-stats span {color:#a9cbc7}
+body.zk-v3 .zk-hero-scene {border-color:rgba(157,230,194,.22);background:linear-gradient(140deg,rgba(11,107,112,.32),rgba(2,43,46,.85))}
+body.zk-v3 .zk-hero-v3 .badge3d {color:var(--zk-mint)}
+body.zk-v3 .zk-scene-bottom .zk-scene-active {color:var(--zk-mint)}
+body.zk-v3 .zk-scene-bottom .zk-scene-active:before {background:var(--zk-mint)}
+body.zk-v3 .zk-dots i:first-child, body.zk-v3 .zk-dots i:nth-child(2), body.zk-v3 .zk-dots i:last-child {background:#4f7f7c}
+
+/* Ikonka plitalari: bitta uslub */
+body.zk-v3 :is(.zk-quick-ic,.fcard .ic,.zk-dash-icon,.mst>span:first-child,.keyq .ic,.fact .ic) {display:grid;place-items:center;background:var(--zk-teal-50);color:var(--zk-teal);border-radius:13px}
+body.zk-v3 :is(.zk-quick-ic,.fcard .ic,.zk-dash-icon,.keyq .ic,.fact .ic) .zi {width:52%;height:52%;margin:0;vertical-align:0}
+body.zk-v3 .zk-quick-item:nth-child(2) .zk-quick-ic, body.zk-v3 .feat > :nth-child(2) .ic, body.zk-v3 .zk-dash-kpi:nth-child(3) .zk-dash-icon {background:var(--zk-green-50);color:var(--zk-green-700)}
+body.zk-v3 .zk-quick-item:nth-child(3) .zk-quick-ic, body.zk-v3 .feat > :nth-child(3) .ic, body.zk-v3 .zk-dash-kpi:nth-child(2) .zk-dash-icon {background:var(--zk-blue-50);color:var(--zk-blue)}
+body.zk-v3 .zk-dash-kpi:nth-child(1) .zk-dash-icon {background:var(--zk-amber-50);color:var(--zk-amber)}
+body.zk-v3 .zk-dash-kpi:nth-child(4) .zk-dash-icon {background:#fbeee4;color:#c8692a}
+body.zk-v3 .zk-quick-item strong {color:var(--zk-ink)}
+body.zk-v3 .zk-quick-arrow {color:var(--zk-teal-600)}
+body.zk-v3 .zk-section-kicker {color:var(--zk-green-700);letter-spacing:.16em}
+body.zk-v3 .sec-h h2 {font-family:var(--fh);font-weight:650;color:var(--zk-ink);letter-spacing:-.02em}
+body.zk-v3 .sec-h p {color:var(--zk-muted)}
+
+/* Sinf kartalari: 6 ko'k, 7 yashil, 8 teal */
+body.zk-v3 .gcard.g6 .zk-grade-top {background:linear-gradient(125deg,#e3ecfb,#f3f7fe)}
+body.zk-v3 .gcard.g7 .zk-grade-top {background:linear-gradient(125deg,#dff2e8,#f2faf6)}
+body.zk-v3 .gcard.g8 .zk-grade-top {background:linear-gradient(125deg,#d9ecea,#eff7f6)}
+body.zk-v3 .zk-grade-number {font-family:var(--fh);font-weight:600;letter-spacing:-.04em;color:var(--zk-blue)}
+body.zk-v3 .gcard.g7 .zk-grade-number {color:var(--zk-green)}
+body.zk-v3 .gcard.g8 .zk-grade-number {color:var(--zk-teal)}
+body.zk-v3 .zk-grade-eyebrow {color:var(--zk-teal-600)}
+body.zk-v3 .gcard h3 {font-family:var(--fh);font-weight:650;letter-spacing:-.015em;color:var(--zk-ink)}
+body.zk-v3 .gcard p {color:var(--zk-muted)}
+body.zk-v3 .zk-grade-footer {color:var(--zk-teal)}
+body.zk-v3 .gcard:hover, body.zk-v3 .gcard.g7:hover {border-color:var(--zk-teal-100);box-shadow:0 22px 48px rgba(2,43,46,.12)}
+body.zk-v3 .gcard.tilt-on, body.zk-v3 .gcard.g7.tilt-on {box-shadow:0 22px 40px -14px rgba(2,43,46,.3),0 0 0 2px var(--zk-teal-100)}
+body.zk-v3 .xbar {background:var(--zk-teal-50)}
+body.zk-v3 .xbar>div, body.zk-v3 .gcard.g6 .xbar>div, body.zk-v3 .gprog.g6 .xbar>div {background:linear-gradient(90deg,var(--zk-green),var(--zk-teal))}
+body.zk-v3 .gcard.g6 .xbar, body.zk-v3 .gprog.g6 .xbar {background:var(--zk-teal-50)}
+
+/* Yorliqlar (chip): uchta brend tusi */
+body.zk-v3 .chip {background:var(--zk-teal-50);color:var(--zk-teal-700)}
+body.zk-v3 .chip.g, body.zk-v3 .chip.ok {background:var(--zk-green-50);color:var(--zk-green-700)}
+body.zk-v3 .chip.p {background:var(--zk-blue-50);color:var(--zk-blue-700)}
+body.zk-v3 .chip.o, body.zk-v3 .chip.st {background:var(--zk-amber-50);color:#8a5d0a}
+body.zk-v3 .chip.more {background:#fff;color:var(--zk-teal-700);border:1px solid var(--zk-teal-100)}
+body.zk-v3 .gcard .chip {background:var(--zk-teal-50);color:var(--zk-teal-700)}
+body.zk-v3 .gcard .chip.p {background:var(--zk-blue-50);color:var(--zk-blue-700)}
+
+/* Xususiyat va tajriba kartalari: bir xil balandlik */
+body.zk-v3 .fcard {border-color:var(--zk-line)}
+body.zk-v3 .fcard h4 {color:var(--zk-ink)}
+body.zk-v3 .fcard .ic {font-size:0}
+body.zk-v3 .xgrid {align-items:stretch}
+body.zk-v3 .xcard {display:flex;flex-direction:column;border-color:var(--zk-line)}
+body.zk-v3 .xcard .th {background:linear-gradient(135deg,var(--zk-teal-50),#eef5fd);flex:none}
+body.zk-v3 .xcard .bd {display:flex;flex-direction:column;flex:1}
+body.zk-v3 .xcard h4 {color:var(--zk-ink)}
+body.zk-v3 .xcard .tags {display:flex;gap:5px;flex-wrap:wrap;margin:auto 0 10px;padding-top:8px}
+body.zk-v3 .xcard .go {color:var(--zk-teal);display:inline-flex;align-items:center;gap:4px}
+body.zk-v3 .xcard .go .zi {width:.9em;height:.9em;margin:0}
+
+/* Dashboard: yangi o'quvchi uchun boshlash bloki */
+body.zk-v3 .zk-dash {background:linear-gradient(180deg,#ecf5f3,var(--zk-bg))}
+body.zk-v3 .zk-dash-head h2 {color:var(--zk-ink)}
+body.zk-v3 .zk-eyebrow {color:var(--zk-green-700)}
+body.zk-v3 .zk-dash-continue {background:var(--zk-teal)!important;box-shadow:0 10px 24px rgba(0,85,90,.22)!important}
+body.zk-v3 .zk-dash-panel h3 {display:flex;align-items:center;gap:0}
+body.zk-v3 .zk-bar-fill {background:var(--zk-teal-100)}
+body.zk-v3 .zk-bar-fill.current {background:var(--zk-teal)}
+body.zk-v3 .zk-grade-line i, body.zk-v3 .zk-goal-track>div {background:linear-gradient(90deg,var(--zk-green),var(--zk-teal))}
+body.zk-v3 .zk-quest .zk-quest-check {background:var(--zk-teal-50);color:var(--zk-teal)}
+body.zk-v3 .zk-quest.done .zk-quest-check {background:var(--zk-green);color:#fff}
+body.zk-v3 .zk-level {background:var(--zk-teal-50);color:var(--zk-teal)}
+body.zk-v3 .zk-quick-actions a {display:flex;align-items:center;gap:8px}
+body.zk-v3 .zk-quick-actions a .zi {color:var(--zk-teal);margin:0}
+.zk-dash-new {padding:6px 2px 14px}
+.zk-dash-new>b {display:block;font-family:var(--fh);font-weight:650;font-size:19px;color:var(--zk-ink)}
+.zk-dash-new>p {margin:4px 0 14px;color:var(--zk-muted);font-size:13px}
+.zk-dash-new ol {list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.zk-dash-new a {display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--zk-line);border-radius:14px;background:#fff;color:var(--zk-ink);font-weight:700;font-size:14px;transition:border-color .15s,transform .15s}
+.zk-dash-new a:hover {border-color:var(--zk-teal-600);transform:translateX(2px)}
+.zk-dash-new-n {width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;background:var(--zk-teal);color:#fff;font-family:var(--fh);font-weight:650}
+.zk-dash-new-t {flex:1;min-width:0}
+.zk-dash-new-xp {flex:none;font-size:12px;font-weight:800;color:var(--zk-green-700);background:var(--zk-green-50);border-radius:99px;padding:4px 10px}
+
+/* ---------- Ichki sahifalar ---------- */
+body.zk-v3 .page-h, body.zk-v3 .page-h.lab, body.zk-v3 .page-h.tests, body.zk-v3 .page-h.me {background:linear-gradient(130deg,var(--zk-teal-900),var(--zk-teal) 70%,#0b6b70)!important}
+body.zk-v3 .page-h.g6 {background:linear-gradient(130deg,#0d2f63,var(--zk-blue-700) 60%,#2b6fd6)!important}
+body.zk-v3 .page-h.g7 {background:linear-gradient(130deg,#0d3b2a,var(--zk-green-700) 60%,#2e9e6a)!important}
+body.zk-v3 .page-h.g8 {background:linear-gradient(130deg,var(--zk-teal-900),var(--zk-teal) 60%,#0f7c86)!important}
+body.zk-v3 .page-h h1 {font-family:var(--fh);font-weight:650;letter-spacing:-.02em}
+body.zk-v3 .lcard h4 {color:var(--zk-ink)}
+body.zk-v3 .lcard:hover {border-color:var(--zk-teal-100)}
+body.zk-v3 .unit-h {color:var(--zk-ink);font-family:var(--fh);font-weight:650}
+body.zk-v3 .unit-h span {box-shadow:none;font-family:var(--f)}
+body.zk-v3 .lnum {box-shadow:none!important}
+body.zk-v3 .seg button.on, body.zk-v3 .seg .on {background:var(--zk-teal)!important;color:#fff!important;border-color:var(--zk-teal)!important}
+
+/* Dars sahifasi */
+body.zk-v3 .lesson-top h1 {font-family:var(--fh);font-weight:650;color:var(--zk-ink);letter-spacing:-.02em}
+body.zk-v3 .lhead .lnum {border-radius:12px;font-family:var(--fh);font-weight:650}
+body.zk-v3 .lnav {background:#fff;border:1px solid var(--zk-line)}
+body.zk-v3 .lnb {border:1px solid var(--zk-line);color:var(--zk-teal)}
+body.zk-v3 a.lnb:hover {background:var(--zk-teal);border-color:var(--zk-teal);color:#fff}
+body.zk-v3 .tabs button {color:var(--zk-muted)}
+body.zk-v3 .tabs button.on {color:var(--zk-teal);border-color:var(--zk-teal)}
+body.zk-v3 .tabs button .ti .zi {width:1.1em;height:1.1em;margin:0}
+body.zk-v3 .tabs button .cnt {background:var(--zk-teal-50);color:var(--zk-teal)}
+body.zk-v3 .tabs button .cnt.q {background:var(--zk-blue-50);color:var(--zk-blue-700)}
+body.zk-v3 .keyq {background:linear-gradient(135deg,var(--zk-teal-50),#eef4fd);border:1px solid var(--zk-teal-100);border-radius:18px}
+body.zk-v3 .keyq b, body.zk-v3 .keyq small {color:var(--zk-teal-700)}
+body.zk-v3 .fact {background:var(--zk-green-50);border:1px solid #c3e7d4;border-radius:18px}
+body.zk-v3 .fact .ic {background:#fff;color:var(--zk-green-700)}
+body.zk-v3 .xinline {background:linear-gradient(135deg,var(--zk-teal-50),#fff);border:1px solid var(--zk-teal-100);border-radius:18px}
+body.zk-v3 .xinline:hover {border-color:var(--zk-teal-600)}
+body.zk-v3 .xinline .play {background:var(--zk-teal);box-shadow:none;display:inline-flex;align-items:center;gap:6px}
+body.zk-v3 .sidex {color:var(--zk-teal)}
+body.zk-v3 .navl a.on {background:var(--zk-teal)!important;color:#fff!important}
+body.zk-v3 .navl a.on i {background:rgba(255,255,255,.2)!important;color:#fff!important}
+body.zk-v3 .pn a {border:1px solid var(--zk-line)}
+body.zk-v3 .pn a:hover {border-color:var(--zk-teal-600)}
+body.zk-v3 .safety {background:var(--zk-amber-50);border:1px solid #edd9a6;color:#76510b}
+body.zk-v3 .safety .zi, body.zk-v3 .zk-lab-safety .zi, body.zk-v3 .zk-cert-note .zi {color:var(--zk-amber)}
+body.zk-v3 .lstat.done {background:var(--zk-green-50);color:var(--zk-green-700)}
+/* "Oldingi / Keyingi dars" suzuvchi tugmasi: kompyuterda kerak emas (sarlavha yonida va pastda bor) */
+@media (min-width:761px) { body.zk-v3 .fnav {display:none!important} }
+body.zk-v3 .fnav {background:rgba(2,43,46,.94)}
+
+/* XP xabarlari: sarlavhani yopmaydi — kompyuterda o'ng pastda, telefonda pastki menyu ustida */
+body.zk-v3 #xpToasts {top:auto!important;bottom:24px;left:auto;right:24px;transform:none;align-items:flex-end;width:auto}
+body.zk-v3 .xpt {border:1px solid var(--zk-line);border-radius:14px;padding:9px 16px 9px 10px;box-shadow:0 14px 34px rgba(2,43,46,.18)}
+body.zk-v3 .xpt .big {width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--zk-amber-50);color:var(--zk-amber);font-size:20px}
+body.zk-v3 .xpt .big .zi {width:20px;height:20px;margin:0;vertical-align:0}
+body.zk-v3 .xpt b {color:var(--zk-ink)}
+body.zk-v3 .xpt.ach .big {background:var(--zk-green-50);color:var(--zk-green-700)}
+body.zk-v3 .xpt.lvl .big {background:var(--zk-teal-50);color:var(--zk-teal)}
+body.zk-v3 .xpt.ach, body.zk-v3 .xpt.lvl {border-color:var(--zk-line);box-shadow:0 14px 34px rgba(2,43,46,.18)}
+body.zk-v3 .xpt.ach b, body.zk-v3 .xpt.lvl b {color:var(--zk-ink)}
+@media (max-width:760px) {
+  body.zk-v3 #xpToasts {right:16px;left:16px;bottom:calc(84px + env(safe-area-inset-bottom));align-items:center}
+}
+
+/* Tugmalar */
+body.zk-v3 .btn.pri {background:var(--zk-teal);box-shadow:0 8px 20px rgba(0,85,90,.18);color:#fff}
+body.zk-v3 .btn.pri:hover {background:var(--zk-teal-800)}
+body.zk-v3 .btn.sec {background:#fff;color:var(--zk-teal-800);border:1px solid var(--zk-line)}
+body.zk-v3 .btn.grn {background:var(--zk-green)}
+body.zk-v3 .btn .zi {margin:0 .3em 0 0}
+body.zk-v3 .zk-dash-continue-l {display:flex;align-items:center;gap:7px;font-weight:800}
+body.zk-v3 .zk-dash-continue-l .zi {width:14px;height:14px;margin:0}
+
+/* 3D laboratoriya */
+body.zk-v3 .lab-bar .lb-play {background:var(--zk-teal);border-color:var(--zk-teal)}
+body.zk-v3 .lab-bar button {display:inline-grid;place-items:center}
+body.zk-v3 .lab-bar button .zi {width:16px;height:16px;margin:0;vertical-align:0}
+body.zk-v3 .lb-fill {background:linear-gradient(90deg,var(--zk-green),var(--zk-teal))}
+body.zk-v3 .lc-step {color:var(--zk-teal)}
+body.zk-v3 .zk-step.active, body.zk-v3 .zk-step[aria-pressed=true] {border-color:var(--zk-teal)!important;background:var(--zk-teal-50)!important}
+body.zk-v3 .zk-step-num, body.zk-v3 .zk-step.active .zk-step-num {background:var(--zk-teal)!important}
+
+/* Testlar va natijalar */
+body.zk-v3 .tm-box {background:var(--zk-teal-50);color:var(--zk-teal)}
+body.zk-v3 .tr-opts button.sel {border-color:var(--zk-teal);background:var(--zk-teal-50)}
+body.zk-v3 .tr-opts button.sel i {background:var(--zk-teal)}
+body.zk-v3 .m3 {background:var(--zk-amber)}
+
+/* Yutuqlar sahifasi */
+body.zk-v3 .xring {--c:var(--zk-teal);background:conic-gradient(var(--c) calc(var(--p)*1%),var(--zk-teal-50) 0)}
+body.zk-v3 .xring b {color:var(--zk-teal)}
+body.zk-v3 .xring.goal {--c:var(--zk-green);background:conic-gradient(var(--c) calc(var(--p)*1%),var(--zk-green-50) 0)}
+body.zk-v3 .xring.goal b {color:var(--zk-green-700)}
+body.zk-v3 .achv.on {background:linear-gradient(180deg,var(--zk-amber-50),#fff);border-color:#ecd8a8;box-shadow:none}
+body.zk-v3 .mst {border:1px solid var(--zk-line);box-shadow:none;border-radius:16px}
+body.zk-v3 .mst>span:first-child {width:40px;height:40px;margin:0 auto 6px;font-size:0}
+body.zk-v3 .mst>span:first-child .zi {width:20px;height:20px;margin:0}
+body.zk-v3 .mst:nth-child(1)>span:first-child {background:var(--zk-amber-50);color:var(--zk-amber)}
+body.zk-v3 .mst:nth-child(3)>span:first-child {background:var(--zk-green-50);color:var(--zk-green-700)}
+body.zk-v3 .mst:nth-child(4)>span:first-child {background:#fbeee4;color:#c8692a}
+body.zk-v3 .mst b {font-family:var(--fh);font-weight:650;color:var(--zk-ink)}
+body.zk-v3 .ad-kpi b {font-family:var(--fh);font-weight:650;color:var(--zk-ink)}
+body.zk-v3 .ad-kpi span, body.zk-v3 table.ad th {color:var(--zk-muted)}
+body.zk-v3 .ad-chart text {fill:var(--zk-muted)}
+body.zk-v3 .ad-chart .v {fill:var(--zk-text)}
+
+/* Pastki mobil menyu */
+body.zk-v3 .bnav a, body.zk-v3 .bnav button {color:var(--zk-muted)}
+body.zk-v3 .bnav i .zi {width:22px;height:22px;margin:0;vertical-align:0}
+body.zk-v3 .bnav a.on, body.zk-v3 .bnav button.on, body.zk-v3 .bnav button[aria-expanded=true] {background:var(--zk-teal-50);color:var(--zk-teal)}
+body.zk-v3 .zk-grade-pill {background:var(--zk-teal)!important;color:#fff!important}
+
+/* Footer */
+body.zk-v3 footer {background:var(--zk-teal-900);color:#b9d4d1;border-top:3px solid var(--zk-green)}
+body.zk-v3 footer b {color:#fff}
+
+/* ---------- Login / ro'yxatdan o'tish oynasi ----------
+   Login dizayni brand-entry.css da (PR #12, ChatGPT). Bu yerda faqat icons.js ikonkalari o'lchami. */
+.zk-gate .zi {width:1.1em;height:1.1em;vertical-align:-.2em}
+
+/* ---------- O'qituvchi va admin panellari ---------- */
+body.zk-v3 .tc-tabs button {border:1px solid var(--zk-line)!important;box-shadow:none!important;border-radius:12px!important;color:var(--zk-text)!important;font-family:var(--f)!important;font-weight:700!important;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+body.zk-v3 .tc-tabs button.on {background:var(--zk-teal)!important;border-color:var(--zk-teal)!important;color:#fff!important}
+body.zk-v3 .tc-tabs button.on .tc-badge {color:var(--zk-teal)!important}
+body.zk-v3 .tc-tabs button .zi {margin:0}
+/* Telefonda tablar ekrandan chiqib ketmaydi: 2 ustunli to'r */
+@media (max-width:760px) {
+  body.zk-v3 .tc-tabs {display:grid!important;grid-template-columns:1fr 1fr;overflow:visible!important;gap:8px!important}
+  body.zk-v3 .tc-tabs button {width:100%;min-height:44px;white-space:normal!important;padding:9px 8px!important;font-size:13px!important;text-align:center}
+}
+body.zk-v3 .ad-kpi > div, body.zk-v3 [data-k] {border-top-color:var(--zk-teal)!important}
+body.zk-v3 .ad-kpi > div:nth-child(3n+2) {border-top-color:var(--zk-green)!important}
+body.zk-v3 .ad-kpi > div:nth-child(3n) {border-top-color:var(--zk-blue)!important}
+body.zk-v3 .panel h3 {font-family:var(--fh);font-weight:650;color:var(--zk-ink);display:flex;align-items:center;gap:0}
+body.zk-v3 .zk-weekly-head h3, body.zk-v3 .zk-att h3 {font-family:var(--fh)}
+
+/* Sertifikat */
+body.zk-v3 .zk-cert-locked {border-color:var(--zk-line)}
+body.zk-v3 .zk-cert-locked > span:first-child .zi {width:46px;height:46px;color:var(--zk-teal)}
+
+/* Harakatni kamaytirish so'ralsa */
+@media (prefers-reduced-motion:reduce) { .zk-dash-new a {transition:none} }
+
+/* Molekulyar laboratoriya: telefonda yig'iladigan blok (bosganda pastga ochiladi) */
+body.zk-v3 .zk-scene-toggle {display:none}
+@media (max-width:760px) {
+  body.zk-v3 .zk-scene-toggle {display:flex;align-items:center;gap:12px;width:100%;margin:0;padding:12px 14px;border-radius:16px;border:1px solid rgba(157,230,194,.25);background:rgba(157,230,194,.07);color:#fff;text-align:left;font:inherit;cursor:pointer}
+  body.zk-v3 .zk-scene-toggle-ic {width:40px;height:40px;flex:none;border-radius:11px;display:grid;place-items:center;background:rgba(157,230,194,.14);color:var(--zk-mint)}
+  body.zk-v3 .zk-scene-toggle-ic .zi {width:22px;height:22px;margin:0;vertical-align:0}
+  body.zk-v3 .zk-scene-toggle-t {flex:1;min-width:0}
+  body.zk-v3 .zk-scene-toggle-t b {display:block;font-family:var(--fh);font-weight:650;font-size:16px}
+  body.zk-v3 .zk-scene-toggle-t small {display:block;color:#a9cbc7;font-size:12px;font-weight:600;margin-top:2px}
+  body.zk-v3 .zk-scene-toggle-ch {font-size:22px;line-height:1;color:var(--zk-mint);transition:transform .25s}
+  body.zk-v3 .zk-scene-toggle.open .zk-scene-toggle-ch {transform:rotate(180deg)}
+  body.zk-v3 .zk-hero-scene {display:none}
+  body.zk-v3 .zk-hero-scene.open {display:block;margin-top:-18px;animation:zkSceneIn .3s ease-out}
+  body.zk-v3 .zk-hero-v3>.wrap {gap:22px}
+}
+@keyframes zkSceneIn {from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce) { body.zk-v3 .zk-hero-scene.open {animation:none} body.zk-v3 .zk-scene-toggle-ch {transition:none} }
