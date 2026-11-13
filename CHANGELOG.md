@@ -4,6 +4,14 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### O'zgartirildi — Zukko brend dizayni (ADR 0005)
+- `brand.css`: maktab logotipi rangi (teal #00555a) + yashil + ko'k + oq; sarlavhalar Fraunces (serif), matn Manrope. Sarlavhalar, chiplar, tablar, tugmalar, toastlar, o'qituvchi/admin paneli bitta uslubda.
+- `icons.js`: interfeysdagi emojilar bir xil SVG ikonkalarga almashtirildi (tajriba rasmchalari va nishonlar o'zgarmadi).
+- Header bitta qatorda (kompyuter va telefon); XP xabarlari sarlavhani yopmaydi; suzuvchi dars navigatsiyasi kompyuterda yashirildi.
+- Bosh sahifa: o'zbekcha yorliqlar, yangi o'quvchi uchun "Boshlash uchun 3 qadam", tajriba kartalarida "+N" yorliq, "Molekulyar laboratoriya" telefonda bosganda ochiladi.
+- O'qituvchi paneli tablari telefonda ekrandan chiqmaydi.
+- Telefonda avatar ("A") va uning menyusi pastki menyuning o'ng chetida; menyu yuqoriga ochiladi.
+
 ### Qo'shildi
 - Administrator paneli (`#admin`): 10 ta ko'rsatkich, 14 kunlik faollik grafigi, sinflar taqqoslanishi, eng faol o'quvchilar, eng qiyin darslar, sayt e'loni, ro'yxatdan o'tishni yoqish/o'chirish, CSV/JSON eksport (parollarsiz), administrator parolini o'zgartirish. `lib/stats.js` + testlar; `settings/site` uchun Firestore qoidalari va testlari.
 - Hamkorlik qoidalari va hujjatlar: `docs/COLLABORATION.md`, `ARCHITECTURE.md`, `TESTING.md`, `SECURITY.md`, `ROADMAP.md`, `docs/adr/` (4 ta qaror).

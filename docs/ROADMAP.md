@@ -28,3 +28,6 @@ ChatGPT'ning texnik rejasi (2026-11-12) va loyiha egasining tanlovi asosida. Har
 ## Xarajatlar
 
 GitHub Pages, Three.js va Firebase Spark bepul. Cloud Functions (2, 3, 6-bosqichlar) Blaze tarifini talab qiladi — maktab hajmida odatda bepul limit ichida, lekin bank kartasi ulanadi. OpenAI API so'rovlari pullik — `aiTutor`da kunlik limit va byudjet ogohlantirishi qo'yiladi.
+
+## Texnik qarz (dizayn)
+- `index.html` ichidagi eski inline CSS, `design-refresh.css`, `visual-v3.css` va `brand.css` ni bitta uslub fayliga birlashtirish (ADR 0005).

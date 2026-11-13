@@ -13,7 +13,9 @@
       task3: "Kunlik dars maqsadiga yetish", ready: "Bajarildi", later: "Bajarilmagan",
       quick: "Tezkor kirish", qtest: "Test ishlash", qlab: "3D laboratoriya", qtable: "Davriy jadval",
       qbadge: "Yutuqlarim", qcert: "Sertifikat", qadmin: "Boshqaruv", qteacher: "O‘qituvchi paneli",
-      caution: "Statistika shaxsiy o‘qish tarixingizdan hisoblangan."
+      caution: "Statistika shaxsiy o‘qish tarixingizdan hisoblangan.",
+      newH: "Boshlash uchun 3 qadam", newP: "Grafik birinchi XP to‘plaganingizdan keyin to‘ladi.",
+      new1: "Birinchi darsni oching", new2: "3D tajribani oxirigacha ko‘ring", new3: "Dars testini 7/10 dan yuqori yeching"
     },
     en: {
       title: "My learning dashboard", sub: "Progress, weekly activity and your next step in one place.",
@@ -25,7 +27,9 @@
       task3: "Reach the daily lesson goal", ready: "Done", later: "Not yet",
       quick: "Quick actions", qtest: "Take a quiz", qlab: "3D laboratory", qtable: "Periodic table",
       qbadge: "My progress", qcert: "Certificate", qadmin: "Administration", qteacher: "Teacher panel",
-      caution: "The figures come from your personal learning history."
+      caution: "The figures come from your personal learning history.",
+      newH: "Three steps to get started", newP: "The chart fills in after you earn your first XP.",
+      new1: "Open your first lesson", new2: "Watch a 3D experiment to the end", new3: "Score 7/10 or more on a lesson quiz"
     }
   };
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -74,15 +78,17 @@
     return `<section class="zk-dash blk" aria-label="${L.title}">
       <div class="wrap">
         <div class="zk-dash-head"><div><span class="zk-eyebrow">⚡ ${esc(L.title)}</span><h2>${esc(L.title)}</h2><p>${esc(L.sub)}</p></div>
-          <a class="btn pri zk-dash-continue" href="${cont}">▶ ${esc(L.continue)} <span>${esc(label)}</span></a></div>
+          <a class="btn pri zk-dash-continue" href="${cont}"><strong class="zk-dash-continue-l">▶ ${esc(L.continue)}</strong><span>${esc(label)}</span></a></div>
         <div class="zk-dash-kpis">
           ${[[ '⚡', state.xp || 0, L.xp ], [ '⭐', done, L.done ], [ '🧪', labs, L.labs ], [ '🔥', xp.s && typeof xp.s === 'object' ? (function(){ let n=0, d=new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (!safeNum((days[localDate(d)]||{}).xp)) d.setDate(d.getDate()-1); while(safeNum((days[localDate(d)]||{}).xp)){n++;d.setDate(d.getDate()-1);} return n; })() : 0, L.streak ]].map(([ic,v,title]) => `<div class="zk-dash-kpi"><span class="zk-dash-icon">${ic}</span><strong>${safeNum(v)}</strong><small>${esc(title)}</small></div>`).join('')}
         </div>
         <div class="zk-dash-body">
           <section class="zk-dash-panel zk-dash-week"><div class="zk-dash-label"><div><h3>📊 ${esc(L.week)}</h3><p>${esc(L.weekSub)}</p></div><b>+${totalWeek} XP</b></div>
-            <div class="zk-bars" role="img" aria-label="${esc(L.weekSub)}">
+            ${totalWeek === 0 && safeNum(state.xp) === 0 ? `<div class="zk-dash-new"><b>${esc(L.newH)}</b><p>${esc(L.newP)}</p><ol>
+              ${[[cont, L.new1, 5], ['#lab', L.new2, 15], ['#tests', L.new3, 20]].map(([href, txt, n], i) => `<li><a href="${href}"><span class="zk-dash-new-n">${i + 1}</span><span class="zk-dash-new-t">${esc(txt)}</span><span class="zk-dash-new-xp">+${n} XP</span></a></li>`).join('')}
+            </ol></div>` : `<div class="zk-bars" role="img" aria-label="${esc(L.weekSub)}">
               ${weeks.map((d,i) => `<div class="zk-bar-col"><span class="zk-bar-value">${d.value || ''}</span><div class="zk-bar-track"><div class="zk-bar-fill ${i === 6 ? 'current' : ''}" style="height:${d.value ? Math.max(5, Math.round(100 * d.value / max)) : 0}%"></div></div><small>${esc(d.text)}</small></div>`).join('')}
-            </div>
+            </div>`}
             <div class="zk-grade-progress"><h3>📚 ${esc(L.grade)}</h3>
               ${grades.map((g) => { const o=xp.grade(g, ctx.B[g].lessons.length); return `<a href="#${g}" class="zk-grade-line"><span>${g.slice(1)}-${ctx.lang === 'en' ? 'grade' : 'sinf'}</span><div role="progressbar" aria-valuenow="${o.p}" aria-valuemin="0" aria-valuemax="100" aria-label="${g}"><i style="width:${o.p}%"></i></div><b>${o.done}/${o.total}</b></a>`; }).join('')}
             </div>

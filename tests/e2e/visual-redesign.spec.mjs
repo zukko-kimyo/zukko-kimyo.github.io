@@ -20,7 +20,7 @@ test('new premium home renders dark science hero and redesigned grade sections',
     return { status: response.status, color: getComputedStyle(hero).backgroundColor };
   });
   expect(design.status).toBe(200);
-  expect(design.color).toBe('rgb(10, 34, 58)');
+  expect(design.color).toBe('rgb(2, 43, 46)'); // brand.css: Zukko teal (2026-11-13)
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   expect(overflow, 'premium theme must not create sideways scroll').toBeLessThanOrEqual(1);
 });
