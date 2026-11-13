@@ -114,13 +114,15 @@ test('admin page and 5-button mobile bar fit narrow 320, 360 and 390 pixel scree
       return {
         scrollWidth: document.documentElement.scrollWidth,
         viewport: innerWidth,
-        navWidth: rect.width,
+        navWidth: rect.width, navLeft: rect.left, navRight: innerWidth - rect.right,
         buttons: [...nav.children].filter(el => el.matches('a,button')).length,
         panelVisible: !!document.querySelector('#adStudentsOpen')?.getClientRects().length
       };
     });
     expect(layout.scrollWidth - layout.viewport, 'no horizontal page overflow at ' + width + 'px').toBeLessThanOrEqual(1);
-    expect(layout.navWidth, 'bottom bar fills the viewport').toBeGreaterThanOrEqual(width - 2);
+    // Brend dizayni (PR #13): pastki menyu "suzuvchi" shisha panel — chetlardan ~10px ichkarida, markazda.
+    expect(layout.navWidth, 'floating bottom bar spans the viewport minus side margins').toBeGreaterThanOrEqual(width - 24);
+    expect(Math.abs(layout.navLeft - layout.navRight), 'bottom bar is centred').toBeLessThanOrEqual(2);
     expect(layout.buttons).toBe(5);
     expect(layout.panelVisible).toBe(true);
   }

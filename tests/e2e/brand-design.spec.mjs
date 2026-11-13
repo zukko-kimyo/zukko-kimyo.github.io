@@ -128,3 +128,46 @@ test('user chip ("A") sits in the bottom-right of the phone menu and opens upwar
   await expect(menu).toBeHidden();
   await expect(chip).toHaveClass(/on/);
 });
+
+test('textbook unit colours are kept as before and carried into the lesson page', async ({ page }) => {
+  await page.goto('/index.html#g6'); await waitReady(page);
+  const units = await page.$$eval('.unit-h span', (els) => els.slice(0, 3).map((e) => getComputedStyle(e).backgroundColor));
+  expect(units).toEqual(['rgb(255, 122, 26)', 'rgb(139, 92, 246)', 'rgb(34, 197, 94)']);
+  await page.evaluate(() => { location.hash = '#g6-4'; }); // 2-bo'lim (binafsha)
+  await expect(page.locator('.lesson-top h1')).toBeVisible();
+  const lnum = await page.locator('.lhead .lnum').evaluate((e) => getComputedStyle(e).backgroundColor);
+  expect(lnum).toBe('rgb(139, 92, 246)');
+  // dars tuzilishi o'zgarmagan: tablar va yon panel joyida
+  await expect(page.locator('.lesson-top .tabs button')).toHaveCount(4);
+  await expect(page.locator('.lesson-body .navl a')).not.toHaveCount(0);
+});
+
+test('glass surfaces: translucent header (and floating tab bar on phones)', async ({ page, isMobile }) => {
+  await page.goto('/index.html#home'); await waitReady(page);
+  const s = await page.evaluate(() => {
+    const h = getComputedStyle(document.querySelector('header.top'));
+    const b = getComputedStyle(document.getElementById('bnav'));
+    return { hBlur: h.backdropFilter || h.webkitBackdropFilter, hBg: h.backgroundColor, bBlur: b.backdropFilter || b.webkitBackdropFilter, bBottom: parseFloat(b.bottom), bRadius: parseFloat(b.borderTopLeftRadius) };
+  });
+  expect(s.hBlur).toMatch(/blur/);
+  expect(s.hBg).toMatch(/rgba\(255, 255, 255, 0\.\d+\)/);
+  if (isMobile) { expect(s.bBlur).toMatch(/blur/); expect(s.bBottom).toBeGreaterThanOrEqual(6); expect(s.bRadius).toBeGreaterThanOrEqual(16); }
+});
+
+test('school name is shown in full ("ZUKKO XALQARO MAKTABI") together with "Kimyo" on every width', async ({ page }) => {
+  await page.goto('/index.html#home'); await waitReady(page);
+  for (const width of [320, 360, 390, 1300]) {
+    await page.setViewportSize({ width, height: 760 });
+    await expect(page.locator('header.top .zk-school-name strong')).toBeVisible();
+    await expect(page.locator('header.top .zk-school-name small')).toBeVisible();
+    await expect(page.locator('header.top .zk-school-name small')).toHaveText('MAKTABI');
+    await expect(page.locator('header.top .zk-subject')).toBeVisible();
+    const ov = await page.evaluate(() => {
+      const r = (s) => document.querySelector(s).getBoundingClientRect();
+      const a = r('header.top .zk-school-name small'), b = r('header.top .zk-subject');
+      return { overlap: !(a.bottom <= b.top + 1 || b.bottom <= a.top + 1 || a.right <= b.left || b.right <= a.left), sw: document.documentElement.scrollWidth - innerWidth };
+    });
+    expect(ov.overlap, 'MAKTABI and Kimyo must not overlap at ' + width).toBe(false);
+    expect(ov.sw).toBeLessThanOrEqual(1);
+  }
+});

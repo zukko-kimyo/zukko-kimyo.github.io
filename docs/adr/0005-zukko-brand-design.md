@@ -31,6 +31,15 @@ Maktab dizayn tizimi: logotip rangi teal `#00555a`, yashil + ko'k + oq, sarlavha
    - telefonda foydalanuvchi belgisi (avatar "A") pastki menyuning o'ng chetiga ko'chdi, "Panel" tugmasi
      o'rnida turadi; menyu yuqoriga ochiladi (foydalanuvchi so'rovi). Kompyuterda header'da qoladi.
 
+## Qo'shimcha qarorlar (2026-11-13, foydalanuvchi talabi)
+- **Darslik ichki tuzilishi o'zgarmaydi.** Bo'lim ranglari (`app.js` → `UC`) oldingi versiyadagidek qaytarildi
+  va dars sahifasiga (`--uc`) olib o'tildi: dars raqami, faol tab, bo'lim ikonkalari, "Asosiy savol", yon menyu.
+- **Zamonaviy uslub — "liquid glass":** shaffof header, telefonda suzuvchi shisha pastki menyu, shisha menyular va
+  toastlar, yumshoq fon. `prefers-reduced-transparency` va `backdrop-filter` bo'lmasa oddiy oq yuzaga qaytadi.
+- **Maktab nomi to'liq:** telefonda uch qatorli lockup "ZUKKO XALQARO / MAKTABI / Kimyo".
+- `mobile-admin-nav.spec`: pastki menyu endi ekran chetidan ~10px ichkarida (suzuvchi). Test "to'liq kenglik"
+  o'rniga "chetlar ayirilgan kenglik va markazda" deb yangilandi.
+
 ## Oqibatlar
 - `+` Bitta brend, barqaror ikonkalar, telefonda kamroq yuklama (3D bosh sahifada so'ralganda).
 - `−` Yana bitta override qatlami (`brand.css`). Keyinchalik `index.html` dagi eski inline CSS va
