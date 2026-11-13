@@ -1,7 +1,7 @@
 (function () {
   const I18N = {
     school: { uz: 'Zukko Xalqaro Maktabi', en: 'Zukko International School' },
-    nav_home: { uz: 'Bosh sahifa', en: 'Home' }, nav_g6: { uz: '6-sinf', en: 'Grade 6' }, nav_g7: { uz: '7-sinf', en: 'Grade 7' }, nav_g8: { uz: '8-sinf', en: 'Grade 8' },
+    nav_home: { uz: 'Bosh sahifa', en: 'Home' }, nav_g6: { uz: '6-sinf', en: 'Grade 6' }, nav_g7: { uz: '7-sinf', en: 'Grade 7' }, nav_g8: { uz: '8-sinf', en: 'Grade 8' }, nav_grades: { uz: 'Sinflar', en: 'Grades' }, ng6: { uz: 'Boshlang‘ich bosqich', en: 'Foundation' }, ng7: { uz: 'Keyingi bosqich', en: 'Intermediate' }, ng8: { uz: 'Chuqurlashtirish', en: 'Advanced' },
     nav_lab: { uz: '3D laboratoriya', en: '3D Lab' }, nav_pt: { uz: 'Davriy jadval', en: 'Periodic table' }, nav_me: { uz: 'Yutuqlarim', en: 'My progress' }, b_home: { uz: 'Bosh', en: 'Home' }, b_tests: { uz: 'Testlar', en: 'Tests' }, tool_h: { uz: 'Interaktiv vosita', en: 'Interactive tool' }, pt_desc: { uz: "Elementlarni bosib o'rganing: tartib raqami, massa, elektron qavatlar, oilalar va o'yin rejimi.", en: 'Explore elements by clicking: atomic number, mass, shells, families and a game mode.' }, nav_book: { uz: 'Darslik', en: 'Textbook' },
     search: { uz: 'Mavzu, dars raqami yoki tajriba…', en: 'Topic, lesson number or experiment…' },
     foot: { uz: "6–8-sinf kimyo darsliklari asosidagi interaktiv o'quv sayti", en: 'Interactive learning site based on the Grade 6–8 chemistry textbooks' },
@@ -513,8 +513,28 @@
 
   /* ---------- router ---------- */
   let lastRoute = '';
+  // Sahifalar orasida silliq o'tish: View Transitions API (Chrome/Edge 111+, Safari 18+) bilan
+  // eski sahifa tez so'nadi, yangisi yumshoq paydo bo'ladi; header va pastki menyu joyida qoladi.
+  // Qo'llamaydigan brauzerda — oddiy qisqa fade (brand.css). "Harakatni kamaytirish" yoqilgan bo'lsa — animatsiyasiz.
   function route() {
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (document.startViewTransition && !reduce && lastRoute !== '' && document.visibilityState === 'visible') {
+      const root = document.documentElement, sw = document.body.dataset.swipe; // telefonda surish yo'nalishi
+      const cls = ['zk-vt'].concat(sw === 'l' || sw === 'r' ? ['zk-vt-' + sw] : []);
+      root.classList.add(...cls);
+      try {
+        const vt = document.startViewTransition(() => renderRoute());
+        vt.finished.finally(() => root.classList.remove(...cls));
+        return;
+      } catch (e) { root.classList.remove('zk-vt'); }
+    }
+    renderRoute();
+  }
+  function toTop() { const st = document.documentElement.style; const prev = st.scrollBehavior; st.scrollBehavior = 'auto'; window.scrollTo(0, 0); st.scrollBehavior = prev; }
+  function renderRoute() {
     const h = (location.hash || '#home').slice(1);
+    const newPage = h !== lastRoute && !(h.match(/-\d+$/) && lastRoute === h);
+    if (newPage) toTop();
     destroyLab(); closeModal(); document.getElementById('nav').classList.remove('open');
     let m, navKey = 'home';
     if (h === 'home' || h === '') home();
@@ -530,14 +550,34 @@
     else if ((m = h.match(/^lab-(.+)$/))) { labPage(m[1]); navKey = 'lab'; }
     else if ((m = h.match(/^book-(g[678])$/))) { book(m[1], bookPos[m[1]]); navKey = 'book'; }
     else home();
-    if (h !== lastRoute && !(h.match(/-\d+$/) && lastRoute === h)) window.scrollTo({ top: 0 });
+    if (newPage) { toTop(); requestAnimationFrame(toTop); } // silliq scroll emas — darhol yuqoriga (rasmlar yuklansa ham)
     lastRoute = h;
     document.querySelectorAll('nav.main a, .bnav a').forEach((a) => a.classList.toggle('on', a.dataset.nav === navKey));
+    const gBtn = document.getElementById('navGradesBtn'); if (gBtn) { gBtn.classList.toggle('on', /^g[678]$/.test(navKey)); gradesMenu(false); }
     if (XPok()) XP.refresh();
-    app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
+    app.classList.remove('enter'); if (!document.documentElement.classList.contains('zk-vt')) { void app.offsetWidth; app.classList.add('enter'); }
   }
   window.addEventListener('hashchange', route);
   document.querySelectorAll('.lang button').forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
   document.getElementById('burger').onclick = () => document.getElementById('nav').classList.toggle('open');
+  // "Sinflar" ochiladigan menyusi (header): 6-, 7-, 8-sinf pastga ochiladi.
+  function gradesMenu(open) {
+    const btn = document.getElementById('navGradesBtn'), menu = document.getElementById('navGradesMenu');
+    if (!btn || !menu) return;
+    menu.hidden = !open; btn.setAttribute('aria-expanded', String(open)); btn.classList.toggle('open', open);
+  }
+  (function () {
+    const grp = document.getElementById('navGrades'), btn = document.getElementById('navGradesBtn'), menu = document.getElementById('navGradesMenu');
+    if (!grp || !btn || !menu) return;
+    btn.onclick = (e) => { e.stopPropagation(); const open = menu.hidden; gradesMenu(open); if (open) menu.querySelector('a').focus({ preventScroll: true }); };
+    menu.addEventListener('click', (e) => { if (e.target.closest('a')) gradesMenu(false); });
+    document.addEventListener('click', (e) => { if (!menu.hidden && !grp.contains(e.target)) gradesMenu(false); });
+    grp.addEventListener('keydown', (e) => {
+      const L = [...menu.querySelectorAll('a')], i = L.indexOf(document.activeElement);
+      if (e.key === 'Escape' && !menu.hidden) { e.preventDefault(); gradesMenu(false); btn.focus(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); if (menu.hidden) gradesMenu(true); L[(i + 1) % L.length].focus(); }
+      else if (e.key === 'ArrowUp' && !menu.hidden) { e.preventDefault(); L[(i - 1 + L.length) % L.length].focus(); }
+    });
+  })();
   setLang(lang);
 })();

@@ -40,6 +40,20 @@ Maktab dizayn tizimi: logotip rangi teal `#00555a`, yashil + ko'k + oq, sarlavha
 - `mobile-admin-nav.spec`: pastki menyu endi ekran chetidan ~10px ichkarida (suzuvchi). Test "to'liq kenglik"
   o'rniga "chetlar ayirilgan kenglik va markazda" deb yangilandi.
 
+- **"Sinflar" menyusi:** headerdagi alohida 6-, 7-, 8-sinf havolalari bitta ochiladigan menyuga birlashtirildi
+  (`#navGradesBtn` / `#navGradesMenu`, `app.js` → `gradesMenu()`); burger menyusida joyida ochiladi.
+- **Kompyuterda to'liq ekran:** `.wrap` 1290px cheklovisiz, chetlarda `clamp(16px,3.2vw,72px)`.
+
+- **Sahifa o'tishlari:** `app.js` `route()` → `document.startViewTransition()` (qo'llanmasa — 280ms fade).
+  Header (`zk-header`) va pastki menyu (`zk-bnav`) o'tishda qotib turadi; sahifa darhol yuqoriga qaytadi
+  (`scroll-behavior:smooth` chetlab o'tiladi). `prefers-reduced-motion` da animatsiya yo'q.
+
+- **Yangi rasmiy logotip (2026-11-13):** foydalanuvchi bergan rasm potrace bilan vektorga o'tkazildi (rang #075860).
+  Sayt hamma joyda faqat belgini ishlatadi (`zukko-mark.svg`, footerda oq variant) — foydalanuvchi talabi: inglizcha
+  "INTERNATIONAL SCHOOL" yozuvi kerak emas, ostida "ZUKKO XALQARO MAKTABI". To'liq logotip (`zukko-logo.svg`) zaxirada,
+  ilova ikonkasi — oq fonda teal belgi (`zukko-school-app-icon.svg`, `zukko-app-192/512.png`, `zukko-apple-180.png`).
+  Asl rasm: `docs/design/2026-11-13/zukko-logo-asl.webp`. `brand-login.spec` va `real-school-logo.spec` yangi logotipga moslandi.
+
 ## Oqibatlar
 - `+` Bitta brend, barqaror ikonkalar, telefonda kamroq yuklama (3D bosh sahifada so'ralganda).
 - `−` Yana bitta override qatlami (`brand.css`). Keyinchalik `index.html` dagi eski inline CSS va

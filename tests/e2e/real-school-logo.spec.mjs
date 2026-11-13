@@ -12,11 +12,11 @@ test('original Zukko school emblem loads in the masthead, without placeholder Z'
     shownWidth:el.getBoundingClientRect().width,
     shownHeight:el.getBoundingClientRect().height,
   }));
-  expect(img.src).toBe('/assets/zukko-school-logo.webp');
+  expect(img.src).toBe('/assets/zukko-mark.svg'); // 2026-11-13: yangi rasmiy logotip belgisi
   expect(img.complete).toBe(true);
-  expect(img.width).toBeGreaterThan(40);
+  expect(img.width).toBeGreaterThan(40); // SVG width=139
   expect(img.height).toBeGreaterThan(40);
-  expect(img.shownWidth).toBeGreaterThanOrEqual(30);
+  expect(img.shownWidth).toBeGreaterThanOrEqual(15); // yangi belgi tik (qalam): ~20×46px
   expect(img.shownHeight).toBeGreaterThanOrEqual(30);
   await expect(page.locator('header.top .zk-school-name')).toContainText('ZUKKO XALQARO');
 });

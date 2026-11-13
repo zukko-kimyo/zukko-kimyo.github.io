@@ -6,7 +6,7 @@ const EMOJI_UI = /[🏠📚📘📖📄🧪✅🛡⚡🔥⭐📊🎯🚀🧩📜
 test('brand layer is loaded: teal hero, serif headings; login (brand-entry.css) keeps school logo', async ({ page }) => {
   await gotoMock(page);
   const gate = page.locator('.zk-gate');
-  await expect(gate.locator('.mk img')).toHaveAttribute('src', /zukko-school-logo\.webp/);
+  await expect(gate.locator('.mk img')).toHaveAttribute('src', /zukko-mark\.svg/);
   await page.goto('/index.html#home'); await waitReady(page);
   const s = await page.evaluate(() => ({
     hero: getComputedStyle(document.querySelector('.zk-hero-v3')).backgroundColor,
@@ -199,4 +199,97 @@ test('desktop: content uses the full screen width (1440 / 1920 / 2560)', async (
     expect(r.width, 'hero container spans the screen at ' + width).toBeGreaterThanOrEqual(width - 1);
     expect(r.sw).toBeLessThanOrEqual(1);
   }
+});
+
+test('desktop: "Sinflar" opens a dropdown with grades 6, 7 and 8', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop header only (phones use the bottom "Sinflar" menu)');
+  await page.goto('/index.html#home'); await waitReady(page);
+  const btn = page.locator('#navGradesBtn'), menu = page.locator('#navGradesMenu');
+  await expect(btn).toBeVisible();
+  await expect(btn).toHaveText(/Sinflar/);
+  await expect(menu).toBeHidden();
+  await expect(page.locator('nav.main > a[href="#g6"]')).toHaveCount(0);
+  await btn.click();
+  await expect(btn).toHaveAttribute('aria-expanded', 'true');
+  await expect(menu.locator('a')).toHaveCount(3);
+  await expect(menu.locator('a b')).toHaveText(['6-sinf', '7-sinf', '8-sinf']);
+  const [b, m] = await Promise.all([btn.boundingBox(), menu.boundingBox()]);
+  expect(m.y, 'menu opens downward').toBeGreaterThan(b.y + b.height - 1);
+  await menu.locator('a[href="#g7"]').click();
+  await expect(page).toHaveURL(/#g7$/);
+  await expect(menu).toBeHidden();
+  await expect(btn).toHaveClass(/\bon\b/);
+  await btn.click(); await expect(menu).toBeVisible();
+  await page.keyboard.press('Escape'); await expect(menu).toBeHidden();
+  await btn.click(); await page.mouse.click(20, 400); await expect(menu).toBeHidden();
+  await page.evaluate(() => { location.hash = '#tests'; });
+  await expect(btn).not.toHaveClass(/\bon\b/);
+});
+
+test('narrow desktop (burger): "Sinflar" expands inside the menu', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop/tablet only');
+  await page.setViewportSize({ width: 1024, height: 760 });
+  await page.goto('/index.html#home'); await waitReady(page);
+  await page.locator('#burger').click();
+  await page.locator('#navGradesBtn').click();
+  await expect(page.locator('#navGradesMenu a')).toHaveCount(3);
+  await page.locator('#navGradesMenu a[href="#g8"]').click();
+  await expect(page).toHaveURL(/#g8$/);
+});
+
+test('page transitions: one smooth transition, instant scroll to top, header stays in place', async ({ page }) => {
+  await page.goto('/index.html#home'); await waitReady(page);
+  const info = await page.evaluate(() => ({ vt: typeof document.startViewTransition === 'function',
+    hdr: getComputedStyle(document.querySelector('header.top')).viewTransitionName }));
+  if (info.vt) expect(info.hdr).toBe('zk-header');
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, 1500); document.documentElement.style.scrollBehavior = ''; });
+  expect(await page.evaluate(() => scrollY)).toBeGreaterThan(500);
+  await page.evaluate(() => { location.hash = '#g7'; });
+  await expect(page.locator('#app .page-h.g7')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => scrollY), { message: 'jumps to top instead of smooth-scrolling', timeout: 3000 }).toBeLessThanOrEqual(2);
+  // stagger kaskadi yo'q: dars kartalari alohida kechikmaydi
+  const lcAnim = await page.locator('.lcard').first().evaluate((e) => getComputedStyle(e).animationName);
+  expect(lcAnim).toBe('none');
+});
+
+test('periodic table fits on one screen on laptops and desktops', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Phones scroll the table sideways by design');
+  for (const [w, h] of [[1920, 991], [1366, 657]]) {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto('/index.html#ptable'); await waitReady(page);
+    await expect(page.locator('.ptcell[data-z="118"]')).toBeAttached();
+    const r = await page.evaluate(() => { const g = document.querySelector('.ptgrid').getBoundingClientRect(); return { gh: g.height, gw: g.width, sw: document.querySelector('.ptscroll').scrollWidth - document.querySelector('.ptscroll').clientWidth }; });
+    expect(r.gh, 'whole table height fits the viewport at ' + w).toBeLessThanOrEqual(h - 72);
+    expect(r.gw).toBeLessThanOrEqual(1200);
+    expect(r.sw, 'no sideways scroll needed on desktop').toBeLessThanOrEqual(1);
+  }
+});
+
+test('home: molecular lab card is level (not rotated)', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop shows the card open');
+  await page.goto('/index.html#home'); await waitReady(page);
+  expect(await page.locator('.zk-hero-scene').evaluate((e) => getComputedStyle(e).transform)).toBe('none');
+});
+
+test('new official logo: mark only in header, login and footer; app icons', async ({ page }) => {
+  await gotoMock(page);
+  // Login: faqat belgi (inglizcha "INTERNATIONAL SCHOOL" yozuvisiz), ostida o'zbekcha maktab nomi
+  const mark = page.locator('.zk-gate .mk img');
+  await expect(mark).toHaveAttribute('src', /assets\/zukko-mark\.svg/);
+  const box = await mark.boundingBox(); expect(box.height).toBeGreaterThan(60);
+  await expect(page.locator('.zk-gate .zk-brand-kicker')).toHaveText('ZUKKO XALQARO MAKTABI');
+  await expect(page.locator('img[src*="zukko-logo"]')).toHaveCount(0);
+  await page.goto('/index.html#home'); await waitReady(page);
+  await expect(page.locator('header.top .logo .mark img')).toHaveAttribute('src', /zukko-mark\.svg/);
+  await expect(page.locator('footer .zk-foot-logo')).toHaveAttribute('src', /zukko-mark-white\.svg/);
+  const r = await page.evaluate(async () => {
+    const m = await (await fetch('manifest.webmanifest')).json();
+    const st = await Promise.all(m.icons.map((i) => fetch(i.src).then((x) => x.status)));
+    const apple = document.querySelector('link[rel="apple-touch-icon"]').getAttribute('href');
+    return { st, srcs: m.icons.map((i) => i.src), apple, appleSt: (await fetch(apple)).status, mark: await (await fetch('assets/zukko-mark.svg')).text() };
+  });
+  expect(r.st.every((x) => x === 200)).toBe(true);
+  expect(r.srcs.join(' ')).toContain('zukko-app-512.png');
+  expect(r.apple).toContain('zukko-apple-180.png'); expect(r.appleSt).toBe(200);
+  expect(r.mark).toContain('#075860');
 });

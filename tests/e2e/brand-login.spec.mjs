@@ -65,10 +65,11 @@ test('Android web app manifest and favicon reference the school, not the old bea
     const m=await (await fetch('manifest.webmanifest?v=20261112-brand-02')).json();
     const icon=await fetch('assets/zukko-school-app-icon.svg');
     const source=await icon.text();
-    return {m,iconStatus:icon.status,inlineLogo:source.includes('data:image/webp;base64,')};
+    // 2026-11-13: yangi rasmiy logotip — vektor (teal #075860), ichiga raster joylanmagan
+    return {m,iconStatus:icon.status,vectorLogo:/<path[^>]+fill="#075860"/.test(source)&&!source.includes('base64')};
   });
   expect(assets.iconStatus).toBe(200);
-  expect(assets.inlineLogo).toBe(true);
+  expect(assets.vectorLogo).toBe(true);
   expect(assets.m.icons[0].src).toContain('zukko-school-app-icon.svg');
   expect(assets.m.icons.map(i=>i.src).join(' ')).not.toContain('icon-512.png');
 });
@@ -99,20 +100,19 @@ test('admin login keeps original authentication and shows authenticated site log
 });
 
 
-test('PWA icon paints the white school emblem, not only a green background', async ({ page }) => {
+test('PWA icon paints the official teal school emblem on white (2026-11-13 logo)', async ({ page }) => {
   await page.goto('/index.html?mock#home');
-  const pixel=await page.evaluate(async () => {
+  const px=await page.evaluate(async () => {
     const img=new Image();img.src='assets/zukko-school-app-icon.svg';
     await img.decode();
     const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
     const ctx=canvas.getContext('2d',{willReadFrequently:true});
     ctx.drawImage(img,0,0,128,128);
-    // Top centre of the school's white upright centre pillar (source image y=~40px).
-    const d=ctx.getImageData(64,42,1,1).data;
-    return [...d];
+    // Markaziy ustun (qalam) — teal; burchak — oq fon.
+    return { pillar:[...ctx.getImageData(64,42,1,1).data], corner:[...ctx.getImageData(4,4,1,1).data] };
   });
-  expect(pixel[3]).toBeGreaterThan(200);
-  expect(pixel[0], 'The school icon should contain a visible white emblem').toBeGreaterThan(155);
-  expect(pixel[1]).toBeGreaterThan(155);
-  expect(pixel[2]).toBeGreaterThan(155);
+  expect(px.pillar[3]).toBeGreaterThan(200);
+  expect(px.pillar[0], 'teal emblem (red channel low)').toBeLessThan(80);
+  expect(px.pillar[1]).toBeGreaterThan(50); expect(px.pillar[2]).toBeGreaterThan(60);
+  expect(Math.min(...px.corner.slice(0,3)), 'white background').toBeGreaterThan(235);
 });
