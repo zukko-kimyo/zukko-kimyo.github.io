@@ -102,3 +102,29 @@ test('mobile: teacher panel tabs all fit on screen', async ({ page, isMobile }) 
   const out = await page.$$eval('.tc-tabs button', (bs) => bs.filter((b) => { const r = b.getBoundingClientRect(); return r.left < 0 || r.right > innerWidth + 1; }).length);
   expect(out).toBe(0);
 });
+
+test('user chip ("A") sits in the bottom-right of the phone menu and opens upward', async ({ page, isMobile }) => {
+  await bootstrapAdmin(page);
+  const chip = page.locator('#uchip');
+  if (!isMobile) {
+    await expect(page.locator('header.top #uchip')).toHaveCount(1);
+    return;
+  }
+  await expect(page.locator('#bnav #uchip')).toHaveCount(1);
+  await expect(page.locator('header.top #uchip')).toHaveCount(0);
+  await expect(page.locator('#mobilePanelLink')).toBeHidden();
+  const box = await chip.boundingBox(); const vw = page.viewportSize().width, vh = page.viewportSize().height;
+  expect(box.x + box.width).toBeGreaterThan(vw * 0.75);
+  expect(box.y).toBeGreaterThan(vh * 0.8);
+  await page.locator('#uchip > button').click();
+  const menu = page.locator('#uchip .mn');
+  await expect(menu).toBeVisible();
+  await expect(menu.locator('a[href="#admin"]')).toHaveCount(1);
+  const m = await menu.boundingBox();
+  expect(m.y + m.height).toBeLessThanOrEqual(box.y + 2);
+  expect(m.x + m.width).toBeLessThanOrEqual(vw);
+  await menu.locator('a[href="#admin"]').click();
+  await expect(page).toHaveURL(/#admin$/);
+  await expect(menu).toBeHidden();
+  await expect(chip).toHaveClass(/on/);
+});

@@ -27,6 +27,8 @@ Maktab dizayn tizimi: logotip rangi teal `#00555a`, yashil + ko'k + oq, sarlavha
    - o'qituvchi paneli tablari telefonda 2 ustunli to'r (hammasi ko'rinadi);
    - "Molekulyar laboratoriya" telefonda yig'ilgan: bosilganda ochiladi, 3D faqat shunda yuklanadi
      (foydalanuvchi so'rovi). Kompyuterda bosh blok yonida qoladi.
+   - telefonda foydalanuvchi belgisi (avatar "A") pastki menyuning o'ng chetiga ko'chdi, "Panel" tugmasi
+     o'rnida turadi; menyu yuqoriga ochiladi (foydalanuvchi so'rovi). Kompyuterda header'da qoladi.
 
 ## Oqibatlar
 - `+` Bitta brend, barqaror ikonkalar, telefonda kamroq yuklama (3D bosh sahifada so'ralganda).

@@ -67,6 +67,8 @@ body.zk-v3 .uchip .av {background:var(--zk-teal);border-radius:10px}
 body.zk-v3 .uchip .mn {border:1px solid var(--zk-line);border-radius:14px;box-shadow:0 18px 40px -16px rgba(2,43,46,.3)}
 body.zk-v3 .uchip .mn a, body.zk-v3 .uchip .mn button {display:flex;align-items:center;gap:8px}
 body.zk-v3 .uchip .mn .zi {color:var(--zk-teal)}
+body.zk-v3 .uchip .mn .who {border-bottom:1px solid var(--zk-line)}
+body.zk-v3 .uchip .mn .who small {color:var(--zk-muted)}
 
 /* Keng bo'lmagan kompyuter ekranlari: nav "burger" menyuga o'tadi, header baribir bitta qator */
 @media (max-width:1180px) {
@@ -348,3 +350,21 @@ body.zk-v3 .zk-scene-toggle {display:none}
 }
 @keyframes zkSceneIn {from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce) { body.zk-v3 .zk-hero-scene.open {animation:none} body.zk-v3 .zk-scene-toggle-ch {transition:none} }
+
+/* Telefonda foydalanuvchi belgisi pastki menyuning o'ng chetida (mobile.js ko'chiradi) */
+@media (max-width:760px) {
+  body.zk-chip-bottom #mobilePanelLink {display:none!important}
+  body.zk-v3 .bnav .uchip {position:static;flex:1;display:flex;justify-content:center;min-width:0}
+  body.zk-v3 .bnav .uchip>button {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:100%;max-width:none;border:0;background:none;border-radius:14px;padding:6px 2px;color:var(--zk-muted);font:700 11px var(--f)}
+  body.zk-v3 .bnav .uchip.on>button, body.zk-v3 .bnav .uchip.open>button {background:var(--zk-teal-50);color:var(--zk-teal)}
+  body.zk-v3 .bnav .uchip .av {width:26px;height:26px;border-radius:50%;font-size:13px;background:var(--zk-teal)}
+  body.zk-v3 .bnav .uchip .nm {display:block!important;max-width:68px;font-size:11px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.zk-v3 .bnav .uchip .mn a, body.zk-v3 .bnav .uchip .mn button {flex:none;flex-direction:row;justify-content:flex-start;align-items:center;gap:10px;width:100%;padding:11px 12px;border:0;border-radius:10px;background:none;font:700 14.5px var(--f);color:var(--zk-ink);text-align:left}
+  body.zk-v3 .bnav .uchip .mn a:hover, body.zk-v3 .bnav .uchip .mn button:hover, body.zk-v3 .bnav .uchip .mn a:active {background:var(--zk-teal-50)}
+  body.zk-v3 .bnav .uchip .mn .zi {width:19px;height:19px;margin:0;color:var(--zk-teal);transform:none}
+  body.zk-v3 .bnav .uchip .mn [data-out] {color:#b4232b;border-top:1px solid var(--zk-line);border-radius:0 0 10px 10px;margin-top:4px}
+  body.zk-v3 .bnav .uchip .mn [data-out] .zi {color:#b4232b}
+  body.zk-v3 .bnav .uchip .mn {position:fixed;top:auto;right:10px;left:auto;bottom:calc(78px + env(safe-area-inset-bottom));min-width:240px;max-width:calc(100vw - 20px);z-index:80;animation:zkMenuUp .18s ease-out}
+}
+@keyframes zkMenuUp {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce) { body.zk-v3 .bnav .uchip .mn {animation:none} }

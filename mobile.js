@@ -55,6 +55,29 @@
     if (window.MutationObserver) new MutationObserver(refreshMobileNav).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
     refreshMobileNav();
   }
+  // Telefonda foydalanuvchi belgisi (avatar "A" va menyusi) pastki menyuning o'ng chetiga ko'chadi:
+  // "Panel" tugmasi o'rnida turadi, menyu yuqoriga ochiladi. Kompyuterda header'da qoladi.
+  (function bottomChip() {
+    const bnav = document.getElementById('bnav'); const head = document.querySelector('header.top .wrap');
+    if (!bnav || !head || !window.matchMedia) return;
+    const mq = matchMedia('(max-width: 760px)');
+    function place() {
+      const c = document.getElementById('uchip'); if (!c) { document.body.classList.remove('zk-chip-bottom'); return; }
+      if (mq.matches) {
+        if (c.parentElement !== bnav) bnav.insertBefore(c, document.getElementById('mobileGradesMenu'));
+        document.body.classList.add('zk-chip-bottom');
+        const h = (location.hash || '#home').slice(1);
+        c.classList.toggle('on', /^(admin|teacher|me|certificate)$/.test(h));
+      } else {
+        if (c.parentElement !== head) head.insertBefore(c, head.querySelector('.lang'));
+        document.body.classList.remove('zk-chip-bottom');
+      }
+    }
+    new MutationObserver(place).observe(head, { childList: true });
+    if (mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
+    window.addEventListener('hashchange', place);
+    place();
+  })();
   const coarse = matchMedia('(pointer:coarse)').matches;
   if (coarse) document.documentElement.classList.add('touch');
   // scroll pastga -> fnav yashirinadi, yuqoriga -> chiqadi
