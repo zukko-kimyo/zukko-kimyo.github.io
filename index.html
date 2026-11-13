@@ -651,7 +651,7 @@ button,a,.ptcell{touch-action:manipulation}
 <link rel="stylesheet" href="visual-v3.css?v=20261112-logo-01" />
 <link rel="stylesheet" href="mobile-admin.css?v=20261112-mobile-01" />
 <link rel="stylesheet" href="brand-entry.css?v=20261112-brand-02" />
-<link rel="stylesheet" href="brand.css?v=20261113-logo-03" />
+<link rel="stylesheet" href="brand.css?v=20261113-perf-01" />
 </head>
 <body class="zk-v3">
 <header class="top">
@@ -698,22 +698,32 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261113-logo-03';
+const VER = '20261113-perf-01';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
+// Tezlik (2026-11-13): hamma fayllar boshidanoq PARALLEL yuklab olinadi (preload), keyin tartib bilan ishga tushadi.
+// 3D, darslar va testlar login tekshiruvi bilan bir vaqtda tayyorlanadi; foydalanuvchiga bog'liq qismlar — logindan keyin.
+const LABS = ['lab-core.js', 'lab-exps1.js', 'lab-exps2.js', 'lab-exps3.js', 'lab-exps4.js', 'lab-exps5.js', 'lab-exps6.js', 'lab-exps7.js'];
+const CONTENT = ['data-g6.js', 'data-g7.js', 'data-g8.js', 'tests.js', 'tests-g8.js', 'pages-tr.js', 'ptable-3d.js', 'ptable.js'];
+const USER = ['progress.js', 'student-dashboard.js', 'lab-guide.js', 'attendance.js', 'admin-weekly.js', 'certificate.js', 'tilt.js', 'lib/stats.js', 'teacher.js', 'admin-mobile.js', 'admin.js', 'app.js', 'mobile.js'];
+const pre = (href, rel, as) => { const l = document.createElement('link'); l.rel = rel; if (as) l.as = as; if (rel === 'modulepreload' || as === 'script') l.crossOrigin = /^https?:/.test(href) ? 'anonymous' : null; l.href = href; document.head.appendChild(l); };
+['firebase-config.js', 'icons.js', 'auth.js', ...LABS, ...CONTENT, ...USER].forEach((s) => pre(s + '?v=' + VER, 'preload', 'script'));
+['build/three.module.js', 'examples/jsm/controls/OrbitControls.js', 'examples/jsm/environments/RoomEnvironment.js'].forEach((f) => pre('https://cdn.jsdelivr.net/npm/three@0.160.0/' + f, 'modulepreload'));
 await load('firebase-config.js').catch(() => {});
 await load('icons.js').catch(() => {});
 await load('auth.js').catch(() => {});
-if (window.ZKAuth) await ZKAuth.ready();
-let three = false;
-try {
-  const THREE = await import('three');
-  const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
-  const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
-  window.THREE = Object.assign({}, THREE, { OrbitControls, RoomEnvironment }); three = true;
-} catch (e) { console.warn('3D unavailable', e); }
-if (three) { for (const s of ['lab-core.js', 'lab-exps1.js', 'lab-exps2.js', 'lab-exps3.js', 'lab-exps4.js', 'lab-exps5.js', 'lab-exps6.js', 'lab-exps7.js']) await load(s); }
-else window.Lab = { lang: 'uz', list: [], exps: {}, tr: (o) => (typeof o === 'string' ? o : o.uz), open: () => null };
-for (const s of ['data-g6.js', 'data-g7.js', 'data-g8.js', 'tests.js', 'tests-g8.js', 'pages-tr.js', 'ptable-3d.js', 'ptable.js', 'progress.js', 'student-dashboard.js', 'lab-guide.js', 'attendance.js', 'admin-weekly.js', 'certificate.js', 'tilt.js', 'lib/stats.js', 'teacher.js', 'admin-mobile.js', 'admin.js', 'app.js', 'mobile.js']) await load(s).catch(() => {});
+const authP = window.ZKAuth ? ZKAuth.ready() : Promise.resolve(null);
+const contentP = (async () => {
+  let three = false;
+  try {
+    const [THREE, { OrbitControls }, { RoomEnvironment }] = await Promise.all([import('three'), import('three/addons/controls/OrbitControls.js'), import('three/addons/environments/RoomEnvironment.js')]);
+    window.THREE = Object.assign({}, THREE, { OrbitControls, RoomEnvironment }); three = true;
+  } catch (e) { console.warn('3D unavailable', e); }
+  if (three) { for (const s of LABS) await load(s); }
+  else window.Lab = { lang: 'uz', list: [], exps: {}, tr: (o) => (typeof o === 'string' ? o : o.uz), open: () => null };
+  for (const s of CONTENT) await load(s).catch(() => {});
+})();
+await Promise.all([authP, contentP]);
+for (const s of USER) await load(s).catch(() => {});
 if (window.ZKAuth && ZKAuth.user) ZKAuth.chip();
 </script>
 </body>

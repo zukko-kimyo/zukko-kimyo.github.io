@@ -381,11 +381,14 @@ body.zk-v3 .zk-scene-toggle {display:none}
   --zk-glass-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 10px 36px rgba(2,43,46,.12);
 }
 /* Yumshoq "mesh" fon — oq sahifa jonliroq, lekin matnga xalaqit bermaydi */
-body.zk-v3 {background:
+/* Tezlik: "background-attachment:fixed" scrollning har qadamida butun ekranni qayta chizdirardi
+   (o'lchov: bosh sahifada scroll 14 kadr/s). Endi fon alohida qotirilgan qatlamda — GPU uni bir marta chizadi. */
+body.zk-v3 {background:var(--zk-bg)}
+body.zk-v3::before {content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;transform:translateZ(0);
+  background:
   radial-gradient(900px 600px at 105% -10%,rgba(46,158,106,.10),transparent 60%),
   radial-gradient(800px 560px at -10% 30%,rgba(37,99,201,.08),transparent 60%),
-  radial-gradient(700px 500px at 60% 110%,rgba(0,85,90,.07),transparent 60%),
-  var(--zk-bg);background-attachment:fixed}
+  radial-gradient(700px 500px at 60% 110%,rgba(0,85,90,.07),transparent 60%)}
 
 /* Suyuq shisha yuzalar */
 body.zk-v3 header.top,

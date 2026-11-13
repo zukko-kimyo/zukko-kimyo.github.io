@@ -191,7 +191,8 @@
       if (labHandle) setTimeout(() => labHandle && labHandle.seek(9), 50);
     };
     const compact = window.matchMedia && matchMedia('(max-width: 760px)').matches;
-    if (!compact) startHero();
+    // Tezlik: 3D sahna sahifa ko'ringandan keyin, brauzer bo'shaganda quriladi — bosh sahifaga o'tish darhol bo'ladi.
+    if (!compact) { const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200)); setTimeout(() => idle(startHero, { timeout: 800 }), 350); }
     tog.onclick = () => {
       const open = !scene.classList.contains('open');
       scene.classList.toggle('open', open); tog.setAttribute('aria-expanded', String(open)); tog.classList.toggle('open', open);
