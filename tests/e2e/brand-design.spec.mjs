@@ -308,3 +308,21 @@ test('speed: background is not repainted on scroll and hero 3D waits until the p
   await expect(page.locator('#heroLab')).toBeAttached();
   expect(await page.locator('#heroLab canvas').count(), 'hero 3D is deferred so navigation is instant').toBe(0);
 });
+
+test('speed: weak GPUs get the light 3D mode automatically; ?gfx=hq forces full quality', async ({ page }) => {
+  await page.goto('/index.html#home'); await waitReady(page);
+  const id = await page.evaluate(() => window.Lab?.list?.find((e) => e.build)?.id || '');
+  test.skip(!id, '3D modules are unavailable in this environment');
+  const tier = await page.evaluate(() => window.Lab.gpuTier && window.Lab.gpuTier());
+  expect(['lite', 'hq']).toContain(tier);
+  await page.evaluate((x) => { location.hash = '#lab-' + x; }, id);
+  await page.waitForFunction(() => document.querySelector('#bigLab .lab-err') || document.querySelector('#bigLab[data-gfx]'), null, { timeout: 20_000 });
+  test.skip(await page.locator('#bigLab .lab-err').count() > 0, 'No WebGL renderer');
+  await expect(page.locator('#bigLab')).toHaveAttribute('data-gfx', tier);
+  // test brauzeri dasturiy grafika (SwiftShader) — yengil rejim kutiladi
+  const gpu = await page.evaluate(() => window.Lab.gpu || '');
+  if (/SwiftShader|llvmpipe/i.test(gpu)) expect(tier).toBe('lite');
+  await page.goto('/index.html?gfx=hq#home'); await waitReady(page);
+  expect(await page.evaluate(() => window.Lab.gpuTier())).toBe('hq');
+  await page.evaluate(() => localStorage.removeItem('zk_gfx'));
+});
