@@ -421,20 +421,20 @@ body.zk-v3 .zk-hero-v3 .btn {border-radius:999px}
 /* ---- Darslik bo'lim ranglari (--uc) ---- */
 body.zk-v3 .unit-h span {background:var(--uc,#ff7a1a)}
 body.zk-v3 .lcard {border-left:4px solid var(--uc,var(--zk-line))}
-body.zk-v3 .lcard:hover {border-color:rgba(0,85,90,.12);border-left-color:var(--uc);box-shadow:0 16px 36px color-mix(in srgb,var(--uc,#00555a) 18%,transparent)}
+body.zk-v3 .lcard:hover {border-color:rgba(0,85,90,.12);border-left-color:var(--uc,#00555a);box-shadow:0 16px 36px color-mix(in srgb,var(--uc,#00555a) 18%,transparent)}
 body.zk-v3 .lcard.done {border-left-color:#22c55e}
 /* Dars sahifasi: raqam, faol tab, bo'lim sarlavhalaridagi ikonkalar va "Asosiy savol" bo'lim rangida */
 body.zk-v3 .lesson-top {border-bottom:1px solid rgba(0,85,90,.08);background:linear-gradient(180deg,color-mix(in srgb,var(--uc,#00555a) 7%,transparent),transparent)}
-body.zk-v3 .lhead .lnum {background:var(--uc)!important;box-shadow:0 8px 20px color-mix(in srgb,var(--uc) 35%,transparent)!important}
-body.zk-v3 .lesson-top .tabs button.on {color:color-mix(in srgb,var(--uc) 80%,#0f2a2c);border-color:var(--uc)}
-body.zk-v3 .lesson-top .tabs button .cnt {background:color-mix(in srgb,var(--uc) 14%,#fff);color:color-mix(in srgb,var(--uc) 75%,#0f2a2c)}
-body.zk-v3 .lesson-body .panel > h3 > .zi:first-child, body.zk-v3 .lesson-body .panel > h4 > .zi:first-child {color:var(--uc)}
-body.zk-v3 .lesson-body .keyq {background:linear-gradient(135deg,color-mix(in srgb,var(--uc) 10%,#fff),#fff);border-color:color-mix(in srgb,var(--uc) 30%,#fff)}
-body.zk-v3 .lesson-body .keyq .ic {background:#fff;color:var(--uc)}
-body.zk-v3 .lesson-body .keyq b, body.zk-v3 .lesson-body .keyq small {color:color-mix(in srgb,var(--uc) 75%,#0f2a2c)}
-body.zk-v3 .lesson-body .navl a.on {background:var(--uc)!important}
-body.zk-v3 .lesson-body .xinline .play {background:var(--uc)}
-body.zk-v3 .lesson-body .xinline {border-color:color-mix(in srgb,var(--uc) 28%,#fff);background:linear-gradient(135deg,color-mix(in srgb,var(--uc) 8%,#fff),#fff)}
+body.zk-v3 .lhead .lnum {background:var(--uc,#00555a)!important;box-shadow:0 8px 20px color-mix(in srgb,var(--uc,#00555a) 35%,transparent)!important}
+body.zk-v3 .lesson-top .tabs button.on {color:color-mix(in srgb,var(--uc,#00555a) 80%,#0f2a2c);border-color:var(--uc,#00555a)}
+body.zk-v3 .lesson-top .tabs button .cnt {background:color-mix(in srgb,var(--uc,#00555a) 14%,#fff);color:color-mix(in srgb,var(--uc,#00555a) 75%,#0f2a2c)}
+body.zk-v3 .lesson-body .panel > h3 > .zi:first-child, body.zk-v3 .lesson-body .panel > h4 > .zi:first-child {color:var(--uc,#00555a)}
+body.zk-v3 .lesson-body .keyq {background:linear-gradient(135deg,color-mix(in srgb,var(--uc,#00555a) 10%,#fff),#fff);border-color:color-mix(in srgb,var(--uc,#00555a) 30%,#fff)}
+body.zk-v3 .lesson-body .keyq .ic {background:#fff;color:var(--uc,#00555a)}
+body.zk-v3 .lesson-body .keyq b, body.zk-v3 .lesson-body .keyq small {color:color-mix(in srgb,var(--uc,#00555a) 75%,#0f2a2c)}
+body.zk-v3 .lesson-body .navl a.on {background:var(--uc,#00555a)!important}
+body.zk-v3 .lesson-body .xinline .play {background:var(--uc,#00555a)}
+body.zk-v3 .lesson-body .xinline {border-color:color-mix(in srgb,var(--uc,#00555a) 28%,#fff);background:linear-gradient(135deg,color-mix(in srgb,var(--uc,#00555a) 8%,#fff),#fff)}
 
 /* Shaffoflikni kamaytirish so'ralsa yoki brauzer qo'llamasa — oddiy oq yuzalar */
 @media (prefers-reduced-transparency:reduce) {
