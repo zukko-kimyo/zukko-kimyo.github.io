@@ -4,6 +4,13 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Tezlashtirildi (2026-11-13, foydalanuvchi: "sayt sekin ishlayapti")
+O'lchov (foydalanuvchining Chrome'i, 1920px): bosh sahifada scroll 8–14 kadr/s, bo'sh turganda 34 kadr/s, sahifa ishga tushishi ~3,5 s.
+- `background-attachment:fixed` o'rniga alohida qotirilgan qatlam (`body::before`) — scrollda butun ekran qayta chizilmaydi.
+- 3D sahnalar ekranda ko'rinmasa yoki tab yashirin bo'lsa chizilmaydi; bosh sahifadagi bezak atomi ~30 kadr/s va past piksel zichligida; u sahifa ko'ringandan keyin (brauzer bo'shaganda) quriladi.
+- Kirishda profil, natijalar va sayt sozlamalari bazadan parallel so'raladi (avval navbat bilan ~10 so'rov).
+- Barcha skriptlar boshidan parallel yuklab olinadi (preload); 3D va dars ma'lumotlari login tekshiruvi bilan bir vaqtda tayyorlanadi.
+
 ### O'zgartirildi — Zukko brend dizayni (ADR 0005)
 - `brand.css`: maktab logotipi rangi (teal #00555a) + yashil + ko'k + oq; sarlavhalar Fraunces (serif), matn Manrope. Sarlavhalar, chiplar, tablar, tugmalar, toastlar, o'qituvchi/admin paneli bitta uslubda.
 - `icons.js`: interfeysdagi emojilar bir xil SVG ikonkalarga almashtirildi (tajriba rasmchalari va nishonlar o'zgarmadi).

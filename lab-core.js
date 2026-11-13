@@ -420,7 +420,7 @@
     try { renderer = new T.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' }); }
     catch (e) { wrap.innerHTML = '<div class="lab-err">WebGL ' + (Lab.lang === 'uz' ? "qo'llab-quvvatlanmaydi" : 'is not supported') + '</div>'; return null; }
     const mobile = /Mobi|Android/i.test(navigator.userAgent);
-    renderer.setPixelRatio(Math.min(mobile ? 1.5 : 2, window.devicePixelRatio || 1)); renderer.setSize(W(), H());
+    renderer.setPixelRatio(Math.min(opts.quiet ? 1.25 : (mobile ? 1.5 : 2), window.devicePixelRatio || 1)); renderer.setSize(W(), H());
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
     renderer.outputColorSpace = T.SRGBColorSpace; renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = ex.exposure || 0.92;
     renderer.domElement.className = 'gl'; wrap.insertBefore(renderer.domElement, labels);
@@ -507,9 +507,19 @@
     }
 
     const v3 = new T.Vector3();
+    // Tezlik: sahna ekranda ko'rinmasa yoki tab yashirin bo'lsa — chizilmaydi (avval to'xtovsiz chizilardi).
+    // Bezak rejimida (opts.quiet — bosh sahifadagi atom) ~30 kadr/s yetarli.
+    let onScreen = true, lastDraw = 0;
+    const io = window.IntersectionObserver ? new IntersectionObserver((es) => { onScreen = es[es.length - 1].isIntersecting; }, { threshold: 0 }) : null;
+    io && io.observe(wrap);
+    const minGap = opts.quiet ? 1000 / 31 : 0;
     function frame(now) {
       if (!alive) return;
+      const sleep = document.hidden || (!onScreen && opts.quiet); // bezak sahnasi ekrandan chiqsa — butunlay to'xtaydi
+      if (sleep || (onScreen && minGap && now - lastDraw < minGap)) { if (sleep) last = now; requestAnimationFrame(frame); return; }
+      lastDraw = now;
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      const draw = onScreen; // ekrandan tashqarida: vaqt va bosqichlar yuradi, faqat chizilmaydi
       if (playing) { t += dt * speed; if (t >= total) { t = total; setPlaying(false); } }
       const i = stepAt(t); if (i !== curStep) { curStep = i; updateCaption(i); }
       if (!endFired && !opts.quiet && i === steps.length - 1 && t - starts[i] > Math.min(1.5, steps[i].dur * 0.4)) { endFired = true; try { window.dispatchEvent(new CustomEvent('zk:labdone', { detail: { id } })); } catch (e) { } }
@@ -519,6 +529,7 @@
       inst.loop && inst.loop(playing ? dt * speed : dt * 0.25, { i, t, p: clamp((t - starts[i]) / steps[i].dur) }, ctx);
       $('.lb-fill').style.width = (100 * t / total) + '%';
       if (camAnim) { camAnim.t = Math.min(1, camAnim.t + dt / 1.3); const k = ease(camAnim.t); camera.position.lerpVectors(camAnim.fp, camAnim.tp, k); controls.target.lerpVectors(camAnim.ft, camAnim.tt, k); if (camAnim.t >= 1) camAnim = null; }
+      if (!draw) { requestAnimationFrame(frame); return; }
       controls && controls.update();
       renderer.render(scene, camera);
       const w = W(), h = H();
@@ -537,7 +548,7 @@
     requestAnimationFrame(frame);
     const handle = {
       destroy() {
-        alive = false; ro.disconnect(); controls && controls.dispose();
+        alive = false; ro.disconnect(); io && io.disconnect(); controls && controls.dispose();
         scene.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) [].concat(o.material).forEach((m) => { m.map && m.map.dispose && !Object.values(texCache).includes(m.map) && m.map.dispose(); m.dispose(); }); });
         envRT && envRT.dispose(); pmrem.dispose();
         renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss(); host.innerHTML = '';

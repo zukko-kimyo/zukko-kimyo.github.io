@@ -146,11 +146,12 @@
   window.addEventListener('online', push);
 
   async function startSession(u) {
-    const prof = await B.get('users', u.uid);
+    // Tezlik: profil va natijalar bir vaqtda so'raladi (avval navbat bilan edi).
+    const [prof, remote0] = await Promise.all([B.get('users', u.uid), B.get('progress', u.uid).catch(() => null)]);
     if (!prof || prof.disabled) { await B.signOut(); throw Object.assign(new Error(t('e_inactive')), { code: 'inactive' }); }
     if (prof.status === 'pending') { await B.signOut(); throw Object.assign(new Error(t('e_pending')), { code: 'pending' }); }
     me = { uid: u.uid, login: prof.login || u.email.split('@')[0], name: prof.name || '', role: prof.role || 'student', cls: prof.cls || '' };
-    let remote = null; try { remote = await B.get('progress', u.uid); } catch (e) { }
+    const remote = remote0;
     const prevOwner = localStorage.getItem('zk_prog_owner');
     if (remote && remote.data) localStorage.setItem(PKEY, remote.data);
     else if (prevOwner !== u.uid) localStorage.removeItem(PKEY); // boshqa odamning natijasi qolib ketmasin
@@ -372,8 +373,10 @@
       css();
       const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="zk-brand-loader" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="sync"><span class="zk-brand-orbit"></span></div><b>${t('loading')}</b><p class="zk-boot-sub">${lang() === 'en' ? 'Zukko International School · Chemistry' : 'Zukko Xalqaro Maktabi · Kimyo'}</p></div>`; document.body.appendChild(boot);
       let u = null;
-      try { u = await B.init(); await loadSettings(); } catch (e) { boot.querySelector('.card').innerHTML = `<b>${t('e_cfg')}</b><div class="nt">${esc(e.message || e)}</div>`; return; }
-      if (u) { try { await startSession(u); boot.remove(); return resolve(me); } catch (e) { /* login ekraniga */ } }
+      let setP = null;
+      try { u = await B.init(); setP = loadSettings(); if (!u) await setP; } catch (e) { boot.querySelector('.card').innerHTML = `<b>${t('e_cfg')}</b><div class="nt">${esc(e.message || e)}</div>`; return; }
+      // Tezlik: sayt sozlamalari va foydalanuvchi ma'lumotlari parallel yuklanadi.
+      if (u) { try { await Promise.all([startSession(u), setP]); boot.remove(); return resolve(me); } catch (e) { await setP; /* login ekraniga */ } }
       boot.remove(); gate(resolve);
     });
     return readyP;

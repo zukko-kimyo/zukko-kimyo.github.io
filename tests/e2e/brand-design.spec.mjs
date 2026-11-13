@@ -293,3 +293,18 @@ test('new official logo: mark only in header, login and footer; app icons', asyn
   expect(r.apple).toContain('zukko-apple-180.png'); expect(r.appleSt).toBe(200);
   expect(r.mark).toContain('#075860');
 });
+
+test('speed: background is not repainted on scroll and hero 3D waits until the page is shown', async ({ page, isMobile }) => {
+  await page.goto('/index.html#home'); await waitReady(page);
+  const bg = await page.evaluate(() => ({ body: getComputedStyle(document.body).backgroundAttachment, layer: getComputedStyle(document.body, '::before').position }));
+  expect(bg.body, 'no background-attachment:fixed (full repaint on every scroll step)').not.toContain('fixed');
+  expect(bg.layer).toBe('fixed');
+  // barcha skriptlar boshidan parallel yuklab olinadi
+  expect(await page.locator('link[rel="preload"][as="script"]').count()).toBeGreaterThan(25);
+  if (isMobile) return;
+  await page.evaluate(() => { location.hash = '#tests'; });
+  await expect(page.locator('#app .page-h.tests')).toBeVisible();
+  await page.evaluate(() => { location.hash = '#home'; });
+  await expect(page.locator('#heroLab')).toBeAttached();
+  expect(await page.locator('#heroLab canvas').count(), 'hero 3D is deferred so navigation is instant').toBe(0);
+});
