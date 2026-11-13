@@ -40,6 +40,10 @@ Maktab dizayn tizimi: logotip rangi teal `#00555a`, yashil + ko'k + oq, sarlavha
 - `mobile-admin-nav.spec`: pastki menyu endi ekran chetidan ~10px ichkarida (suzuvchi). Test "to'liq kenglik"
   o'rniga "chetlar ayirilgan kenglik va markazda" deb yangilandi.
 
+- **"Sinflar" menyusi:** headerdagi alohida 6-, 7-, 8-sinf havolalari bitta ochiladigan menyuga birlashtirildi
+  (`#navGradesBtn` / `#navGradesMenu`, `app.js` → `gradesMenu()`); burger menyusida joyida ochiladi.
+- **Kompyuterda to'liq ekran:** `.wrap` 1290px cheklovisiz, chetlarda `clamp(16px,3.2vw,72px)`.
+
 ## Oqibatlar
 - `+` Bitta brend, barqaror ikonkalar, telefonda kamroq yuklama (3D bosh sahifada so'ralganda).
 - `−` Yana bitta override qatlami (`brand.css`). Keyinchalik `index.html` dagi eski inline CSS va
