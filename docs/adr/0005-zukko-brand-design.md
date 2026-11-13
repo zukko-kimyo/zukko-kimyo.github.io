@@ -13,6 +13,7 @@ Maktab dizayn tizimi: logotip rangi teal `#00555a`, yashil + ko'k + oq, sarlavha
 ## Qaror
 1. `brand.css` — eng oxirida yuklanadigan brend qatlami. Mavjud CSS fayllar o'chirilmaydi (xavfsiz qaytarish:
    `<link brand.css>` va `icons.js` ni olib tashlash kifoya). Eski `--orange/--purple/--pri` tokenlari brendga ulanadi.
+   Login oynasi `brand-entry.css` da qoladi (PR #12, ChatGPT) — `brand.css` unga tegmaydi.
 2. Shriftlar: sarlavhalar `Fraunces` (serif, Google Fonts), matn `Manrope`. Nunito olib tashlandi.
 3. `icons.js` — 50+ ta bir xil chiziqli SVG ikonka. MutationObserver interfeysdagi ma'lum emojilarni ikonkaga
    almashtiradi. Kontent emojilari (tajriba rasmchalari `.th`, nishonlar `.achv`, dars ichidagi illyustratsiyalar)

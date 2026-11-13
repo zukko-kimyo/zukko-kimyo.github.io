@@ -5,7 +5,7 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 ## [Chiqarilmagan]
 
 ### O'zgartirildi — Zukko brend dizayni (ADR 0005)
-- `brand.css`: maktab logotipi rangi (teal #00555a) + yashil + ko'k + oq; sarlavhalar Fraunces (serif), matn Manrope. Login oynasi, sarlavhalar, chiplar, tablar, tugmalar, toastlar, o'qituvchi/admin paneli bitta uslubda.
+- `brand.css`: maktab logotipi rangi (teal #00555a) + yashil + ko'k + oq; sarlavhalar Fraunces (serif), matn Manrope. Sarlavhalar, chiplar, tablar, tugmalar, toastlar, o'qituvchi/admin paneli bitta uslubda.
 - `icons.js`: interfeysdagi emojilar bir xil SVG ikonkalarga almashtirildi (tajriba rasmchalari va nishonlar o'zgarmadi).
 - Header bitta qatorda (kompyuter va telefon); XP xabarlari sarlavhani yopmaydi; suzuvchi dars navigatsiyasi kompyuterda yashirildi.
 - Bosh sahifa: o'zbekcha yorliqlar, yangi o'quvchi uchun "Boshlash uchun 3 qadam", tajriba kartalarida "+N" yorliq, "Molekulyar laboratoriya" telefonda bosganda ochiladi.
