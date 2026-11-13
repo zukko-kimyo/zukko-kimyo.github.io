@@ -651,16 +651,21 @@ button,a,.ptcell{touch-action:manipulation}
 <link rel="stylesheet" href="visual-v3.css?v=20261112-logo-01" />
 <link rel="stylesheet" href="mobile-admin.css?v=20261112-mobile-01" />
 <link rel="stylesheet" href="brand-entry.css?v=20261112-brand-02" />
-<link rel="stylesheet" href="brand.css?v=20261113-brand-06" />
+<link rel="stylesheet" href="brand.css?v=20261113-brand-07" />
 </head>
 <body class="zk-v3">
 <header class="top">
   <div class="wrap">
     <a class="logo" href="#home" aria-label="Zukko Xalqaro Maktabi — Kimyo"><span class="mark" aria-hidden="true"><img src="assets/zukko-school-logo.webp" width="144" height="144" alt="" decoding="async" fetchpriority="high"></span><div class="zk-school-name"><strong>ZUKKO XALQARO</strong><small>MAKTABI</small></div><span class="zk-subject" aria-label="Kimyo fani">KIMYO</span></a>
     <nav class="main" id="nav">
-      <a href="#g6" data-nav="g6" data-i="nav_g6"></a>
-      <a href="#g7" data-nav="g7" data-i="nav_g7"></a>
-      <a href="#g8" data-nav="g8" data-i="nav_g8"></a>
+      <div class="zk-ngrp" id="navGrades">
+        <button type="button" class="zk-ngrp-btn" id="navGradesBtn" aria-haspopup="true" aria-expanded="false" aria-controls="navGradesMenu"><span data-i="nav_grades"></span><svg class="zi zk-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="zk-ngrp-menu" id="navGradesMenu" role="group" hidden>
+          <a href="#g6" data-nav="g6"><span class="zk-ngrp-n g6">06</span><span class="zk-ngrp-t"><b data-i="nav_g6"></b><small data-i="ng6"></small></span></a>
+          <a href="#g7" data-nav="g7"><span class="zk-ngrp-n g7">07</span><span class="zk-ngrp-t"><b data-i="nav_g7"></b><small data-i="ng7"></small></span></a>
+          <a href="#g8" data-nav="g8"><span class="zk-ngrp-n g8">08</span><span class="zk-ngrp-t"><b data-i="nav_g8"></b><small data-i="ng8"></small></span></a>
+        </div>
+      </div>
       <a href="#tests" data-nav="tests" data-i="nav_tests"></a>
       <a href="#lab" data-nav="lab" data-i="nav_lab"></a>
       <a href="#ptable" data-nav="pt" data-i="nav_pt"></a>
@@ -693,7 +698,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261113-brand-06';
+const VER = '20261113-brand-07';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 await load('firebase-config.js').catch(() => {});
 await load('icons.js').catch(() => {});

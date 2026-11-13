@@ -200,3 +200,39 @@ test('desktop: content uses the full screen width (1440 / 1920 / 2560)', async (
     expect(r.sw).toBeLessThanOrEqual(1);
   }
 });
+
+test('desktop: "Sinflar" opens a dropdown with grades 6, 7 and 8', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop header only (phones use the bottom "Sinflar" menu)');
+  await page.goto('/index.html#home'); await waitReady(page);
+  const btn = page.locator('#navGradesBtn'), menu = page.locator('#navGradesMenu');
+  await expect(btn).toBeVisible();
+  await expect(btn).toHaveText(/Sinflar/);
+  await expect(menu).toBeHidden();
+  await expect(page.locator('nav.main > a[href="#g6"]')).toHaveCount(0);
+  await btn.click();
+  await expect(btn).toHaveAttribute('aria-expanded', 'true');
+  await expect(menu.locator('a')).toHaveCount(3);
+  await expect(menu.locator('a b')).toHaveText(['6-sinf', '7-sinf', '8-sinf']);
+  const [b, m] = await Promise.all([btn.boundingBox(), menu.boundingBox()]);
+  expect(m.y, 'menu opens downward').toBeGreaterThan(b.y + b.height - 1);
+  await menu.locator('a[href="#g7"]').click();
+  await expect(page).toHaveURL(/#g7$/);
+  await expect(menu).toBeHidden();
+  await expect(btn).toHaveClass(/\bon\b/);
+  await btn.click(); await expect(menu).toBeVisible();
+  await page.keyboard.press('Escape'); await expect(menu).toBeHidden();
+  await btn.click(); await page.mouse.click(20, 400); await expect(menu).toBeHidden();
+  await page.evaluate(() => { location.hash = '#tests'; });
+  await expect(btn).not.toHaveClass(/\bon\b/);
+});
+
+test('narrow desktop (burger): "Sinflar" expands inside the menu', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop/tablet only');
+  await page.setViewportSize({ width: 1024, height: 760 });
+  await page.goto('/index.html#home'); await waitReady(page);
+  await page.locator('#burger').click();
+  await page.locator('#navGradesBtn').click();
+  await expect(page.locator('#navGradesMenu a')).toHaveCount(3);
+  await page.locator('#navGradesMenu a[href="#g8"]').click();
+  await expect(page).toHaveURL(/#g8$/);
+});
