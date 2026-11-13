@@ -223,7 +223,7 @@
     const el = document.createElement('div'); el.className = 'zk-gate'; document.body.appendChild(el);
     let mode = 'login';
     const langBar = (L) => `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
-    const head = () => `<div class="lg"><span class="mk zk-mk-full"><img src="assets/zukko-logo.svg" alt="Zukko International School" width="659" height="576" decoding="async"></span><div><span class="zk-brand-kicker">${lang() === 'en' ? 'ZUKKO INTERNATIONAL SCHOOL' : 'ZUKKO XALQARO MAKTABI'}</span><h1>${lang() === 'en' ? 'Welcome back' : 'Xush kelibsiz!'}</h1><div class="sb">${t('sub')}</div></div></div>`;
+    const head = () => `<div class="lg"><span class="mk zk-mk-mark"><img src="assets/zukko-mark.svg" alt="" width="139" height="314" decoding="async"></span><div><span class="zk-brand-kicker">${lang() === 'en' ? 'ZUKKO INTERNATIONAL SCHOOL' : 'ZUKKO XALQARO MAKTABI'}</span><h1>${lang() === 'en' ? 'Welcome back' : 'Xush kelibsiz!'}</h1><div class="sb">${t('sub')}</div></div></div>`;
     const render = (keep) => {
       const L = lang(); const v = keep || {};
       if (mode === 'reg') return renderReg(v);

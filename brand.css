@@ -570,12 +570,15 @@ body.zk-v3 .top .logo .mark {width:auto;height:46px;border-radius:0;background:n
 body.zk-v3 .top .logo .mark img {width:auto;height:46px;object-fit:contain;border-radius:0}
 @media (max-width:760px) { body.zk-v3 .top .logo .mark {width:auto!important;height:42px} body.zk-v3 .top .logo .mark img {height:42px} }
 /* Login: to'liq logotip markazda, ostida salom va matn */
-body.zk-v3 .zk-gate .lg:has(.zk-mk-full) {flex-direction:column;text-align:center;gap:10px;padding-right:0;margin-top:14px}
-body.zk-v3 .zk-gate .mk.zk-mk-full {width:auto;height:auto;border-radius:0;overflow:visible}
-body.zk-v3 .zk-gate .mk.zk-mk-full img {width:min(190px,56vw);height:auto;object-fit:contain;border-radius:0}
+/* Login: faqat belgi (inglizcha yozuvsiz), ostida "ZUKKO XALQARO MAKTABI" (foydalanuvchi talabi) */
+body.zk-v3 .zk-gate .lg:has(.zk-mk-mark) {flex-direction:column;text-align:center;gap:12px;padding-right:0;margin-top:14px}
+body.zk-v3 .zk-gate .mk.zk-mk-mark {width:auto;height:auto;border-radius:0;overflow:visible;background:none}
+body.zk-v3 .zk-gate .mk.zk-mk-mark img {width:auto;height:84px;object-fit:contain;border-radius:0}
+body.zk-v3 .zk-gate .lg:has(.zk-mk-mark) .zk-brand-kicker {font-size:13px;letter-spacing:.14em;color:#075860;margin-bottom:8px}
+@media (max-width:480px) { body.zk-v3 .zk-gate .mk.zk-mk-mark img {height:72px} body.zk-v3 .zk-gate .lg:has(.zk-mk-mark) .zk-brand-kicker {font-size:12px} }
 /* Yuklanish ekrani: belgi oq doira ichida, atrofida aylanuvchi halqa */
 body.zk-v3 .zk-brand-loader img {object-fit:contain;background:#fff;padding:26px 44px;border-radius:50%;box-sizing:border-box;box-shadow:0 16px 40px rgba(5,90,89,.16)}
 /* Footer: oq logotip */
 body.zk-v3 footer .wrap {align-items:center}
-body.zk-v3 .zk-foot-logo {height:58px;width:auto;flex:none;opacity:.95}
-@media (max-width:760px) { body.zk-v3 .zk-foot-logo {height:48px} }
+body.zk-v3 .zk-foot-logo {height:46px;width:auto;flex:none;opacity:.95}
+@media (max-width:760px) { body.zk-v3 .zk-foot-logo {height:40px} }

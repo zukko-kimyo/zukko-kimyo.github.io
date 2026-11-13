@@ -12,7 +12,7 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - O'qituvchi paneli tablari telefonda ekrandan chiqmaydi.
 - Telefonda avatar ("A") va uning menyusi pastki menyuning o'ng chetida; menyu yuqoriga ochiladi.
 - Darslik bo'lim ranglari oldingidek qaytdi va dars sahifasida ham ishlatiladi; darslik tuzilishi o'zgarmadi.
-- **Yangi rasmiy logotip** (teal belgi + "ZUKKO INTERNATIONAL SCHOOL", vektor SVG): headerda belgi, login oynasida to'liq logotip, yuklanish ekranida belgi, footerda oq logotip; favicon, Android/iOS ilova ikonkalari yangilandi (`assets/zukko-logo*.svg`, `zukko-mark*.svg`, `zukko-app-*.png`).
+- **Yangi rasmiy logotip** (teal belgi + "ZUKKO INTERNATIONAL SCHOOL", vektor SVG): hamma joyda faqat belgi (inglizcha "INTERNATIONAL SCHOOL" yozuvisiz): headerda, login oynasida (ostida "ZUKKO XALQARO MAKTABI"), yuklanish ekranida, footerda oq belgi; favicon, Android/iOS ilova ikonkalari yangilandi (`assets/zukko-logo*.svg`, `zukko-mark*.svg`, `zukko-app-*.png`).
 - Davriy jadval kompyuterda bir ekranga sig'adi (to'liq ekran rejimida katakchalar 100px gacha kattalashgan edi); "Molekulyar laboratoriya" kartasi tekis.
 - Sahifalar orasida silliq o'tish: View Transitions (eski sahifa so'nadi, yangisi yumshoq paydo bo'ladi; header va pastki menyu joyida); bo'laklab kechikadigan kaskad va sekin "silliq scroll" olib tashlandi; telefonda surishda yo'nalishga mos siljish.
 - Header: "Sinflar" tugmasi — bosganda 6-, 7-, 8-sinf pastga ochiladi (klaviatura: ↓ ↑ Esc). Telefonda pastki menyudagi "Sinflar" shu ranglarda.

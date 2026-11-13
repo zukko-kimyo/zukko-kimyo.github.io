@@ -49,7 +49,8 @@ Maktab dizayn tizimi: logotip rangi teal `#00555a`, yashil + ko'k + oq, sarlavha
   (`scroll-behavior:smooth` chetlab o'tiladi). `prefers-reduced-motion` da animatsiya yo'q.
 
 - **Yangi rasmiy logotip (2026-11-13):** foydalanuvchi bergan rasm potrace bilan vektorga o'tkazildi (rang #075860).
-  Header — belgi (`zukko-mark.svg`), login — to'liq logotip (`zukko-logo.svg`), footer — oq variant,
+  Sayt hamma joyda faqat belgini ishlatadi (`zukko-mark.svg`, footerda oq variant) — foydalanuvchi talabi: inglizcha
+  "INTERNATIONAL SCHOOL" yozuvi kerak emas, ostida "ZUKKO XALQARO MAKTABI". To'liq logotip (`zukko-logo.svg`) zaxirada,
   ilova ikonkasi — oq fonda teal belgi (`zukko-school-app-icon.svg`, `zukko-app-192/512.png`, `zukko-apple-180.png`).
   Asl rasm: `docs/design/2026-11-13/zukko-logo-asl.webp`. `brand-login.spec` va `real-school-logo.spec` yangi logotipga moslandi.
 

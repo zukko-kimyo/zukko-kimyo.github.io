@@ -6,7 +6,7 @@ const EMOJI_UI = /[🏠📚📘📖📄🧪✅🛡⚡🔥⭐📊🎯🚀🧩📜
 test('brand layer is loaded: teal hero, serif headings; login (brand-entry.css) keeps school logo', async ({ page }) => {
   await gotoMock(page);
   const gate = page.locator('.zk-gate');
-  await expect(gate.locator('.mk img')).toHaveAttribute('src', /zukko-logo\.svg/);
+  await expect(gate.locator('.mk img')).toHaveAttribute('src', /zukko-mark\.svg/);
   await page.goto('/index.html#home'); await waitReady(page);
   const s = await page.evaluate(() => ({
     hero: getComputedStyle(document.querySelector('.zk-hero-v3')).backgroundColor,
@@ -271,14 +271,17 @@ test('home: molecular lab card is level (not rotated)', async ({ page, isMobile 
   expect(await page.locator('.zk-hero-scene').evaluate((e) => getComputedStyle(e).transform)).toBe('none');
 });
 
-test('new official logo: header mark, full logo on login, white logo in footer, app icons', async ({ page }) => {
+test('new official logo: mark only in header, login and footer; app icons', async ({ page }) => {
   await gotoMock(page);
-  const full = page.locator('.zk-gate .mk img');
-  await expect(full).toHaveAttribute('src', /assets\/zukko-logo\.svg/);
-  const box = await full.boundingBox(); expect(box.width).toBeGreaterThan(120);
+  // Login: faqat belgi (inglizcha "INTERNATIONAL SCHOOL" yozuvisiz), ostida o'zbekcha maktab nomi
+  const mark = page.locator('.zk-gate .mk img');
+  await expect(mark).toHaveAttribute('src', /assets\/zukko-mark\.svg/);
+  const box = await mark.boundingBox(); expect(box.height).toBeGreaterThan(60);
+  await expect(page.locator('.zk-gate .zk-brand-kicker')).toHaveText('ZUKKO XALQARO MAKTABI');
+  await expect(page.locator('img[src*="zukko-logo"]')).toHaveCount(0);
   await page.goto('/index.html#home'); await waitReady(page);
   await expect(page.locator('header.top .logo .mark img')).toHaveAttribute('src', /zukko-mark\.svg/);
-  await expect(page.locator('footer .zk-foot-logo')).toHaveAttribute('src', /zukko-logo-white\.svg/);
+  await expect(page.locator('footer .zk-foot-logo')).toHaveAttribute('src', /zukko-mark-white\.svg/);
   const r = await page.evaluate(async () => {
     const m = await (await fetch('manifest.webmanifest')).json();
     const st = await Promise.all(m.icons.map((i) => fetch(i.src).then((x) => x.status)));
