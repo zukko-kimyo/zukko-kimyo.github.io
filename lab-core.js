@@ -408,6 +408,40 @@
   }
   Lab.micro = micro;
 
+  /* ================= Grafika darajasi =================
+     Kuchsiz (o'rnatilgan / mobil) videokartalarda og'ir effektlar o'chiriladi: shisha va suyuqlikning
+     "nur o'tkazish" (transmission) effekti oddiy shaffoflikka, yumshoq soyalar oddiy soyaga almashadi.
+     Majburlash: ?gfx=hq yoki ?gfx=lite (localStorage 'zk_gfx' da saqlanadi). */
+  function gpuTier() {
+    if (Lab.gfx) return Lab.gfx;
+    let forced = null;
+    try { const q = (location.search.match(/[?&]gfx=(hq|lite)\b/) || [])[1]; if (q) localStorage.setItem('zk_gfx', q); forced = q || localStorage.getItem('zk_gfx'); } catch (e) { }
+    if (forced === 'hq' || forced === 'lite') return (Lab.gfx = forced);
+    let r = '';
+    try {
+      const c = document.createElement('canvas'); const gl = c.getContext('webgl2') || c.getContext('webgl');
+      if (!gl) return (Lab.gfx = 'lite');
+      const d = gl.getExtension('WEBGL_debug_renderer_info'); r = d ? String(gl.getParameter(d.UNMASKED_RENDERER_WEBGL)) : String(gl.getParameter(gl.RENDERER));
+      const lose = gl.getExtension('WEBGL_lose_context'); lose && lose.loseContext();
+    } catch (e) { }
+    const weakGpu = /Intel|UHD|HD Graphics|Iris|SwiftShader|llvmpipe|Software|Mali|Adreno|PowerVR|Vivante|Microsoft Basic/i.test(r) && !/Apple/i.test(r);
+    const weakDevice = (navigator.deviceMemory && navigator.deviceMemory <= 4) || /Mobi|Android/i.test(navigator.userAgent);
+    Lab.gpu = r; return (Lab.gfx = weakGpu || weakDevice ? 'lite' : 'hq');
+  }
+  Lab.gpuTier = gpuTier;
+  // Yengil rejim: transmission -> oddiy shaffoflik (qadamlarda transmission o'zgartirilsa ham ishlaydi), clearcoat o'chadi.
+  function liteMaterial(m) {
+    if (!m || !m.isMeshPhysicalMaterial || m.userData.zkLite) return;
+    m.userData.zkLite = true; m.clearcoat = 0;
+    const base = m.transmission || 0;
+    if (base > 0 || m.userData.liquid) {
+      const apply = (v) => { m.userData.zkTr = v; m.transparent = true; m.depthWrite = false; m.opacity = Math.max(0.35, Math.min(0.95, 1 - 0.5 * v)); };
+      apply(base);
+      Object.defineProperty(m, 'transmission', { configurable: true, get: () => 0, set: apply });
+      m.needsUpdate = true;
+    }
+  }
+
   /* ================= Viewer ================= */
   Lab.open = function (host, id, opts = {}) {
     const ex = Lab.exps[id]; if (!ex) return null;
@@ -420,8 +454,12 @@
     try { renderer = new T.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' }); }
     catch (e) { wrap.innerHTML = '<div class="lab-err">WebGL ' + (Lab.lang === 'uz' ? "qo'llab-quvvatlanmaydi" : 'is not supported') + '</div>'; return null; }
     const mobile = /Mobi|Android/i.test(navigator.userAgent);
-    renderer.setPixelRatio(Math.min(opts.quiet ? 1.25 : (mobile ? 1.5 : 2), window.devicePixelRatio || 1)); renderer.setSize(W(), H());
-    renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+    const lite = gpuTier() === 'lite';
+    const basePR = Math.min(opts.quiet ? 1.25 : (lite ? 1 : (mobile ? 1.5 : 2)), window.devicePixelRatio || 1);
+    let curPR = basePR;
+    renderer.setPixelRatio(curPR); renderer.setSize(W(), H());
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = lite ? T.PCFShadowMap : T.PCFSoftShadowMap;
+    host.dataset.gfx = lite ? 'lite' : 'hq';
     renderer.outputColorSpace = T.SRGBColorSpace; renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = ex.exposure || 0.92;
     renderer.domElement.className = 'gl'; wrap.insertBefore(renderer.domElement, labels);
     const scene = new T.Scene();
@@ -437,7 +475,7 @@
     if (T.OrbitControls) { controls = new T.OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.target.set(...cam0.target); controls.maxPolarAngle = Math.PI * 0.52; controls.minDistance = 1; controls.maxDistance = 12; controls.update(); }
     else camera.lookAt(...cam0.target);
     scene.add(new T.HemisphereLight(0xeef4ff, 0x3a3328, 0.55));
-    const sun = new T.DirectionalLight(0xfff4e6, 2.2); sun.position.set(3, 6, 4); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+    const sun = new T.DirectionalLight(0xfff4e6, 2.2); sun.position.set(3, 6, 4); sun.castShadow = true; sun.shadow.mapSize.set(lite ? 1024 : 2048, lite ? 1024 : 2048);
     Object.assign(sun.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4, near: 0.5, far: 20 }); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; scene.add(sun);
     const fill = new T.DirectionalLight(0xcfe2ff, 0.6); fill.position.set(-4, 3, 2); scene.add(fill);
     if (ex.table !== false) {
@@ -461,6 +499,10 @@
     const inst = ex.build(ctx) || {};
     // cast shadows from solid objects automatically
     scene.traverse((o) => { if (o.isMesh && o.material && !o.material.transparent && !o.material.userData.liquid && o.material.type !== 'MeshBasicMaterial' && o.material.type !== 'ShaderMaterial') { o.castShadow = true; } });
+    if (lite) scene.traverse((o) => { if (o.material) [].concat(o.material).forEach(liteMaterial); });
+    // Shaderlar fonda kompilyatsiya qilinadi (KHR_parallel_shader_compile) — sahifa qotib qolmaydi; tayyor bo'lguncha chizilmaydi.
+    let gpuReady = !renderer.compileAsync;
+    if (renderer.compileAsync) { const go = () => { gpuReady = true; }; try { renderer.compileAsync(scene, camera).then(go, go); setTimeout(go, 4000); } catch (e) { gpuReady = true; } }
     const steps = inst.steps || ex.steps || [];
     const total = steps.reduce((a, s) => a + s.dur, 0);
     const starts = []; steps.reduce((a, s) => (starts.push(a), a + s.dur), 0);
@@ -509,7 +551,7 @@
     const v3 = new T.Vector3();
     // Tezlik: sahna ekranda ko'rinmasa yoki tab yashirin bo'lsa — chizilmaydi (avval to'xtovsiz chizilardi).
     // Bezak rejimida (opts.quiet — bosh sahifadagi atom) ~30 kadr/s yetarli.
-    let onScreen = true, lastDraw = 0;
+    let onScreen = true, lastDraw = 0; const perf = { n: 0, sum: 0 };
     const io = window.IntersectionObserver ? new IntersectionObserver((es) => { onScreen = es[es.length - 1].isIntersecting; }, { threshold: 0 }) : null;
     io && io.observe(wrap);
     const minGap = opts.quiet ? 1000 / 31 : 0;
@@ -529,9 +571,18 @@
       inst.loop && inst.loop(playing ? dt * speed : dt * 0.25, { i, t, p: clamp((t - starts[i]) / steps[i].dur) }, ctx);
       $('.lb-fill').style.width = (100 * t / total) + '%';
       if (camAnim) { camAnim.t = Math.min(1, camAnim.t + dt / 1.3); const k = ease(camAnim.t); camera.position.lerpVectors(camAnim.fp, camAnim.tp, k); controls.target.lerpVectors(camAnim.ft, camAnim.tt, k); if (camAnim.t >= 1) camAnim = null; }
-      if (!draw) { requestAnimationFrame(frame); return; }
+      if (!draw || !gpuReady) { requestAnimationFrame(frame); return; }
       controls && controls.update();
       renderer.render(scene, camera);
+      // Moslashuvchan sifat: kadrlar sekin bo'lsa chizish o'lchami pasayadi, tez bo'lsa asta tiklanadi.
+      perf.n++; perf.sum += dt;
+      if (perf.n >= 40) {
+        const avg = perf.sum / perf.n; perf.n = 0; perf.sum = 0;
+        let next = curPR;
+        if (avg > 0.04 && curPR > 0.55) next = Math.max(0.55, +(curPR - 0.15).toFixed(2));
+        else if (avg < 0.019 && curPR < basePR) next = Math.min(basePR, +(curPR + 0.1).toFixed(2));
+        if (next !== curPR) { curPR = next; renderer.setPixelRatio(curPR); renderer.setSize(W(), H()); host.dataset.pr = String(curPR); }
+      }
       const w = W(), h = H();
       lbls.forEach((L) => {
         const tg = L.target; if (tg.isObject3D) tg.getWorldPosition(v3); else v3.copy(tg);
@@ -553,7 +604,7 @@
         envRT && envRT.dispose(); pmrem.dispose();
         renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss(); host.innerHTML = '';
       },
-      play: () => setPlaying(true), seek, get stepIndex() { return curStep; }, steps: steps.map((s, i) => ({ start: starts[i], dur: s.dur, cap: s.cap, eq: s.eq || '' })), get t() { return t; }, total
+      play: () => setPlaying(true), seek, get stepIndex() { return curStep; }, get gfx() { return lite ? 'lite' : 'hq'; }, get pixelRatio() { return curPR; }, steps: steps.map((s, i) => ({ start: starts[i], dur: s.dur, cap: s.cap, eq: s.eq || '' })), get t() { return t; }, total
     };
     window.__lab = handle; return handle;
   };

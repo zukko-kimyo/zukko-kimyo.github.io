@@ -585,3 +585,6 @@ body.zk-v3 .zk-brand-loader img {object-fit:contain;background:#fff;padding:26px
 body.zk-v3 footer .wrap {align-items:center}
 body.zk-v3 .zk-foot-logo {height:46px;width:auto;flex:none;opacity:.95}
 @media (max-width:760px) { body.zk-v3 .zk-foot-logo {height:40px} }
+
+/* Tezlik: juda keng ekranda 3D sahna 1320px dan oshmaydi (piksel soni kamroq, ko'rish qulayroq) */
+body.zk-v3 .labpage {max-width:1320px;margin-inline:auto}
