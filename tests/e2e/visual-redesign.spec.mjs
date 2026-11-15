@@ -9,9 +9,10 @@ test('new premium home renders dark science hero and redesigned grade sections',
   await expect(page.locator('.top .zk-subject')).toHaveText('KIMYO');
   await expect(page.locator('#app .zk-hero-v3')).toBeVisible();
   await expect(page.locator('#app .zk-hero-v3 h1')).toContainText('Kimyoni ko‘r.');
-  await expect(page.locator('#app .zk-quick-item')).toHaveCount(3);
+  await expect(page.locator('#app .zk-bcard')).toHaveCount(3);
+  await expect(page.locator('#app .zk-lpanel .zk-hunit')).toHaveCount(3);
   await expect(page.locator('#app .grades .gcard')).toHaveCount(3);
-  await expect(page.locator('#app .grades .zk-grade-number')).toHaveText(['06','07','08']);
+  await expect(page.locator('#app .grades .zk-grade-number')).toHaveText(['6','7','8']);
 
   // Confirms the last stylesheet was fetched and the original orange hero replaced.
   const design = await page.evaluate(async () => {
