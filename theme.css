@@ -1,0 +1,307 @@
+/* Zukko Xalqaro Maktabi — Kimyo | "Shisha 2.0" qatlami + tungi rejim (2026-11-15).
+   Tanlangan dizayn: A "Shisha" (Apple uslubidagi shaffof yuzalar), dizayn maydonidagi variant asosida.
+   Eng oxirida yuklanadi. Mantiq va darslik tuzilishi o'zgarmaydi; bo'lim ranglari (--uc) oldingidek.
+   Tungi rejim: <html data-theme="dark">, index.html <head> dagi skript qo'yadi (localStorage zk_theme
+   yoki qurilma sozlamasi). Harakatlar "prefers-reduced-motion" da o'chadi. */
+
+/* ===================== 1. Tokenlar ===================== */
+:root {
+  --f:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --zk-ease:cubic-bezier(.22,1,.36,1);
+  --zk-spring:cubic-bezier(.34,1.56,.64,1);
+  --zk-r-sm:14px; --zk-r:20px; --zk-r-lg:28px;
+  --zk-surface:rgba(255,255,255,.72);
+  --zk-surface-2:rgba(255,255,255,.86);
+  --zk-hair:rgba(0,85,90,.10);
+  --zk-track:rgba(0,85,90,.10);
+  --zk-lift:0 1px 0 rgba(255,255,255,.9) inset,0 2px 4px rgba(2,43,46,.05),0 26px 54px -16px rgba(2,43,46,.24);
+  --zk-on-accent:#ffffff;
+  --zk-accent:var(--zk-teal);
+  --card:var(--zk-surface-2);
+  color-scheme:light;
+}
+html[data-theme="dark"] {
+  color-scheme:dark;
+  --zk-teal:#5fd4c4; --zk-teal-600:#49c2b2; --zk-teal-700:#7fe0d2; --zk-teal-800:#bfeee7; --zk-teal-900:#041012;
+  --zk-teal-100:rgba(95,212,196,.20); --zk-teal-50:rgba(95,212,196,.10);
+  --zk-green:#3cc985; --zk-green-700:#7beab0; --zk-green-50:rgba(79,224,142,.12); --zk-mint:#7fe7b8;
+  --zk-blue:#5ca8ff; --zk-blue-700:#9ccaff; --zk-blue-50:rgba(92,168,255,.13);
+  --zk-amber:#f2b84f; --zk-amber-50:rgba(242,184,79,.13);
+  --zk-ink:#e6f2f1; --zk-text:#c8dbd9; --zk-muted:#9db6b4; --zk-line:rgba(255,255,255,.09); --zk-bg:#061315;
+  --zk-glass:rgba(14,32,36,.62); --zk-glass-strong:rgba(18,40,44,.86);
+  --zk-glass-line:rgba(255,255,255,.08);
+  --zk-glass-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 14px 40px rgba(0,0,0,.42);
+  --zk-surface:rgba(16,36,40,.66); --zk-surface-2:rgba(20,44,48,.82);
+  --zk-hair:rgba(255,255,255,.08); --zk-track:rgba(255,255,255,.09);
+  --zk-lift:0 1px 0 rgba(255,255,255,.06) inset,0 30px 60px -16px rgba(0,0,0,.7);
+  --zk-on-accent:#04201f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.35);
+  --navy:var(--zk-teal-800); --ink:var(--zk-ink); --muted:var(--zk-muted); --line:var(--zk-line); --bg:var(--zk-bg);
+  --blue:var(--zk-blue); --sky:var(--zk-blue-50); --green:var(--zk-green); --mint:var(--zk-green-50);
+  --orange:var(--zk-amber); --purple:var(--zk-teal); --pri:var(--zk-teal); --pri-d:var(--zk-teal-700);
+}
+
+/* ===================== 2. Asos ===================== */
+body.zk-v3 {font-family:var(--f);transition:background-color .5s var(--zk-ease),color .5s var(--zk-ease)}
+body.zk-v3 :where(input,select,textarea,button) {font-family:inherit}
+html[data-theme="dark"] body.zk-v3 {background:var(--zk-bg);color:var(--zk-ink)}
+html[data-theme="dark"] body.zk-v3::before {
+  background:
+    radial-gradient(900px 620px at 105% -10%,rgba(0,170,150,.16),transparent 60%),
+    radial-gradient(820px 560px at -10% 25%,rgba(26,120,232,.12),transparent 60%),
+    radial-gradient(760px 520px at 55% 110%,rgba(24,169,87,.08),transparent 60%)}
+html[data-theme="dark"] body.zk-v3 ::selection {background:rgba(95,212,196,.32)}
+html[data-theme="dark"] body.zk-v3 :where(a,button,input,select,textarea):focus-visible {outline-color:var(--zk-teal)}
+
+/* Mavzu almashganda: tugmadan aylana bo'lib yoyiladi (View Transitions) */
+html.zk-theming body.zk-v3 header.top, html.zk-theming body.zk-v3 #bnav {view-transition-name:none}
+html.zk-theming::view-transition-old(root) {animation:none}
+html.zk-theming::view-transition-new(root) {animation:zkThemeReveal .65s var(--zk-ease) both}
+@keyframes zkThemeReveal {
+  from {clip-path:circle(0 at var(--zk-tx,50%) var(--zk-ty,0))}
+  to {clip-path:circle(var(--zk-tr,150vmax) at var(--zk-tx,50%) var(--zk-ty,0))}}
+
+/* ===================== 3. Header: suzuvchi shisha ===================== */
+body.zk-v3 header.top {
+  top:10px;margin:10px clamp(10px,2vw,28px) 0;border-radius:22px;
+  background:var(--zk-glass);-webkit-backdrop-filter:var(--zk-glass-blur);backdrop-filter:var(--zk-glass-blur);
+  border:1px solid var(--zk-glass-line);box-shadow:var(--zk-glass-shadow);
+  transition:background-color .5s var(--zk-ease),border-color .5s var(--zk-ease)}
+body.zk-v3 header.top > .wrap {padding-left:clamp(12px,1.4vw,22px);padding-right:clamp(10px,1.2vw,16px)}
+html[data-theme="dark"] body.zk-v3 header.top {background:var(--zk-glass)}
+html[data-theme="dark"] body.zk-v3 .zk-school-name, html[data-theme="dark"] body.zk-v3 .zk-school-name small {color:var(--zk-ink)}
+html[data-theme="dark"] body.zk-v3 .top .logo .mark img, html[data-theme="dark"] body.zk-v3 .zk-gate .mk.zk-mk-mark img {filter:brightness(0) invert(1)}
+body.zk-v3 nav.main a, body.zk-v3 .zk-ngrp-btn {border-radius:999px;transition:background-color .3s var(--zk-ease),color .3s var(--zk-ease)}
+body.zk-v3 nav.main a.on, body.zk-v3 .zk-ngrp-btn.on, body.zk-v3 .lang button.on {color:var(--zk-on-accent)}
+body.zk-v3 .lang {border-radius:999px}
+body.zk-v3 .lang button {border-radius:999px}
+body.zk-v3 .search input {border-radius:999px}
+html[data-theme="dark"] body.zk-v3 :is(.search input,.lang,.xpw) {background:rgba(255,255,255,.05);border-color:var(--zk-hair);color:var(--zk-ink)}
+html[data-theme="dark"] body.zk-v3 .search input::placeholder {color:var(--zk-muted)}
+html[data-theme="dark"] body.zk-v3 .burger {color:var(--zk-on-accent)}
+html[data-theme="dark"] body.zk-v3 :is(.zk-ngrp-menu,nav.main.open,.sres,.uchip .mn) {background:var(--zk-glass-strong);border-color:var(--zk-glass-line)}
+html[data-theme="dark"] body.zk-v3 nav.main .zk-ngrp-menu a:hover {background:var(--zk-teal-50)}
+html[data-theme="dark"] body.zk-v3 .zk-ngrp-n, html[data-theme="dark"] body.zk-v3 .zk-grade-pill {color:var(--zk-on-accent)}
+html[data-theme="dark"] body.zk-v3 .sres a:hover, html[data-theme="dark"] body.zk-v3 .sres a.sel, html[data-theme="dark"] body.zk-v3 .sres a.top {background:var(--zk-teal-50);outline-color:var(--zk-teal-100)}
+html[data-theme="dark"] body.zk-v3 .snum.lab {background:rgba(139,92,246,.22)}
+
+/* Tungi rejim tugmasi: quyosh/oy aylanib almashadi */
+.zk-theme {position:relative;flex:none;width:40px;height:40px;padding:0;border-radius:999px;border:1px solid var(--zk-hair);
+  background:var(--zk-surface-2);color:var(--zk-ink);cursor:pointer;display:grid;place-items:center;overflow:hidden;
+  transition:transform .35s var(--zk-spring),background-color .4s var(--zk-ease),border-color .4s var(--zk-ease)}
+.zk-theme:hover {transform:translateY(-1px) rotate(-8deg)}
+.zk-theme:active {transform:scale(.92);transition-duration:.12s}
+.zk-theme svg {position:absolute;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .6s var(--zk-spring),opacity .35s var(--zk-ease)}
+.zk-theme .zk-moon {transform:rotate(-90deg) scale(.3);opacity:0}
+html[data-theme="dark"] .zk-theme .zk-sun {transform:rotate(90deg) scale(.3);opacity:0}
+html[data-theme="dark"] .zk-theme .zk-moon {transform:none;opacity:1}
+
+@media (max-width:760px) {
+  body.zk-v3 header.top {top:8px;margin:8px 8px 0;border-radius:20px}
+  .zk-theme {width:42px;height:42px}
+  body.zk-v3 .top .wrap {gap:8px}
+}
+@media (max-width:420px) {
+  /* tor telefon: til tugmasi ixchamroq, tungi rejim tugmasi sig'adi */
+  body.zk-v3 .lang button {padding-left:8px;padding-right:8px}
+  body.zk-v3 .top .logo .mark, body.zk-v3 .top .logo .mark img {height:38px}
+}
+
+/* ===================== 4. Yuzalar: shisha kartalar ===================== */
+body.zk-v3 :is(.panel,.gcard,.xcard,.fcard,.zk-dash-panel,.zk-dash-kpi,.toolcard,.mst,.zk-quick-item) {
+  background:var(--zk-surface-2);border-color:var(--zk-hair);
+  transition:transform .5s var(--zk-ease),box-shadow .5s var(--zk-ease),background-color .5s var(--zk-ease),border-color .5s var(--zk-ease)}
+body.zk-v3 :is(.panel,.zk-dash-panel) {border-radius:var(--zk-r-lg)}
+body.zk-v3 :is(.gcard,.xcard,.fcard,.zk-quick-item,.zk-dash-kpi,.toolcard) {border-radius:24px}
+@media (hover:hover) {
+  body.zk-v3 :is(.gcard,.xcard,.fcard,.zk-quick-item,.toolcard):hover {transform:translateY(-6px);box-shadow:var(--zk-lift)}
+}
+body.zk-v3 .btn {transition:transform .35s var(--zk-spring),background-color .35s var(--zk-ease),box-shadow .35s var(--zk-ease),color .35s var(--zk-ease),border-color .35s var(--zk-ease)}
+@media (hover:hover) { body.zk-v3 .btn:hover {transform:translateY(-2px)} }
+body.zk-v3 .btn:active {transform:scale(.97);transition-duration:.12s}
+html[data-theme="dark"] body.zk-v3 .btn.pri {color:var(--zk-on-accent)}
+html[data-theme="dark"] body.zk-v3 .btn.sec {background:rgba(255,255,255,.05);color:var(--zk-ink);border-color:var(--zk-hair)}
+
+/* ===================== 5. Bosh sahifa ===================== */
+body.zk-v3 .zk-hero-v3 {background:transparent;color:var(--zk-ink)}
+body.zk-v3 .zk-hero-v3:before {background:none}
+body.zk-v3 .zk-hero-v3 h1 {color:var(--zk-ink)}
+body.zk-v3 .zk-hero-v3 h1 em {color:var(--zk-teal);font-weight:500}
+body.zk-v3 .zk-hero-v3 p.lead {color:var(--zk-muted)}
+body.zk-v3 .zk-hero-kicker {background:var(--zk-surface);border-color:var(--zk-hair);color:var(--zk-text)}
+body.zk-v3 .zk-hero-stats b {color:var(--zk-ink)}
+body.zk-v3 .zk-hero-stats span {color:var(--zk-muted)}
+body.zk-v3 .zk-hero-stats {border-color:var(--zk-hair)}
+body.zk-v3 .zk-hero-stats > div {border-color:var(--zk-hair)}
+body.zk-v3 .zk-hero-v3 .btn.pri {background:var(--zk-teal);color:var(--zk-on-accent);box-shadow:0 14px 30px -10px rgba(0,85,90,.55)}
+body.zk-v3 .zk-hero-v3 .btn.pri:hover {background:var(--zk-teal-700)}
+body.zk-v3 .zk-hero-v3 .btn.sec {background:var(--zk-surface);color:var(--zk-ink);border:1px solid var(--zk-hair)}
+body.zk-v3 .zk-hero-v3 .btn.sec:hover {background:var(--zk-surface-2)}
+body.zk-v3 .zk-scene-toggle {background:var(--zk-surface);border-color:var(--zk-hair);color:var(--zk-ink)}
+body.zk-v3 .zk-scene-toggle small {color:var(--zk-muted)}
+/* 3D sahna — "laboratoriya oynasi": ikkala rejimda ham to'q, atom yaxshi ko'rinadi */
+body.zk-v3 .zk-hero-scene {border-radius:32px;box-shadow:var(--zk-lift)}
+
+/* "Davom ettirish" kartasi */
+.zk-hero-cont {display:flex;align-items:center;gap:16px;max-width:620px;margin:6px 0 4px;padding:16px 16px 16px 18px;border-radius:24px;
+  background:var(--zk-surface-2);border:1px solid var(--zk-hair);box-shadow:var(--zk-glass-shadow);color:var(--zk-ink);text-decoration:none;
+  -webkit-backdrop-filter:var(--zk-glass-blur);backdrop-filter:var(--zk-glass-blur);
+  transition:transform .5s var(--zk-ease),box-shadow .5s var(--zk-ease),background-color .5s var(--zk-ease)}
+.zk-hero-cont .lnum {width:52px;height:52px;flex:none;border-radius:16px;display:grid;place-items:center;font:600 24px/1 var(--fh);
+  box-shadow:0 12px 24px -10px var(--uc)}
+.zk-hc-t {display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 auto}
+.zk-hc-t small {font-size:11.5px;font-weight:800;letter-spacing:.09em;color:var(--zk-muted)}
+.zk-hc-t b {font:600 19px/1.3 var(--fh);color:var(--zk-ink)}
+.zk-hc-t span {font-size:13px;color:var(--zk-muted)}
+.zk-hc-go {flex:none;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px;border-radius:999px;font-weight:700;font-size:14.5px;
+  background:var(--zk-teal);color:var(--zk-on-accent)}
+.zk-hc-arr {width:17px;height:17px;transition:transform .4s var(--zk-spring)}
+@media (hover:hover) { .zk-hero-cont:hover {transform:translateY(-4px);box-shadow:var(--zk-lift)} .zk-hero-cont:hover .zk-hc-arr {transform:translateX(4px)} }
+.zk-hero-cont:active {transform:scale(.985)}
+@media (max-width:560px) {
+  .zk-hero-cont {flex-wrap:wrap;gap:12px;padding:14px}
+  .zk-hero-cont .lnum {width:46px;height:46px;font-size:21px}
+  .zk-hc-t {flex:1 1 calc(100% - 60px)}
+  .zk-hc-t b {font-size:17px}
+  .zk-hc-go {width:100%;justify-content:center;height:48px}
+}
+
+/* Sinf kartalari */
+body.zk-v3 .gcard {overflow:hidden}
+body.zk-v3 .zk-grade-number {transition:transform .5s var(--zk-spring)}
+@media (hover:hover) { body.zk-v3 .gcard:hover .zk-grade-number {transform:translateY(-3px) scale(1.04)} }
+
+/* ===================== 6. Darslar ro'yxati ===================== */
+body.zk-v3 .lcard {border:1px solid var(--zk-hair);border-left:1px solid var(--zk-hair);border-radius:var(--zk-r);background:var(--zk-surface-2);
+  transition:transform .45s var(--zk-spring),box-shadow .45s var(--zk-ease),border-color .45s var(--zk-ease),background-color .5s var(--zk-ease)}
+body.zk-v3 .lcard.done {border-left-color:var(--zk-hair)}
+body.zk-v3 .lcard .lnum {border-radius:13px;font-weight:800;transition:transform .45s var(--zk-spring)}
+@media (hover:hover) {
+  body.zk-v3 .lcard:hover {transform:translateY(-4px);border-color:color-mix(in srgb,var(--uc,#00555a) 45%,transparent);border-left-color:color-mix(in srgb,var(--uc,#00555a) 45%,transparent);
+    box-shadow:0 18px 36px -14px color-mix(in srgb,var(--uc,#00555a) 55%,transparent)}
+  body.zk-v3 .lcard:hover .lnum {transform:rotate(-6deg) scale(1.06)}
+}
+body.zk-v3 .unit-h span {color:var(--uc-on,#fff)}
+
+/* ===================== 7. Dars sahifasi ===================== */
+body.zk-v3 .lesson-top {background:linear-gradient(180deg,color-mix(in srgb,var(--uc,#00555a) 9%,transparent),transparent);border-bottom:0}
+body.zk-v3 .lhead .lnum {color:var(--uc-on,#fff);border-radius:18px}
+body.zk-v3 .lnav {background:var(--zk-surface-2);border-color:var(--zk-hair);border-radius:999px}
+body.zk-v3 .lnb {background:transparent;border-color:transparent;border-radius:999px;color:var(--zk-ink);transition:transform .3s var(--zk-spring),background-color .3s var(--zk-ease)}
+body.zk-v3 a.lnb:hover {background:var(--zk-teal);color:var(--zk-on-accent);border-color:transparent}
+body.zk-v3 .lpos b {color:var(--zk-ink)}
+
+/* Tablar: teng ustunlar + siljiydigan bo'lim rangidagi "tanlov" */
+body.zk-v3 .lesson-top .tabs {position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:5px;margin-top:16px;
+  border-radius:20px;background:var(--zk-teal-50);border:1px solid var(--zk-hair);overflow:visible;border-bottom:1px solid var(--zk-hair)}
+body.zk-v3 .lesson-top .tabs button {position:relative;z-index:1;justify-content:center;border:0!important;border-radius:15px;background:transparent!important;
+  color:var(--zk-muted);min-height:46px;margin:0;box-shadow:none!important;transition:color .35s var(--zk-ease)}
+body.zk-v3 .lesson-top .tabs button:hover {color:var(--zk-ink)}
+body.zk-v3 .lesson-top .tabs button.on {color:var(--uc-os,#fff)!important}
+body.zk-v3 .lesson-top .tabs button.on::after {display:none}
+body.zk-v3 .lesson-top .tabs button.on .cnt {background:rgba(0,0,0,.14);color:inherit}
+.tthumb {position:absolute;z-index:0;top:5px;bottom:5px;left:5px;width:calc((100% - 10px) / 4);border-radius:15px;
+  background:var(--uc-bs,var(--uc,#00555a));box-shadow:0 10px 24px -10px var(--uc,#00555a);
+  transform:translateX(calc(var(--ti,0) * 100%));animation:zkThumb .55s var(--zk-spring) both}
+@keyframes zkThumb {from {transform:translateX(calc(var(--tp,0) * 100%))}}
+body.zk-v3 .lesson-body > div > :not(.pn) {animation:zkPaneIn .45s var(--zk-ease) both}
+body.zk-v3 .lesson-body > div > :nth-child(2) {animation-delay:.04s}
+body.zk-v3 .lesson-body > div > :nth-child(3) {animation-delay:.08s}
+body.zk-v3 .lesson-body > div > :nth-child(n+4) {animation-delay:.12s}
+@keyframes zkPaneIn {from {opacity:0;transform:translateY(10px)}}
+@media (max-width:760px) {
+  body.zk-v3 .lesson-top .tabs {border-radius:18px;padding:4px}
+  body.zk-v3 .lesson-top .tabs button {min-height:56px;border-radius:14px;padding:6px 2px}
+  .tthumb {top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 4);border-radius:14px}
+}
+body.zk-v3 .lesson-body .keyq {border-radius:24px}
+body.zk-v3 .lesson-body .navl a {border-radius:12px;transition:background-color .3s var(--zk-ease),transform .35s var(--zk-spring)}
+@media (hover:hover) { body.zk-v3 .lesson-body .navl a:hover {transform:translateX(3px)} }
+body.zk-v3 .lesson-body .navl a.on i {color:inherit}
+body.zk-v3 .pn a {border-radius:20px;background:var(--zk-surface-2);border-color:var(--zk-hair);transition:transform .45s var(--zk-ease),box-shadow .45s var(--zk-ease)}
+@media (hover:hover) { body.zk-v3 .pn a:hover {transform:translateY(-3px);box-shadow:var(--zk-lift)} }
+body.zk-v3 .fnav {background:var(--zk-glass-strong);color:var(--zk-ink);border:1px solid var(--zk-glass-line);
+  -webkit-backdrop-filter:var(--zk-glass-blur);backdrop-filter:var(--zk-glass-blur);box-shadow:var(--zk-glass-shadow)}
+body.zk-v3 .fnav a, body.zk-v3 .fnav .off {color:var(--zk-ink)}
+body.zk-v3 .fnav a:hover {background:var(--zk-teal-50)}
+
+/* ===================== 8. Tungi rejim: komponentlar ===================== */
+html[data-theme="dark"] body.zk-v3 :is(.panel,.gcard,.xcard,.fcard,.zk-dash-panel,.zk-dash-kpi,.toolcard,.mst,.lcard,.zk-quick-item,.pn a) {background:var(--zk-surface-2);border-color:var(--zk-hair);color:var(--zk-ink)}
+html[data-theme="dark"] body.zk-v3 :is(h1,h2,h3,h4,h5,b,strong) {color:inherit}
+html[data-theme="dark"] body.zk-v3 .lesson-body .keyq {background:linear-gradient(135deg,color-mix(in srgb,var(--uc,#00555a) 18%,transparent),color-mix(in srgb,var(--uc,#00555a) 6%,transparent));border-color:color-mix(in srgb,var(--uc,#00555a) 35%,transparent)}
+html[data-theme="dark"] body.zk-v3 .lesson-body .keyq .ic {background:rgba(255,255,255,.06)}
+html[data-theme="dark"] body.zk-v3 .lesson-body .keyq b, html[data-theme="dark"] body.zk-v3 .lesson-body .keyq small {color:color-mix(in srgb,var(--uc,#5fd4c4) 55%,#fff)}
+html[data-theme="dark"] body.zk-v3 .lesson-body .xinline {background:linear-gradient(135deg,color-mix(in srgb,var(--uc,#00555a) 14%,transparent),transparent);border-color:color-mix(in srgb,var(--uc,#00555a) 30%,transparent)}
+html[data-theme="dark"] body.zk-v3 .lesson-top .tabs button .cnt {background:rgba(255,255,255,.08);color:var(--zk-text)}
+html[data-theme="dark"] body.zk-v3 footer {background:#030b0c}
+
+/* Kontrast tuzatishlari (avtomatik tekshiruv natijasi) */
+body.zk-v3 .lcard .lnum {font-size:19px}
+body.zk-v3 .lesson-body .navl a.on {background:color-mix(in srgb,var(--uc,#00555a) 16%,transparent)!important;color:var(--zk-ink)!important;font-weight:700}
+body.zk-v3 .lesson-body .navl a.on i {background:var(--uc-bs,var(--uc,#00555a));color:var(--uc-os,#fff)}
+body.zk-v3 .lesson-body .xinline .play {background:var(--zk-teal);color:var(--zk-on-accent)}
+body.zk-v3 .btn.grn {background:var(--zk-green-700);color:#fff}
+body.zk-v3 .snum.g7 {background:var(--zk-green-700)}
+html[data-theme="dark"] body.zk-v3 .seg button.on, html[data-theme="dark"] body.zk-v3 .seg .on {color:var(--zk-on-accent)!important}
+html[data-theme="dark"] body.zk-v3 .btn.grn {background:var(--zk-green);color:var(--zk-on-accent)}
+html[data-theme="dark"] body.zk-v3 .snum.g7 {background:var(--zk-green);color:var(--zk-on-accent)}
+html[data-theme="dark"] body.zk-v3 .tc-tabs button.on {color:var(--zk-on-accent)!important}
+html[data-theme="dark"] .ptbig {color:#14213d}
+
+/* Sahifa sarlavhasi tasmasi: tungi rejimda to'q, yumshoq rangli */
+html[data-theme="dark"] body.zk-v3 .page-h, html[data-theme="dark"] body.zk-v3 .page-h.lab, html[data-theme="dark"] body.zk-v3 .page-h.tests, html[data-theme="dark"] body.zk-v3 .page-h.me, html[data-theme="dark"] body.zk-v3 .page-h.g8 {background:linear-gradient(130deg,#03292c,#0a4448 65%,#0d5458)!important;color:#fff}
+html[data-theme="dark"] body.zk-v3 .page-h.g6 {background:linear-gradient(130deg,#0a2147,#12386e 60%,#1a4a8a)!important}
+html[data-theme="dark"] body.zk-v3 .page-h.g7 {background:linear-gradient(130deg,#06281c,#0d4a33 60%,#136043)!important}
+html[data-theme="dark"] body.zk-v3 .page-h :is(h1,h2,p,a,span,small,b) {color:#fff}
+html[data-theme="dark"] body.zk-v3 .page-h .crumbs, html[data-theme="dark"] body.zk-v3 .page-h p {color:rgba(255,255,255,.82)}
+html[data-theme="dark"] body.zk-v3 :is(main,.zk-gate) :is(h1,h2,h3) {color:var(--zk-ink)}
+html[data-theme="dark"] body.zk-v3 .page-h h1 {color:#fff}
+/* Davriy jadval katakchalari: rang saqlanadi, tungi fonga moslab yumshatiladi */
+html[data-theme="dark"] body.zk-v3 .ptcell {background:color-mix(in srgb,var(--c) 70%,#0b1d20);border-color:rgba(255,255,255,.06)}
+html[data-theme="dark"] body.zk-v3 .ptcell[style*="--c"], html[data-theme="dark"] body.zk-v3 .ptcell[style*="--c"] * {color:#0c1b1d}
+html[data-theme="dark"] body.zk-v3 .ptcell.ptph2 {background:rgba(255,255,255,.06)}
+html[data-theme="dark"] body.zk-v3 .ptcell.ptph2 * {color:var(--zk-muted)}
+
+/* Login ekrani (tungi) */
+html[data-theme="dark"] body.zk-v3 .zk-gate, html[data-theme="dark"] body.zk-v3 .zk-gate.boot {background:radial-gradient(800px 560px at 85% -10%,rgba(0,170,150,.20),transparent 60%),radial-gradient(760px 520px at -10% 110%,rgba(26,120,232,.16),transparent 60%),#061315!important;color:var(--zk-ink)}
+html[data-theme="dark"] body.zk-v3 .zk-gate .card {background:var(--zk-glass-strong);border-color:var(--zk-glass-line);box-shadow:var(--zk-glass-shadow)}
+html[data-theme="dark"] body.zk-v3 .zk-gate :is(h1,.rh,.zk-gate.boot b) {color:var(--zk-ink)}
+html[data-theme="dark"] body.zk-v3 .zk-gate .zk-brand-kicker, html[data-theme="dark"] body.zk-v3 .zk-gate .lg:has(.zk-mk-mark) .zk-brand-kicker {color:var(--zk-teal)}
+html[data-theme="dark"] body.zk-v3 .zk-gate :is(input[type="text"],input[type="password"],input[type="search"],select) {background:rgba(255,255,255,.05);color:var(--zk-ink);border-color:var(--zk-hair)}
+html[data-theme="dark"] body.zk-v3 .zk-gate :is(.lnk,.kv) {color:var(--zk-teal)}
+html[data-theme="dark"] body.zk-v3 .zk-gate .alt {background:var(--zk-teal-50);color:var(--zk-teal);border-color:var(--zk-teal-100)}
+html[data-theme="dark"] body.zk-v3 .zk-gate .lng {background:rgba(255,255,255,.05);border-color:var(--zk-hair)}
+html[data-theme="dark"] body.zk-v3 .zk-gate .lng button.on {background:var(--zk-teal);color:var(--zk-on-accent)}
+html[data-theme="dark"] body.zk-v3 .zk-gate .go {color:#fff}
+body.zk-v3 .zk-gate :is(.ht,.sb,.nt) {color:var(--zk-muted)}
+body.zk-v3 .zk-gate .lng button:not(.on) {color:var(--zk-muted)}
+/* Bosh sahifa: 3D sahna har ikki rejimda to'q oyna */
+body.zk-v3 .zk-hero-scene {background:linear-gradient(150deg,#0b4f53 0%,#03292c 60%,#021d20 100%)}
+/* Kichik izoh matnlari: o'qilishi oson kulrang (4.5:1) */
+body.zk-v3 :is(.zk-quick-item small,.fcard p,.xcard .bd p,.zk-quest small,.zk-dash-foot,.zk-dash-head p,.gcard p) {color:var(--zk-muted)}
+
+/* ===================== Telefon qulayligi ===================== */
+body.zk-v3 .xinline > div:not(.ic) {flex:1 1 auto;min-width:0}
+@media (max-width:600px) {
+  body.zk-v3 .xinline {flex-wrap:wrap}
+  body.zk-v3 .xinline > div:not(.ic) {flex:1 1 calc(100% - 72px)}
+  body.zk-v3 .xinline .play {flex:1 1 100%;margin-left:0;text-align:center;padding:12px 14px}
+}
+@media (max-width:760px) {
+  /* "Davom ettirish" kartasi bor bo'lsa, takroriy "Darslarni boshlash" tugmasi yashiriladi */
+  body.zk-v3 .zk-btns-sec > a:first-child {display:none}
+}
+@media (max-width:760px) {
+  body.zk-v3 .top .search input:not(:focus)::placeholder {color:transparent}
+  html[data-theme="dark"] body.zk-v3 .top .search input:not(:focus) {color:transparent}
+}
+@media (max-width:440px) {
+  body.zk-v3 .top .zk-theme {order:3;width:38px;height:38px}
+  body.zk-v3 .top .zk-theme svg {width:18px;height:18px}
+}
+
+/* ===================== 9. Harakatni kamaytirish ===================== */
+@media (prefers-reduced-motion:reduce) {
+  body.zk-v3 *, body.zk-v3 *::before, body.zk-v3 *::after, .tthumb {animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+}

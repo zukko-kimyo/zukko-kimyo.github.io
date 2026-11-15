@@ -10,11 +10,16 @@ test('brand layer is loaded: teal hero, serif headings; login (brand-entry.css) 
   await page.goto('/index.html#home'); await waitReady(page);
   const s = await page.evaluate(() => ({
     hero: getComputedStyle(document.querySelector('.zk-hero-v3')).backgroundColor,
+    h1: getComputedStyle(document.querySelector('.zk-hero-v3 h1')).color,
     h2: getComputedStyle(document.querySelector('.sec-h h2')).fontFamily,
     css: [...document.styleSheets].some((x) => /brand\.css/.test(x.href || '')),
+    theme: [...document.styleSheets].some((x) => /theme\.css/.test(x.href || '')),
   }));
   expect(s.css).toBe(true);
-  expect(s.hero).toBe('rgb(2, 43, 46)');
+  expect(s.theme).toBe(true);
+  // Shisha 2.0 (2026-11-15): bosh blok shaffof, fon — umumiy yumshoq "mesh"; sarlavha to'q teal-qora.
+  expect(s.hero).toBe('rgba(0, 0, 0, 0)');
+  expect(s.h1).toBe('rgb(15, 42, 44)');
   expect(s.h2).toMatch(/Fraunces/);
 });
 

@@ -67,11 +67,20 @@
   const tr = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || o.uz || ''));
   const app = document.getElementById('app');
   let labHandle = null, modalHandle = null;
-  const GC = { g6: '#2563c9', g7: '#2e9e6a', g8: '#00555a' }; // sinf ranglari — brend palitrasi
+  const GC = { g6: '#2563c9', g7: '#217a51', g8: '#00555a' }; // sinf ranglari — brend palitrasi
   const GN = { g6: 6, g7: 7, g8: 8 }; const GRADES = ['g6', 'g7', 'g8'];
   // Darslik bo'limlari ranglari — oldingi versiyadagidek (foydalanuvchi talabi, 2026-11-13).
   // Dars sahifasida ham shu bo'lim rangi ishlatiladi (--uc).
   const UC = ['#ff7a1a', '#8b5cf6', '#22c55e', '#ec4899', '#0ea5e9', '#f59e0b', '#14b8a6', '#ef4444', '#6366f1', '#84cc16'];
+  // Bo'lim rangi ustidagi matn rangi: oq yetarli o'qilmasa (WCAG, katta matn 3:1) — to'q rang.
+  const onCol = (hex) => { const v = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))); const L = 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; return 1.05 / (L + 0.05) >= 3 ? '#ffffff' : '#0f2a2c'; };
+  // Kichik matn uchun (4.5:1): bo'lim rangi o'zi yetmasa — biroz to'qroq fon + oq matn.
+  const ucStrong = (hex) => {
+    const lum = (h) => { const v = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+    const L = lum(hex); if (1.05 / (L + 0.05) >= 4.5) return [hex, '#ffffff']; if ((L + 0.05) / 0.0717 >= 4.5) return [hex, '#0f2a2c'];
+    let c = hex; for (let k = 0; k < 12 && 1.05 / (lum(c) + 0.05) < 4.6; k++) c = '#' + [1, 3, 5].map((i) => Math.round(parseInt(c.slice(i, i + 2), 16) * 0.92).toString(16).padStart(2, '0')).join('');
+    return [c, '#ffffff'];
+  };
   const unitIdx = (g, n) => Math.max(0, (B[g].units || []).filter((u) => u.from <= n).length - 1);
   const XPok = () => !!window.XP;
   const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -103,16 +112,32 @@
   function destroyLab() { if (labHandle) { labHandle.destroy(); labHandle = null; } }
 
   /* ---------- views ---------- */
+  // Bosh sahifa: "Davom ettirish" kartasi — saytga faqat login bilan kiriladi, demak har bir kiruvchi o'quvchi.
+  function heroCont() {
+    if (!XPok() || !XP.s) return '';
+    let g = 'g6', n = 1, started = false;
+    if (/^g[678]-[1-9]\d*$/.test(XP.s.last || '')) { const p = XP.s.last.split('-'); g = p[0]; n = +p[1]; started = true; }
+    const L = B[g] && B[g].lessons[n - 1]; if (!L) return '';
+    const col = UC[unitIdx(g, n) % UC.length], u = (B[g].units || [])[unitIdx(g, n)];
+    const uz = lang === 'uz', arrow = '<svg class="zi zk-hc-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    return `<a class="zk-hero-cont" href="#${g}-${n}" style="--uc:${col};--uc-on:${onCol(col)}">
+      <span class="lnum" style="background:${col};color:${onCol(col)}">${n}</span>
+      <span class="zk-hc-t"><small>${started ? (uz ? 'DAVOM ETTIRISH' : 'CONTINUE') : (uz ? 'BIRINCHI DARS' : 'FIRST LESSON')} · ${GN[g]}-${uz ? 'SINF' : 'GRADE'}</small><b>${esc(tr(L.t))}</b>${u ? `<span>${esc(tr(u.t))}</span>` : ''}</span>
+      <span class="zk-hc-go">${started ? (uz ? 'Davom etish' : 'Continue') : (uz ? 'Boshlash' : 'Start')}${arrow}</span></a>`;
+  }
+
   function home() {
     const nL = GRADES.reduce((a, g) => a + (B[g] ? B[g].lessons.length : 0), 0);
+    const hc = heroCont();
     app.innerHTML = `
     <section class="hero zk-hero-v3"><div class="wrap">
       <div class="zk-hero-content">
         <div class="zk-hero-kicker"><span class="zk-live-dot"></span>${lang === 'uz' ? 'ZUKKO XALQARO MAKTABI · RAQAMLI KIMYO' : 'ZUKKO INTERNATIONAL SCHOOL · CHEMISTRY'}</div>
         <h1>${lang === 'uz' ? 'Kimyoni ko‘r.' : 'See chemistry.'} <em>${lang === 'uz' ? 'Tajribada kashf et.' : 'Discover it in action.'}</em></h1>
         <p class="lead">${lang === 'uz' ? 'Oddiy darslikdan ko‘proq: tushunarli mavzular, interaktiv 3D tajribalar va bilimni mustahkamlaydigan testlar — barchasi bir joyda.' : 'More than a textbook: clear lessons, interactive 3D experiments and practice tests, all in one modern learning space.'}</p>
-        <div class="btns">
-          <a class="btn pri" href="#g6">${lang === 'uz' ? '📚 Darslarni boshlash' : '📚 Explore lessons'} <span aria-hidden="true">↗</span></a>
+        ${hc}
+        <div class="btns${hc ? ' zk-btns-sec' : ''}">
+          <a class="btn ${hc ? 'sec' : 'pri'}" href="#g6">${lang === 'uz' ? '📚 Darslarni boshlash' : '📚 Explore lessons'} <span aria-hidden="true">↗</span></a>
           <a class="btn sec" href="#lab">${lang === 'uz' ? '🧪 3D laboratoriyani ochish' : '🧪 Explore the 3D laboratory'}</a>
         </div>
         <div class="zk-hero-stats">
@@ -213,10 +238,10 @@
     const bk = B[g]; const gr = GN[g];
     let html = '', cnt = 0;
     bk.lessons.forEach((L, i) => {
-      const n = i + 1; if (bk.units) { const u = bk.units.find((u) => u.from === n); if (u && !filter3d) html += `<div class="unit-h" style="--uc:${UC[unitIdx(g, n) % UC.length]}"><span>${unitIdx(g, n) + 1}</span>${tr(u.t)}</div>`; }
+      const n = i + 1; if (bk.units) { const u = bk.units.find((u) => u.from === n); if (u && !filter3d) html += `<div class="unit-h" style="--uc:${UC[unitIdx(g, n) % UC.length]};--uc-on:${onCol(UC[unitIdx(g, n) % UC.length])}"><span>${unitIdx(g, n) + 1}</span>${tr(u.t)}</div>`; }
       const ex = expsOf(g, n); if (filter3d && !ex.length) return;
       const col = UC[unitIdx(g, n) % UC.length]; const ls = XPok() ? XP.state(g, n) : ''; const best = ls ? XP.s.L[g + '-' + n].best : 0;
-      html += `<a class="lcard ${ls}" href="#${g}-${n}" style="--uc:${col};--i:${Math.min(cnt++, 24)}"><div class="lnum" style="background:${col}">${ls === 'done' ? '★' : n}</div><div><h4>${tr(L.t)}</h4><div class="tags">${ls === 'done' ? `<span class="chip ok">⭐ ${best}/10</span>` : ls ? `<span class="chip st">▶ ${XP.t('st_start')}</span>` : ''}${ex.length ? `<span class="chip p">🧪 ${ex.length} 3D</span>` : ''}<span class="chip o">✅ 10+</span></div></div>${ls === 'done' ? '<span class="lstate">✓</span>' : ''}</a>`;
+      html += `<a class="lcard ${ls}" href="#${g}-${n}" style="--uc:${col};--uc-on:${onCol(col)};--i:${Math.min(cnt++, 24)}"><div class="lnum" style="background:${col};color:${onCol(col)}">${ls === 'done' ? '★' : n}</div><div><h4>${tr(L.t)}</h4><div class="tags">${ls === 'done' ? `<span class="chip ok">⭐ ${best}/10</span>` : ls ? `<span class="chip st">▶ ${XP.t('st_start')}</span>` : ''}${ex.length ? `<span class="chip p">🧪 ${ex.length} 3D</span>` : ''}<span class="chip o">✅ 10+</span></div></div>${ls === 'done' ? '<span class="lstate">✓</span>' : ''}</a>`;
     });
     app.innerHTML = `<div class="page-h ${g}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_' + g)}</div><h1>${t(g + '_t')}</h1><p>${t(g + '_d')}</p>${XPok() ? (() => { const o = XP.grade(g, bk.lessons.length); return `<div class="phprog"><div class="xbar big"><div style="width:${o.p}%"></div><i style="width:${Math.round((100 * (o.done + o.started)) / o.total)}%"></i></div><span>⭐ ${o.done} / ${o.total} ${XP.t('st_done').toLowerCase()} • ${o.p}%</span></div>`; })() : ''}</div></div>
       <div class="wrap"><div class="toolbar"><div class="seg"><button data-f="0" class="${filter3d ? '' : 'on'}">${t('all')} (${bk.lessons.length})</button><button data-f="1" class="${filter3d ? 'on' : ''}">🧪 ${t('with3d')}</button></div><a class="btn sec" href="#book-${g}" style="padding:8px 14px;font-size:14px">📖 ${t('nav_book')}</a></div>
@@ -263,13 +288,15 @@
     }
     const navl = bk.lessons.map((x, i) => `<a href="#${g}-${i + 1}" class="${i + 1 === n ? 'on' : ''}"><i>${i + 1}</i>${tr(x.t)}</a>`).join('');
     const prev = bk.lessons[n - 2], next = bk.lessons[n];
-    app.innerHTML = `<div class="lesson-top" style="--uc:${col}"><div class="wrap">
+    const TABS = ['content', 'pages', 'lab', 'quiz']; const ti = Math.max(0, TABS.indexOf(tab)); const tp = lastTab && lastTab.key === g + '-' + n ? lastTab.i : ti; lastTab = { key: g + '-' + n, i: ti };
+    const ucs = ucStrong(col); const ucv = `--uc:${col};--uc-on:${onCol(col)};--uc-bs:${ucs[0]};--uc-os:${ucs[1]}`;
+    app.innerHTML = `<div class="lesson-top" style="${ucv}"><div class="wrap">
         <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#${g}">${t('nav_' + g)}</a> / ${t('lesson')} ${n}</div>
-        <div class="lhead"><h1><span class="lnum" style="background:${col}">${n}</span>${tr(L.t)}${lst === 'done' ? `<span class="lstat done">⭐ ${XP.t('st_done')}</span>` : ''}</h1>
+        <div class="lhead"><h1><span class="lnum" style="background:${col};color:${onCol(col)}">${n}</span>${tr(L.t)}${lst === 'done' ? `<span class="lstat done">⭐ ${XP.t('st_done')}</span>` : ''}</h1>
           <div class="lnav" title="${t('kb_hint')}">${prev ? `<a class="lnb" href="#${g}-${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${n}</b> / ${bk.lessons.length}</span>${next ? `<a class="lnb" href="#${g}-${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
-        <div class="tabs">${['content', 'pages', 'lab', 'quiz'].map((k) => `<button data-tab="${k}" class="${tab === k ? 'on' : ''}"><i class="ti">${{ content: '📘', pages: '📄', lab: '🧪', quiz: '✅' }[k]}</i><span class="tlong">${t('t_' + k)}</span><span class="tsh">${t('ts_' + k)}</span>${k === 'lab' && (ex.length || toolsOf(g, n).length) ? `<span class="cnt">${ex.length + toolsOf(g, n).length}</span>` : ''}${k === 'quiz' ? `<span class="cnt q">10</span>` : ''}</button>`).join('')}</div>
+        <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${tp}"></span>${TABS.map((k) => `<button data-tab="${k}" role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}"><i class="ti">${{ content: '📘', pages: '📄', lab: '🧪', quiz: '✅' }[k]}</i><span class="tlong">${t('t_' + k)}</span><span class="tsh">${t('ts_' + k)}</span>${k === 'lab' && (ex.length || toolsOf(g, n).length) ? `<span class="cnt">${ex.length + toolsOf(g, n).length}</span>` : ''}${k === 'quiz' ? `<span class="cnt q">10</span>` : ''}</button>`).join('')}</div>
       </div></div>
-      <div class="wrap lesson-body" style="--uc:${col}">
+      <div class="wrap lesson-body" style="${ucv}">
         <div>${body}
           <div class="pn">${prev ? `<a href="#${g}-${n - 1}"><small>${t('prev')}</small>${tr(prev.t)}</a>` : '<span style="flex:1"></span>'}${next ? `<a class="r" href="#${g}-${n + 1}"><small>${t('next')}</small>${tr(next.t)}</a>` : '<span style="flex:1"></span>'}</div>
         </div>
@@ -385,7 +412,7 @@
     document.getElementById('tgo').onclick = () => start([...TS.sel].map((k) => { const [g, n] = k.split('-'); return [g, +n]; }), TS.count, TS.diff);
     document.getElementById('tq').onclick = () => start(allLessons(), 20, 'mix');
   }
-  let curTab = 'content';
+  let curTab = 'content'; let lastTab = null;
   function xinline(e) { return `<div class="xinline" data-x="${e.id}"><div class="ic">${e.icon || '🧪'}</div><div><h4>${tr(e.title)}</h4><p>${tr(e.desc)}</p></div><span class="play">${t('watch')}</span></div>`; }
 
   function quiz(el, qs) {
