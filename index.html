@@ -19,8 +19,8 @@
   function paint() {
     var m = document.querySelector('meta[name="theme-color"]');
     if (m) m.setAttribute('content', root.dataset.theme === 'dark' ? '#061315' : '#00555a');
-    var b = document.getElementById('themeBtn');
-    if (b) { b.setAttribute('aria-label', label()); b.setAttribute('title', label()); b.setAttribute('aria-pressed', root.dataset.theme === 'dark' ? 'true' : 'false'); }
+    var bs = document.querySelectorAll('.zk-theme');
+    for (var i = 0; i < bs.length; i++) { bs[i].setAttribute('aria-label', label()); bs[i].setAttribute('title', label()); bs[i].setAttribute('aria-pressed', root.dataset.theme === 'dark' ? 'true' : 'false'); }
   }
   function apply(t) { root.dataset.theme = t; root.style.colorScheme = t; paint(); try { window.dispatchEvent(new CustomEvent('zk:theme', { detail: t })); } catch (e) {} }
   function set(t, animate) {
@@ -36,7 +36,7 @@
   apply(current());
   if (mq && mq.addEventListener) mq.addEventListener('change', function () { if (!saved()) apply(current()); });
   document.addEventListener('click', function (e) {
-    var b = e.target.closest && e.target.closest('#themeBtn');
+    var b = e.target.closest && e.target.closest('.zk-theme');
     if (!b) return;
     var r = b.getBoundingClientRect();
     root.style.setProperty('--zk-tx', Math.round(r.left + r.width / 2) + 'px');
@@ -44,6 +44,7 @@
     set(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
   });
   new MutationObserver(paint).observe(root, { attributes: true, attributeFilter: ['lang'] });
+  document.addEventListener('DOMContentLoaded', function () { new MutationObserver(function (m) { for (var i = 0; i < m.length; i++) if (m[i].addedNodes.length) { paint(); break; } }).observe(document.body, { childList: true }); });
   document.addEventListener('DOMContentLoaded', paint);
   window.ZKTheme = { get: function () { return root.dataset.theme; }, set: function (t) { set(t, false); } };
 })();
@@ -696,8 +697,8 @@ button,a,.ptcell{touch-action:manipulation}
 <link rel="stylesheet" href="mobile-admin.css?v=20261112-mobile-01" />
 <link rel="stylesheet" href="brand-entry.css?v=20261112-brand-02" />
 <link rel="stylesheet" href="brand.css?v=20261113-perf-02" />
-<link rel="stylesheet" href="theme-dark.css?v=20261115-shisha-01" />
-<link rel="stylesheet" href="theme.css?v=20261115-shisha-01" />
+<link rel="stylesheet" href="theme-dark.css?v=20261115-shisha-02" />
+<link rel="stylesheet" href="theme.css?v=20261115-shisha-02" />
 </head>
 <body class="zk-v3">
 <header class="top">
@@ -745,7 +746,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261115-shisha-01';
+const VER = '20261115-shisha-02';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 // Tezlik (2026-11-13): hamma fayllar boshidanoq PARALLEL yuklab olinadi (preload), keyin tartib bilan ishga tushadi.
 // 3D, darslar va testlar login tekshiruvi bilan bir vaqtda tayyorlanadi; foydalanuvchiga bog'liq qismlar — logindan keyin.

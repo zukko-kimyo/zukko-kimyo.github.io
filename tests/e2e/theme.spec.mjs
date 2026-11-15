@@ -95,3 +95,13 @@ test('reduced motion: theme still switches without animation', async ({ page }) 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(page.locator('html')).not.toHaveClass(/zk-theming/);
 });
+
+test('login screen has the dark mode toggle too', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/index.html?mock#home'); await waitReady(page);
+  const b = page.locator('.zk-gate .zk-gate-theme');
+  await expect(b).toBeVisible();
+  await b.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(b).toHaveAttribute('aria-label', 'Kunduzgi rejimga o‘tish');
+});

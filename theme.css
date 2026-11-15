@@ -263,6 +263,10 @@ html[data-theme="dark"] body.zk-v3 .ptcell[style*="--c"], html[data-theme="dark"
 html[data-theme="dark"] body.zk-v3 .ptcell.ptph2 {background:rgba(255,255,255,.06)}
 html[data-theme="dark"] body.zk-v3 .ptcell.ptph2 * {color:var(--zk-muted)}
 
+/* Login ekrani: tungi rejim tugmasi kartaning chap yuqori burchagida */
+body.zk-v3 .zk-gate .card {position:relative;border-radius:28px}
+.zk-gate .zk-gate-theme {position:absolute;top:16px;left:16px;width:40px;height:40px;z-index:2}
+
 /* Login ekrani (tungi) */
 html[data-theme="dark"] body.zk-v3 .zk-gate, html[data-theme="dark"] body.zk-v3 .zk-gate.boot {background:radial-gradient(800px 560px at 85% -10%,rgba(0,170,150,.20),transparent 60%),radial-gradient(760px 520px at -10% 110%,rgba(26,120,232,.16),transparent 60%),#061315!important;color:var(--zk-ink)}
 html[data-theme="dark"] body.zk-v3 .zk-gate .card {background:var(--zk-glass-strong);border-color:var(--zk-glass-line);box-shadow:var(--zk-glass-shadow)}
