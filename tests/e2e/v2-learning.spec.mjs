@@ -3,6 +3,10 @@ import { test, expect, bootstrapAdmin } from './fixtures.mjs';
 
 test('home dashboard and personal certificate are available after sign-in', async ({ page }) => {
   await bootstrapAdmin(page);
+  // Shisha 2.0: bosh sahifada "Davom ettirish" va kunlik maqsad; to'liq o'quv markazi — "Mening yutuqlarim" sahifasida
+  await expect(page.locator('#app .zk-hero-cont')).toBeVisible();
+  await expect(page.locator('#app .zk-goal')).toBeVisible();
+  await page.evaluate(() => { location.hash = '#me'; });
   await expect(page.locator('.zk-dash')).toBeVisible();
   await expect(page.locator('.zk-dash-kpi')).toHaveCount(4);
   await expect(page.locator('.zk-quest')).toHaveCount(3);

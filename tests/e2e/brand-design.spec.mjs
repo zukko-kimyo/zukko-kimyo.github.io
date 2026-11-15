@@ -32,7 +32,8 @@ test('interface emojis are replaced by SVG icons (headings, quick links, bottom 
       .filter((e) => !e.closest('.th') && re.test(e.textContent)).map((e) => e.tagName + ':' + e.textContent.trim().slice(0, 20));
   }, EMOJI_UI.source);
   expect(left).toEqual([]);
-  expect(await page.locator('.zk-quick-ic svg.zi').count()).toBe(3);
+  // Shisha 2.0: tezkor havolalar o'rnida bento kartalar (davriy jadval, 3D laboratoriya, testlar)
+  expect(await page.locator('.zk-bcard .zk-bic svg.zi').count()).toBe(2);
   expect(await page.locator('#bnav svg.zi').count()).toBeGreaterThanOrEqual(4);
 });
 
@@ -93,7 +94,8 @@ test('desktop: molecular lab stays visible without a toggle', async ({ page, isM
 });
 
 test('new learner sees "3 steps" instead of an empty chart', async ({ page }) => {
-  await page.goto('/index.html#home'); await waitReady(page);
+  // o'quv markazi (dashboard) Shisha 2.0 da "Mening yutuqlarim" sahifasida
+  await page.goto('/index.html#me'); await waitReady(page);
   await expect(page.locator('.zk-dash-new')).toBeVisible();
   await expect(page.locator('.zk-dash-new li')).toHaveCount(3);
   await expect(page.locator('.zk-bars')).toHaveCount(0);

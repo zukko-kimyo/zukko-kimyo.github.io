@@ -14,6 +14,8 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - Matn shrifti Manrope o'rniga Inter (maktab dizayn tizimi bo'yicha).
 - `prefers-reduced-motion` da barcha animatsiyalar o'chadi.
 - Login ekranida ham tungi rejim tugmasi (kartaning chap yuqori burchagida).
+- Bosh sahifa dizayn maydonidagi variantga to'liq moslandi: statistika + "Bugungi maqsad" (haftalik faollik), shisha sinf kartalari (progress bilan), bento (kichik davriy jadval, 3D laboratoriya, testlar), darslar paneli 6/7/8-sinf almashtirgichi bilan (har bo'limdan 3 dars, bo'lim ranglarida).
+- "Mening o'quv markazim" (dashboard) bosh sahifadan "Mening yutuqlarim" sahifasiga ko'chdi; tezkor havolalar, "Imkoniyatlar" va tajribalar ro'yxati bosh sahifadan olindi (ular 3D laboratoriya va bento kartalarida bor).
 
 ### 3D laboratoriya: kuchsiz videokartalar uchun yengil rejim (2026-11-13)
 - Kuchsiz (o'rnatilgan/mobil/dasturiy) videokartada shisha va suyuqlikning "nur o'tkazish" effekti oddiy shaffoflikka, yumshoq soyalar oddiy soyaga almashadi; `?gfx=hq` / `?gfx=lite` bilan majburlash mumkin.
