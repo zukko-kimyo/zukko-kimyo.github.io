@@ -13,6 +13,7 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - Telefonda: tajriba kartasi matni siqilib qolmaydi, takroriy tugma yashirildi, header tor ekranga sig'adi.
 - Matn shrifti Manrope o'rniga Inter (maktab dizayn tizimi bo'yicha).
 - `prefers-reduced-motion` da barcha animatsiyalar o'chadi.
+- Login ekranida ham tungi rejim tugmasi (kartaning chap yuqori burchagida).
 
 ### 3D laboratoriya: kuchsiz videokartalar uchun yengil rejim (2026-11-13)
 - Kuchsiz (o'rnatilgan/mobil/dasturiy) videokartada shisha va suyuqlikning "nur o'tkazish" effekti oddiy shaffoflikka, yumshoq soyalar oddiy soyaga almashadi; `?gfx=hq` / `?gfx=lite` bilan majburlash mumkin.

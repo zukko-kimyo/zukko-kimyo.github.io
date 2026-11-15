@@ -223,7 +223,8 @@
     css();
     const el = document.createElement('div'); el.className = 'zk-gate'; document.body.appendChild(el);
     let mode = 'login';
-    const langBar = (L) => `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
+    const themeBtn = '<button type="button" class="zk-theme zk-gate-theme" aria-pressed="false" aria-label="Tungi rejimga o‘tish"><svg class="zk-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="zk-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>';
+    const langBar = (L) => themeBtn + `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
     const head = () => `<div class="lg"><span class="mk zk-mk-mark"><img src="assets/zukko-mark.svg" alt="" width="139" height="314" decoding="async"></span><div><span class="zk-brand-kicker">${lang() === 'en' ? 'ZUKKO INTERNATIONAL SCHOOL' : 'ZUKKO XALQARO MAKTABI'}</span><h1>${lang() === 'en' ? 'Welcome back' : 'Xush kelibsiz!'}</h1><div class="sb">${t('sub')}</div></div></div>`;
     const render = (keep) => {
       const L = lang(); const v = keep || {};
