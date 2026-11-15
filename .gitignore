@@ -25,3 +25,4 @@ serviceAccount*.json
 # Tizim
 .DS_Store
 Thumbs.db
+tools/dark-mode/rules.json

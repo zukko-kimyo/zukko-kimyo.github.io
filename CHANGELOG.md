@@ -4,6 +4,16 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Yangi dizayn "Shisha 2.0" va tungi rejim (2026-11-15, ADR 0006)
+- **Tungi rejim**: headerda oy/quyosh tugmasi; tanlov eslab qolinadi (`localStorage zk_theme`), tanlanmagan bo'lsa qurilma sozlamasi (`prefers-color-scheme`) olinadi. Mavzu sahifa chizilishidan oldin qo'yiladi — oq "miltillash" yo'q. Almashganda tugmadan aylana bo'lib yoyiladi (View Transitions).
+- `theme.css` — Shisha 2.0 qatlami: suzuvchi shisha header, shaffof bosh blok, yumshoq kartalar, prujinali (spring) harakatlar, dars tablarida bo'lim rangidagi siljiydigan tanlov.
+- `theme-dark.css` — barcha och fon/to'q matn qoidalarining tungi muqobili (`tools/dark-mode/` bilan hosil qilingan), aniqlashtirishlar `theme.css` da.
+- Bosh sahifada "Davom ettirish" kartasi (oxirgi ochilgan dars, bo'lim rangida).
+- Kontrast (WCAG AA): bo'lim rangi ustidagi raqam/matn rangi avtomatik tanlanadi (to'q sariq, yashil — to'q matn); kichik matnli tugmalar biroz to'qroq fonda; kulrang izohlar 4.5:1.
+- Telefonda: tajriba kartasi matni siqilib qolmaydi, takroriy tugma yashirildi, header tor ekranga sig'adi.
+- Matn shrifti Manrope o'rniga Inter (maktab dizayn tizimi bo'yicha).
+- `prefers-reduced-motion` da barcha animatsiyalar o'chadi.
+
 ### 3D laboratoriya: kuchsiz videokartalar uchun yengil rejim (2026-11-13)
 - Kuchsiz (o'rnatilgan/mobil/dasturiy) videokartada shisha va suyuqlikning "nur o'tkazish" effekti oddiy shaffoflikka, yumshoq soyalar oddiy soyaga almashadi; `?gfx=hq` / `?gfx=lite` bilan majburlash mumkin.
 - Kadrlar sekin bo'lsa chizish o'lchami avtomatik pasayadi (moslashuvchan sifat).

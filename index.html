@@ -4,6 +4,50 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#00555a">
+<meta name="color-scheme" content="light dark">
+<script>
+/* Tungi rejim (2026-11-15): sahifa chizilishidan oldin mavzu tanlanadi — oq "miltillash" bo'lmaydi.
+   Tanlov localStorage'da (zk_theme); tanlanmagan bo'lsa, qurilma sozlamasi (prefers-color-scheme) olinadi. */
+(function () {
+  var root = document.documentElement, KEY = 'zk_theme', mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+  function saved() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function current() { var v = saved(); return v === 'dark' || v === 'light' ? v : (mq && mq.matches ? 'dark' : 'light'); }
+  function label() {
+    var dark = root.dataset.theme === 'dark', en = root.lang === 'en';
+    return dark ? (en ? 'Switch to light mode' : 'Kunduzgi rejimga o\u2018tish') : (en ? 'Switch to dark mode' : 'Tungi rejimga o\u2018tish');
+  }
+  function paint() {
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', root.dataset.theme === 'dark' ? '#061315' : '#00555a');
+    var b = document.getElementById('themeBtn');
+    if (b) { b.setAttribute('aria-label', label()); b.setAttribute('title', label()); b.setAttribute('aria-pressed', root.dataset.theme === 'dark' ? 'true' : 'false'); }
+  }
+  function apply(t) { root.dataset.theme = t; root.style.colorScheme = t; paint(); try { window.dispatchEvent(new CustomEvent('zk:theme', { detail: t })); } catch (e) {} }
+  function set(t, animate) {
+    if (t === root.dataset.theme) return;
+    try { localStorage.setItem(KEY, t); } catch (e) {}
+    var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (animate && !calm && document.startViewTransition) {
+      root.classList.add('zk-theming');
+      var vt = document.startViewTransition(function () { apply(t); });
+      vt.finished.then(function () { root.classList.remove('zk-theming'); }, function () { root.classList.remove('zk-theming'); });
+    } else apply(t);
+  }
+  apply(current());
+  if (mq && mq.addEventListener) mq.addEventListener('change', function () { if (!saved()) apply(current()); });
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('#themeBtn');
+    if (!b) return;
+    var r = b.getBoundingClientRect();
+    root.style.setProperty('--zk-tx', Math.round(r.left + r.width / 2) + 'px');
+    root.style.setProperty('--zk-ty', Math.round(r.top + r.height / 2) + 'px');
+    set(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
+  });
+  new MutationObserver(paint).observe(root, { attributes: true, attributeFilter: ['lang'] });
+  document.addEventListener('DOMContentLoaded', paint);
+  window.ZKTheme = { get: function () { return root.dataset.theme; }, set: function (t) { set(t, false); } };
+})();
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Zukko Kimyo">
@@ -15,7 +59,7 @@
 <title>Zukko Xalqaro Maktabi — Kimyo | 6–8-sinf</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#0b2a5b; --blue:#1f5fd6; --sky:#e8f1fe; --green:#16a34a; --mint:#e7f8ee; --orange:#f59e0b; --purple:#7c3aed;
@@ -652,6 +696,8 @@ button,a,.ptcell{touch-action:manipulation}
 <link rel="stylesheet" href="mobile-admin.css?v=20261112-mobile-01" />
 <link rel="stylesheet" href="brand-entry.css?v=20261112-brand-02" />
 <link rel="stylesheet" href="brand.css?v=20261113-perf-02" />
+<link rel="stylesheet" href="theme-dark.css?v=20261115-shisha-01" />
+<link rel="stylesheet" href="theme.css?v=20261115-shisha-01" />
 </head>
 <body class="zk-v3">
 <header class="top">
@@ -675,6 +721,7 @@ button,a,.ptcell{touch-action:manipulation}
     <div class="search"><input id="q" autocomplete="off"><div class="sres" id="sres"></div></div>
     <a class="xpw" id="xpw" href="#me"></a>
     <div class="lang"><button data-lang="uz">UZ</button><button data-lang="en">EN</button></div>
+    <button type="button" class="zk-theme" id="themeBtn" aria-pressed="false" aria-label="Tungi rejimga o‘tish"><svg class="zk-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="zk-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
     <button class="burger" id="burger" aria-label="Menyu"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   </div>
 </header>
@@ -698,7 +745,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261113-perf-02';
+const VER = '20261115-shisha-01';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 // Tezlik (2026-11-13): hamma fayllar boshidanoq PARALLEL yuklab olinadi (preload), keyin tartib bilan ishga tushadi.
 // 3D, darslar va testlar login tekshiruvi bilan bir vaqtda tayyorlanadi; foydalanuvchiga bog'liq qismlar — logindan keyin.
