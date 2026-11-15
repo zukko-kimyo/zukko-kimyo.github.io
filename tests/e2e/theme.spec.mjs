@@ -105,3 +105,17 @@ test('login screen has the dark mode toggle too', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(b).toHaveAttribute('aria-label', 'Kunduzgi rejimga o‘tish');
 });
+
+test('home matches the Shisha 2.0 design: stats, goal, grade cards, bento and lessons with a grade switcher', async ({ page }) => {
+  await page.goto('/index.html#home'); await waitReady(page);
+  await expect(page.locator('#app .zk-stats > div')).toHaveCount(3);
+  await expect(page.locator('#app .zk-goal .zk-week span')).toHaveCount(7);
+  await expect(page.locator('#app .zk-grades2 .gcard')).toHaveCount(3);
+  await expect(page.locator('#app .zk-minipt i')).toHaveCount(126);
+  const panel = page.locator('#zkLessons');
+  await expect(panel.locator('h2')).toHaveText('6-sinf darslari');
+  await panel.locator('[data-hg="g7"]').click();
+  await expect(panel.locator('h2')).toHaveText('7-sinf darslari');
+  await expect(panel.locator('[data-hg="g7"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(panel.locator('.zk-hl').first()).toHaveAttribute('href', '#g7-1');
+});
