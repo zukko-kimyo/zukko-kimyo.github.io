@@ -4,6 +4,19 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Xavfsizlik va ma'lumot xavfsizligi tuzatishlari (2026-11-16, mustaqil audit natijasi)
+- Firestore qoidalari: o'qituvchi faqat o'quvchi profiliga tegishli parol yozuvini yarata/yangilay oladi; natija hujjati tekshiriladi (faqat ma'lum maydonlar, sonlar — son, chegaralar bilan); o'chirib qo'yilgan foydalanuvchi natija yoza olmaydi. **Firebase Console'da qoidalarni "Publish" qilish kerak.**
+- O'qituvchi va admin panelida o'quvchi natijalari songa aylantirilib chiqariladi; CSV eksportida `= + - @` bilan boshlangan katakchalar zararsizlantiriladi.
+- Natijalarni sinxronlash: server o'qish xatosi "natija yo'q" deb qabul qilinmaydi, server nusxasi o'qilmaguncha ustidan yozilmaydi; mahalliy va server nusxalari birlashtiriladi; internetsiz chiqishda ogohlantirish va shu foydalanuvchi uchun zaxira (keyingi kirishda yuboriladi).
+- Yuklovchi: bitta 3D fayl yuklanmasa ham sayt ochiladi; ilova ishga tushmasa — "Qayta yuklash" kartasi.
+
+### Ko'rinadigan xatolar (2026-11-16)
+- Planshetda (761–960px) header ekrandan chiqib ketmaydi.
+- Dars tabi almashganda 3D sahna to'xtatiladi (yashirin animatsiya sikli qolmaydi).
+- Til almashganda dars sahifasi pastga sakramaydi (faqat yon ro'yxat suriladi).
+- Imtihonda taymer "--:--" ko'rsatmaydi; "dars topilmadi" matnida 8-sinf qo'shildi.
+- Tez-tez sahifa almashganda View Transition xatolari konsolga chiqmaydi.
+
 ### Yangi dizayn "Shisha 2.0" va tungi rejim (2026-11-15, ADR 0006)
 - **Tungi rejim**: headerda oy/quyosh tugmasi; tanlov eslab qolinadi (`localStorage zk_theme`), tanlanmagan bo'lsa qurilma sozlamasi (`prefers-color-scheme`) olinadi. Mavzu sahifa chizilishidan oldin qo'yiladi — oq "miltillash" yo'q. Almashganda tugmadan aylana bo'lib yoyiladi (View Transitions).
 - `theme.css` — Shisha 2.0 qatlami: suzuvchi shisha header, shaffof bosh blok, yumshoq kartalar, prujinali (spring) harakatlar, dars tablarida bo'lim rangidagi siljiydigan tanlov.

@@ -444,3 +444,10 @@ body.zk-v3 .xinline > div:not(.ic) {flex:1 1 auto;min-width:0}
   background:var(--zk-surface-2);border:1px solid var(--zk-hair);box-shadow:var(--zk-glass-shadow);color:var(--zk-ink)}
 .zk-boot-err b {font-size:18px} .zk-boot-err span {color:var(--zk-muted)}
 .zk-boot-err button {align-self:center;min-height:44px;padding:0 22px;border:0;border-radius:999px;background:var(--zk-teal);color:var(--zk-on-accent);font-weight:700;cursor:pointer}
+
+/* Planshet (761–960px): tungi rejim tugmasi qo'shilgach header sig'masdi — qidiruv ixchamroq, bosilganda kengayadi */
+@media (min-width:761px) and (max-width:960px) {
+  body.zk-v3 .top .search input {width:104px}
+  body.zk-v3 .top .search input:focus {width:140px}
+  body.zk-v3 .top .wrap {gap:8px}
+}
