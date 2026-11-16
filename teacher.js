@@ -44,6 +44,11 @@
   let L = 'uz';
   const t = (k, o) => { let s = S[L][k] || k; if (o) Object.keys(o).forEach((x) => (s = s.replace('{' + x + '}', o[x]))); return s; };
   const esc = (s) => window.ZKAuth.esc(s);
+  // O'quvchi o'zi yozadigan natija qiymatlari ekranga chiqishdan oldin songa aylantiriladi (HTML/kod kiritilmasin).
+  const num = (v, max = 1e7) => { v = Number(v); return Number.isFinite(v) && v >= 0 ? Math.min(v, max) : 0; };
+  const cleanProg = (p) => Object.assign({}, p, { xp: num(p.xp), done6: num(p.done6, 500), done7: num(p.done7, 500), done8: num(p.done8, 500),
+    visited: num(p.visited, 1e4), labs: num(p.labs, 1e4), quizN: num(p.quizN, 1e4), updated: num(p.updated, 1e14),
+    quizAvg: p.quizAvg == null || p.quizAvg === '' || !Number.isFinite(Number(p.quizAvg)) ? null : Math.min(10, Math.max(0, Number(p.quizAvg))) });
   const st = { tab: 'res', cls: '', users: null, prog: {}, secrets: {}, showPw: false, created: null, detail: null, busy: false };
 
   /* ---------- yordamchilar ---------- */
@@ -79,7 +84,7 @@
     const Bk = ZKAuth.backend;
     const [users, prog, secrets, codes] = await Promise.all([Bk.list('users'), Bk.list('progress'), (ZKAuth.isAdmin() ? Bk.list('secrets') : Bk.list('secrets', 'role', 'student')).catch(() => []), Bk.list('classes').catch(() => [])]);
     st.codes = codes;
-    st.users = users; st.prog = {}; prog.forEach((p) => (st.prog[p.id] = p)); st.secrets = {}; secrets.forEach((s) => (st.secrets[s.id] = s));
+    st.users = users; st.prog = {}; prog.forEach((p) => (st.prog[p.id] = cleanProg(p))); st.secrets = {}; secrets.forEach((s) => (st.secrets[s.id] = s));
   }
   const students = () => (st.users || []).filter((u) => u.role === 'student' && u.status !== 'pending');
   const pending = () => (st.users || []).filter((u) => u.role === 'student' && u.status === 'pending').sort((a, b) => (a.created || 0) - (b.created || 0));
@@ -305,7 +310,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     body().innerHTML = `<button class="btn sec sm" id="tcBack">${t('d_back')}</button>
       <div class="panel" style="margin-top:12px"><div class="tc-det-h"><div class="av">${esc((u.name || u.login)[0] || '?').toUpperCase()}</div><div><h2 style="margin:0;font-size:22px">${esc(u.name || u.login)}</h2><div class="tc-mut"><code>${esc(u.login)}</code> · ${esc(u.cls || '')} ${sec ? `· <span class="tc-pw">${esc(sec.pw)}</span>` : ''}</div></div><div style="flex:1"></div><div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div></div>
       <div class="tc-kpi"><div><b>${xp}</b><span>XP · L${lv(xp)}</span></div><div><b>${(p.done6 || 0) + (p.done7 || 0) + (p.done8 || 0)}</b><span>⭐ ${L === 'en' ? 'lessons mastered' : "o'zlashtirilgan dars"}</span></div><div><b>${p.visited || 0}</b><span>${t('d_visited')}</span></div><div><b>${p.quizAvg != null ? p.quizAvg : '—'}</b><span>${t('c_quiz')} (${p.quizN || 0})</span></div><div><b>${p.labs || 0}</b><span>🧪 ${t('d_labs')}</span></div><div><b style="font-size:16px">${ago(p.updated)}</b><span>${t('c_last')}</span></div></div>
-      ${grades.map((g) => { const bk = BOOKS[g]; const items = bk.lessons.map((Lz, i) => ({ n: i + 1, r: Ls[g + '-' + (i + 1)], t: CTX.tr(Lz.t) })).filter((x) => x.r); return `<h3 style="margin:16px 0 8px">${g.slice(1)}-${t('grade')} <small class="tc-mut">${items.filter((x) => x.r.done).length}/${bk.lessons.length}</small></h3>${items.length ? `<div class="tc-ls">${items.map((x) => `<div class="${x.r.done ? '' : 'off'}"><span class="n" style="background:${CTX.GC[g]}">${x.n}</span><span>${esc(x.t)}</span><span class="s">${x.r.best ? `<span class="tc-q ${qcls(x.r.best)}">${x.r.best}/10</span>` : '👁'}</span></div>`).join('')}</div>` : `<div class="tc-mut">—</div>`}`; }).join('')}
+      ${grades.map((g) => { const bk = BOOKS[g]; const items = bk.lessons.map((Lz, i) => ({ n: i + 1, r: Ls[g + '-' + (i + 1)], t: CTX.tr(Lz.t) })).filter((x) => x.r); return `<h3 style="margin:16px 0 8px">${g.slice(1)}-${t('grade')} <small class="tc-mut">${items.filter((x) => x.r.done).length}/${bk.lessons.length}</small></h3>${items.length ? `<div class="tc-ls">${items.map((x) => `<div class="${x.r.done ? '' : 'off'}"><span class="n" style="background:${CTX.GC[g]}">${x.n}</span><span>${esc(x.t)}</span><span class="s">${num(x.r.best, 10) ? `<span class="tc-q ${qcls(num(x.r.best, 10))}">${num(x.r.best, 10)}/10</span>` : '👁'}</span></div>`).join('')}</div>` : `<div class="tc-mut">—</div>`}`; }).join('')}
       </div>`;
     document.getElementById('tcBack').onclick = () => { st.detail = null; results(); };
     wireActions(body());
@@ -314,7 +319,9 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   function csv(list) {
     const head = [t('c_name'), t('c_login'), t('add_cls'), 'XP', 'Level', t('c_g6'), t('c_g7'), t('c_g8'), t('c_quiz'), t('d_labs'), t('c_last')];
     const lines = [head].concat(list.map((u) => { const p = st.prog[u.id] || {}; return [u.name, u.login, u.cls, p.xp || 0, lv(p.xp || 0), p.done6 || 0, p.done7 || 0, p.done8 || 0, p.quizAvg != null ? p.quizAvg : '', p.labs || 0, p.updated ? new Date(p.updated).toLocaleDateString('sv') : '']; }));
-    const txt = '﻿' + lines.map((r) => r.map((x) => `"${String(x == null ? '' : x).replace(/"/g, '""')}"`).join(';')).join('\r\n');
+    // Excel formulasi bo'lib ishlab ketmasin: = + - @ bilan boshlangan matn oldiga ' qo'yiladi
+    const cell = (x) => { let v = String(x == null ? '' : x); if (typeof x === 'string' && /^[\s]*[=+\-@]/.test(v)) v = "'" + v; return `"${v.replace(/"/g, '""')}"`; };
+    const txt = '﻿' + lines.map((r) => r.map(cell).join(';')).join('\r\n');
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv;charset=utf-8' })); a.download = `zukko-kimyo-${st.cls || 'all'}-${new Date().toLocaleDateString('sv')}.csv`; document.body.appendChild(a); a.click(); a.remove();
   }
   function cards(list) {

@@ -697,8 +697,8 @@ button,a,.ptcell{touch-action:manipulation}
 <link rel="stylesheet" href="mobile-admin.css?v=20261112-mobile-01" />
 <link rel="stylesheet" href="brand-entry.css?v=20261112-brand-02" />
 <link rel="stylesheet" href="brand.css?v=20261113-perf-02" />
-<link rel="stylesheet" href="theme-dark.css?v=20261115-shisha-03" />
-<link rel="stylesheet" href="theme.css?v=20261115-shisha-03" />
+<link rel="stylesheet" href="theme-dark.css?v=20261115-fix-04" />
+<link rel="stylesheet" href="theme.css?v=20261115-fix-04" />
 </head>
 <body class="zk-v3">
 <header class="top">
@@ -746,7 +746,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261115-shisha-03';
+const VER = '20261115-fix-04';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 // Tezlik (2026-11-13): hamma fayllar boshidanoq PARALLEL yuklab olinadi (preload), keyin tartib bilan ishga tushadi.
 // 3D, darslar va testlar login tekshiruvi bilan bir vaqtda tayyorlanadi; foydalanuvchiga bog'liq qismlar — logindan keyin.
@@ -766,13 +766,24 @@ const contentP = (async () => {
     const [THREE, { OrbitControls }, { RoomEnvironment }] = await Promise.all([import('three'), import('three/addons/controls/OrbitControls.js'), import('three/addons/environments/RoomEnvironment.js')]);
     window.THREE = Object.assign({}, THREE, { OrbitControls, RoomEnvironment }); three = true;
   } catch (e) { console.warn('3D unavailable', e); }
-  if (three) { for (const s of LABS) await load(s); }
-  else window.Lab = { lang: 'uz', list: [], exps: {}, tr: (o) => (typeof o === 'string' ? o : o.uz), open: () => null };
+  // bitta 3D fayl yuklanmasa ham sayt ochilaveradi (oldin butun sayt bo'sh qolardi)
+  if (three) { for (const s of LABS) await load(s).catch((e) => console.warn('lab script failed', s, e)); }
+  if (!three || !window.Lab) window.Lab = { lang: 'uz', list: [], exps: {}, tr: (o) => (typeof o === 'string' ? o : o.uz), open: () => null };
   for (const s of CONTENT) await load(s).catch(() => {});
 })();
-await Promise.all([authP, contentP]);
-for (const s of USER) await load(s).catch(() => {});
+await Promise.all([authP.catch(() => null), contentP.catch(() => null)]);
+const failed = [];
+for (const s of USER) await load(s).catch(() => failed.push(s));
 if (window.ZKAuth && ZKAuth.user) ZKAuth.chip();
+// Asosiy fayl yuklanmasa — bo'sh sahifa o'rniga tushunarli xabar va "Qayta yuklash" tugmasi
+setTimeout(() => {
+  const app = document.getElementById('app');
+  if (document.querySelector('.zk-gate') || (app && app.children.length && !failed.includes('app.js'))) return;
+  const en = document.documentElement.lang === 'en', box = document.createElement('div');
+  box.className = 'zk-boot-err'; box.setAttribute('role', 'alert');
+  box.innerHTML = `<b>${en ? 'The site did not load completely' : 'Sayt to‘liq yuklanmadi'}</b><span>${en ? 'Check your internet connection and reload the page.' : 'Internet aloqasini tekshirib, sahifani qayta yuklang.'}</span><button type="button" onclick="location.reload()">${en ? 'Reload' : 'Qayta yuklash'}</button>`;
+  (app || document.body).appendChild(box);
+}, 1500);
 </script>
 </body>
 </html>

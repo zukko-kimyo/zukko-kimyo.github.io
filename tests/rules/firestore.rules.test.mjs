@@ -119,6 +119,32 @@ test('tasdiqlanmagan o\'quvchi faqat o\'z paroli yozuvini yaratadi', async () =>
   await assertFails(setDoc(doc(student(), 'secrets/stu1'), { pw: 'x', role: 'student', login: 'vali.a.7a' }));
 });
 
+test('o\'qituvchi admin yoki o\'qituvchi parol yozuvini "student" deb o\'zgartirib o\'qiy olmaydi', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'secrets/admin1'), { pw: 'adm1234', role: 'admin', login: 'admin' }); });
+  await assertFails(setDoc(doc(teacher(), 'secrets/admin1'), { role: 'student' }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'secrets/teach1'), { role: 'student' }, { merge: true }));
+  await assertFails(getDoc(doc(teacher(), 'secrets/admin1')));
+  // yozuvi yo'q o'qituvchi/admin uid uchun ham yangi "student" yozuv ochib bo'lmaydi
+  await env.withSecurityRulesDisabled(async (ctx) => { await deleteDoc(doc(ctx.firestore(), 'secrets/admin1')); });
+  await assertFails(setDoc(doc(teacher(), 'secrets/admin1'), { pw: 'x', role: 'student', login: 'admin' }));
+});
+test('o\'qituvchi o\'quvchi parolini yangilay oladi va yangi o\'quvchiga yozuv ochadi', async () => {
+  await assertSucceeds(setDoc(doc(teacher(), 'secrets/stu1'), { pw: 'new1234', role: 'student', login: 'vali.a.7a' }, { merge: true }));
+  await assertSucceeds(setDoc(doc(teacher(), 'secrets/stu2'), { pw: 'mal1234', role: 'student', login: 'malika.k.7a' }));
+});
+test('natijaga son o\'rniga matn (kod) yoki ortiqcha maydon yozib bo\'lmaydi', async () => {
+  await assertFails(setDoc(doc(student(), 'progress/stu1'), { data: '{}', xp: '<img src=x onerror=alert(1)>', role: 'student' }));
+  await assertFails(setDoc(doc(student(), 'progress/stu1'), { data: '{}', xp: 5, quizAvg: '<b>9</b>', role: 'student' }));
+  await assertFails(setDoc(doc(student(), 'progress/stu1'), { data: '{}', xp: -5, role: 'student' }));
+  await assertFails(setDoc(doc(student(), 'progress/stu1'), { data: '{}', xp: 5, role: 'student', html: 'x' }));
+  await assertSucceeds(setDoc(doc(student(), 'progress/stu1'), { data: '{}', updated: Date.now(), login: 'vali.a.7a', name: 'Vali', cls: '7A', role: 'student',
+    xp: 120, done6: 3, done7: 0, done8: 0, quizAvg: null, quizN: 0, labs: 2, visited: 5, last: 'g6-5' }));
+});
+test('o\'chirib qo\'yilgan o\'quvchi natija yoza olmaydi', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/stu1'), { login: 'vali.a.7a', name: 'Vali', role: 'student', cls: '7A', disabled: true }); });
+  await assertFails(setDoc(doc(student(), 'progress/stu1'), { data: '{}', xp: 5, role: 'student' }));
+});
+
 // ---------- classes ----------
 test('sinf kodini bilgan odam faqat o\'shani tekshiradi, ro\'yxatni ko\'ra olmaydi', async () => {
   await assertSucceeds(getDoc(doc(anon(), 'classes/ABC234')));

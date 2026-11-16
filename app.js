@@ -38,7 +38,7 @@
     safety: { uz: "Xavfsizlik: tajribalar faqat o'qituvchi nazoratida, himoya ko'zoynagi va xalatda o'tkaziladi.", en: 'Safety: carry out experiments only under teacher supervision, wearing goggles and a lab coat.' },
     related: { uz: 'Bog\'liq darslar', en: 'Related lessons' }, open: { uz: 'Ochish', en: 'Open' },
     book_h: { uz: 'Darslikni varaqlash', en: 'Flip through the textbook' }, page: { uz: 'bet', en: 'page' },
-    nores: { uz: 'Hech narsa topilmadi', en: 'Nothing found' }, no_lesson_n: { uz: '{n}-dars topilmadi (6-sinfda 35, 7-sinfda 72 ta dars bor)', en: 'Lesson {n} not found (grade 6 has 35, grade 7 has 72 lessons)' }, of_word: { uz: 'dan', en: 'of' }, kb_hint: { uz: 'Klaviaturada ← → tugmalari bilan ham o\'tish mumkin', en: 'You can also use the ← → keys' }, grade: { uz: 'sinf', en: 'grade' },
+    nores: { uz: 'Hech narsa topilmadi', en: 'Nothing found' }, no_lesson_n: { uz: '{n}-dars topilmadi (6-sinfda 35, 7-sinfda 72, 8-sinfda 68 ta dars bor)', en: 'Lesson {n} not found (grade 6 has 35, grade 7 has 72, grade 8 has 68 lessons)' }, of_word: { uz: 'dan', en: 'of' }, kb_hint: { uz: 'Klaviaturada ← → tugmalari bilan ham o\'tish mumkin', en: 'You can also use the ← → keys' }, grade: { uz: 'sinf', en: 'grade' },
     exp_word: { uz: 'tajriba', en: 'experiment' }, back_lab: { uz: '← Barcha tajribalar', en: '← All experiments' },
     hero_badge: { uz: '3D • aylantiring', en: '3D • drag to rotate' },
     nav_tests: { uz: 'Testlar', en: 'Tests' },
@@ -270,6 +270,7 @@
 
   function lesson(g, n, tab) {
     const bk = B[g]; const L = bk.lessons[n - 1]; if (!L) return list(g);
+    destroyLab(); // tab almashganda oldingi 3D sahna yashirincha ishlab qolmasin
     const ex = expsOf(g, n); const gr = GN[g]; tab = tab || 'content';
     if (XPok()) XP.visit(g, n);
     const col = UC[unitIdx(g, n) % UC.length]; const lst = XPok() ? XP.state(g, n) : '';
@@ -328,7 +329,8 @@
     app.querySelectorAll('.tabs button').forEach((b) => (b.onclick = () => { curTab = b.dataset.tab; lesson(g, n, curTab); window.scrollTo({ top: 0 }); }));
     app.querySelectorAll('.pages img').forEach((im) => (im.onclick = () => zoomImg(im)));
     app.querySelectorAll('.xinline').forEach((el) => (el.onclick = () => openModal(el.dataset.x)));
-    const on = app.querySelector('.navl a.on'); if (on) on.scrollIntoView({ block: 'center' });
+    const on = app.querySelector('.navl a.on'); const nl = on && on.closest('.navl');
+    if (on && nl) { const d = on.getBoundingClientRect().top - nl.getBoundingClientRect().top; nl.scrollTop += d - nl.clientHeight / 2 + on.offsetHeight / 2; } // faqat ro'yxat suriladi, sahifa sakramaydi
     if (tab === 'lab' && ex.length) {
       const run = (id) => { destroyLab(); labHandle = Lab.open(document.getElementById('lessonLab'), id, { autoplay: false }); };
       run(ex[0].id);
@@ -345,6 +347,7 @@
     const st = { i: 0, ans: items.map(() => null), done: false, start: Date.now(), timer: null };
     const exam = opts.mode === 'exam'; const limit = exam ? items.length * 60 : 0;
     function clearT() { if (st.timer) { clearInterval(st.timer); st.timer = null; } }
+    const tmText = () => { const left = Math.max(0, limit - Math.floor((Date.now() - st.start) / 1000)); return `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`; };
     if (exam) st.timer = setInterval(() => { const left = limit - Math.floor((Date.now() - st.start) / 1000); const tEl = el.querySelector('.tm'); if (!document.body.contains(el)) return clearT(); if (left <= 0) { finish(); return; } if (tEl) tEl.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`; }, 1000);
     const letters = ['A', 'B', 'C', 'D', 'E'];
     function draw() {
@@ -352,7 +355,7 @@
       const it = items[st.i]; const a = st.ans[st.i]; const reveal = !exam && a != null;
       const answered = st.ans.filter((x) => x != null).length;
       el.innerHTML = `<div class="tr-run">
-        <div class="tr-top"><div class="tr-prog"><div style="width:${100 * answered / items.length}%"></div></div><span>${t('q_word')} ${st.i + 1} / ${items.length}</span>${exam ? `<span class="tm-box">⏱ <b class="tm">--:--</b></span>` : ''}</div>
+        <div class="tr-top"><div class="tr-prog"><div style="width:${100 * answered / items.length}%"></div></div><span>${t('q_word')} ${st.i + 1} / ${items.length}</span>${exam ? `<span class="tm-box">⏱ <b class="tm">${tmText()}</b></span>` : ''}</div>
         <div class="tr-meta"><span class="dchip ${it.d}">${t(DL[it.d])}</span><a href="#${it.g}-${it.n}" class="tr-topic">${lessonTitle(it)}</a></div>
         <div class="tr-q">${it.tf ? `<small>${t('tf_hint')}</small>` : ''}${tr(it.q)}</div>
         <div class="tr-opts ${it.tf ? 'tf' : ''}">${it.o.map((o, k) => { let cls = ''; if (a === k) cls = 'sel'; if (reveal) { if (k === it.a) cls = 'ok'; else if (a === k) cls = 'bad'; } return `<button data-k="${k}" class="${cls}" ${reveal ? 'disabled' : ''}><i>${it.tf ? (k ? '✗' : '✓') : letters[k]}</i><span>${tr(o)}</span></button>`; }).join('')}</div>
@@ -570,8 +573,12 @@
       const cls = ['zk-vt'].concat(sw === 'l' || sw === 'r' ? ['zk-vt-' + sw] : []);
       root.classList.add(...cls);
       try {
+        const seq = String(Date.now() + Math.random()); root.dataset.vtSeq = seq;
         const vt = document.startViewTransition(() => renderRoute());
-        vt.finished.finally(() => root.classList.remove(...cls));
+        // tez-tez almashganda oldingi animatsiya "skipped" bo'ladi — bu xato emas, jim yutiladi;
+        // klass faqat oxirgi animatsiya tugaganda olinadi
+        const quiet = () => {}; vt.ready.catch(quiet); vt.updateCallbackDone.catch(quiet);
+        vt.finished.catch(quiet).finally(() => { if (root.dataset.vtSeq === seq) root.classList.remove(...cls); });
         return;
       } catch (e) { root.classList.remove('zk-vt'); }
     }

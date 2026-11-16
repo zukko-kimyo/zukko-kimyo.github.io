@@ -35,6 +35,11 @@
   let L = 'uz', APP, CTX;
   const t = (k) => S[L][k] || k;
   const esc = (s) => window.ZKAuth.esc(s);
+  // O'quvchi o'zi yozadigan natija qiymatlari ekranga chiqishdan oldin songa aylantiriladi (HTML/kod kiritilmasin).
+  const num = (v, max = 1e7) => { v = Number(v); return Number.isFinite(v) && v >= 0 ? Math.min(v, max) : 0; };
+  const cleanProg = (p) => Object.assign({}, p, { xp: num(p.xp), done6: num(p.done6, 500), done7: num(p.done7, 500), done8: num(p.done8, 500),
+    visited: num(p.visited, 1e4), labs: num(p.labs, 1e4), quizN: num(p.quizN, 1e4), updated: num(p.updated, 1e14),
+    quizAvg: p.quizAvg == null || p.quizAvg === '' || !Number.isFinite(Number(p.quizAvg)) ? null : Math.min(10, Math.max(0, Number(p.quizAvg))) });
   const st = { users: null, prog: {}, settings: {} };
 
   function css() {
@@ -101,7 +106,7 @@ table.ad td{padding:8px;border-bottom:1px solid #f4ece1}table.ad tr:last-child t
   async function load() {
     const B = ZKAuth.backend;
     const [users, prog, settings] = await Promise.all([B.list('users'), B.list('progress'), B.get('settings', 'site').catch(() => null)]);
-    st.users = users; st.prog = {}; prog.forEach((p) => (st.prog[p.id] = p)); st.settings = settings || {};
+    st.users = users; st.prog = {}; prog.forEach((p) => (st.prog[p.id] = cleanProg(p))); st.settings = settings || {};
   }
 
   const qcls = (q) => (q == null ? '' : q >= 7 ? 'g' : q >= 5 ? 'm' : 'b');

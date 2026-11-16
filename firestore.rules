@@ -13,6 +13,23 @@ service cloud.firestore {
     function isAdmin() { return role() == 'admin'; }
     function isAdminEmail() { return signedIn() && request.auth.token.email == 'admin@zukko-kimyo.uz'; }
     function codeDoc(code) { return get(/databases/$(db)/documents/classes/$(code)).data; }
+    // Faqat "o'quvchi" profili bor uid (o'qituvchi/admin parol yozuviga o'qituvchi tega olmasin)
+    function isStudentUid(uid) {
+      return exists(/databases/$(db)/documents/users/$(uid))
+        && get(/databases/$(db)/documents/users/$(uid)).data.role == 'student';
+    }
+    // Natija hujjati: faqat ma'lum maydonlar, sonlar — son, matnlar — matn (o'qituvchi paneliga kod yuborib bo'lmasin)
+    function optNum(d, k, mx) { return !(k in d) || (d[k] is number && d[k] >= 0 && d[k] <= mx); }
+    function optStr(d, k, mx) { return !(k in d) || (d[k] is string && d[k].size() <= mx); }
+    function validProgress(d) {
+      return d.keys().hasOnly(['data', 'updated', 'login', 'name', 'cls', 'role', 'xp', 'done6', 'done7', 'done8',
+                               'quizAvg', 'quizN', 'labs', 'visited', 'last'])
+        && optStr(d, 'data', 400000) && optNum(d, 'updated', 100000000000000)
+        && optStr(d, 'login', 80) && optStr(d, 'name', 120) && optStr(d, 'cls', 40) && optStr(d, 'last', 20)
+        && optNum(d, 'xp', 10000000) && optNum(d, 'done6', 500) && optNum(d, 'done7', 500) && optNum(d, 'done8', 500)
+        && (!('quizAvg' in d) || d.quizAvg == null || (d.quizAvg is number && d.quizAvg >= 0 && d.quizAvg <= 10))
+        && optNum(d, 'quizN', 10000) && optNum(d, 'labs', 10000) && optNum(d, 'visited', 10000);
+    }
     // O'quvchi o'zi ro'yxatdan o'tishi: faol sinf kodi bilan, "pending" holatda
     function selfSignup(uid) {
       let d = request.resource.data;
@@ -48,14 +65,19 @@ service cloud.firestore {
       allow read: if signedIn() && (request.auth.uid == uid || isStaff());
       allow create, update: if hasProfile() && request.auth.uid == uid
                             && request.resource.data.role == role()
-                            && profile().get('status', 'active') != 'pending';
+                            && profile().get('status', 'active') != 'pending'
+                            && profile().get('disabled', false) != true
+                            && validProgress(request.resource.data);
       allow delete: if isStaff();
     }
 
     // Parollar: o'quvchilarnikini o'qituvchilar, o'qituvchilarnikini faqat administrator ko'radi
     match /secrets/{uid} {
       allow read: if isAdmin() || (isStaff() && resource.data.role == 'student');
-      allow create, update: if isAdmin() || (isStaff() && request.resource.data.role == 'student');
+      // O'qituvchi faqat o'quvchi profiliga tegishli yozuvni yaratadi/yangilaydi; mavjud yozuv ham "student" bo'lishi shart
+      // (aks holda o'qituvchi admin yozuviga role:'student' yozib, uning parolini o'qiy olardi).
+      allow create: if isAdmin() || (isStaff() && request.resource.data.role == 'student' && isStudentUid(uid));
+      allow update: if isAdmin() || (isStaff() && resource.data.role == 'student' && request.resource.data.role == 'student' && isStudentUid(uid));
       allow create: if signedIn() && request.auth.uid == uid && request.resource.data.role == 'student'
                     && request.resource.data.keys().hasOnly(['pw', 'role', 'login'])
                     && exists(/databases/$(db)/documents/users/$(uid))
