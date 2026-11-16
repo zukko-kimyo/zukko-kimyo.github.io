@@ -16,6 +16,8 @@
       title: 'Zukko Kimyo', sub: 'Zukko Xalqaro Maktabi · 6–8-sinf kimyo', login: 'Login', pass: 'Parol', remember: 'Shu qurilmada eslab qolish',
       enter: 'Kirish', hint: "Login va parolni o'qituvchingizdan oling.", e_empty: 'Login va parolni kiriting.', e_bad: "Login yoki parol noto'g'ri.",
       e_net: "Internet bilan aloqa yo'q. Qayta urinib ko'ring.", e_many: "Juda ko'p urinish. Bir necha daqiqadan so'ng qayta urinib ko'ring.",
+      sync_fail: "Natijalar hozircha serverga saqlanmadi — internet tiklanganda avtomatik saqlanadi.",
+      logout_unsynced: "Natijalaringiz hali serverga saqlanmadi (internet yo'q bo'lishi mumkin). Baribir chiqasizmi? Natijalar shu qurilmada saqlanib qoladi va keyingi kirishda yuboriladi.",
       e_inactive: "Bu hisob faol emas. O'qituvchingizga murojaat qiling.", e_cfg: "Sayt sozlanmagan: firebase-config.js ni tekshiring.",
       mk_admin: 'Administrator hisobini yaratish', mk_admin_q: "Hali administrator yo'qmi? Shu parol bilan administrator hisobini yaratish mumkin (faqat birinchi marta).",
       e_weak: "Parol kamida 6 belgidan iborat bo'lsin.", e_exists: "Administrator allaqachon bor — parol noto'g'ri.",
@@ -34,6 +36,8 @@
       title: 'Zukko Chemistry', sub: 'Zukko International School · Grades 6–8 chemistry', login: 'Login', pass: 'Password', remember: 'Remember me on this device',
       enter: 'Sign in', hint: 'Get your login and password from your teacher.', e_empty: 'Enter your login and password.', e_bad: 'Wrong login or password.',
       e_net: 'No internet connection. Please try again.', e_many: 'Too many attempts. Try again in a few minutes.',
+      sync_fail: 'Your progress is not saved to the server yet — it will sync automatically when the connection returns.',
+      logout_unsynced: 'Your progress is not saved to the server yet (you may be offline). Sign out anyway? It stays on this device and syncs at your next sign-in.',
       e_inactive: 'This account is not active. Please contact your teacher.', e_cfg: 'Site is not configured: check firebase-config.js.',
       mk_admin: 'Create administrator account', mk_admin_q: 'No administrator yet? You can create one with this password (first time only).',
       e_weak: 'Password must be at least 6 characters.', e_exists: 'An administrator already exists — wrong password.',
@@ -65,6 +69,8 @@
     const wait = (v) => new Promise((r) => setTimeout(() => r(v), 120));
     const err = (code) => { const e = new Error(code); e.code = code; return e; };
     const uidOf = (d, email) => Object.keys(d.auth).find((u) => d.auth[u].email === email);
+    // Faqat sinov rejimi: testlar tarmoq xatosini taqlid qiladi (localStorage zk_mock_fail = {"progress:get":true})
+    const fail = (c, op) => { let f = {}; try { f = JSON.parse(localStorage.getItem('zk_mock_fail') || '{}'); } catch (e) { } if (f[c + ':' + op]) throw err('unavailable'); };
     return {
       async init() { const u = sessionStorage.getItem(SK) || localStorage.getItem(SK); const d = db(); return wait(u && d.auth[u] ? { uid: u, email: d.auth[u].email } : null); },
       async signIn(email, pw, remember) { const d = db(); const u = uidOf(d, email); if (!u || d.auth[u].pw !== pw) throw err('auth/invalid-credential'); (remember ? localStorage : sessionStorage).setItem(SK, u); return wait({ uid: u, email }); },
@@ -75,8 +81,8 @@
       async createAccount(email, pw) { const d = db(); if (uidOf(d, email)) throw err('auth/email-already-in-use'); if (pw.length < 6) throw err('auth/weak-password'); const u = 'u' + Math.random().toString(36).slice(2, 10); d.auth[u] = { email, pw }; put(d); return wait(u); },
       async changePassword(email, oldPw, newPw) { const d = db(); const u = uidOf(d, email); if (!u || d.auth[u].pw !== oldPw) throw err('auth/invalid-credential'); d.auth[u].pw = newPw; put(d); return wait(true); },
       async deleteAccount(email, pw) { const d = db(); const u = uidOf(d, email); if (u && d.auth[u].pw === pw) { delete d.auth[u]; put(d); } return wait(true); },
-      async get(c, id) { const d = db(); return wait(((d.col[c] || {})[id]) || null); },
-      async set(c, id, data, merge) { const d = db(); d.col[c] = d.col[c] || {}; d.col[c][id] = merge ? Object.assign({}, d.col[c][id] || {}, data) : data; put(d); return wait(true); },
+      async get(c, id) { fail(c, 'get'); const d = db(); return wait(((d.col[c] || {})[id]) || null); },
+      async set(c, id, data, merge) { fail(c, 'set'); const d = db(); d.col[c] = d.col[c] || {}; d.col[c][id] = merge ? Object.assign({}, d.col[c][id] || {}, data) : data; put(d); return wait(true); },
       async del(c, id) { const d = db(); if (d.col[c]) delete d.col[c][id]; put(d); return wait(true); },
       async list(c, field, val) { const d = db(); return wait(Object.entries(d.col[c] || {}).filter(([, v]) => !field || v[field] === val).map(([id, v]) => Object.assign({ id }, v))); },
     };
@@ -126,36 +132,81 @@
 
   /* ================= SESSION & PROGRESS SYNC ================= */
   let me = null; // {uid, login, name, role, cls}
-  let pushT = null, dirty = false;
-  function readLocal() { try { return JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch (e) { return null; } }
+  let pushT = null, dirty = false, syncBlocked = false, warned = false;
+  // localStorage: maxfiy rejim yoki to'lgan xotirada xato bermasin
+  const LS = {
+    get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+    del: (k) => { try { localStorage.removeItem(k); } catch (e) { } },
+  };
+  const BAK = (uid) => 'zk_prog_bak_' + uid; // chiqishda serverga yetib bormagan natijalar zaxirasi
+  function parse(j) { try { return j ? JSON.parse(j) : null; } catch (e) { return null; } }
+  function readLocal() { return parse(LS.get(PKEY)); }
+  // Ikki nusxani birlashtirish (hech biri yo'qolmasin): son — kattasi, ha/yo'q — "ha", ro'yxat — birlashma,
+  // obyekt — ichma-ich, matn — mahalliy (shu qurilmadagi oxirgi holat).
+  function mergeProg(a, b) {
+    if (a == null) return b; if (b == null) return a;
+    if (typeof a === 'number' && typeof b === 'number') return Math.max(a, b);
+    if (typeof a === 'boolean' || typeof b === 'boolean') return !!(a || b);
+    if (Array.isArray(a) && Array.isArray(b)) return [...new Set([...a, ...b])];
+    if (typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) {
+      const o = {}; new Set([...Object.keys(a), ...Object.keys(b)]).forEach((k) => (o[k] = mergeProg(a[k], b[k]))); return o;
+    }
+    return a === '' ? b : a;
+  }
   function summary(s) {
     const L = s.L || {}; const g = { g6: 0, g7: 0, g8: 0 }; let qs = 0, qn = 0, vis = 0;
-    Object.entries(L).forEach(([k, v]) => { if (v.v) vis++; const gg = k.split('-')[0]; if (v.done && g[gg] != null) g[gg]++; if (v.best) { qs += v.best; qn++; } });
-    return { xp: s.xp || 0, done6: g.g6, done7: g.g7, done8: g.g8, quizAvg: qn ? Math.round((qs / qn) * 10) / 10 : null, quizN: qn, labs: Object.keys(s.labs || {}).length, visited: vis, last: s.last || '' };
+    Object.entries(L).forEach(([k, v]) => { if (v.v) vis++; const gg = k.split('-')[0]; if (v.done && g[gg] != null) g[gg]++; if (v.best) { qs += Number(v.best) || 0; qn++; } });
+    return { xp: Math.max(0, Number(s.xp) || 0), done6: g.g6, done7: g.g7, done8: g.g8, quizAvg: qn ? Math.round((qs / qn) * 10) / 10 : null, quizN: qn, labs: Object.keys(s.labs || {}).length, visited: vis, last: String(s.last || '').slice(0, 20) };
   }
+  // Server nusxasini qayta o'qib, mahalliy natija bilan birlashtiradi (o'qish muvaffaqiyatsiz bo'lsa — false)
+  async function resync() {
+    let remote; try { remote = await B.get('progress', me.uid); } catch (e) { return false; }
+    const local = (window.XP && XP.s) || readLocal();
+    const merged = mergeProg(local, parse(remote && remote.data));
+    if (merged) { LS.set(PKEY, JSON.stringify(merged)); try { window.dispatchEvent(new Event('zk:prog-merged')); } catch (e) { } }
+    syncBlocked = false; return true;
+  }
+  // Natijani serverga yuborish. Muvaffaqiyatli bo'lsa (yoki yuboradigan narsa bo'lmasa) — true.
   async function push() {
-    if (!me || !dirty) return; dirty = false;
-    const s = readLocal(); if (!s) return;
-    try { await B.set('progress', me.uid, Object.assign({ data: JSON.stringify(s), updated: Date.now(), login: me.login, name: me.name || '', cls: me.cls || '', role: me.role }, summary(s))); }
-    catch (e) { dirty = true; console.warn('progress push failed', e); }
+    if (!me) return true;
+    if (!dirty && LS.get('zk_dirty') !== me.uid) return true;
+    if (syncBlocked && !(await resync())) { dirty = true; return false; } // server nusxasini ko'rmay turib ustidan yozilmaydi
+    const s = (window.XP && XP.s) || readLocal(); if (!s) { dirty = false; return true; }
+    dirty = false;
+    try {
+      await B.set('progress', me.uid, Object.assign({ data: JSON.stringify(s), updated: Date.now(), login: me.login, name: me.name || '', cls: me.cls || '', role: me.role }, summary(s)));
+      LS.del('zk_dirty'); return true;
+    } catch (e) {
+      dirty = true; LS.set('zk_dirty', me.uid); console.warn('progress push failed', e);
+      if (!warned && window.XP && XP.toast) { warned = true; XP.toast('⚠ ' + t('sync_fail'), 'warn'); }
+      return false;
+    }
   }
-  function schedule() { dirty = true; clearTimeout(pushT); pushT = setTimeout(push, 2500); }
+  function schedule() { dirty = true; if (me) LS.set('zk_dirty', me.uid); clearTimeout(pushT); pushT = setTimeout(push, 2500); }
   window.addEventListener('zk:save', () => { if (me) schedule(); });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') push(); });
   window.addEventListener('pagehide', push);
   window.addEventListener('online', push);
 
   async function startSession(u) {
-    // Tezlik: profil va natijalar bir vaqtda so'raladi (avval navbat bilan edi).
-    const [prof, remote0] = await Promise.all([B.get('users', u.uid), B.get('progress', u.uid).catch(() => null)]);
+    // Tezlik: profil va natijalar bir vaqtda so'raladi. Natijani o'qish XATOSI "natija yo'q" bilan adashtirilmaydi:
+    // aks holda bo'sh natija serverdagi eski natijaning ustidan yozilib, XP yo'qolardi.
+    let readOk = true;
+    const [prof, remote] = await Promise.all([B.get('users', u.uid), B.get('progress', u.uid).catch(() => { readOk = false; return null; })]);
     if (!prof || prof.disabled) { await B.signOut(); throw Object.assign(new Error(t('e_inactive')), { code: 'inactive' }); }
     if (prof.status === 'pending') { await B.signOut(); throw Object.assign(new Error(t('e_pending')), { code: 'pending' }); }
     me = { uid: u.uid, login: prof.login || u.email.split('@')[0], name: prof.name || '', role: prof.role || 'student', cls: prof.cls || '' };
-    const remote = remote0;
-    const prevOwner = localStorage.getItem('zk_prog_owner');
-    if (remote && remote.data) localStorage.setItem(PKEY, remote.data);
-    else if (prevOwner !== u.uid) localStorage.removeItem(PKEY); // boshqa odamning natijasi qolib ketmasin
-    localStorage.setItem('zk_prog_owner', u.uid);
+    const sameOwner = LS.get('zk_prog_owner') === u.uid;
+    let local = sameOwner ? readLocal() : null; // boshqa odamning natijasi qolib ketmasin
+    const bak = parse(LS.get(BAK(u.uid))); if (bak) local = mergeProg(local, bak);
+    const remoteData = parse(remote && remote.data);
+    const merged = mergeProg(local, remoteData);
+    if (merged) LS.set(PKEY, JSON.stringify(merged)); else LS.del(PKEY);
+    LS.set('zk_prog_owner', u.uid); LS.del(BAK(u.uid));
+    syncBlocked = !readOk;
+    // Mahalliy nusxada serverda yo'q narsa bo'lsa — yuboriladi
+    if (local && JSON.stringify(merged) !== JSON.stringify(remoteData)) { dirty = true; LS.set('zk_dirty', u.uid); setTimeout(push, 4000); }
     return me;
   }
 
@@ -359,9 +410,14 @@
   }
 
   async function logout() {
-    await push();
+    const ok = await push();
+    if (!ok) {
+      if (!confirm(t('logout_unsynced'))) return;
+      // yuborilmagan natija shu qurilmada shu foydalanuvchi uchun zaxiralanadi va keyingi kirishda birlashtiriladi
+      const cur = (window.XP && XP.s) || readLocal(); if (cur && me) LS.set(BAK(me.uid), JSON.stringify(cur));
+    }
     try { await B.signOut(); } catch (e) { }
-    localStorage.removeItem(PKEY); localStorage.removeItem('zk_prog_owner');
+    LS.del(PKEY); LS.del('zk_prog_owner'); LS.del('zk_dirty');
     location.hash = '#home'; location.reload();
   }
 

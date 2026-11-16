@@ -570,8 +570,12 @@
       const cls = ['zk-vt'].concat(sw === 'l' || sw === 'r' ? ['zk-vt-' + sw] : []);
       root.classList.add(...cls);
       try {
+        const seq = String(Date.now() + Math.random()); root.dataset.vtSeq = seq;
         const vt = document.startViewTransition(() => renderRoute());
-        vt.finished.finally(() => root.classList.remove(...cls));
+        // tez-tez almashganda oldingi animatsiya "skipped" bo'ladi — bu xato emas, jim yutiladi;
+        // klass faqat oxirgi animatsiya tugaganda olinadi
+        const quiet = () => {}; vt.ready.catch(quiet); vt.updateCallbackDone.catch(quiet);
+        vt.finished.catch(quiet).finally(() => { if (root.dataset.vtSeq === seq) root.classList.remove(...cls); });
         return;
       } catch (e) { root.classList.remove('zk-vt'); }
     }

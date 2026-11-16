@@ -48,6 +48,8 @@
     return s;
   }
   let st = load();
+  // auth.js server nusxasini birlashtirganda (kech tiklangan aloqa) — xotiradagi holat yangilanadi
+  window.addEventListener('zk:prog-merged', () => { st = load(); try { refresh(); } catch (e) { } });
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { } try { window.dispatchEvent(new Event('zk:save')); } catch (e) { } };
   function level(xp) { let L = 1; while (xp >= 25 * L * (L + 1)) L++; const a = 25 * (L - 1) * L, b = 25 * L * (L + 1); return { L, a, b, p: (xp - a) / (b - a) }; }
   function rank(L) { const r = t('ranks'); return r[Math.min(r.length - 1, [1, 3, 5, 8, 11, 14, 18].filter((x) => L >= x).length - 1)]; }
@@ -94,7 +96,8 @@
   }
   const lk = (g, n) => g + '-' + n;
   const rec = (g, n) => (st.L[lk(g, n)] = st.L[lk(g, n)] || { v: 0, best: 0, done: false, lab: 0 });
-  function visit(g, n) { const r = rec(g, n); st.last = lk(g, n); if (!r.v) { r.v = 1; save(); add(5, t('visit')); } else save(); }
+  // Har qayta chizishda (tab, til) saqlanmaydi — faqat o'zgarish bo'lsa
+  function visit(g, n) { const r = rec(g, n); const k = lk(g, n), moved = st.last !== k; st.last = k; if (!r.v) { r.v = 1; save(); add(5, t('visit')); } else if (moved) save(); }
   function lab(id) {
     const e = window.Lab && Lab.exps[id]; if (!e) return;
     const ls = (e.lessons || []).map(([gr, n]) => ['g' + gr, n]);
