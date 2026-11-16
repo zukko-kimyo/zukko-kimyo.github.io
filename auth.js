@@ -273,6 +273,11 @@
   function gate(resolve) {
     css();
     const el = document.createElement('div'); el.className = 'zk-gate'; document.body.appendChild(el);
+    // Kirish oynasi modal: orqadagi sayt klaviatura va ekran o'quvchidan yashiriladi
+    el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', lang() === 'en' ? 'Sign in' : 'Kirish');
+    const BG = 'header.top,#app,#bnav,footer,#zkSkip';
+    document.querySelectorAll(BG).forEach((n) => n.setAttribute('inert', ''));
+    const closeGate = () => { document.querySelectorAll(BG).forEach((n) => n.removeAttribute('inert')); el.remove(); };
     let mode = 'login';
     const themeBtn = '<button type="button" class="zk-theme zk-gate-theme" aria-pressed="false" aria-label="Tungi rejimga o‘tish"><svg class="zk-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="zk-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>';
     const langBar = (L) => themeBtn + `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
@@ -307,7 +312,7 @@
         busy(true);
         try {
           const u = await B.signIn(emailOf(login), pw, iR.checked);
-          await startSession(u); el.remove(); resolve(me);
+          await startSession(u); closeGate(); resolve(me);
         } catch (e) {
           busy(false); showErr(e.code === 'inactive' || e.code === 'pending' ? e.message : errMsg(e));
           if (login === 'admin' && /invalid-credential|user-not-found|wrong-password/.test(e.code || '')) {
@@ -318,7 +323,7 @@
               try {
                 const u = await B.createSelf(emailOf('admin'), pw);
                 await B.set('users', u.uid, { login: 'admin', name: 'Administrator', role: 'admin', cls: '', created: Date.now() });
-                await startSession(u); el.remove(); resolve(me);
+                await startSession(u); closeGate(); resolve(me);
               } catch (e2) { busy(false); showErr(/email-already-in-use/.test(e2.code || '') ? t('e_exists') : errMsg(e2)); }
             };
           }
@@ -417,7 +422,7 @@
       const cur = (window.XP && XP.s) || readLocal(); if (cur && me) LS.set(BAK(me.uid), JSON.stringify(cur));
     }
     try { await B.signOut(); } catch (e) { }
-    LS.del(PKEY); LS.del('zk_prog_owner'); LS.del('zk_dirty');
+    LS.del(PKEY); LS.del('zk_prog_owner'); LS.del('zk_dirty'); LS.del('zk_hist'); // test tarixi keyingi foydalanuvchiga ko'rinmasin
     location.hash = '#home'; location.reload();
   }
 

@@ -26,7 +26,6 @@
     document.getElementById('mobileGradesLabel').textContent = en ? 'Classes' : 'Sinflar';
     document.getElementById('mobileGradesTitle').textContent = en ? 'Choose a class' : 'Sinfni tanlang';
     gradesMenu.setAttribute('aria-label', en ? 'Classes' : 'Sinflar');
-    gradesToggle.setAttribute('aria-label', en ? 'Choose a class' : 'Sinfni tanlang');
     gradesMenu.querySelectorAll('a[href^="#g"]').forEach((link) => {
       const number = link.hash.replace('#g', '');
       const text = link.querySelector('span:nth-child(2)');

@@ -58,7 +58,7 @@
   function today() { const d = st.days[day()] || { xp: 0, ls: [] }; return { n: (d.ls || []).length, goal: st.goal, xp: d.xp }; }
 
   /* ---- UI helpers ---- */
-  function toastBox() { let b = document.getElementById('xpToasts'); if (!b) { b = document.createElement('div'); b.id = 'xpToasts'; document.body.appendChild(b); } return b; }
+  function toastBox() { let b = document.getElementById('xpToasts'); if (!b) { b = document.createElement('div'); b.id = 'xpToasts'; b.setAttribute('role', 'status'); b.setAttribute('aria-live', 'polite'); document.body.appendChild(b); } return b; }
   function toast(html, cls) { const el = document.createElement('div'); el.className = 'xpt ' + (cls || ''); el.innerHTML = html; toastBox().appendChild(el); setTimeout(() => el.classList.add('out'), 2600); setTimeout(() => el.remove(), 3100); }
   function confetti(n) {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
