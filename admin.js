@@ -164,6 +164,7 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
           <label class="ad-chk"><input type="checkbox" id="adAnnOn" ${set.announceOn ? 'checked' : ''}> ${t('ann_on')}</label>
           <label class="ad-chk"><input type="checkbox" id="adReg" ${set.regOpen === false ? '' : 'checked'}> ${t('reg_on')}</label>
           <fieldset class="ad-prices"><legend>💳 ${L === 'en' ? 'Subscription plans (shown to students on locked pages)' : 'Obuna tariflari (yopiq sahifalarda o‘quvchilarga ko‘rinadi)'}</legend>
+            <label for="adFreeN">${L === 'en' ? 'Free topics in each grade (lesson, 3D, test and textbook pages)' : 'Har bir sinfda bepul mavzular soni (dars, 3D, test va darslik sahifalari)'}</label><input type="number" id="adFreeN" min="0" max="50" step="1" value="${window.ZKSub ? ZKSub.freeCount(set) : 3}" style="max-width:120px">
             ${['month', 'quarter', 'year'].map((k) => `<label for="adPr_${k}">${window.ZKSub ? ZKSub.NAMES[L === 'en' ? 'en' : 'uz'][k] : k}</label><input type="text" id="adPr_${k}" maxlength="40" placeholder="${L === 'en' ? 'e.g. 50,000 sum' : 'masalan: 50 000 so‘m'}" value="${esc(((set.prices || {})[k]) || '')}">`).join('')}
             <label for="adPay">${L === 'en' ? 'How to pay (contacts, account)' : 'Qanday to‘lanadi (aloqa, hisob raqam)'}</label><textarea id="adPay" maxlength="400" placeholder="${L === 'en' ? 'e.g. Pay at the school office, phone +998 …' : 'masalan: Maktab kassasiga to‘lang, tel: +998 …'}">${esc(set.payInfo || '')}</textarea>
           </fieldset>
@@ -191,8 +192,9 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
     const $ = (id) => APP.querySelector('#' + id);
     $('adSave').onclick = async () => {
       const msg = $('adSetMsg'); msg.className = 'ad-msg'; msg.textContent = '';
+      const fv = Math.round(Number($('adFreeN').value)); const freeN = Number.isFinite(fv) ? Math.max(0, Math.min(50, fv)) : 3;
       const prices = {}; ['month', 'quarter', 'year'].forEach((k) => { const v = $('adPr_' + k).value.trim().slice(0, 40); if (v) prices[k] = v; });
-      const doc = { announce: $('adAnn').value.trim().slice(0, 300), announceOn: $('adAnnOn').checked, regOpen: $('adReg').checked, prices, payInfo: $('adPay').value.trim().slice(0, 400), updated: Date.now(), by: ZKAuth.user.uid };
+      const doc = { announce: $('adAnn').value.trim().slice(0, 300), announceOn: $('adAnnOn').checked, regOpen: $('adReg').checked, prices, payInfo: $('adPay').value.trim().slice(0, 400), freeN, updated: Date.now(), by: ZKAuth.user.uid };
       $('adSave').disabled = true;
       try { await ZKAuth.backend.set('settings', 'site', doc, true); st.settings = Object.assign({}, st.settings, doc); msg.className = 'ad-msg ok'; msg.textContent = t('saved'); ZKAuth.applySettings && ZKAuth.applySettings(st.settings); }
       catch (e) { msg.className = 'ad-msg er'; msg.textContent = '⚠ ' + ZKAuth.errMsg(e); }

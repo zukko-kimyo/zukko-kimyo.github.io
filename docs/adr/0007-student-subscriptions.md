@@ -14,6 +14,10 @@ Tanlovlar (2026-11-17):
 Muhim cheklov: sayt — ochiq (public) repodan GitHub Pages'da tarqatiladigan statik fayllar. Darslar, testlar va darslik
 rasmlari hozir ochiq fayllarda. Firestore qoidalari bu fayllarni himoya qila olmaydi.
 
+Aniqlashtirish (2026-11-17): "har bir sinifdan malum darajada darslar ochiladi yani 6-sinf dastlabki 2-3 mavzular tekin keyingilarini korish ucun obuna kerak labaratoriya ham shunday testlar ham shunday Oqituvchi va Admin ucun hammasi ochiq bulishi kerak".
+Shunga ko'ra: har sinfda dastlabki `freeN` mavzu (standart 3, admin sozlaydi) barcha tablari bilan bepul; 3D tajriba bepul darsga
+bog'langan bo'lsa ochiq; testlar va darslik sahifalari ham shu mavzular doirasida.
+
 ## Qaror
 **1-bosqich (shu PR): obuna yozuvi va interfeysdagi qulflar.**
 - `users/{uid}.sub = { plan, until, at, by }`. Faqat administrator yozadi. `firestore.rules` o'quvchiga ham, o'qituvchiga ham

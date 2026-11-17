@@ -4,6 +4,11 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Obuna qoidasi: har sinfda dastlabki mavzular bepul (2026-11-17)
+- Foydalanuvchi aniqlashtirdi: har bir sinfda dastlabki mavzular (standart 3 ta; admin "Sayt sozlamalari"da 0–50 oralig'ida o'zgartiradi) — darsi, 3D tajribasi, testi va darslik sahifalari bilan — bepul. Qolganlari obuna bilan. O'qituvchi va admin uchun hammasi ochiq.
+- 3D tajriba bepul darsga bog'langan bo'lsa ochiq. Testlar sahifasida yopiq mavzular 🔒 belgisi bilan tanlanmaydi. Darslik bepul mavzular sahifalarigacha ochiq. Ro'yxatlar, bosh sahifa va dars yon panelida yopiq darslarda 🔒 bor.
+- `firestore.rules`: `settings/site.freeN` (butun son, 0–50) — **Publish kerak**.
+
 ### O'quvchilar obunasi — 1-bosqich (2026-11-17, ADR-0007)
 - Pullik qismlar (3D laboratoriya, testlar va imtihon, 7–8-sinf darslari, darslik sahifalari) obunasiz o'quvchiga "obuna bilan ochiladi" oynasi bilan yopiq. Oynada tariflar, narxlar va to'lov yo'riqnomasi bor. Bepul: 6-sinf dars matni, davriy jadval, bosh sahifa, profil.
 - Admin: o'qituvchi panelida "Obunalar" tabi (o'quvchiga yoki butun sinfga oylik / choraklik / o'quv yili obunasi, to'xtatish); "Sayt sozlamalari"da narxlar va to'lov ma'lumoti.
