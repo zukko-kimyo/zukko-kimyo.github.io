@@ -284,6 +284,7 @@
     const head = () => `<div class="lg"><span class="mk zk-mk-mark"><img src="assets/zukko-mark.svg" alt="" width="139" height="314" decoding="async"></span><div><span class="zk-brand-kicker">${lang() === 'en' ? 'ZUKKO INTERNATIONAL SCHOOL' : 'ZUKKO XALQARO MAKTABI'}</span><h1>${lang() === 'en' ? 'Welcome back' : 'Xush kelibsiz!'}</h1><div class="sb">${t('sub')}</div></div></div>`;
     const render = (keep) => {
       const L = lang(); const v = keep || {};
+      el.setAttribute('aria-label', L === 'en' ? (mode === 'reg' ? 'Sign up' : 'Sign in') : (mode === 'reg' ? "Ro'yxatdan o'tish" : 'Kirish'));
       if (mode === 'reg') return renderReg(v);
       if (mode === 'sent') return renderSent(v);
       el.innerHTML = `<form class="card" autocomplete="on" novalidate>
@@ -292,7 +293,7 @@
         <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="password" autocomplete="current-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="${lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish'}" aria-pressed="false">◉</button></div>
         <label class="rm"><input type="checkbox" id="zkR" ${v.r === false ? '' : 'checked'}> ${t('remember')}</label>
         <button class="go" type="submit">${t('enter')}</button>
-        <div class="er" id="zkE" role="alert" aria-live="polite"></div><div id="zkX"></div>
+        <div class="er" id="zkE" role="alert"></div><div id="zkX"></div>
         <div class="ht">${t('hint')}</div>
         ${SITE.regOpen === false ? '' : `<div class="sw">${t('no_acc')} <button type="button" class="lnk" data-reg>${t('reg_go')}</button></div>`}
         ${MOCK ? `<div class="mockb">🧪 ${t('mock')}</div>` : ''}
@@ -343,7 +344,7 @@
         <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="new-password" autocomplete="new-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="${lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish'}" aria-pressed="false">◉</button></div>
         <label for="zkP2">${t('r_pass2')}</label><div class="in"><input id="zkP2" type="password" autocomplete="new-password" value="${esc(v.p2 || '')}"></div>
         <button class="go" type="submit">${t('reg_btn')}</button>
-        <div class="er" id="zkE" role="alert" aria-live="polite"></div>
+        <div class="er" id="zkE" role="alert"></div>
         <div class="sw">${t('have_acc')} <button type="button" class="lnk" data-login>${t('enter')}</button></div>
         ${MOCK ? `<div class="mockb">🧪 ${t('mock')}</div>` : ''}
       </form>`;
@@ -402,14 +403,16 @@
     if (!c) { c = document.createElement('div'); c.className = 'uchip'; c.id = 'uchip'; const lg = host.querySelector('.lang'); host.insertBefore(c, lg || null); }
     const staff = me.role === 'teacher' || me.role === 'admin';
     const nm = me.name || me.login;
-    c.innerHTML = `<button type="button" aria-haspopup="true"><span class="av">${esc(nm.trim()[0] || '?').toUpperCase()}</span><span class="nm">${esc(nm)}</span></button>
+    c.innerHTML = `<button type="button" aria-haspopup="true" aria-expanded="false"><span class="av">${esc(nm.trim()[0] || '?').toUpperCase()}</span><span class="nm">${esc(nm)}</span></button>
       <div class="mn"><div class="who"><b>${esc(nm)}</b><small>${esc(me.login)} · ${t(me.role)}${me.cls ? ' · ' + esc(me.cls) : ''}</small></div>
       ${me.role === 'admin' ? `<a href="#admin">🛡 ${t('adm_panel')}</a>` : ''}${staff ? `<a href="#teacher">👩‍🏫 ${t('panel')}</a>` : ''}<a href="#me">🏆 ${lang() === 'en' ? 'My progress' : 'Mening yutuqlarim'}</a>
       <button type="button" data-out>🚪 ${t('logout')}</button></div>`;
-    c.querySelector('button').onclick = (e) => { e.stopPropagation(); c.classList.toggle('open'); };
+    const ub = c.querySelector('button'), setOpen = (v) => { c.classList.toggle('open', v); ub.setAttribute('aria-expanded', String(v)); };
+    ub.onclick = (e) => { e.stopPropagation(); setOpen(!c.classList.contains('open')); };
+    c.onkeydown = (e) => { if (e.key === 'Escape' && c.classList.contains('open')) { e.stopPropagation(); setOpen(false); ub.focus(); } };
     c.querySelector('[data-out]').onclick = logout;
-    c.querySelectorAll('.mn a').forEach((a) => (a.onclick = () => c.classList.remove('open')));
-    if (!chip._doc) { chip._doc = true; document.addEventListener('click', (e) => { const cc = document.getElementById('uchip'); if (cc && !cc.contains(e.target)) cc.classList.remove('open'); }); }
+    c.querySelectorAll('.mn a').forEach((a) => (a.onclick = () => setOpen(false)));
+    if (!chip._doc) { chip._doc = true; document.addEventListener('click', (e) => { const cc = document.getElementById('uchip'); if (cc && !cc.contains(e.target) && cc.classList.contains('open')) { cc.classList.remove('open'); const b = cc.querySelector('button'); if (b) b.setAttribute('aria-expanded', 'false'); } }); }
     applySettings();
     if (MOCK && !document.querySelector('.zk-mockbar')) { const m = document.createElement('div'); m.className = 'zk-mockbar'; m.textContent = '🧪 ' + t('mock'); document.body.appendChild(m); }
   }

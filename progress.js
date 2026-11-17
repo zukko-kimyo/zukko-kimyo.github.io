@@ -73,6 +73,7 @@
     const lv = level(st.xp), sk = streak(), td = today();
     w.innerHTML = `<span class="xs ${sk ? 'on' : ''}" title="${sk} ${t('streak')}">🔥<b>${sk}</b></span><span class="xx" title="${t('total_xp')}">⚡<b>${st.xp}</b></span><span class="xl" style="--p:${Math.round(lv.p * 100)}" title="${t('lvl')} ${lv.L} — ${rank(lv.L)}"><b>${lv.L}</b></span>`;
     w.title = `${t('today')}: ${Math.min(td.n, td.goal)}/${td.goal}`;
+    w.setAttribute('aria-label', `${t('streak')}: ${sk}, ${t('total_xp')}: ${st.xp}, ${t('lvl')} ${lv.L} — ${t('me')}`);
     const bn = document.querySelector('.bnav [data-nav="me"] i'); if (bn) bn.textContent = sk ? '🔥' : '🏆';
   }
   function checkAch() {

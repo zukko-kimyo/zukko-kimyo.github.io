@@ -4,6 +4,11 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Ikkinchi tekshiruv tuzatishlari (2026-11-17, 4 ta mustaqil agent: dizayn, qulaylik, kod/xavfsizlik, tezlik)
+- Dizayn: ikonkali sarlavhalar ikkinchi qatorda ikonka ostiga tushmaydi; "Mening yutuqlarim"da takror karta olib tashlandi; testlar tugmasi brend rangida, qiyinlik tugmalari telefonda bir tekis; sinf kartalari progressi bir chiziqda; telefonda lab kartalari; tungi rejimdagi eski ko'k/binafsha qoldiqlar; shriftlar bir xil; pastki menyuda "Profil"; davriy jadval planshetda to'liq; testlar ro'yxati va bog'liq darslarda bo'lim ranglari.
+- Qulaylik: test sozlamalari qayta chizilganda fokus o'sha tugmada qoladi; xato xabari e'lon qilinadi; foydalanuvchi menyusi `aria-expanded` va Escape; burger Escape; o'qituvchi tablari holati; XP vidjeti nomi; kirish oynasi nomi tilga mos, fokus halqasi aniq; qidiruvdan Tab bilan chiqishda fokus yo'qolmaydi; mayda matnlar kontrasti; 3D vaqt chizig'i va radio tugmalar kattaroq; iOS'da maydon fokusda kattalashmaydi.
+- Testlar: progress-sync testi aynan ochilgan darsni kutadi (tez almashganda oraliq sahifa o'tkazib yuborilardi).
+
 ### Qulaylik (klaviatura, ekran o'quvchi) va dizayn tozalash (2026-11-17, mustaqil agentlar tekshiruvi)
 - Klaviatura: "Asosiy qismga o'tish" havolasi; dars tablari ARIA tablist (strelka fokusni siljitadi, Enter tanlaydi); test variantlari radiogroup, javob natijasi e'lon qilinadi; qidiruv combobox; mobil menyu va sinflar menyusida fokus va Escape.
 - Oynalar (kirish, 3D tajriba, darslik sahifasi): fokus ichkarida aylanadi, orqadagi sayt `inert`; sahifa kattalashtirishda "Yopish" tugmasi.

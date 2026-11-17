@@ -3,7 +3,7 @@
     school: { uz: 'Zukko Xalqaro Maktabi', en: 'Zukko International School' },
     nav_home: { uz: 'Bosh sahifa', en: 'Home' }, nav_g6: { uz: '6-sinf', en: 'Grade 6' }, nav_g7: { uz: '7-sinf', en: 'Grade 7' }, nav_g8: { uz: '8-sinf', en: 'Grade 8' }, nav_grades: { uz: 'Sinflar', en: 'Grades' }, ng6: { uz: 'Boshlang‘ich bosqich', en: 'Foundation' }, ng7: { uz: 'Keyingi bosqich', en: 'Intermediate' }, ng8: { uz: 'Chuqurlashtirish', en: 'Advanced' },
     nav_lab: { uz: '3D laboratoriya', en: '3D Lab' }, nav_pt: { uz: 'Davriy jadval', en: 'Periodic table' }, nav_me: { uz: 'Yutuqlarim', en: 'My progress' }, b_home: { uz: 'Bosh', en: 'Home' }, b_tests: { uz: 'Testlar', en: 'Tests' }, tool_h: { uz: 'Interaktiv vosita', en: 'Interactive tool' }, pt_desc: { uz: "Elementlarni bosib o'rganing: tartib raqami, massa, elektron qavatlar, oilalar va o'yin rejimi.", en: 'Explore elements by clicking: atomic number, mass, shells, families and a game mode.' }, nav_book: { uz: 'Darslik', en: 'Textbook' },
-    search: { uz: 'Mavzu, dars raqami yoki tajriba…', en: 'Topic, lesson number or experiment…' },
+    search: { uz: 'Qidirish…', en: 'Search…' },
     foot: { uz: "6–8-sinf kimyo darsliklari asosidagi interaktiv o'quv sayti", en: 'Interactive learning site based on the Grade 6–8 chemistry textbooks' },
     foot2: { uz: 'Bilim — kuch! Tadqiqot — kelajak!', en: 'Knowledge is power! Research is the future!' },
     hero_pill: { uz: '🧪 6–8-sinf kimyo • 2 tilda', en: '🧪 Grade 6–8 chemistry • 2 languages' },
@@ -440,7 +440,7 @@
     let hist = []; try { hist = JSON.parse(localStorage.getItem('zk_hist') || '[]'); } catch (e) { }
     const groups = GRADES.filter((g) => TS.grade === 'both' || TS.grade === g).map((g) => {
       const bk = B[g]; let html = `<div class="tg-h">${t(g + '_t')}</div>`;
-      bk.lessons.forEach((L, i) => { const n = i + 1; const u = (bk.units || []).find((u) => u.from === n); if (u) html += `<div class="tu-h">${tr(u.t)}</div>`; const key = g + '-' + n; html += `<label class="tl"><input type="checkbox" data-k="${key}" ${TS.sel.has(key) ? 'checked' : ''}><span class="lnum s" style="background:${GC[g]}">${n}</span><span>${tr(L.t)}</span></label>`; });
+      bk.lessons.forEach((L, i) => { const n = i + 1; const u = (bk.units || []).find((u) => u.from === n); if (u) html += `<div class="tu-h">${tr(u.t)}</div>`; const key = g + '-' + n; html += `<label class="tl"><input type="checkbox" data-k="${key}" ${TS.sel.has(key) ? 'checked' : ''}><span class="lnum s" style="background:${ucStrong(UC[unitIdx(g, n) % UC.length])[0]};color:${ucStrong(UC[unitIdx(g, n) % UC.length])[1]}">${n}</span><span>${tr(L.t)}</span></label>`; });
       return html;
     }).join('');
     const seg = (name, val, opts) => `<div class="seg" data-seg="${name}">${opts.map(([v, l]) => `<button data-v="${v}" class="${String(TS[name]) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;
@@ -453,15 +453,15 @@
         <div class="ts-f" role="group" aria-labelledby="tsl1"><label id="tsl1">${t('t_count')}</label>${seg('count', TS.count, [[10, '10'], [20, '20'], [30, '30'], [50, '50']])}</div>
         <div class="ts-f" role="group" aria-labelledby="tsl2"><label id="tsl2">${t('t_diff')}</label>${seg('diff', TS.diff, [['mix', t('t_mix')], ['easy', t('easy')], ['medium', t('medium')], ['hard', t('hard')]])}</div>
         <div class="ts-f" role="group" aria-labelledby="tsl3"><label id="tsl3">${t('t_mode')}</label><div class="modes"><label><input type="radio" name="md" value="practice" ${TS.mode === 'practice' ? 'checked' : ''}> ${t('t_practice')}</label><label><input type="radio" name="md" value="exam" ${TS.mode === 'exam' ? 'checked' : ''}> ${t('t_exam')}</label></div></div>
-        <button class="btn grn big" id="tgo">▶ ${t('t_start')}</button><button class="btn sec big" id="tq" style="margin-top:8px">${t('t_quick')}</button><div id="terr" class="terr"></div></div>
+        <button class="btn grn big" id="tgo">▶ ${t('t_start')}</button><button class="btn sec big" id="tq" style="margin-top:8px">${t('t_quick')}</button><div id="terr" class="terr" role="alert"></div></div>
         ${hist.length ? `<div class="panel"><h3>🕘 ${t('history')}</h3>${hist.map((h) => `<div class="hist"><span>${new Date(h.d).toLocaleDateString()} — ${h.title}</span><b>${h.s}/${h.n}</b></div>`).join('')}</div>` : ''}
       </div></div></div>`;
     const updC = () => (document.getElementById('selc').textContent = `(${TS.sel.size} ${t('t_selected')})`); updC();
     app.querySelectorAll('.tlist input').forEach((c) => (c.onchange = () => { c.checked ? TS.sel.add(c.dataset.k) : TS.sel.delete(c.dataset.k); updC(); }));
-    app.querySelectorAll('[data-seg]').forEach((s) => s.querySelectorAll('button').forEach((b) => (b.onclick = () => { const k = s.dataset.seg; TS[k] = k === 'count' ? +b.dataset.v : b.dataset.v; if (k === 'grade') TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); })));
+    app.querySelectorAll('[data-seg]').forEach((s) => s.querySelectorAll('button').forEach((b) => (b.onclick = () => { const k = s.dataset.seg; TS[k] = k === 'count' ? +b.dataset.v : b.dataset.v; if (k === 'grade') TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); const f = app.querySelector(`[data-seg="${k}"] [data-v="${b.dataset.v}"]`); if (f) f.focus({ preventScroll: true }); })));
     app.querySelectorAll('input[name=md]').forEach((r) => (r.onchange = () => (TS.mode = r.value)));
-    document.getElementById('sa').onclick = () => { TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); };
-    document.getElementById('sn').onclick = () => { TS.sel = new Set(); testsPage(); };
+    document.getElementById('sa').onclick = () => { TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); const f = document.getElementById('sa'); if (f) f.focus({ preventScroll: true }); };
+    document.getElementById('sn').onclick = () => { TS.sel = new Set(); testsPage(); const f = document.getElementById('sn'); if (f) f.focus({ preventScroll: true }); };
     const start = (sel, count, diff) => {
       if (!sel.length) { document.getElementById('terr').textContent = t('t_pick'); return; }
       const go = () => { const items = QB.build(sel, count, diff); const w = document.getElementById('tWrap'); w.innerHTML = '<div class="panel tr-panel"><div id="tRun"></div></div>'; runTest(document.getElementById('tRun'), items, { mode: TS.mode, title: `${t('nav_tests')} (${sel.length} ${lang === 'uz' ? 'mavzu' : 'topics'})`, onNew: go, onBack: testsPage, focus: true, onFinish: (s) => { if (XPok()) XP.test(s); return s; } }); window.scrollTo({ top: 0 }); };
@@ -501,7 +501,7 @@
       <div class="labpage"><div class="lab-host" id="bigLab"></div></div>
       <div class="safety">⚠️ ${t('safety')}</div>
       <div id="zkLabGuide"></div>
-      <div class="panel" style="margin-top:18px"><h3>📚 ${t('related')}</h3>${ls.map((x) => `<a href="#${x.g}-${x.n}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span class="lnum" style="width:32px;height:32px;font-size:13px;background:${GC[x.g]}">${x.n}</span><span><b>${tr(x.L.t)}</b><br><small style="color:var(--muted)">${GN[x.g]}-${t('grade')}</small></span></a>`).join('')}</div>
+      <div class="panel" style="margin-top:18px"><h3>📚 ${t('related')}</h3>${ls.map((x) => `<a href="#${x.g}-${x.n}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span class="lnum" style="width:32px;height:32px;font-size:13px;background:${ucStrong(UC[unitIdx(x.g, x.n) % UC.length])[0]};color:${ucStrong(UC[unitIdx(x.g, x.n) % UC.length])[1]}">${x.n}</span><span><b>${tr(x.L.t)}</b><br><small style="color:var(--muted)">${GN[x.g]}-${t('grade')}</small></span></a>`).join('')}</div>
     </div>`;
     labHandle = Lab.open(document.getElementById('bigLab'), id, { autoplay: true });
     if (window.ZKLabGuide && labHandle) ZKLabGuide.mount(document.getElementById('zkLabGuide'), labHandle, { lang });
@@ -577,7 +577,7 @@
     }
   };
 
-  function zoomImg(im) { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); zi.src = im.getAttribute('src'); const h = +im.dataset.h || 1273; zi.style.cssText = `aspect-ratio:900/${h};object-fit:cover;object-position:${im.style.objectPosition};height:min(96vh, ${(96 * h / 900).toFixed(1)}vw);width:auto`; z.classList.remove('big'); z.classList.add('on'); zi.alt = im.getAttribute('aria-label') || im.getAttribute('alt') || ''; const zx = document.getElementById('zoomX'); if (zx) { zx.setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close'); zx.onclick = (e) => { e.stopPropagation(); closeZoom(); }; } dlgOpen(z, zx); }
+  function zoomImg(im) { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); zi.src = im.getAttribute('src'); const h = +im.dataset.h || 1273; zi.style.cssText = `aspect-ratio:900/${h};object-fit:cover;object-position:${im.style.objectPosition};height:min(96vh, ${(96 * h / 900).toFixed(1)}vw);width:auto`; z.classList.remove('big'); z.classList.add('on'); zi.alt = im.getAttribute('alt') || ''; const zx = document.getElementById('zoomX'); if (zx) { zx.setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close'); zx.onclick = (e) => { e.stopPropagation(); closeZoom(); }; } dlgOpen(z, zx); }
   { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); const touch = matchMedia('(pointer:coarse)').matches;
     z.onclick = (e) => { if (touch && e.target === zi) { const r0 = zi.getBoundingClientRect(); const fx = (e.clientX - r0.left) / r0.width, fy = (e.clientY - r0.top) / r0.height; const big = z.classList.toggle('big'); if (big) { zi.dataset.cs = zi.style.cssText; zi.style.height = 'auto'; zi.style.width = '240vw'; zi.style.maxWidth = 'none'; zi.style.maxHeight = 'none'; requestAnimationFrame(() => { const r = zi.getBoundingClientRect(); z.scrollTo({ left: fx * r.width - innerWidth / 2 + 20, top: fy * r.height - innerHeight / 2 + 20 }); }); } else { zi.style.cssText = zi.dataset.cs || ''; z.scrollTo(0, 0); } return; } z.classList.remove('on', 'big'); z.scrollTo(0, 0); dlgClose(); }; }
 
@@ -652,7 +652,7 @@
   function toTop() { const st = document.documentElement.style; const prev = st.scrollBehavior; st.scrollBehavior = 'auto'; window.scrollTo(0, 0); st.scrollBehavior = prev; }
   // Segment tugmalari (.seg / .modes) holati ekran o'quvchiga aria-pressed orqali bildiriladi.
   // Tugmalar ko'p joyda qo'lda yaratiladi, shuning uchun bitta kuzatuvchi .on klassini kuzatib boradi.
-  const syncPressed = (root) => root.querySelectorAll('.seg > button, .modes > button').forEach((b) => {
+  const syncPressed = (root) => root.querySelectorAll('.seg > button, .modes > button, #tcTabs > button, .tc-chips > button').forEach((b) => {
     if (b.getAttribute('role') === 'tab' || b.getAttribute('role') === 'radio') return;
     const v = String(b.classList.contains('on')); if (b.getAttribute('aria-pressed') !== v) b.setAttribute('aria-pressed', v);
     if (!b.hasAttribute('type')) b.type = 'button';
@@ -660,7 +660,7 @@
   try {
     const appEl = document.getElementById('app');
     if (appEl && 'MutationObserver' in window) new MutationObserver((ms) => {
-      for (const m of ms) { if (m.type === 'childList') { if (!syncPressed._q) { syncPressed._q = 1; requestAnimationFrame(() => { syncPressed._q = 0; syncPressed(appEl); }); } return; } const tg = m.target; if (tg.parentElement && tg.parentElement.matches('.seg,.modes')) { syncPressed(tg.parentElement); } }
+      for (const m of ms) { if (m.type === 'childList') { if (!syncPressed._q) { syncPressed._q = 1; requestAnimationFrame(() => { syncPressed._q = 0; syncPressed(appEl); }); } return; } const tg = m.target; if (tg.parentElement && tg.parentElement.matches('.seg,.modes,#tcTabs,.tc-chips')) { syncPressed(tg.parentElement); } }
     }).observe(appEl, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
   } catch (e) { }
   function renderRoute() {
@@ -701,6 +701,7 @@
   window.addEventListener('hashchange', route);
   document.querySelectorAll('.lang button').forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
   document.getElementById('burger').onclick = () => { const nv = document.getElementById('nav'), o = nv.classList.toggle('open'); document.getElementById('burger').setAttribute('aria-expanded', String(o)); if (o) { const f = nv.querySelector('a[href],button'); if (f) setTimeout(() => f.focus(), 30); } };
+  document.getElementById('burger').addEventListener('keydown', (e) => { const nv = document.getElementById('nav'); if (e.key === 'Escape' && nv.classList.contains('open')) { nv.classList.remove('open'); e.currentTarget.setAttribute('aria-expanded', 'false'); } });
   document.getElementById('nav').addEventListener('keydown', (e) => { const nv = e.currentTarget; if (e.key === 'Escape' && nv.classList.contains('open')) { nv.classList.remove('open'); const bg = document.getElementById('burger'); bg.setAttribute('aria-expanded', 'false'); bg.focus(); } });
   // "Asosiy qismga o'tish": klaviatura foydalanuvchisi header tugmalarini aylanib o'tmaydi
   { const sk = document.getElementById('zkSkip'); if (sk) sk.onclick = () => { const h1 = app.querySelector('h1'); const tg = h1 || app; if (h1) h1.tabIndex = -1; tg.focus(); }; }
@@ -719,7 +720,7 @@
     grp.addEventListener('focusout', (e) => { if (!menu.hidden && e.relatedTarget && !grp.contains(e.relatedTarget)) gradesMenu(false); });
     grp.addEventListener('keydown', (e) => {
       const L = [...menu.querySelectorAll('a')], i = L.indexOf(document.activeElement);
-      if (e.key === 'Escape' && !menu.hidden) { e.preventDefault(); gradesMenu(false); btn.focus(); }
+      if (e.key === 'Escape' && !menu.hidden) { e.preventDefault(); e.stopPropagation(); gradesMenu(false); btn.focus(); }
       else if (e.key === 'ArrowDown') { e.preventDefault(); if (menu.hidden) gradesMenu(true); L[(i + 1) % L.length].focus(); }
       else if (e.key === 'ArrowUp' && !menu.hidden) { e.preventDefault(); L[(i - 1 + L.length) % L.length].focus(); }
     });
