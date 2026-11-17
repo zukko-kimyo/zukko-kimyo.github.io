@@ -45,7 +45,7 @@
       const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
       const key = localDate(d);
       const value = safeNum((days[key] || {}).xp);
-      weeks.push({ key, value, text: d.toLocaleDateString(ctx.lang === 'en' ? 'en-US' : 'uz-UZ', { weekday: 'short' }) });
+      weeks.push({ key, value, text: ctx.lang === 'en' ? d.toLocaleDateString('en-US', { weekday: 'short' }) : ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh'][d.getDay()] });
     }
     const max = Math.max(1, ...weeks.map((d) => d.value));
     const totalWeek = weeks.reduce((s, d) => s + d.value, 0);

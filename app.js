@@ -3,7 +3,7 @@
     school: { uz: 'Zukko Xalqaro Maktabi', en: 'Zukko International School' },
     nav_home: { uz: 'Bosh sahifa', en: 'Home' }, nav_g6: { uz: '6-sinf', en: 'Grade 6' }, nav_g7: { uz: '7-sinf', en: 'Grade 7' }, nav_g8: { uz: '8-sinf', en: 'Grade 8' }, nav_grades: { uz: 'Sinflar', en: 'Grades' }, ng6: { uz: 'Boshlang‘ich bosqich', en: 'Foundation' }, ng7: { uz: 'Keyingi bosqich', en: 'Intermediate' }, ng8: { uz: 'Chuqurlashtirish', en: 'Advanced' },
     nav_lab: { uz: '3D laboratoriya', en: '3D Lab' }, nav_pt: { uz: 'Davriy jadval', en: 'Periodic table' }, nav_me: { uz: 'Yutuqlarim', en: 'My progress' }, b_home: { uz: 'Bosh', en: 'Home' }, b_tests: { uz: 'Testlar', en: 'Tests' }, tool_h: { uz: 'Interaktiv vosita', en: 'Interactive tool' }, pt_desc: { uz: "Elementlarni bosib o'rganing: tartib raqami, massa, elektron qavatlar, oilalar va o'yin rejimi.", en: 'Explore elements by clicking: atomic number, mass, shells, families and a game mode.' }, nav_book: { uz: 'Darslik', en: 'Textbook' },
-    search: { uz: 'Mavzu, dars raqami yoki tajriba…', en: 'Topic, lesson number or experiment…' },
+    search: { uz: 'Qidirish…', en: 'Search…' },
     foot: { uz: "6–8-sinf kimyo darsliklari asosidagi interaktiv o'quv sayti", en: 'Interactive learning site based on the Grade 6–8 chemistry textbooks' },
     foot2: { uz: 'Bilim — kuch! Tadqiqot — kelajak!', en: 'Knowledge is power! Research is the future!' },
     hero_pill: { uz: '🧪 6–8-sinf kimyo • 2 tilda', en: '🧪 Grade 6–8 chemistry • 2 languages' },
@@ -106,6 +106,13 @@
     document.querySelectorAll('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === l));
     document.querySelectorAll('[data-i]').forEach((el) => (el.innerHTML = t(el.dataset.i)));
     document.getElementById('q').placeholder = t('search');
+    // ekran o'quvchilar uchun nomlar (til bilan birga almashadi)
+    const uz = l === 'uz', setA = (id, v) => { const e = document.getElementById(id); if (e) e.setAttribute('aria-label', v); };
+    setA('zoom', uz ? 'Darslik sahifasi' : 'Textbook page'); setA('sres', uz ? 'Qidiruv natijalari' : 'Search results');
+    setA('q', uz ? 'Mavzu yoki dars raqamini qidirish' : 'Search topics or lesson number');
+    setA('burger', uz ? 'Menyu' : 'Menu'); setA('bnav', uz ? 'Pastki menyu' : 'Bottom navigation'); setA('nav', uz ? 'Asosiy menyu' : 'Main menu');
+    document.querySelectorAll('.lang button').forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.lang === l)); b.setAttribute('lang', b.dataset.lang); });
+    const sk = document.getElementById('zkSkip'); if (sk) sk.textContent = uz ? 'Asosiy qismga o‘tish' : 'Skip to main content';
     if (window.ZKAuth && ZKAuth.user) ZKAuth.chip();
     route();
   }
@@ -312,12 +319,12 @@
     const ucs = ucStrong(col); const ucv = `--uc:${col};--uc-on:${onCol(col)};--uc-bs:${ucs[0]};--uc-os:${ucs[1]}`;
     app.innerHTML = `<div class="lesson-top" style="${ucv}"><div class="wrap">
         <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#${g}">${t('nav_' + g)}</a> / ${t('lesson')} ${n}</div>
-        <div class="lhead"><h1><span class="lnum" style="background:${col};color:${onCol(col)}">${n}</span>${tr(L.t)}${lst === 'done' ? `<span class="lstat done">⭐ ${XP.t('st_done')}</span>` : ''}</h1>
+        <div class="lhead"><h1><span class="zk-sr">${lang === 'uz' ? n + '-dars: ' : 'Lesson ' + n + ': '}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${n}</span>${tr(L.t)}${lst === 'done' ? `<span class="lstat done">⭐ ${XP.t('st_done')}</span>` : ''}</h1>
           <div class="lnav" title="${t('kb_hint')}">${prev ? `<a class="lnb" href="#${g}-${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${n}</b> / ${bk.lessons.length}</span>${next ? `<a class="lnb" href="#${g}-${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
-        <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${tp}"></span>${TABS.map((k) => `<button data-tab="${k}" role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}"><i class="ti">${{ content: '📘', pages: '📄', lab: '🧪', quiz: '✅' }[k]}</i><span class="tlong">${t('t_' + k)}</span><span class="tsh">${t('ts_' + k)}</span>${k === 'lab' && (ex.length || toolsOf(g, n).length) ? `<span class="cnt">${ex.length + toolsOf(g, n).length}</span>` : ''}${k === 'quiz' ? `<span class="cnt q">10</span>` : ''}</button>`).join('')}</div>
+        <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${tp}"></span>${TABS.map((k) => `<button data-tab="${k}" role="tab" id="ltab-${k}" aria-controls="lpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" class="${tab === k ? 'on' : ''}"><i class="ti" aria-hidden="true">${{ content: '📘', pages: '📄', lab: '🧪', quiz: '✅' }[k]}</i><span class="tlong">${t('t_' + k)}</span><span class="tsh">${t('ts_' + k)}</span>${k === 'lab' && (ex.length || toolsOf(g, n).length) ? `<span class="cnt">${ex.length + toolsOf(g, n).length}</span>` : ''}${k === 'quiz' ? `<span class="cnt q">10</span>` : ''}</button>`).join('')}</div>
       </div></div>
       <div class="wrap lesson-body" style="${ucv}">
-        <div>${body}
+        <div><div id="lpanel" role="tabpanel" aria-labelledby="ltab-${tab}">${body}</div>
           <div class="pn">${prev ? `<a href="#${g}-${n - 1}"><small>${t('prev')}</small>${tr(prev.t)}</a>` : '<span style="flex:1"></span>'}${next ? `<a class="r" href="#${g}-${n + 1}"><small>${t('next')}</small>${tr(next.t)}</a>` : '<span style="flex:1"></span>'}</div>
         </div>
         <aside class="side">
@@ -326,9 +333,20 @@
         </aside>
       </div>
       <div class="fnav">${prev ? `<a href="#${g}-${n - 1}" title="${esc(tr(prev.t))}">‹ <span>${t('prev').replace(/[←→]/g, '').trim()}</span></a>` : '<span class="off">‹</span>'}<b>${n} / ${bk.lessons.length}</b>${next ? `<a href="#${g}-${n + 1}" title="${esc(tr(next.t))}"><span>${t('next').replace(/[←→]/g, '').trim()}</span> ›</a>` : '<span class="off">›</span>'}</div>`;
-    app.querySelectorAll('.tabs button').forEach((b) => (b.onclick = () => { curTab = b.dataset.tab; lesson(g, n, curTab); window.scrollTo({ top: 0 }); }));
-    app.querySelectorAll('.pages img').forEach((im) => (im.onclick = () => zoomImg(im)));
-    app.querySelectorAll('.xinline').forEach((el) => (el.onclick = () => openModal(el.dataset.x)));
+    // Tablar: bosilganda ham, strelkalar bilan ham; fokus yangi tabda qoladi
+    const goTab = (k, focus) => { curTab = k; lesson(g, n, curTab); window.scrollTo({ top: 0 }); if (focus) { const nb = document.getElementById('ltab-' + k); if (nb) nb.focus({ preventScroll: true }); } };
+    app.querySelectorAll('.tabs button').forEach((b) => (b.onclick = () => goTab(b.dataset.tab, true)));
+    const tl = app.querySelector('.tabs[role=tablist]');
+    if (tl) tl.onkeydown = (e) => {
+      const i = TABS.indexOf(tab), j = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: TABS.length - 1 }[e.key];
+      if (j == null) return; e.preventDefault(); e.stopPropagation();
+      // faqat fokus siljiydi (har bosishda dars qayta chizilmasin, 3D yuklanmasin); Enter/Space — tanlash
+      const bs = [...tl.querySelectorAll('[role=tab]')], cur = bs.indexOf(document.activeElement), base = cur >= 0 ? cur : i;
+      const jj = { ArrowRight: base + 1, ArrowLeft: base - 1, Home: 0, End: bs.length - 1 }[e.key];
+      const nb = bs[(jj + bs.length) % bs.length]; if (nb) { bs.forEach((x) => (x.tabIndex = x === nb ? 0 : -1)); nb.focus(); }
+    };
+    app.querySelectorAll('.pages img').forEach((im) => pressable(im, () => zoomImg(im), `${t('page')} ${(im.getAttribute('alt') || '').replace(/\D+/g, '')} — ${lang === 'uz' ? 'kattalashtirish' : 'enlarge'}`));
+    app.querySelectorAll('.xinline').forEach((el) => { const h4 = el.querySelector('h4'); pressable(el, () => openModal(el.dataset.x), (h4 ? h4.textContent.trim() + ' — ' : '') + (lang === 'uz' ? '3D tajribani ochish' : 'open 3D experiment')); });
     const on = app.querySelector('.navl a.on'); const nl = on && on.closest('.navl');
     if (on && nl) { const d = on.getBoundingClientRect().top - nl.getBoundingClientRect().top; nl.scrollTop += d - nl.clientHeight / 2 + on.offsetHeight / 2; } // faqat ro'yxat suriladi, sahifa sakramaydi
     if (tab === 'lab' && ex.length) {
@@ -343,6 +361,7 @@
   /* ---------- test runner ---------- */
   const DL = { easy: 'easy', medium: 'medium', hard: 'hard' };
   function lessonTitle(it) { const L = B[it.g].lessons[it.n - 1]; return `${GN[it.g]}-${t('grade')} • ${t('lesson')} ${it.n}: ${tr(L.t)}`; }
+  const uzL = () => lang === 'uz';
   function runTest(el, items, opts = {}) {
     const st = { i: 0, ans: items.map(() => null), done: false, start: Date.now(), timer: null };
     const exam = opts.mode === 'exam'; const limit = exam ? items.length * 60 : 0;
@@ -357,20 +376,36 @@
       el.innerHTML = `<div class="tr-run">
         <div class="tr-top"><div class="tr-prog"><div style="width:${100 * answered / items.length}%"></div></div><span>${t('q_word')} ${st.i + 1} / ${items.length}</span>${exam ? `<span class="tm-box">⏱ <b class="tm">${tmText()}</b></span>` : ''}</div>
         <div class="tr-meta"><span class="dchip ${it.d}">${t(DL[it.d])}</span><a href="#${it.g}-${it.n}" class="tr-topic">${lessonTitle(it)}</a></div>
-        <div class="tr-q">${it.tf ? `<small>${t('tf_hint')}</small>` : ''}${tr(it.q)}</div>
-        <div class="tr-opts ${it.tf ? 'tf' : ''}">${it.o.map((o, k) => { let cls = ''; if (a === k) cls = 'sel'; if (reveal) { if (k === it.a) cls = 'ok'; else if (a === k) cls = 'bad'; } return `<button data-k="${k}" class="${cls}" ${reveal ? 'disabled' : ''}><i>${it.tf ? (k ? '✗' : '✓') : letters[k]}</i><span>${tr(o)}</span></button>`; }).join('')}</div>
+        <div class="tr-q" id="trq" tabindex="-1">${it.tf ? `<small>${t('tf_hint')}</small>` : ''}${tr(it.q)}</div>
+        <div class="tr-opts ${it.tf ? 'tf' : ''}" role="radiogroup" aria-labelledby="trq">${it.o.map((o, k) => { let cls = ''; if (a === k) cls = 'sel'; if (reveal) { if (k === it.a) cls = 'ok'; else if (a === k) cls = 'bad'; } return `<button type="button" role="radio" aria-checked="${a === k}" tabindex="${(a == null ? k === 0 : a === k) ? 0 : -1}" data-k="${k}" class="${cls}" ${reveal ? 'aria-disabled="true"' : ''}><i>${it.tf ? (k ? '✗' : '✓') : letters[k]}</i><span>${tr(o)}</span></button>`; }).join('')}</div>
         ${reveal ? `<div class="tr-fb ${a === it.a ? 'ok' : 'bad'}">${a === it.a ? t('right') : t('wrong') + '<b>' + tr(it.o[it.a]) + '</b>'}${it.e ? ' — ' + tr(it.e) : ''}</div>` : ''}
         ${answered === items.length && !opts.compact ? `<div class="note" style="margin-top:12px">${t('finished_q')}</div>` : ''}
         <div class="tr-nav"><button class="btn sec" id="qp" ${st.i ? '' : 'disabled'}>${t('prev_q')}</button>
-          <div class="tr-pal">${items.map((x, k) => `<button data-j="${k}" class="${k === st.i ? 'cur' : ''} ${st.ans[k] != null ? (exam ? 'done' : (st.ans[k] === x.a ? 'okk' : 'badd')) : ''}">${k + 1}</button>`).join('')}</div>
+          <div class="tr-pal" role="group" aria-label="${uzL() ? 'Savollar' : 'Questions'}">${items.map((x, k) => { const stt = st.ans[k] == null ? '' : exam ? (uzL() ? ', javob berilgan' : ', answered') : st.ans[k] === x.a ? (uzL() ? ', to‘g‘ri' : ', correct') : (uzL() ? ', noto‘g‘ri' : ', wrong'); return `<button type="button" data-j="${k}" aria-label="${t('q_word')} ${k + 1}${stt}" ${k === st.i ? 'aria-current="step"' : ''} class="${k === st.i ? 'cur' : ''} ${st.ans[k] != null ? (exam ? 'done' : (st.ans[k] === x.a ? 'okk' : 'badd')) : ''}">${k + 1}</button>`; }).join('')}</div>
           ${st.i < items.length - 1 ? `<button class="btn pri" id="qn">${t('next_q')}</button>` : `<button class="btn grn" id="qf">${t('finish')}</button>`}</div>
       </div>`;
-      el.querySelectorAll('.tr-opts button').forEach((b) => (b.onclick = () => { st.ans[st.i] = +b.dataset.k; if (exam && st.i < items.length - 1) { st.i++; } draw(); }));
-      el.querySelectorAll('.tr-pal button').forEach((b) => (b.onclick = () => { st.i = +b.dataset.j; draw(); }));
+      // Klaviatura va ekran o'quvchilar: javobdan keyin natija e'lon qilinadi, fokus mantiqiy joyga o'tadi
+      const fq = () => { const x = el.querySelector('#trq'); if (x) x.focus({ preventScroll: true }); };
+      const say = (txt) => { const an = document.getElementById('zkAnnounce'); if (an) { an.textContent = ''; setTimeout(() => (an.textContent = txt), 40); } };
+      el.querySelectorAll('.tr-opts button').forEach((b) => (b.onclick = () => {
+        if (b.getAttribute('aria-disabled') === 'true') return;
+        st.ans[st.i] = +b.dataset.k; const was = st.i; if (exam && st.i < items.length - 1) { st.i++; } draw();
+        if (!exam) { const fb = el.querySelector('.tr-fb'); if (fb) say(fb.textContent); const nx = el.querySelector('#qn,#qf'); if (nx) { nx.focus({ preventScroll: true }); if (nx.scrollIntoView) nx.scrollIntoView({ block: 'nearest' }); } }
+        else if (st.i !== was) fq(); else { const o = el.querySelector(`.tr-opts [data-k="${st.ans[st.i]}"]`); if (o) o.focus({ preventScroll: true }); }
+      }));
+      { const og = el.querySelector('.tr-opts'); if (og) og.onkeydown = (e) => {
+          // radiogroup: strelkalar fokusni siljitadi (javobni o'zi tanlamaydi — tanlash qaytarib bo'lmaydi), Enter/Space tanlaydi
+          const bs = [...og.querySelectorAll('button')], i = bs.indexOf(document.activeElement); if (i < 0) return;
+          const d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key]; let j = null;
+          if (d) j = (i + d + bs.length) % bs.length; else if (e.key === 'Home') j = 0; else if (e.key === 'End') j = bs.length - 1;
+          if (j == null) return; e.preventDefault(); e.stopPropagation(); bs.forEach((b, k) => (b.tabIndex = k === j ? 0 : -1)); bs[j].focus();
+        }; }
+      el.querySelectorAll('.tr-pal button').forEach((b) => (b.onclick = () => { st.i = +b.dataset.j; draw(); fq(); }));
       const qp = el.querySelector('#qp'), qn = el.querySelector('#qn'), qf = el.querySelector('#qf');
-      if (qp) qp.onclick = () => { st.i--; draw(); }; if (qn) qn.onclick = () => { st.i++; draw(); }; if (qf) qf.onclick = finish;
+      if (qp) qp.onclick = () => { st.i--; draw(); fq(); }; if (qn) qn.onclick = () => { st.i++; draw(); fq(); }; if (qf) qf.onclick = finish;
     }
-    function finish() { clearT(); st.done = true; save(); st.gain = opts.onFinish ? opts.onFinish(score(), items.length) || 0 : 0; results(); if (!opts.compact) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 90 }); }
+    function finish() { clearT(); st.done = true; save(); st.gain = opts.onFinish ? opts.onFinish(score(), items.length) || 0 : 0; results();
+      { const an = document.getElementById('zkAnnounce'); if (an) an.textContent = `${t('res_h')}: ${score()} / ${items.length}`; const h = el.querySelector('.tr-res h3'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } } if (!opts.compact) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 90 }); }
     function score() { return items.reduce((s, it, k) => s + (st.ans[k] === it.a ? 1 : 0), 0); }
     function save() { try { const h = JSON.parse(localStorage.getItem('zk_hist') || '[]'); h.unshift({ d: Date.now(), s: score(), n: items.length, title: opts.title || lessonTitle(items[0]) }); localStorage.setItem('zk_hist', JSON.stringify(h.slice(0, 10))); } catch (e) { } }
     function results() {
@@ -392,6 +427,7 @@
       const rb = el.querySelector('#rb'); if (rb) rb.onclick = opts.onBack;
     }
     draw();
+    if (opts.focus) { const x = el.querySelector('#trq'); if (x) x.focus({ preventScroll: true }); }
   }
 
   /* ---------- tests centre ---------- */
@@ -404,37 +440,37 @@
     let hist = []; try { hist = JSON.parse(localStorage.getItem('zk_hist') || '[]'); } catch (e) { }
     const groups = GRADES.filter((g) => TS.grade === 'both' || TS.grade === g).map((g) => {
       const bk = B[g]; let html = `<div class="tg-h">${t(g + '_t')}</div>`;
-      bk.lessons.forEach((L, i) => { const n = i + 1; const u = (bk.units || []).find((u) => u.from === n); if (u) html += `<div class="tu-h">${tr(u.t)}</div>`; const key = g + '-' + n; html += `<label class="tl"><input type="checkbox" data-k="${key}" ${TS.sel.has(key) ? 'checked' : ''}><span class="lnum s" style="background:${GC[g]}">${n}</span><span>${tr(L.t)}</span></label>`; });
+      bk.lessons.forEach((L, i) => { const n = i + 1; const u = (bk.units || []).find((u) => u.from === n); if (u) html += `<div class="tu-h">${tr(u.t)}</div>`; const key = g + '-' + n; html += `<label class="tl"><input type="checkbox" data-k="${key}" ${TS.sel.has(key) ? 'checked' : ''}><span class="lnum s" style="background:${ucStrong(UC[unitIdx(g, n) % UC.length])[0]};color:${ucStrong(UC[unitIdx(g, n) % UC.length])[1]}">${n}</span><span>${tr(L.t)}</span></label>`; });
       return html;
     }).join('');
     const seg = (name, val, opts) => `<div class="seg" data-seg="${name}">${opts.map(([v, l]) => `<button data-v="${v}" class="${String(TS[name]) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;
-    app.innerHTML = `<div class="page-h tests"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_tests')}</div><h1>✅ ${t('t_h')}</h1><p>${t('t_p')}</p><div class="stats" style="margin-top:14px"><div><b style="color:#fff">${bankTotal}+</b><span style="color:#9de6c2">${t('t_bank')}</span></div><div><b style="color:#fff">${GRADES.reduce((a, g) => a + B[g].lessons.length, 0)}</b><span style="color:#9de6c2">${t('t_topics')}</span></div><div><b style="color:#fff">3 : 4 : 3</b><span style="color:#9de6c2">${t('easy')} : ${t('medium')} : ${t('hard')}</span></div></div></div></div>
+    app.innerHTML = `<div class="page-h tests"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_tests')}</div><h1>✅ ${t('t_h')}</h1><p>${t('t_p')}</p><div class="stats" style="margin-top:14px"><div><b>${bankTotal}+</b><span>${t('t_bank')}</span></div><div><b>${GRADES.reduce((a, g) => a + B[g].lessons.length, 0)}</b><span>${t('t_topics')}</span></div><div><b>3 : 4 : 3</b><span>${t('easy')} : ${t('medium')} : ${t('hard')}</span></div></div></div></div>
     <div class="wrap" id="tWrap"><div class="tsetup">
       <div class="panel ts-l"><h3>📚 ${t('t_topics')} <small id="selc" style="font-weight:600;color:var(--muted);font-size:13px"></small></h3>
         <div class="ts-row">${seg('grade', TS.grade, [['both', t('t_both')], ['g6', t('nav_g6')], ['g7', t('nav_g7')], ['g8', t('nav_g8')]])}<button class="btn sec sm" id="sa">${t('t_all')}</button><button class="btn sec sm" id="sn">${t('t_none')}</button></div>
         <div class="tlist">${groups}</div></div>
       <div class="ts-r"><div class="panel"><h3>⚙️ ${lang === 'uz' ? 'Sozlamalar' : 'Settings'}</h3>
-        <div class="ts-f"><label>${t('t_count')}</label>${seg('count', TS.count, [[10, '10'], [20, '20'], [30, '30'], [50, '50']])}</div>
-        <div class="ts-f"><label>${t('t_diff')}</label>${seg('diff', TS.diff, [['mix', t('t_mix')], ['easy', t('easy')], ['medium', t('medium')], ['hard', t('hard')]])}</div>
-        <div class="ts-f"><label>${t('t_mode')}</label><div class="modes"><label><input type="radio" name="md" value="practice" ${TS.mode === 'practice' ? 'checked' : ''}> ${t('t_practice')}</label><label><input type="radio" name="md" value="exam" ${TS.mode === 'exam' ? 'checked' : ''}> ${t('t_exam')}</label></div></div>
-        <button class="btn grn big" id="tgo">▶ ${t('t_start')}</button><button class="btn sec big" id="tq" style="margin-top:8px">${t('t_quick')}</button><div id="terr" class="terr"></div></div>
+        <div class="ts-f" role="group" aria-labelledby="tsl1"><label id="tsl1">${t('t_count')}</label>${seg('count', TS.count, [[10, '10'], [20, '20'], [30, '30'], [50, '50']])}</div>
+        <div class="ts-f" role="group" aria-labelledby="tsl2"><label id="tsl2">${t('t_diff')}</label>${seg('diff', TS.diff, [['mix', t('t_mix')], ['easy', t('easy')], ['medium', t('medium')], ['hard', t('hard')]])}</div>
+        <div class="ts-f" role="group" aria-labelledby="tsl3"><label id="tsl3">${t('t_mode')}</label><div class="modes"><label><input type="radio" name="md" value="practice" ${TS.mode === 'practice' ? 'checked' : ''}> ${t('t_practice')}</label><label><input type="radio" name="md" value="exam" ${TS.mode === 'exam' ? 'checked' : ''}> ${t('t_exam')}</label></div></div>
+        <button class="btn grn big" id="tgo">▶ ${t('t_start')}</button><button class="btn sec big" id="tq" style="margin-top:8px">${t('t_quick')}</button><div id="terr" class="terr" role="alert"></div></div>
         ${hist.length ? `<div class="panel"><h3>🕘 ${t('history')}</h3>${hist.map((h) => `<div class="hist"><span>${new Date(h.d).toLocaleDateString()} — ${h.title}</span><b>${h.s}/${h.n}</b></div>`).join('')}</div>` : ''}
       </div></div></div>`;
     const updC = () => (document.getElementById('selc').textContent = `(${TS.sel.size} ${t('t_selected')})`); updC();
     app.querySelectorAll('.tlist input').forEach((c) => (c.onchange = () => { c.checked ? TS.sel.add(c.dataset.k) : TS.sel.delete(c.dataset.k); updC(); }));
-    app.querySelectorAll('[data-seg]').forEach((s) => s.querySelectorAll('button').forEach((b) => (b.onclick = () => { const k = s.dataset.seg; TS[k] = k === 'count' ? +b.dataset.v : b.dataset.v; if (k === 'grade') TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); })));
+    app.querySelectorAll('[data-seg]').forEach((s) => s.querySelectorAll('button').forEach((b) => (b.onclick = () => { const k = s.dataset.seg; TS[k] = k === 'count' ? +b.dataset.v : b.dataset.v; if (k === 'grade') TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); const f = app.querySelector(`[data-seg="${k}"] [data-v="${b.dataset.v}"]`); if (f) f.focus({ preventScroll: true }); })));
     app.querySelectorAll('input[name=md]').forEach((r) => (r.onchange = () => (TS.mode = r.value)));
-    document.getElementById('sa').onclick = () => { TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); };
-    document.getElementById('sn').onclick = () => { TS.sel = new Set(); testsPage(); };
+    document.getElementById('sa').onclick = () => { TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); const f = document.getElementById('sa'); if (f) f.focus({ preventScroll: true }); };
+    document.getElementById('sn').onclick = () => { TS.sel = new Set(); testsPage(); const f = document.getElementById('sn'); if (f) f.focus({ preventScroll: true }); };
     const start = (sel, count, diff) => {
       if (!sel.length) { document.getElementById('terr').textContent = t('t_pick'); return; }
-      const go = () => { const items = QB.build(sel, count, diff); const w = document.getElementById('tWrap'); w.innerHTML = '<div class="panel tr-panel"><div id="tRun"></div></div>'; runTest(document.getElementById('tRun'), items, { mode: TS.mode, title: `${t('nav_tests')} (${sel.length} ${lang === 'uz' ? 'mavzu' : 'topics'})`, onNew: go, onBack: testsPage, onFinish: (s) => { if (XPok()) XP.test(s); return s; } }); window.scrollTo({ top: 0 }); };
+      const go = () => { const items = QB.build(sel, count, diff); const w = document.getElementById('tWrap'); w.innerHTML = '<div class="panel tr-panel"><div id="tRun"></div></div>'; runTest(document.getElementById('tRun'), items, { mode: TS.mode, title: `${t('nav_tests')} (${sel.length} ${lang === 'uz' ? 'mavzu' : 'topics'})`, onNew: go, onBack: testsPage, focus: true, onFinish: (s) => { if (XPok()) XP.test(s); return s; } }); window.scrollTo({ top: 0 }); };
       go();
     };
     document.getElementById('tgo').onclick = () => start([...TS.sel].map((k) => { const [g, n] = k.split('-'); return [g, +n]; }), TS.count, TS.diff);
     document.getElementById('tq').onclick = () => start(allLessons(), 20, 'mix');
   }
-  let curTab = 'content'; let lastTab = null;
+  let curTab = 'content'; let lastTab = null; let lastAnnounced = '';
   function xinline(e) { return `<div class="xinline" data-x="${e.id}"><div class="ic">${e.icon || '🧪'}</div><div><h4>${tr(e.title)}</h4><p>${tr(e.desc)}</p></div><span class="play">${t('watch')}</span></div>`; }
 
   function quiz(el, qs) {
@@ -461,22 +497,47 @@
     const ls = lessonsOfExp(e);
     app.innerHTML = `<div class="wrap" style="padding-top:20px;padding-bottom:30px">
       <div class="crumbs" style="color:var(--muted);margin-bottom:10px"><a href="#lab">${t('back_lab')}</a></div>
-      <h1 style="font-size:28px;color:var(--navy);margin-bottom:6px">${e.icon} ${tr(e.title)}</h1><p style="margin:0 0 16px;color:var(--muted)">${tr(e.desc)}</p>
+      <h1 class="zk-lab-title"><span aria-hidden="true">${e.icon}</span> ${tr(e.title)}</h1><p style="margin:0 0 16px;color:var(--muted)">${tr(e.desc)}</p>
       <div class="labpage"><div class="lab-host" id="bigLab"></div></div>
       <div class="safety">⚠️ ${t('safety')}</div>
       <div id="zkLabGuide"></div>
-      <div class="panel" style="margin-top:18px"><h3>📚 ${t('related')}</h3>${ls.map((x) => `<a href="#${x.g}-${x.n}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span class="lnum" style="width:32px;height:32px;font-size:13px;background:${GC[x.g]}">${x.n}</span><span><b>${tr(x.L.t)}</b><br><small style="color:var(--muted)">${GN[x.g]}-${t('grade')}</small></span></a>`).join('')}</div>
+      <div class="panel" style="margin-top:18px"><h3>📚 ${t('related')}</h3>${ls.map((x) => `<a href="#${x.g}-${x.n}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span class="lnum" style="width:32px;height:32px;font-size:13px;background:${ucStrong(UC[unitIdx(x.g, x.n) % UC.length])[0]};color:${ucStrong(UC[unitIdx(x.g, x.n) % UC.length])[1]}">${x.n}</span><span><b>${tr(x.L.t)}</b><br><small style="color:var(--muted)">${GN[x.g]}-${t('grade')}</small></span></a>`).join('')}</div>
     </div>`;
     labHandle = Lab.open(document.getElementById('bigLab'), id, { autoplay: true });
     if (window.ZKLabGuide && labHandle) ZKLabGuide.mount(document.getElementById('zkLabGuide'), labHandle, { lang });
   }
+  // Klaviatura bilan bosiladigan element (div/img uchun): Enter/Space, fokuslanadi, nomi bor
+  function pressable(el, fn, label) {
+    el.onclick = fn; if (!/^(BUTTON|A)$/.test(el.tagName)) { el.tabIndex = 0; el.setAttribute('role', 'button'); }
+    if (label) el.setAttribute('aria-label', label);
+    el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } };
+  }
+  // Oyna (dialog): ochilganda fokus ichkariga, Tab ichida aylanadi, yopilganda fokus joyiga qaytadi
+  let dlgBack = null;
+  const BG = 'header.top,#app,#bnav,footer,#zkSkip';
+  const setInert = (on) => document.querySelectorAll(BG).forEach((n) => { if (on) n.setAttribute('inert', ''); else n.removeAttribute('inert'); });
+  function dlgOpen(box, focusEl) {
+    dlgBack = document.activeElement; setInert(true);
+    box.onkeydown = (e) => {
+      if (e.key !== 'Tab') return;
+      const F = [...box.querySelectorAll('button,a[href],input,select,[tabindex]:not([tabindex="-1"])')].filter((x) => x.offsetParent !== null);
+      if (!F.length) { e.preventDefault(); return; }
+      const a = F[0], z = F[F.length - 1];
+      if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+    };
+    setTimeout(() => (focusEl || box).focus({ preventScroll: true }), 30);
+  }
+  function dlgClose() { setInert(false); const b = dlgBack; dlgBack = null; if (b && document.contains(b) && b.focus) b.focus({ preventScroll: true }); }
   function openModal(id) {
     const e = Lab.exps[id]; if (!e) return; destroyLab();
     document.getElementById('lmTitle').textContent = tr(e.title); document.getElementById('lmIcon').textContent = e.icon || '🧪';
-    document.getElementById('labModal').classList.add('on');
-    modalHandle = Lab.open(document.getElementById('lmHost'), id, { autoplay: true });
+    const m = document.getElementById('labModal'); m.classList.add('on');
+    document.getElementById('lmClose').setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close');
+    modalHandle = Lab.open(document.getElementById('lmHost'), id, { autoplay: !matchMedia('(prefers-reduced-motion: reduce)').matches });
+    dlgOpen(m, document.getElementById('lmClose'));
   }
-  function closeModal() { document.getElementById('labModal').classList.remove('on'); if (modalHandle) { modalHandle.destroy(); modalHandle = null; } }
+  function closeModal() { const m = document.getElementById('labModal'); const was = m.classList.contains('on'); m.classList.remove('on'); if (modalHandle) { modalHandle.destroy(); modalHandle = null; } if (was) dlgClose(); }
+  function closeZoom() { const z = document.getElementById('zoom'); if (z.classList.contains('on') || z.classList.contains('big')) { const zi = z.querySelector('img'); if (z.classList.contains('big') && zi && zi.dataset.cs != null) { zi.style.cssText = zi.dataset.cs; } z.classList.remove('on', 'big'); dlgClose(); } }
   document.getElementById('lmClose').onclick = closeModal;
   document.getElementById('labModal').onclick = (ev) => { if (ev.target.id === 'labModal') closeModal(); };
 
@@ -490,7 +551,7 @@
     app.innerHTML = `<div class="page-h ${g}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_book')}</div><h1>📖 ${t(g + '_t')}</h1><p>${t('book_h')}</p></div></div>
     <div class="wrap reader">
       <div class="seg"><button data-b="g6" class="${g === 'g6' ? 'on' : ''}">${t('nav_g6')}</button><button data-b="g7" class="${g === 'g7' ? 'on' : ''}">${t('nav_g7')}</button><button data-b="g8" class="${g === 'g8' ? 'on' : ''}">${t('nav_g8')}</button></div>
-      <div class="ctl"><button class="btn sec" id="bp">←</button><input id="bi" type="number" min="1" max="${max}" value="${p + 1}"><span style="color:var(--muted)">/ ${max}</span><button class="btn sec" id="bn">→</button></div>
+      <div class="ctl"><button type="button" class="btn sec" id="bp" aria-label="${lang === 'uz' ? 'Oldingi sahifa' : 'Previous page'}">←</button><input id="bi" type="number" min="1" max="${max}" value="${p + 1}" aria-label="${lang === 'uz' ? 'Sahifa raqami' : 'Page number'}"><span style="color:var(--muted)">/ ${max}</span><button type="button" class="btn sec" id="bn" aria-label="${lang === 'uz' ? 'Keyingi sahifa' : 'Next page'}">→</button></div>
       ${trAvail ? `<div class="tr-bar" style="margin:4px 0 12px"><div class="note" style="margin:0;flex:1">${t(g === 'g6' ? 'tr_note_en' : 'tr_note_uz')}</div><button class="btn sec" id="bkTr" style="padding:8px 14px;font-size:13.5px">${bookTr ? t('show_orig') : t('show_tr')}</button></div>` : ''}
       <div class="tr-bar" style="margin:4px 0 12px"><div class="note" style="margin:0;flex:1">${t(pageLang(g, p, bookFlip) === 'uz' ? 'pg_in_uz' : 'pg_in_en')}</div><button class="btn sec" id="bkFlip" style="padding:8px 14px;font-size:13.5px">${t(pageLang(g, p, bookFlip) === 'uz' ? 'see_en' : 'see_uz')}</button></div>
       <div class="spread${useTr ? ' trspread' : ''}">${cell(p)}${p + 1 < max ? cell(p + 1) : ''}</div>
@@ -501,13 +562,14 @@
     document.getElementById('bp').onclick = () => go(p - 2); document.getElementById('bn').onclick = () => go(p + 2);
     document.getElementById('bi').onchange = (e) => go(+e.target.value - 1);
     app.querySelectorAll('[data-b]').forEach((b) => (b.onclick = () => (location.hash = 'book-' + b.dataset.b)));
-    app.querySelectorAll('.spread img').forEach((im) => (im.onclick = () => zoomImg(im)));
+    app.querySelectorAll('.spread img').forEach((im) => pressable(im, () => zoomImg(im), lang === 'uz' ? 'Sahifani kattalashtirish' : 'Enlarge page'));
   }
   const bookPos = { g6: 0, g7: 0, g8: 0 }; let bookTr = true;
   document.onkeydown = (e) => {
-    if (e.key === 'Escape') { closeModal(); document.getElementById('zoom').classList.remove('on'); return; }
+    if (e.key === 'Escape') { closeModal(); closeZoom(); return; }
     if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !e.altKey && !e.ctrlKey && !e.metaKey) {
       const tg = e.target; if (tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT' || tg.isContentEditable)) return;
+      if (tg && tg.closest && tg.closest('[role=tablist],[role=radiogroup],[role=toolbar],.lab-host,.ptgrid')) return; // o'z strelkalari bor elementlar
       if (document.getElementById('labModal').classList.contains('on') || document.getElementById('zoom').classList.contains('on')) return;
       const m = (location.hash || '').match(/^#(g[678])-(\d+)$/); if (!m) return;
       const n = +m[2] + (e.key === 'ArrowRight' ? 1 : -1); if (n < 1 || n > B[m[1]].lessons.length) return;
@@ -515,9 +577,9 @@
     }
   };
 
-  function zoomImg(im) { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); zi.src = im.getAttribute('src'); const h = +im.dataset.h || 1273; zi.style.cssText = `aspect-ratio:900/${h};object-fit:cover;object-position:${im.style.objectPosition};height:min(96vh, ${(96 * h / 900).toFixed(1)}vw);width:auto`; z.classList.remove('big'); z.classList.add('on'); }
+  function zoomImg(im) { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); zi.src = im.getAttribute('src'); const h = +im.dataset.h || 1273; zi.style.cssText = `aspect-ratio:900/${h};object-fit:cover;object-position:${im.style.objectPosition};height:min(96vh, ${(96 * h / 900).toFixed(1)}vw);width:auto`; z.classList.remove('big'); z.classList.add('on'); zi.alt = im.getAttribute('alt') || ''; const zx = document.getElementById('zoomX'); if (zx) { zx.setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close'); zx.onclick = (e) => { e.stopPropagation(); closeZoom(); }; } dlgOpen(z, zx); }
   { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); const touch = matchMedia('(pointer:coarse)').matches;
-    z.onclick = (e) => { if (touch && e.target === zi) { const r0 = zi.getBoundingClientRect(); const fx = (e.clientX - r0.left) / r0.width, fy = (e.clientY - r0.top) / r0.height; const big = z.classList.toggle('big'); if (big) { zi.dataset.cs = zi.style.cssText; zi.style.height = 'auto'; zi.style.width = '240vw'; zi.style.maxWidth = 'none'; zi.style.maxHeight = 'none'; requestAnimationFrame(() => { const r = zi.getBoundingClientRect(); z.scrollTo({ left: fx * r.width - innerWidth / 2 + 20, top: fy * r.height - innerHeight / 2 + 20 }); }); } else { zi.style.cssText = zi.dataset.cs || ''; z.scrollTo(0, 0); } return; } z.classList.remove('on', 'big'); z.scrollTo(0, 0); }; }
+    z.onclick = (e) => { if (touch && e.target === zi) { const r0 = zi.getBoundingClientRect(); const fx = (e.clientX - r0.left) / r0.width, fy = (e.clientY - r0.top) / r0.height; const big = z.classList.toggle('big'); if (big) { zi.dataset.cs = zi.style.cssText; zi.style.height = 'auto'; zi.style.width = '240vw'; zi.style.maxWidth = 'none'; zi.style.maxHeight = 'none'; requestAnimationFrame(() => { const r = zi.getBoundingClientRect(); z.scrollTo({ left: fx * r.width - innerWidth / 2 + 20, top: fy * r.height - innerHeight / 2 + 20 }); }); } else { zi.style.cssText = zi.dataset.cs || ''; z.scrollTo(0, 0); } return; } z.classList.remove('on', 'big'); z.scrollTo(0, 0); dlgClose(); }; }
 
   /* ---------- search ---------- */
   const q = document.getElementById('q'), sres = document.getElementById('sres');
@@ -535,30 +597,33 @@
   q.oninput = () => {
     const raw = q.value.trim(), s = raw.toLowerCase(); sIdx = -1;
     const num = parseNum(s);
-    if (!num && s.length < 2) { sres.classList.remove('on'); return; }
+    if (!num && s.length < 2) { clearTimeout(srchSay._t); sres.classList.remove('on'); q.setAttribute('aria-expanded', 'false'); return; }
     const out = [], seen = new Set();
     if (num) {
       GRADES.forEach((g) => { if (num.g && num.g !== g) return; const L = B[g].lessons[num.n - 1]; if (L) { out.push(hit(g, num.n, L, 'top')); seen.add(g + num.n); } });
-      if (!out.length) out.push(`<a class="muted">${t('no_lesson_n').replace('{n}', num.n)}</a>`);
+      if (!out.length) out.push(`<a class="muted" role="option" aria-disabled="true">${t('no_lesson_n').replace('{n}', num.n)}</a>`);
     }
     if (s.length >= 2) {
       GRADES.forEach((g) => B[g].lessons.forEach((L, i) => { if (seen.has(g + (i + 1))) return; const hay = [L.t.uz, L.t.en, ...(L.pts || []).flatMap((p) => [p.uz, p.en]), ...(L.terms || []).flatMap((x) => [x[0].uz, x[0].en])].join(' ').toLowerCase(); if (hay.includes(s)) out.push(hit(g, i + 1, L)); }));
       Lab.list.forEach((e) => { if ((e.title.uz + e.title.en + e.desc.uz + e.desc.en).toLowerCase().includes(s)) out.push(`<a href="#lab-${e.id}"><span class="snum lab">${e.icon}</span><span class="stx">${esc(tr(e.title))}<small>3D ${t('exp_word')}</small></span></a>`); });
     }
-    sres.innerHTML = out.slice(0, 14).join('') || `<a class="muted">${t('nores')}</a>`; sres.classList.add('on');
+    sres.innerHTML = out.slice(0, 14).join('') || `<a class="muted" role="option" aria-disabled="true">${t('nores')}</a>`; sres.classList.add('on');
+    links().forEach((a, i) => { a.id = 'sr' + i; a.tabIndex = -1; a.setAttribute('role', 'option'); a.setAttribute('aria-selected', 'false'); });
+    q.setAttribute('aria-expanded', 'true'); q.removeAttribute('aria-activedescendant');
+    clearTimeout(srchSay._t); srchSay._t = setTimeout(() => { const an = document.getElementById('zkAnnounce'); if (!an) return; const n = links().length; an.textContent = ''; setTimeout(() => (an.textContent = n ? `${n} ${lang === 'uz' ? 'ta natija' : 'results'}` : t('nores')), 40); }, 450);
     if (num && sres.querySelector('a[href]')) { sIdx = 0; mark(); }
   };
-  const links = () => [...sres.querySelectorAll('a[href]')];
-  function mark() { links().forEach((a, i) => a.classList.toggle('sel', i === sIdx)); const a = links()[sIdx]; if (a) a.scrollIntoView({ block: 'nearest' }); }
+  const links = () => [...sres.querySelectorAll('a[href]')]; const srchSay = {};
+  function mark() { links().forEach((a, i) => { a.classList.toggle('sel', i === sIdx); a.setAttribute('aria-selected', String(i === sIdx)); }); const a = links()[sIdx]; if (a) { a.scrollIntoView({ block: 'nearest' }); q.setAttribute('aria-activedescendant', a.id); } }
   q.onkeydown = (e) => {
     const L = links(); if (!sres.classList.contains('on') || !L.length) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); sIdx = (sIdx + 1) % L.length; mark(); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); sIdx = (sIdx - 1 + L.length) % L.length; mark(); }
-    else if (e.key === 'Enter') { e.preventDefault(); const a = L[Math.max(0, sIdx)]; location.hash = a.getAttribute('href'); q.value = ''; q.blur(); sres.classList.remove('on'); }
-    else if (e.key === 'Escape') { sres.classList.remove('on'); q.blur(); }
+    else if (e.key === 'Enter') { e.preventDefault(); clearTimeout(srchSay._t); const a = L[Math.max(0, sIdx)]; location.hash = a.getAttribute('href'); q.value = ''; q.blur(); sres.classList.remove('on'); }
+    else if (e.key === 'Escape') { e.preventDefault(); clearTimeout(srchSay._t); sres.classList.remove('on'); q.setAttribute('aria-expanded', 'false'); q.blur(); }
   };
   q.onfocus = () => { if (q.value.trim()) q.oninput(); };
-  q.onblur = () => setTimeout(() => sres.classList.remove('on'), 200);
+  q.onblur = () => setTimeout(() => { clearTimeout(srchSay._t); sres.classList.remove('on'); q.setAttribute('aria-expanded', 'false'); }, 200);
   sres.onclick = () => { q.value = ''; sres.classList.remove('on'); };
 
   /* ---------- router ---------- */
@@ -577,7 +642,7 @@
         const vt = document.startViewTransition(() => renderRoute());
         // tez-tez almashganda oldingi animatsiya "skipped" bo'ladi — bu xato emas, jim yutiladi;
         // klass faqat oxirgi animatsiya tugaganda olinadi
-        const quiet = () => {}; vt.ready.catch(quiet); vt.updateCallbackDone.catch(quiet);
+        const quiet = () => {}; vt.ready.catch(quiet); vt.updateCallbackDone.catch((e) => console.error('route render', e));
         vt.finished.catch(quiet).finally(() => { if (root.dataset.vtSeq === seq) root.classList.remove(...cls); });
         return;
       } catch (e) { root.classList.remove('zk-vt'); }
@@ -585,11 +650,24 @@
     renderRoute();
   }
   function toTop() { const st = document.documentElement.style; const prev = st.scrollBehavior; st.scrollBehavior = 'auto'; window.scrollTo(0, 0); st.scrollBehavior = prev; }
+  // Segment tugmalari (.seg / .modes) holati ekran o'quvchiga aria-pressed orqali bildiriladi.
+  // Tugmalar ko'p joyda qo'lda yaratiladi, shuning uchun bitta kuzatuvchi .on klassini kuzatib boradi.
+  const syncPressed = (root) => root.querySelectorAll('.seg > button, .modes > button, #tcTabs > button, .tc-chips > button').forEach((b) => {
+    if (b.getAttribute('role') === 'tab' || b.getAttribute('role') === 'radio') return;
+    const v = String(b.classList.contains('on')); if (b.getAttribute('aria-pressed') !== v) b.setAttribute('aria-pressed', v);
+    if (!b.hasAttribute('type')) b.type = 'button';
+  });
+  try {
+    const appEl = document.getElementById('app');
+    if (appEl && 'MutationObserver' in window) new MutationObserver((ms) => {
+      for (const m of ms) { if (m.type === 'childList') { if (!syncPressed._q) { syncPressed._q = 1; requestAnimationFrame(() => { syncPressed._q = 0; syncPressed(appEl); }); } return; } const tg = m.target; if (tg.parentElement && tg.parentElement.matches('.seg,.modes,#tcTabs,.tc-chips')) { syncPressed(tg.parentElement); } }
+    }).observe(appEl, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+  } catch (e) { }
   function renderRoute() {
     const h = (location.hash || '#home').slice(1);
     const newPage = h !== lastRoute && !(h.match(/-\d+$/) && lastRoute === h);
     if (newPage) toTop();
-    destroyLab(); closeModal(); document.getElementById('nav').classList.remove('open');
+    destroyLab(); closeModal(); closeZoom(); document.getElementById('nav').classList.remove('open'); document.getElementById('burger').setAttribute('aria-expanded', 'false');
     let m, navKey = 'home';
     if (h === 'home' || h === '') home();
     else if (h === 'g6' || h === 'g7' || h === 'g8') { list(h); navKey = h; }
@@ -606,14 +684,27 @@
     else home();
     if (newPage) { toTop(); requestAnimationFrame(toTop); } // silliq scroll emas — darhol yuqoriga (rasmlar yuklansa ham)
     lastRoute = h;
-    document.querySelectorAll('nav.main a, .bnav a').forEach((a) => a.classList.toggle('on', a.dataset.nav === navKey));
+    document.querySelectorAll('nav.main a, .bnav a').forEach((a) => { const on = a.dataset.nav === navKey; a.classList.toggle('on', on); if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    // Sahifa sarlavhasi (brauzer tabi) va ekran o'quvchilar uchun e'lon; yangi sahifada fokus sarlavhaga o'tadi
+    const h1 = app.querySelector('h1'), hc = h1 && h1.cloneNode(true); if (hc) hc.querySelectorAll('.lnum,.lstat,[aria-hidden="true"]').forEach((x) => x.remove()); const h1t = hc ? hc.textContent.replace(/\s+/g, ' ').trim() : '';
+    const isHome = !!app.querySelector('.zk-hero-v3'); const tt = h1t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '').trim();
+    document.title = (tt && !isHome ? tt + ' · ' : '') + 'Zukko Xalqaro Maktabi — Kimyo';
+    if (newPage && lastAnnounced !== '') {
+      const an = document.getElementById('zkAnnounce'); if (an) { an.textContent = ''; setTimeout(() => (an.textContent = h1t || document.title), 60); }
+      if (h1 && document.activeElement && (document.activeElement === document.body || !document.activeElement.closest('header,#bnav,.zk-gate,.lesson-top .tabs'))) { h1.tabIndex = -1; h1.focus({ preventScroll: true }); }
+    }
+    lastAnnounced = h;
     const gBtn = document.getElementById('navGradesBtn'); if (gBtn) { gBtn.classList.toggle('on', /^g[678]$/.test(navKey)); gradesMenu(false); }
     if (XPok()) XP.refresh();
     app.classList.remove('enter'); if (!document.documentElement.classList.contains('zk-vt')) { void app.offsetWidth; app.classList.add('enter'); }
   }
   window.addEventListener('hashchange', route);
   document.querySelectorAll('.lang button').forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
-  document.getElementById('burger').onclick = () => document.getElementById('nav').classList.toggle('open');
+  document.getElementById('burger').onclick = () => { const nv = document.getElementById('nav'), o = nv.classList.toggle('open'); document.getElementById('burger').setAttribute('aria-expanded', String(o)); if (o) { const f = nv.querySelector('a[href],button'); if (f) setTimeout(() => f.focus(), 30); } };
+  document.getElementById('burger').addEventListener('keydown', (e) => { const nv = document.getElementById('nav'); if (e.key === 'Escape' && nv.classList.contains('open')) { nv.classList.remove('open'); e.currentTarget.setAttribute('aria-expanded', 'false'); } });
+  document.getElementById('nav').addEventListener('keydown', (e) => { const nv = e.currentTarget; if (e.key === 'Escape' && nv.classList.contains('open')) { nv.classList.remove('open'); const bg = document.getElementById('burger'); bg.setAttribute('aria-expanded', 'false'); bg.focus(); } });
+  // "Asosiy qismga o'tish": klaviatura foydalanuvchisi header tugmalarini aylanib o'tmaydi
+  { const sk = document.getElementById('zkSkip'); if (sk) sk.onclick = () => { const h1 = app.querySelector('h1'); const tg = h1 || app; if (h1) h1.tabIndex = -1; tg.focus(); }; }
   // "Sinflar" ochiladigan menyusi (header): 6-, 7-, 8-sinf pastga ochiladi.
   function gradesMenu(open) {
     const btn = document.getElementById('navGradesBtn'), menu = document.getElementById('navGradesMenu');
@@ -626,9 +717,10 @@
     btn.onclick = (e) => { e.stopPropagation(); const open = menu.hidden; gradesMenu(open); if (open) menu.querySelector('a').focus({ preventScroll: true }); };
     menu.addEventListener('click', (e) => { if (e.target.closest('a')) gradesMenu(false); });
     document.addEventListener('click', (e) => { if (!menu.hidden && !grp.contains(e.target)) gradesMenu(false); });
+    grp.addEventListener('focusout', (e) => { if (!menu.hidden && e.relatedTarget && !grp.contains(e.relatedTarget)) gradesMenu(false); });
     grp.addEventListener('keydown', (e) => {
       const L = [...menu.querySelectorAll('a')], i = L.indexOf(document.activeElement);
-      if (e.key === 'Escape' && !menu.hidden) { e.preventDefault(); gradesMenu(false); btn.focus(); }
+      if (e.key === 'Escape' && !menu.hidden) { e.preventDefault(); e.stopPropagation(); gradesMenu(false); btn.focus(); }
       else if (e.key === 'ArrowDown') { e.preventDefault(); if (menu.hidden) gradesMenu(true); L[(i + 1) % L.length].focus(); }
       else if (e.key === 'ArrowUp' && !menu.hidden) { e.preventDefault(); L[(i - 1 + L.length) % L.length].focus(); }
     });

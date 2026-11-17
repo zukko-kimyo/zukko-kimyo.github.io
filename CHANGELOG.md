@@ -4,6 +4,19 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Ikkinchi tekshiruv tuzatishlari (2026-11-17, 4 ta mustaqil agent: dizayn, qulaylik, kod/xavfsizlik, tezlik)
+- Dizayn: ikonkali sarlavhalar ikkinchi qatorda ikonka ostiga tushmaydi; "Mening yutuqlarim"da takror karta olib tashlandi; testlar tugmasi brend rangida, qiyinlik tugmalari telefonda bir tekis; sinf kartalari progressi bir chiziqda; telefonda lab kartalari; tungi rejimdagi eski ko'k/binafsha qoldiqlar; shriftlar bir xil; pastki menyuda "Profil"; davriy jadval planshetda to'liq; testlar ro'yxati va bog'liq darslarda bo'lim ranglari.
+- Qulaylik: test sozlamalari qayta chizilganda fokus o'sha tugmada qoladi; xato xabari e'lon qilinadi; foydalanuvchi menyusi `aria-expanded` va Escape; burger Escape; o'qituvchi tablari holati; XP vidjeti nomi; kirish oynasi nomi tilga mos, fokus halqasi aniq; qidiruvdan Tab bilan chiqishda fokus yo'qolmaydi; mayda matnlar kontrasti; 3D vaqt chizig'i va radio tugmalar kattaroq; iOS'da maydon fokusda kattalashmaydi.
+- Testlar: progress-sync testi aynan ochilgan darsni kutadi (tez almashganda oraliq sahifa o'tkazib yuborilardi).
+
+### Qulaylik (klaviatura, ekran o'quvchi) va dizayn tozalash (2026-11-17, mustaqil agentlar tekshiruvi)
+- Klaviatura: "Asosiy qismga o'tish" havolasi; dars tablari ARIA tablist (strelka fokusni siljitadi, Enter tanlaydi); test variantlari radiogroup, javob natijasi e'lon qilinadi; qidiruv combobox; mobil menyu va sinflar menyusida fokus va Escape.
+- Oynalar (kirish, 3D tajriba, darslik sahifasi): fokus ichkarida aylanadi, orqadagi sayt `inert`; sahifa kattalashtirishda "Yopish" tugmasi.
+- Sahifa almashganda sarlavha `document.title` ga yoziladi va e'lon qilinadi; dars raqami ekran o'quvchiga "5-dars:" deb o'qiladi.
+- 3D tajriba boshqaruvlari nomlangan, vaqt chizig'i strelka bilan boshqariladi, ijro/pauza holati bildiriladi; "kamroq harakat" sozlamasida avtomatik ijro yo'q.
+- Kontrast: kulrang matn tokeni to'qlashtirildi, pastki menyu, davriy jadval (tungi rejim) va boshqa joylar 4.5:1 ga yetkazildi.
+- Dizayn: sahifa sarlavhalari (sinflar, testlar, lab, jadval, profil, o'qituvchi, admin) Shisha 2.0 uslubida; o'qituvchi va admin panellari binafsha o'rniga brend teal; davriy jadval katakchalarida matn kesilmaydi; profildagi takror bloklar olib tashlandi; footer qisqa sahifalarda pastda; footer, lab qo'llanma va jadval aksentlari yangi palitrada; katta monitorlarda kontent kengligi chegaralandi.
+
 ### Xavfsizlik va ma'lumot xavfsizligi tuzatishlari (2026-11-16, mustaqil audit natijasi)
 - Firestore qoidalari: o'qituvchi faqat o'quvchi profiliga tegishli parol yozuvini yarata/yangilay oladi; natija hujjati tekshiriladi (faqat ma'lum maydonlar, sonlar — son, chegaralar bilan); o'chirib qo'yilgan foydalanuvchi natija yoza olmaydi. **Firebase Console'da qoidalarni "Publish" qilish kerak.**
 - O'qituvchi va admin panelida o'quvchi natijalari songa aylantirilib chiqariladi; CSV eksportida `= + - @` bilan boshlangan katakchalar zararsizlantiriladi.

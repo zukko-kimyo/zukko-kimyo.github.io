@@ -118,7 +118,7 @@ html[data-theme="dark"] .keyq b {color:#f8b295}
 html[data-theme="dark"] .pts li {background-color:rgba(255,166,41,0.16);border-top-color:rgba(215,161,81,0.38);border-bottom-color:rgba(215,161,81,0.38);border-left-color:rgba(215,161,81,0.38);border-right-color:rgba(215,161,81,0.38)}
 html[data-theme="dark"] .fact {background-color:rgba(255,214,41,0.16)}
 html[data-theme="dark"] .xinline {background-image:none;background-color:rgba(121,41,255,0.16);border-top-color:rgba(101,41,255,0.38);border-bottom-color:rgba(101,41,255,0.38);border-left-color:rgba(101,41,255,0.38);border-right-color:rgba(101,41,255,0.38)}
-html[data-theme="dark"] .tr-opts button:hover:not(:disabled) {background-color:rgba(255,166,41,0.16);border-top-color:rgba(255,144,41,0.38);border-bottom-color:rgba(255,144,41,0.38);border-left-color:rgba(255,144,41,0.38);border-right-color:rgba(255,144,41,0.38)}
+html[data-theme="dark"] .tr-opts button:hover:not(:disabled):not([aria-disabled="true"]) {background-color:rgba(255,166,41,0.16);border-top-color:rgba(255,144,41,0.38);border-bottom-color:rgba(255,144,41,0.38);border-left-color:rgba(255,144,41,0.38);border-right-color:rgba(255,144,41,0.38)}
 html[data-theme="dark"] .tr-opts button.sel {background-color:rgba(255,152,41,0.16)}
 html[data-theme="dark"] .xpgain {background-color:rgba(255,208,41,0.16);color:#fad093}
 html[data-theme="dark"] .mst {background-color:var(--zk-surface-2)}

@@ -375,7 +375,7 @@ Og|Oganesson|Oganesson|[294]`;
     }
 
     cells.forEach((c) => {
-      c.setAttribute('aria-label', `${c.dataset.z} — ${nm(EL[+c.dataset.z - 1])}, ${EL[+c.dataset.z - 1].s}`);
+      c.setAttribute('aria-label', `${c.dataset.z} ${EL[+c.dataset.z - 1].s} ${nm(EL[+c.dataset.z - 1])}`);
       c.onkeydown = (event) => {
         const jump = {ArrowRight:1,ArrowLeft:-1,ArrowDown:18,ArrowUp:-18}[event.key];
         if (!jump) return;

@@ -502,35 +502,40 @@
     if (lite) scene.traverse((o) => { if (o.material) [].concat(o.material).forEach(liteMaterial); });
     // Shaderlar fonda kompilyatsiya qilinadi (KHR_parallel_shader_compile) — sahifa qotib qolmaydi; tayyor bo'lguncha chizilmaydi.
     let gpuReady = !renderer.compileAsync;
-    if (renderer.compileAsync) { const go = () => { gpuReady = true; }; try { renderer.compileAsync(scene, camera).then(go, go); setTimeout(go, 4000); } catch (e) { gpuReady = true; } }
+    let compileP = null, compiled = true;
+    if (renderer.compileAsync) { const go = () => { gpuReady = true; }; try { compiled = false; compileP = renderer.compileAsync(scene, camera); compileP.then(() => { compiled = true; go(); }, () => { compiled = true; go(); }); setTimeout(go, 4000); } catch (e) { gpuReady = true; compiled = true; } }
     const steps = inst.steps || ex.steps || [];
     const total = steps.reduce((a, s) => a + s.dur, 0);
     const starts = []; steps.reduce((a, s) => (starts.push(a), a + s.dur), 0);
 
+    const uzl = Lab.lang === 'uz';
+    const L = uzl ? { play: 'Ijro / pauza', pause: 'Pauza', playOnly: 'Ijro etish', prev: 'Oldingi bosqich', next: 'Keyingi bosqich', restart: 'Boshidan', track: 'Tajriba vaqt chizig‘i', speed: 'Tezlik', full: 'To‘liq ekran', canvas: '3D tajriba modeli' }
+                  : { play: 'Play / pause', pause: 'Pause', playOnly: 'Play', prev: 'Previous step', next: 'Next step', restart: 'Restart', track: 'Experiment timeline', speed: 'Speed', full: 'Fullscreen', canvas: '3D experiment model' };
     const ui = document.createElement('div'); ui.className = 'lab-ui'; host.appendChild(ui);
+    try { renderer.domElement.setAttribute('role', 'img'); renderer.domElement.setAttribute('aria-label', L.canvas + ': ' + tr(ex.title)); } catch (e) { }
     ui.innerHTML = `
       <div class="lab-bar">
-        <button class="lb-play" title="Play">▶</button>
-        <button class="lb-prev" title="Prev">⏮</button>
-        <button class="lb-next" title="Next">⏭</button>
-        <button class="lb-restart" title="Restart">↺</button>
-        <div class="lb-track"><div class="lb-fill"></div><div class="lb-ticks"></div></div>
-        <select class="lb-speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
-        <button class="lb-full" title="Fullscreen">⛶</button>
+        <button type="button" class="lb-play" title="${L.play}" aria-label="${L.play}">▶</button>
+        <button type="button" class="lb-prev" title="${L.prev}" aria-label="${L.prev}">⏮</button>
+        <button type="button" class="lb-next" title="${L.next}" aria-label="${L.next}">⏭</button>
+        <button type="button" class="lb-restart" title="${L.restart}" aria-label="${L.restart}">↺</button>
+        <div class="lb-track" role="slider" tabindex="0" aria-label="${L.track}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="lb-fill"></div><div class="lb-ticks"></div></div>
+        <select class="lb-speed" aria-label="${L.speed}"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
+        <button type="button" class="lb-full" title="${L.full}" aria-label="${L.full}">⛶</button>
       </div>
       <div class="lab-cap"><div class="lc-step"></div><div class="lc-text"></div><div class="lc-eq"></div></div>`;
     const $ = (s) => ui.querySelector(s);
     const ticks = $('.lb-ticks'); starts.forEach((s, i) => { const d = document.createElement('i'); d.style.left = (100 * s / total) + '%'; d.title = String(i + 1); ticks.appendChild(d); });
     const hint = document.createElement('div'); hint.className = 'lab-hint'; hint.textContent = matchMedia('(pointer:coarse)').matches ? (Lab.lang === 'uz' ? "👆 Barmoq bilan aylantiring • ikki barmoq bilan yaqinlashtiring" : '👆 Drag to rotate • pinch to zoom') : (Lab.lang === 'uz' ? "🖱 Aylantirish uchun suring • g'ildirak bilan yaqinlashtiring" : '🖱 Drag to rotate • scroll to zoom'); wrap.appendChild(hint);
 
-    let t = 0, playing = !!opts.autoplay, speed = 1, curStep = -1, alive = true, last = performance.now(); let endFired = false;
+    let t = 0, playing = !!opts.autoplay && !matchMedia('(prefers-reduced-motion: reduce)').matches, speed = 1, curStep = -1, alive = true, last = performance.now(); let endFired = false;
     let camAnim = null;
     function stepAt(tt) { let i = 0; for (let k = 0; k < steps.length; k++) if (tt >= starts[k]) i = k; return i; }
     function moveCam(c) {
       if (!c || !controls) return;
       c = scaleCam(c); camAnim = { t: 0, fp: camera.position.clone(), ft: controls.target.clone(), tp: new T.Vector3(...c.pos), tt: new T.Vector3(...c.target) };
     }
-    function setPlaying(v) { playing = v; $('.lb-play').textContent = v ? '⏸' : '▶'; if (v && t >= total - 1e-3) seek(0); }
+    function setPlaying(v) { playing = v; $('.lb-play').textContent = v ? '⏸' : '▶'; $('.lb-play').setAttribute('aria-label', v ? L.pause : L.playOnly); $('.lb-play').title = v ? L.pause : L.playOnly; if (v && t >= total - 1e-3) seek(0); }
     function seek(tt) { t = clamp(tt, 0, total); inst.clear && inst.clear(); }
     $('.lb-play').onclick = () => setPlaying(!playing);
     $('.lb-restart').onclick = () => { seek(0); curStep = -1; setPlaying(true); };
@@ -538,6 +543,8 @@
     $('.lb-prev').onclick = () => { const i = stepAt(t); seek(t - starts[i] > 0.6 ? starts[i] : starts[Math.max(0, i - 1)]); };
     $('.lb-speed').onchange = (e) => (speed = +e.target.value);
     $('.lb-track').onclick = (e) => { const r = e.currentTarget.getBoundingClientRect(); seek(total * (e.clientX - r.left) / r.width); };
+    // klaviatura: strelkalar bilan oldinga/orqaga, Home/End
+    $('.lb-track').onkeydown = (e) => { const d = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]; if (d) { e.preventDefault(); seek(t + d * Math.max(0.5, total / 20)); } else if (e.key === 'Home') { e.preventDefault(); seek(0); } else if (e.key === 'End') { e.preventDefault(); seek(total); } };
     $('.lb-full').onclick = () => { try { if (document.fullscreenElement) document.exitFullscreen(); else host.requestFullscreen(); } catch (e) { } };
 
     function updateCaption(i) {
@@ -570,6 +577,7 @@
       for (let k = 0; k <= i; k++) { const s = steps[k]; const p = k < i ? 1 : clamp((t - starts[k]) / s.dur); s.f && s.f(p, ctx); }
       inst.loop && inst.loop(playing ? dt * speed : dt * 0.25, { i, t, p: clamp((t - starts[i]) / steps[i].dur) }, ctx);
       $('.lb-fill').style.width = (100 * t / total) + '%';
+      { const tk = $('.lb-track'), v = Math.round(100 * t / total); if (tk && tk._v !== v) { tk._v = v; tk.setAttribute('aria-valuenow', v); tk.setAttribute('aria-valuetext', (uzl ? 'Bosqich ' : 'Step ') + (stepAt(t) + 1) + ' / ' + steps.length); } }
       if (camAnim) { camAnim.t = Math.min(1, camAnim.t + dt / 1.3); const k = ease(camAnim.t); camera.position.lerpVectors(camAnim.fp, camAnim.tp, k); controls.target.lerpVectors(camAnim.ft, camAnim.tt, k); if (camAnim.t >= 1) camAnim = null; }
       if (!draw || !gpuReady) { requestAnimationFrame(frame); return; }
       controls && controls.update();
@@ -600,9 +608,15 @@
     const handle = {
       destroy() {
         alive = false; ro.disconnect(); io && io.disconnect(); controls && controls.dispose();
+        // compileAsync hali tugamagan bo'lsa, materiallarni darhol o'chirsak three.js "isReady" xatosini beradi — kompilyatsiya tugashini kutamiz
+        let gone = false;
+        const disposeGL = () => { if (gone) return; gone = true;
         scene.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) [].concat(o.material).forEach((m) => { m.map && m.map.dispose && !Object.values(texCache).includes(m.map) && m.map.dispose(); m.dispose(); }); });
         envRT && envRT.dispose(); pmrem.dispose();
-        renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss(); host.innerHTML = '';
+        renderer.dispose(); renderer.forceContextLoss && renderer.forceContextLoss();
+        };
+        host.innerHTML = ''; // DOM darhol tozalanadi (host keyingi tajriba uchun qayta ishlatilishi mumkin)
+        if (compileP && !compiled) { compileP.then(disposeGL, disposeGL); setTimeout(disposeGL, 15000); } else disposeGL();
       },
       play: () => setPlaying(true), seek, get stepIndex() { return curStep; }, get gfx() { return lite ? 'lite' : 'hq'; }, get pixelRatio() { return curPR; }, steps: steps.map((s, i) => ({ start: starts[i], dur: s.dur, cap: s.cap, eq: s.eq || '' })), get t() { return t; }, total
     };

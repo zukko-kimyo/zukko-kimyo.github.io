@@ -58,7 +58,7 @@
   function today() { const d = st.days[day()] || { xp: 0, ls: [] }; return { n: (d.ls || []).length, goal: st.goal, xp: d.xp }; }
 
   /* ---- UI helpers ---- */
-  function toastBox() { let b = document.getElementById('xpToasts'); if (!b) { b = document.createElement('div'); b.id = 'xpToasts'; document.body.appendChild(b); } return b; }
+  function toastBox() { let b = document.getElementById('xpToasts'); if (!b) { b = document.createElement('div'); b.id = 'xpToasts'; b.setAttribute('role', 'status'); b.setAttribute('aria-live', 'polite'); document.body.appendChild(b); } return b; }
   function toast(html, cls) { const el = document.createElement('div'); el.className = 'xpt ' + (cls || ''); el.innerHTML = html; toastBox().appendChild(el); setTimeout(() => el.classList.add('out'), 2600); setTimeout(() => el.remove(), 3100); }
   function confetti(n) {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -73,6 +73,7 @@
     const lv = level(st.xp), sk = streak(), td = today();
     w.innerHTML = `<span class="xs ${sk ? 'on' : ''}" title="${sk} ${t('streak')}">🔥<b>${sk}</b></span><span class="xx" title="${t('total_xp')}">⚡<b>${st.xp}</b></span><span class="xl" style="--p:${Math.round(lv.p * 100)}" title="${t('lvl')} ${lv.L} — ${rank(lv.L)}"><b>${lv.L}</b></span>`;
     w.title = `${t('today')}: ${Math.min(td.n, td.goal)}/${td.goal}`;
+    w.setAttribute('aria-label', `${t('streak')}: ${sk}, ${t('total_xp')}: ${st.xp}, ${t('lvl')} ${lv.L} — ${t('me')}`);
     const bn = document.querySelector('.bnav [data-nav="me"] i'); if (bn) bn.textContent = sk ? '🔥' : '🏆';
   }
   function checkAch() {

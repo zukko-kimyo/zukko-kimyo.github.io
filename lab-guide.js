@@ -39,7 +39,7 @@
       if(i===last)return;last=i;const s=steps[i];
       counter.textContent=S.step+' '+(i+1)+' / '+steps.length;
       caption.textContent=plain(tr(s.cap,L));
-      equation.textContent=s.eq?plain(tr(s.eq,L)):S.noeq;
+      equation.textContent=s.eq?plain(tr(s.eq,L)):S.noeq; equation.classList.toggle('is-empty',!s.eq);
       host.querySelectorAll('.zk-step').forEach((btn,j)=>{
         btn.classList.toggle('active',j===i);
         btn.setAttribute('aria-pressed',String(j===i));
