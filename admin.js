@@ -69,7 +69,7 @@
 .ad-kpi div.warn b{color:#dc2626}
 .ad-directory{margin:18px 0}.ad-directory .panel{max-height:410px;overflow:auto}.ad-muted-login{display:block;font-size:11px;color:var(--muted);font-weight:600}.ad-insights{margin:18px 0}.ad-bars{display:grid;gap:12px;margin-top:16px}.ad-bar-row{display:grid;grid-template-columns:minmax(48px,90px) minmax(0,1fr) 55px;align-items:center;gap:10px;font-size:13px;font-weight:800}.ad-bar-track{height:12px;border-radius:99px;background:#f1ecfb;overflow:hidden}.ad-bar-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#20bfc7)}
 .ad-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.ad-grid>.panel{margin:0;min-width:0}
-.ad-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ad-tw{overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative}
 @media (min-width:900px){.ad-kpi{grid-template-columns:repeat(5,1fr)}}
 .ad-sub{font-size:13px;color:#7a6f66;font-weight:700;margin:-6px 0 12px}
 .ad-chart{width:100%;height:auto;display:block}.ad-chart text{font:700 10px var(--f);fill:var(--zk-muted,#5b6b6c)}.ad-chart .v{font:900 10.5px var(--f);fill:var(--zk-ink,#0f2a2c)}
@@ -120,11 +120,11 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
   let pdfjsP = null;
   const loadPdfjs = () => pdfjsP || (pdfjsP = import(PDFJS + 'pdf.min.mjs').then((m) => { m.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.mjs'; return m; }).catch((e) => { pdfjsP = null; throw e; }));
   const BK = {
-    uz: { h: '📚 Darsliklar (fanlar)', p: 'Darslik PDF faylini tanlang — sahifalar rasmga aylantirilib Firebase’ga yuklanadi. O‘quvchilar dastlabki bepul mavzularni va obunasi bor fanni ko‘radi. Yuklash bir necha daqiqa oladi, sahifani yopmang.',
+    uz: { les: 'Dars mazmuni', lpick: 'JSON tanlash', lnone: 'Yuklanmagan', ldone: '{n} ta dars · {d}', lbad: 'Bu fayl tanlangan darslikka mos kelmaydi.', lok: 'Yuklandi: {n} ta dars', lgo: '{i} / {n} dars…', ljson: 'Fayl o‘qilmadi (JSON emas).', h: '📚 Darsliklar (fanlar)', p: 'Darslik PDF faylini tanlang — sahifalar rasmga aylantirilib Firebase’ga yuklanadi. O‘quvchilar dastlabki bepul mavzularni va obunasi bor fanni ko‘radi. Yuklash bir necha daqiqa oladi, sahifani yopmang.',
       book: 'Darslik', st: 'Holat', none: 'Yuklanmagan', done: '{n} sahifa · {d}', pick: 'PDF tanlash', bad: 'Bu fayl tanlangan darslikka mos kelmaydi: {n} sahifa bor, kamida {m} kerak.', go: '{i} / {n} sahifa…', ok: 'Yuklandi: {n} sahifa', again: 'Bu darslik avval yuklangan. Qayta yuklab, eskisini almashtirasizmi?', cdn: 'PDF o‘quvchi (pdf.js) yuklanmadi — internetni tekshiring.' },
-    en: { h: '📚 Textbooks (subjects)', p: 'Choose the textbook PDF — pages are turned into images and uploaded to Firebase. Students see the free first topics and the subjects they subscribe to. Uploading takes a few minutes; keep this page open.',
+    en: { les: 'Lesson content', lpick: 'Choose JSON', lnone: 'Not uploaded', ldone: '{n} lessons · {d}', lbad: 'This file does not match the chosen textbook.', lok: 'Uploaded: {n} lessons', lgo: '{i} / {n} lessons…', ljson: 'Could not read the file (not JSON).', h: '📚 Textbooks (subjects)', p: 'Choose the textbook PDF — pages are turned into images and uploaded to Firebase. Students see the free first topics and the subjects they subscribe to. Uploading takes a few minutes; keep this page open.',
       book: 'Textbook', st: 'Status', none: 'Not uploaded', done: '{n} pages · {d}', pick: 'Choose PDF', bad: 'This file does not match the chosen textbook: it has {n} pages, at least {m} needed.', go: '{i} / {n} pages…', ok: 'Uploaded: {n} pages', again: 'This textbook was uploaded before. Upload again and replace it?', cdn: 'The PDF reader (pdf.js) did not load — check the internet.' },
-    ru: { h: '📚 Учебники (предметы)', p: 'Выберите PDF-файл учебника — страницы будут преобразованы в изображения и загружены в Firebase. Ученики видят первые бесплатные темы и предметы, на которые оформлена подписка. Загрузка занимает несколько минут, не закрывайте страницу.',
+    ru: { les: 'Содержание уроков', lpick: 'Выбрать JSON', lnone: 'Не загружено', ldone: '{n} уроков · {d}', lbad: 'Этот файл не подходит к выбранному учебнику.', lok: 'Загружено: {n} уроков', lgo: '{i} / {n} уроков…', ljson: 'Файл не прочитан (не JSON).', h: '📚 Учебники (предметы)', p: 'Выберите PDF-файл учебника — страницы будут преобразованы в изображения и загружены в Firebase. Ученики видят первые бесплатные темы и предметы, на которые оформлена подписка. Загрузка занимает несколько минут, не закрывайте страницу.',
       book: 'Учебник', st: 'Статус', none: 'Не загружен', done: '{n} стр. · {d}', pick: 'Выбрать PDF', bad: 'Этот файл не подходит к выбранному учебнику: в нём {n} стр., нужно не менее {m}.', go: '{i} / {n} стр.…', ok: 'Загружено: {n} стр.', again: 'Этот учебник уже загружен. Загрузить заново и заменить старый?', cdn: 'Не удалось загрузить программу просмотра PDF (pdf.js) — проверьте подключение к интернету.' },
   };
   const bk = (k, o) => { let x = (BK[L] || BK.uz)[k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
@@ -132,13 +132,35 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
     const host = APP.querySelector('#adBooks'); if (!host || !window.ZKSubjects) { if (host) host.remove(); return; }
     const rows = []; ZKSubjects.list.forEach((sj) => (sj.books || []).forEach((b) => rows.push({ sj, b, id: `${sj.id}-${b.grade}-${b.part}` })));
     const idx = await Promise.all(rows.map((r) => ZKAuth.backend.get('contentIndex', r.id).catch(() => null)));
+    const lix = await Promise.all(rows.map((r) => ZKAuth.backend.get('lessonIndex', r.id).catch(() => null)));
     if (!host.isConnected) return;
     const fmt = (ms) => (window.ZKSub ? ZKSub.fmtDate(ms) : new Date(ms).toLocaleDateString());
-    host.innerHTML = `<h3>${bk('h')}</h3><div class="ad-sub">${bk('p')}</div><div class="ad-tw"><table class="ad ad-books"><thead><tr><th>${bk('book')}</th><th>${bk('st')}</th><th><span class="zk-sr">${bk('pick')}</span></th></tr></thead><tbody>
+    host.innerHTML = `<h3>${bk('h')}</h3><div class="ad-sub">${bk('p')}</div><div class="ad-tw"><table class="ad ad-books"><thead><tr><th>${bk('book')}</th><th>${bk('st')}</th><th><span class="zk-sr">${bk('pick')}</span></th><th>${bk('les')}</th></tr></thead><tbody>
       ${rows.map((r, i) => `<tr data-bk="${r.id}"><td><b>${esc(r.sj.name[L] || r.sj.name.uz)} · ${r.b.grade}-${t('grade')}</b><div class="ad-mut">${esc(r.b.title)}</div></td>
         <td class="bk-st" role="status">${idx[i] ? `<span class="ad-ok">✓ ${bk('done', { n: Number(idx[i].pages) || 0, d: fmt(idx[i].at) })}</span>` : `<span class="ad-mut">${bk('none')}</span>`}</td>
-        <td><label class="btn sec sm bk-pick">${bk('pick')}<input type="file" accept="application/pdf,.pdf" data-i="${i}" class="zk-sr"></label></td></tr>`).join('')}</tbody></table></div>`;
-    host.querySelectorAll('input[type=file]').forEach((inp) => (inp.onchange = () => { const f = inp.files && inp.files[0]; const i = +inp.dataset.i; inp.value = ''; if (f) uploadBook(rows[i], f, !!idx[i], host.querySelector(`tr[data-bk="${rows[i].id}"] .bk-st`), inp); }));
+        <td><label class="btn sec sm bk-pick">${bk('pick')}<input type="file" accept="application/pdf,.pdf" data-i="${i}" class="zk-sr"></label></td>
+        <td><div class="bk-ls" role="status">${lix[i] ? `<span class="ad-ok">✓ ${bk('ldone', { n: Number(lix[i].count) || 0, d: fmt(lix[i].at) })}</span>` : `<span class="ad-mut">${bk('lnone')}</span>`}</div><label class="btn sec sm bk-pick">${bk('lpick')}<input type="file" accept="application/json,.json" data-l="${i}" class="zk-sr"></label></td></tr>`).join('')}</tbody></table></div>`;
+    host.querySelectorAll('input[data-l]').forEach((inp) => (inp.onchange = () => { const f = inp.files && inp.files[0]; const i = +inp.dataset.l; inp.value = ''; if (f) uploadLessons(rows[i], f, host.querySelector(`tr[data-bk="${rows[i].id}"] .bk-ls`), inp); }));
+    host.querySelectorAll('input[data-i]').forEach((inp) => (inp.onchange = () => { const f = inp.files && inp.files[0]; const i = +inp.dataset.i; inp.value = ''; if (f) uploadBook(rows[i], f, !!idx[i], host.querySelector(`tr[data-bk="${rows[i].id}"] .bk-st`), inp); }));
+  }
+  // Dars mazmuni: { book: "<fan>-<sinf>-<qism>", lessons: [{ n, title, goal, summary, words, phrases, tasks, quiz }] } → lessons/<book>-<n>
+  async function uploadLessons(row, file, out, inp) {
+    const B = ZKAuth.backend, { sj, b } = row, lbl = inp.closest('label'), say = (h) => { out.innerHTML = h; };
+    lbl.classList.add('busy'); inp.disabled = true;
+    try {
+      let data; try { data = JSON.parse(await file.text()); } catch (e) { throw new Error(bk('ljson')); }
+      const Ls = data && Array.isArray(data.lessons) ? data.lessons : null;
+      if (!Ls || data.book !== row.id || Ls.length !== b.topics.length || Ls.some((x, i) => !x || x.n !== i + 1 || !Array.isArray(x.quiz))) throw new Error(bk('lbad'));
+      for (let k = 0; k < Ls.length; k++) {
+        const j = JSON.stringify(Ls[k]); if (j.length >= 200000) throw new Error(bk('lbad'));
+        await B.set('lessons', `${row.id}-${k + 1}`, { s: sj.id, g: b.grade, part: b.part, n: k + 1, j, at: Date.now(), by: ZKAuth.user.uid });
+        say(`<span class="ad-mut">${bk('lgo', { i: k + 1, n: Ls.length })}</span><progress max="${Ls.length}" value="${k + 1}"></progress>`);
+      }
+      await B.set('lessonIndex', row.id, { count: Ls.length, at: Date.now(), by: ZKAuth.user.uid, file: String(file.name || '').slice(0, 120) });
+      say(`<span class="ad-ok">✓ ${bk('lok', { n: Ls.length })}</span>`);
+    } catch (e) {
+      say(`<span class="ad-err">⚠ ${esc((e && e.message) || ZKAuth.errMsg(e))}</span>`);
+    } finally { lbl.classList.remove('busy'); inp.disabled = false; }
   }
   async function uploadBook(row, file, had, out, inp) {
     if (had && !confirm(bk('again'))) return;
