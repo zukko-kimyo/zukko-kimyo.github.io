@@ -88,7 +88,8 @@
   function pagesOf(g, n) { return g === 'g6' ? [2 * n + 1, 2 * n + 2] : [2 * n + 2, 2 * n + 3]; }
   const PMAX = { g6: 75, g7: 150, g8: 142 };
   const PH = { g6: 1273, g6en: 1273, g7: 1271, g7uz: 1273, g8: 1273, g8en: 1273 };
-  const ptag = (set, i, extra = '') => `<img ${extra} src="pages/s/${set}/${String(Math.floor(i / 4)).padStart(2, '0')}.webp" data-h="${PH[set]}" style="aspect-ratio:900/${PH[set]};object-fit:cover;object-position:50% ${((i % 4) * 100) / 3}%">`;
+  // Har bir darslik sahifasi alohida fayl (oldin bitta faylda 4 sahifa edi — 2 sahifa uchun ~780 KB yuklanardi)
+  const ptag = (set, i, extra = '') => `<img ${extra} src="pages/p/${set}/${String(i).padStart(3, '0')}.webp" data-h="${PH[set]}" decoding="async" style="aspect-ratio:900/${PH[set]};object-fit:cover">`;
   const img = (g, i) => ptag(g, i);
   const ALT = { g6: 'g6en', g7: 'g7uz', g8: 'g8en' }, ORIG = { g6: 'uz', g7: 'en', g8: 'uz' };
   const altHas = (g, i) => (g === 'g6' ? i !== 2 && i >= 0 && i < 75 : i >= 0 && i < PMAX[g]);

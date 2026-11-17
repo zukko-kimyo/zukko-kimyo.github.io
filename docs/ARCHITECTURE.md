@@ -18,7 +18,7 @@ Zukko Kimyo — build bosqichi yo'q statik sayt (oddiy HTML + JavaScript), GitHu
 | `tests.js`, `tests-g8.js` | Test banki va generatorlari — `window.QB` |
 | `lab-core.js`, `lab-exps1..7.js` | Three.js 3D laboratoriya (52 tajriba) |
 | `ptable.js` | Interaktiv davriy jadval |
-| `pages-tr.js`, `pages/s/` | Darslik sahifalari rasmlari (4 sahifadan birlashtirilgan webp) |
+| `pages-tr.js`, `pages/p/` | Darslik sahifalari rasmlari (har bir sahifa alohida webp, 900px) |
 | `mobile.js`, `tilt.js` | Telefon uchun surish (swipe), kartalarning egilish effekti |
 | `firestore.rules` | Firestore xavfsizlik qoidalari — **manba shu fayl** |
 

@@ -4,6 +4,22 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Tezlik: kerak bo'lganda yuklash, darslik rasmlari, sakrashsiz sahifa (2026-11-17)
+O'lchov (sekin 4G, 4× sekinlashtirilgan telefon protsessori, bitta o'lchov):
+| | Oldin | Keyin |
+|---|---|---|
+| Bosh sahifa ochilishi (LCP) | 7.3 s | 3.9 s |
+| Birinchi kirishda yuklanadigan hajm | 811 KB, 48 so'rov | 253 KB, 27 so'rov |
+| Sahifa sakrashi (CLS) | 0.21 | 0.005 |
+| Darsning "Darslik sahifalari" tabi (2 sahifa) | ~780 KB | ~180 KB |
+
+- 3D (three.js + tajribalar), testlar bazasi, darslik tarjimasi, davriy jadval va o'qituvchi/admin panellari faqat kerak bo'lganda yuklanadi (`window.ZKLazy`); yuklanayotganda "Yuklanmoqda…", xato bo'lsa "Qayta urinish". Tez internetda 3D bo'sh paytda oldindan tayyorlanadi (trafikni tejash rejimida emas).
+- Tajribalar ro'yxati alohida kichik `lab-meta.js` da (`node tools/build-lab-meta.mjs`; eskirsa unit test yiqiladi).
+- Darslik rasmlari har bir sahifa alohida fayl (`pages/p/`), o'lchami ko'rsatilgan.
+- Kuchsiz/dasturiy grafikali kompyuterlarda bosh sahifa 3D o'zi boshlanmaydi ("3D modelni ko'rish" tugmasi).
+- Telefonda kartalarda shisha xiralash o'chirildi (sarlavha va pastki menyuda qoldi) — aylantirish silliqroq.
+- Admin panelidagi bo'sh kartalarda "—" o'rniga tushuntirish.
+
 ### Ikkinchi tekshiruv tuzatishlari (2026-11-17, 4 ta mustaqil agent: dizayn, qulaylik, kod/xavfsizlik, tezlik)
 - Dizayn: ikonkali sarlavhalar ikkinchi qatorda ikonka ostiga tushmaydi; "Mening yutuqlarim"da takror karta olib tashlandi; testlar tugmasi brend rangida, qiyinlik tugmalari telefonda bir tekis; sinf kartalari progressi bir chiziqda; telefonda lab kartalari; tungi rejimdagi eski ko'k/binafsha qoldiqlar; shriftlar bir xil; pastki menyuda "Profil"; davriy jadval planshetda to'liq; testlar ro'yxati va bog'liq darslarda bo'lim ranglari.
 - Qulaylik: test sozlamalari qayta chizilganda fokus o'sha tugmada qoladi; xato xabari e'lon qilinadi; foydalanuvchi menyusi `aria-expanded` va Escape; burger Escape; o'qituvchi tablari holati; XP vidjeti nomi; kirish oynasi nomi tilga mos, fokus halqasi aniq; qidiruvdan Tab bilan chiqishda fokus yo'qolmaydi; mayda matnlar kontrasti; 3D vaqt chizig'i va radio tugmalar kattaroq; iOS'da maydon fokusda kattalashmaydi.
