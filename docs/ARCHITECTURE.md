@@ -11,7 +11,7 @@ Zukko Kimyo — build bosqichi yo'q statik sayt (oddiy HTML + JavaScript), GitHu
 | `auth.js` | Login, ro'yxatdan o'tish, chiqish, natijani serverga sinxronlash, `ZKAuth` API. Ikki backend: Firebase va `mock` (sinov) |
 | `admin.js` | Administrator paneli (`#admin`, faqat admin): statistika, faollik grafigi, sinflar, eng faol o'quvchilar, qiyin darslar, sayt sozlamalari, eksport, parolni o'zgartirish |
 | `lib/stats.js` | Administrator paneli statistikasi — sof funksiyalar (DOM'siz), `window.ZKStats`; Node'da unit testlanadi |
-| `teacher.js` | O'qituvchi paneli (`#teacher`): natijalar, o'quvchi qo'shish, arizalar, sinf kodlari, o'qituvchilar (admin) |
+| `teacher.js` | O'qituvchi paneli (`#teacher`): o'qituvchi uchun faqat natijalar (kuzatish); administrator uchun yana o'quvchi qo'shish, arizalar, sinf kodlari, obunalar, o'qituvchilar |
 | `app.js` | Asosiy SPA: marshrutlar (`#home`, `#g6`…`#g8-12`, `#tests`, `#lab`, `#ptable`, `#book-g7`, `#me`, `#teacher`), dars sahifalari, test markazi |
 | `progress.js` | XP, darajalar, kunlik maqsad, yutuqlar. `localStorage['zk_prog']` ga yozadi va `zk:save` hodisasini chiqaradi |
 | `data-g6.js`, `data-g7.js`, `data-g8.js` | Darslar mazmuni (uz/en) — `window.BOOKS` |
