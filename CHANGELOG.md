@@ -4,6 +4,11 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### O'qituvchi faqat kuzatadi (2026-11-17)
+- Foydalanuvchi qarori: "oqituvchilarda oquvchi qoshish imkoni bulmasin u faqat nazorat qila olsin xolos".
+- O'qituvchi panelida o'qituvchi uchun faqat "Natijalar" (o'quvchi tafsiloti, CSV eksport). O'quvchi qo'shish, arizalar, sinf kodlari, parollarni ko'rish/tiklash, login varaqalari va o'chirish faqat administratorda.
+- `firestore.rules`: foydalanuvchi yaratish/o'zgartirish/o'chirish, parollar va sinf kodlari — faqat administrator; o'qituvchi profillar va natijalarni o'qiydi xolos. **Publish kerak**.
+
 ### Obuna qoidasi: har sinfda dastlabki mavzular bepul (2026-11-17)
 - Foydalanuvchi aniqlashtirdi: har bir sinfda dastlabki mavzular (standart 3 ta; admin "Sayt sozlamalari"da 0–50 oralig'ida o'zgartiradi) — darsi, 3D tajribasi, testi va darslik sahifalari bilan — bepul. Qolganlari obuna bilan. O'qituvchi va admin uchun hammasi ochiq.
 - 3D tajriba bepul darsga bog'langan bo'lsa ochiq. Testlar sahifasida yopiq mavzular 🔒 belgisi bilan tanlanmaydi. Darslik bepul mavzular sahifalarigacha ochiq. Ro'yxatlar, bosh sahifa va dars yon panelida yopiq darslarda 🔒 bor.

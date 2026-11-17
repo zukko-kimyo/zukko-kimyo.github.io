@@ -50,7 +50,6 @@ service cloud.firestore {
     }
 
     // Obuna (users/{uid}.sub) — faqat administrator beradi. O'qituvchi o'quvchini tahrirlaganda obunasi o'zgarmasligi shart.
-    function subSame() { return request.resource.data.get('sub', null) == resource.data.get('sub', null); }
     function validSub(d) {
       return !('sub' in d) || d.sub == null
         || (d.sub is map && d.sub.keys().hasOnly(['plan', 'until', 'at', 'by'])
@@ -62,15 +61,13 @@ service cloud.firestore {
     // Foydalanuvchi profillari: ism, login, sinf, rol
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isStaff());
-      allow create: if (isStaff() && request.resource.data.role == 'student' && (isAdmin() || !('sub' in request.resource.data)) && validSub(request.resource.data))
-                    || (isAdmin() && request.resource.data.role == 'teacher')
+      // O'qituvchi faqat kuzatadi (2026-11-17): o'quvchi qo'shish, o'zgartirish va o'chirish — faqat administrator
+      allow create: if (isAdmin() && request.resource.data.role in ['student', 'teacher'] && validSub(request.resource.data))
                     || (isAdminEmail() && request.auth.uid == uid && request.resource.data.role == 'admin'
                         && !exists(/databases/$(db)/documents/users/$(uid)))
                     || selfSignup(uid);
-      allow update: if (isStaff() && resource.data.role == 'student' && request.resource.data.role == 'student'
-                        && (isAdmin() || subSame()) && validSub(request.resource.data))
-                    || (isAdmin() && resource.data.role != 'admin' && validSub(request.resource.data));
-      allow delete: if (isStaff() && resource.data.role == 'student') || (isAdmin() && resource.data.role == 'teacher');
+      allow update: if isAdmin() && resource.data.role != 'admin' && validSub(request.resource.data);
+      allow delete: if isAdmin() && resource.data.role in ['student', 'teacher'];
     }
 
     // O'quvchining natijalari (XP, darslar, testlar)
@@ -81,27 +78,24 @@ service cloud.firestore {
                             && profile().get('status', 'active') != 'pending'
                             && profile().get('disabled', false) != true
                             && validProgress(request.resource.data);
-      allow delete: if isStaff();
+      allow delete: if isAdmin();
     }
 
-    // Parollar: o'quvchilarnikini o'qituvchilar, o'qituvchilarnikini faqat administrator ko'radi
+    // Parollar: faqat administrator (o'qituvchi faqat natijalarni kuzatadi — 2026-11-17)
     match /secrets/{uid} {
-      allow read: if isAdmin() || (isStaff() && resource.data.role == 'student');
-      // O'qituvchi faqat o'quvchi profiliga tegishli yozuvni yaratadi/yangilaydi; mavjud yozuv ham "student" bo'lishi shart
-      // (aks holda o'qituvchi admin yozuviga role:'student' yozib, uning parolini o'qiy olardi).
-      allow create: if isAdmin() || (isStaff() && request.resource.data.role == 'student' && isStudentUid(uid));
-      allow update: if isAdmin() || (isStaff() && resource.data.role == 'student' && request.resource.data.role == 'student' && isStudentUid(uid));
-      allow create: if signedIn() && request.auth.uid == uid && request.resource.data.role == 'student'
+      allow read: if isAdmin();
+      allow update: if isAdmin();
+      allow create: if isAdmin() || (signedIn() && request.auth.uid == uid && request.resource.data.role == 'student'
                     && request.resource.data.keys().hasOnly(['pw', 'role', 'login'])
                     && exists(/databases/$(db)/documents/users/$(uid))
-                    && get(/databases/$(db)/documents/users/$(uid)).data.status == 'pending';
-      allow delete: if isAdmin() || (isStaff() && resource.data.role == 'student');
+                    && get(/databases/$(db)/documents/users/$(uid)).data.status == 'pending');
+      allow delete: if isAdmin();
     }
 
-    // Sinf kodlari: kodni bilgan odam faqat o'sha bitta kodni tekshira oladi, ro'yxatni faqat o'qituvchilar ko'radi
+    // Sinf kodlari: kodni bilgan odam faqat o'sha bitta kodni tekshira oladi, ro'yxat va boshqaruv — faqat administrator
     match /classes/{code} {
       allow get: if true;
-      allow list, create, update, delete: if isStaff();
+      allow list, create, update, delete: if isAdmin();
     }
 
     // Sayt sozlamalari: e'lon va ro'yxatdan o'tish holati. Hamma o'qiydi (kirish oynasida kerak), faqat administrator yozadi

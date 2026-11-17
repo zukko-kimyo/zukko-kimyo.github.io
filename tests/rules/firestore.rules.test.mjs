@@ -46,9 +46,10 @@ test('o\'quvchi o\'z profilini o\'qiydi, boshqanikini o\'qiy olmaydi', async () 
 test('kirmagan foydalanuvchi profillarni o\'qiy olmaydi', async () => {
   await assertFails(getDoc(doc(anon(), 'users/stu1')));
 });
-test('o\'qituvchi barcha profillarni o\'qiydi va o\'quvchi yarata oladi, o\'qituvchi yarata olmaydi', async () => {
+test('o\'qituvchi profillarni faqat ko\'radi: o\'quvchi ham, o\'qituvchi ham yarata olmaydi; admin yaratadi', async () => {
   await assertSucceeds(getDocs(collection(teacher(), 'users')));
-  await assertSucceeds(setDoc(doc(teacher(), 'users/new1'), { login: 'new.1', name: 'Yangi', role: 'student', cls: '7A' }));
+  await assertFails(setDoc(doc(teacher(), 'users/new1'), { login: 'new.1', name: 'Yangi', role: 'student', cls: '7A' }));
+  await assertSucceeds(setDoc(doc(admin(), 'users/new1'), { login: 'new.1', name: 'Yangi', role: 'student', cls: '7A' }));
   await assertFails(setDoc(doc(teacher(), 'users/new2'), { login: 'new.2', name: 'Yangi', role: 'teacher', cls: '' }));
 });
 test('administrator o\'qituvchi yaratadi', async () => {
@@ -62,8 +63,9 @@ test('administratorni faqat admin email egasi va faqat bir marta yaratadi', asyn
   await assertFails(setDoc(doc(as('x1', 'hacker'), 'users/x1'), { login: 'hacker', name: 'H', role: 'admin', cls: '' }));
   await assertSucceeds(setDoc(doc(as('a9', 'admin'), 'users/a9'), { login: 'admin', name: 'Administrator', role: 'admin', cls: '' }));
 });
-test('o\'qituvchi o\'quvchini tasdiqlay oladi (status: active)', async () => {
-  await assertSucceeds(setDoc(doc(teacher(), 'users/pend1'), { status: 'active' }, { merge: true }));
+test('arizani faqat administrator tasdiqlaydi (status: active)', async () => {
+  await assertFails(setDoc(doc(teacher(), 'users/pend1'), { status: 'active' }, { merge: true }));
+  await assertSucceeds(setDoc(doc(admin(), 'users/pend1'), { status: 'active' }, { merge: true }));
 });
 
 // ---------- o'zi ro'yxatdan o'tish ----------
@@ -101,10 +103,10 @@ test('o\'qituvchi barcha natijalarni o\'qiydi', async () => {
 });
 
 // ---------- secrets ----------
-test('o\'qituvchi o\'quvchi parolini ko\'radi, o\'qituvchi parolini ko\'ra olmaydi', async () => {
-  await assertSucceeds(getDoc(doc(teacher(), 'secrets/stu1')));
+test('o\'qituvchi hech qanday parolni ko\'ra olmaydi', async () => {
+  await assertFails(getDoc(doc(teacher(), 'secrets/stu1')));
   await assertFails(getDoc(doc(teacher(), 'secrets/teach1')));
-  await assertSucceeds(getDocs(query(collection(teacher(), 'secrets'), where('role', '==', 'student'))));
+  await assertFails(getDocs(query(collection(teacher(), 'secrets'), where('role', '==', 'student'))));
   await assertFails(getDocs(collection(teacher(), 'secrets')));
 });
 test('o\'quvchi hech qanday parolni, hatto o\'zinikini ham o\'qiy olmaydi', async () => {
@@ -128,9 +130,11 @@ test('o\'qituvchi admin yoki o\'qituvchi parol yozuvini "student" deb o\'zgartir
   await env.withSecurityRulesDisabled(async (ctx) => { await deleteDoc(doc(ctx.firestore(), 'secrets/admin1')); });
   await assertFails(setDoc(doc(teacher(), 'secrets/admin1'), { pw: 'x', role: 'student', login: 'admin' }));
 });
-test('o\'qituvchi o\'quvchi parolini yangilay oladi va yangi o\'quvchiga yozuv ochadi', async () => {
-  await assertSucceeds(setDoc(doc(teacher(), 'secrets/stu1'), { pw: 'new1234', role: 'student', login: 'vali.a.7a' }, { merge: true }));
-  await assertSucceeds(setDoc(doc(teacher(), 'secrets/stu2'), { pw: 'mal1234', role: 'student', login: 'malika.k.7a' }));
+test('parolni faqat administrator yangilaydi va yangi o\'quvchiga yozuv ochadi', async () => {
+  await assertFails(setDoc(doc(teacher(), 'secrets/stu1'), { pw: 'new1234', role: 'student', login: 'vali.a.7a' }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'secrets/stu2'), { pw: 'mal1234', role: 'student', login: 'malika.k.7a' }));
+  await assertSucceeds(setDoc(doc(admin(), 'secrets/stu1'), { pw: 'new1234', role: 'student', login: 'vali.a.7a' }, { merge: true }));
+  await assertSucceeds(setDoc(doc(admin(), 'secrets/stu2'), { pw: 'mal1234', role: 'student', login: 'malika.k.7a' }));
 });
 test('natijaga son o\'rniga matn (kod) yoki ortiqcha maydon yozib bo\'lmaydi', async () => {
   await assertFails(setDoc(doc(student(), 'progress/stu1'), { data: '{}', xp: '<img src=x onerror=alert(1)>', role: 'student' }));
@@ -150,12 +154,14 @@ test('sinf kodini bilgan odam faqat o\'shani tekshiradi, ro\'yxatni ko\'ra olmay
   await assertSucceeds(getDoc(doc(anon(), 'classes/ABC234')));
   await assertFails(getDocs(collection(anon(), 'classes')));
   await assertFails(getDocs(collection(student(), 'classes')));
-  await assertSucceeds(getDocs(collection(teacher(), 'classes')));
+  await assertFails(getDocs(collection(teacher(), 'classes')));
+  await assertSucceeds(getDocs(collection(admin(), 'classes')));
 });
-test('kodlarni faqat o\'qituvchi yaratadi va o\'chiradi', async () => {
+test('kodlarni faqat administrator yaratadi va o\'chiradi', async () => {
   await assertFails(setDoc(doc(student(), 'classes/HACK11'), { cls: '7A', active: true }));
-  await assertSucceeds(setDoc(doc(teacher(), 'classes/NEW222'), { cls: '7A', active: true }));
-  await assertSucceeds(deleteDoc(doc(teacher(), 'classes/NEW222')));
+  await assertFails(setDoc(doc(teacher(), 'classes/NEW222'), { cls: '7A', active: true }));
+  await assertSucceeds(setDoc(doc(admin(), 'classes/NEW222'), { cls: '7A', active: true }));
+  await assertSucceeds(deleteDoc(doc(admin(), 'classes/NEW222')));
 });
 
 // ---------- boshqa ----------
@@ -217,7 +223,7 @@ test('davomatga soxta sana, ortiqcha maydon va boshqa uid orqali yozib bo‘lmay
 });
 
 test('o‘chirilgan (disabled) o‘qituvchi xodim huquqlarini yo‘qotadi', async () => {
-  await assertSucceeds(getDoc(doc(teacher(), 'secrets/stu1')));
+  await assertSucceeds(getDocs(collection(teacher(), 'progress')));
   await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/teach1'), { login: 'dilnoza.k', name: 'Dilnoza', role: 'teacher', cls: '', disabled: true }); });
   await assertFails(getDoc(doc(teacher(), 'secrets/stu1')));
   await assertFails(getDocs(collection(teacher(), 'progress')));
@@ -232,10 +238,10 @@ test('obunani faqat administrator beradi', async () => {
 test('o\'quvchi o\'ziga obuna bera olmaydi', async () => {
   await assertFails(setDoc(doc(student(), 'users/stu1'), { sub: SUB }, { merge: true }));
 });
-test('o\'qituvchi obuna bera olmaydi, lekin o\'quvchining boshqa maydonini o\'zgartira oladi', async () => {
+test('o\'qituvchi obuna ham, o\'quvchi ma\'lumotini ham o\'zgartira olmaydi', async () => {
   await assertFails(setDoc(doc(teacher(), 'users/stu1'), { sub: SUB }, { merge: true }));
   await assertFails(setDoc(doc(teacher(), 'users/new3'), { login: 'new.3', name: 'Yangi', role: 'student', cls: '7A', sub: SUB }));
-  await assertSucceeds(setDoc(doc(teacher(), 'users/stu1'), { name: 'Vali Aliyev' }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'users/stu1'), { name: 'Vali Aliyev' }, { merge: true }));
 });
 test('noto\'g\'ri obuna yozuvi rad etiladi', async () => {
   await assertFails(setDoc(doc(admin(), 'users/stu1'), { sub: { plan: 'forever', until: 1 } }, { merge: true }));
