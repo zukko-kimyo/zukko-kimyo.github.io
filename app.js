@@ -88,7 +88,8 @@
   function pagesOf(g, n) { return g === 'g6' ? [2 * n + 1, 2 * n + 2] : [2 * n + 2, 2 * n + 3]; }
   const PMAX = { g6: 75, g7: 150, g8: 142 };
   const PH = { g6: 1273, g6en: 1273, g7: 1271, g7uz: 1273, g8: 1273, g8en: 1273 };
-  const ptag = (set, i, extra = '') => `<img ${extra} src="pages/s/${set}/${String(Math.floor(i / 4)).padStart(2, '0')}.webp" data-h="${PH[set]}" style="aspect-ratio:900/${PH[set]};object-fit:cover;object-position:50% ${((i % 4) * 100) / 3}%">`;
+  // Har bir darslik sahifasi alohida fayl (oldin bitta faylda 4 sahifa edi — 2 sahifa uchun ~780 KB yuklanardi)
+  const ptag = (set, i, extra = '') => `<img ${extra} src="pages/p/${set}/${String(i).padStart(3, '0')}.webp" data-h="${PH[set]}" decoding="async" style="aspect-ratio:900/${PH[set]};object-fit:cover">`;
   const img = (g, i) => ptag(g, i);
   const ALT = { g6: 'g6en', g7: 'g7uz', g8: 'g8en' }, ORIG = { g6: 'uz', g7: 'en', g8: 'uz' };
   const altHas = (g, i) => (g === 'g6' ? i !== 2 && i >= 0 && i < 75 : i >= 0 && i < PMAX[g]);
@@ -237,13 +238,17 @@
     const host = document.getElementById('heroLab');
     const scene = document.getElementById('zkScene'), tog = document.getElementById('zkSceneToggle');
     const startHero = () => {
-      if (labHandle || !window.THREE || !host.isConnected) return;
+      if (labHandle || !host.isConnected) return;
+      if (!(window.Lab && Lab.ready)) { if (window.ZKLazy) ZKLazy.three().then(startHero).catch(() => {}); return; }
       labHandle = Lab.open(host, 'atom-model', { autoplay: true, quiet: true });
       if (labHandle) setTimeout(() => labHandle && labHandle.seek(9), 50);
     };
     const compact = window.matchMedia && matchMedia('(max-width: 760px)').matches;
     // Tezlik: 3D sahna sahifa ko'ringandan keyin, brauzer bo'shaganda quriladi — bosh sahifaga o'tish darhol bo'ladi.
-    if (!compact) { const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200)); setTimeout(() => idle(startHero, { timeout: 800 }), 350); }
+    // Kuchsiz/dasturiy grafikada (maktab kompyuterlari) 3D o'zi boshlanmaydi — sahifa qotmasin; tugma bilan ochiladi
+    if (!compact && !softGpu()) { const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200)); setTimeout(() => idle(startHero, { timeout: 800 }), 350); }
+    else if (!compact && host) { host.innerHTML = `<button type="button" class="zk-hero-play">▶ ${uz ? '3D modelni ko‘rish' : 'Show 3D model'}</button>`; host.querySelector('button').onclick = () => { host.innerHTML = lazyBox(); startHero(); }; }
+    if (window.ZKLazy) ZKLazy.prefetch();
     tog.onclick = () => {
       const open = !scene.classList.contains('open');
       scene.classList.toggle('open', open); tog.setAttribute('aria-expanded', String(open)); tog.classList.toggle('open', open);
@@ -275,6 +280,46 @@
     app.querySelectorAll('.seg button').forEach((b) => (b.onclick = () => { filter3d = b.dataset.f === '1'; list(g); }));
   }
 
+  /* ---------- kerak bo'lganda yuklanadigan qismlar (index.html → window.ZKLazy) ---------- */
+  // Yuklangach sahifa o'sha joyda qayta chiziladi; foydalanuvchi boshqa sahifaga o'tib ketgan bo'lsa — hech narsa qilinmaydi.
+  const lazyBox = () => `<div class="zk-lazy" role="status"><span class="zk-lazy-spin" aria-hidden="true"></span>${lang === 'uz' ? 'Yuklanmoqda…' : 'Loading…'}</div>`;
+  function need(key, redo, host) {
+    const Z = window.ZKLazy; if (!Z || !Z[key]) return;
+    const h = location.hash;
+    Z[key]().then(() => {
+      if (location.hash !== h || (host && !host.isConnected)) return;
+      // qayta chizishda fokus yo'qolmasin (masalan, dars tabida turgan bo'lsa)
+      const fid = document.activeElement && document.activeElement !== document.body && document.activeElement.id;
+      redo();
+      if (fid) { const f = document.getElementById(fid); if (f && f !== document.activeElement) f.focus({ preventScroll: true }); }
+    }).catch(() => {
+      if (location.hash !== h || (host && !host.isConnected)) return;
+      const box = host || app, d = document.createElement('div');
+      d.className = 'zk-lazy zk-lazy-err'; d.setAttribute('role', 'alert');
+      d.innerHTML = `<b>${lang === 'uz' ? 'Bu qism yuklanmadi' : 'This part did not load'}</b><span>${lang === 'uz' ? 'Internet aloqasini tekshiring.' : 'Check your internet connection.'}</span><button type="button" class="btn sec">${lang === 'uz' ? 'Qayta urinish' : 'Try again'}</button>`;
+      d.querySelector('button').onclick = () => { d.remove(); need(key, redo, host); };
+      if (host) { host.innerHTML = ''; host.appendChild(d); } else { const w = box.querySelector('.zk-lazy'); if (w) w.replaceWith(d); else box.prepend(d); }
+    });
+  }
+  // 3D sahna: three.js va tajriba fayllari birinchi marta kerak bo'lganda yuklanadi
+  function withLab(host, fn) {
+    if (!host) return;
+    if (window.Lab && Lab.ready) return fn();
+    host.innerHTML = lazyBox();
+    need('three', () => { host.innerHTML = ''; fn(); }, host);
+  }
+  // Grafik protsessor dasturiy (SwiftShader/llvmpipe) yoki juda kuchsiz bo'lsa — 3D'ni o'zi boshlamaymiz
+  let softGpuV = null;
+  function softGpu() {
+    if (softGpuV !== null) return softGpuV;
+    try {
+      const c = document.createElement('canvas'), gl = c.getContext('webgl'); if (!gl) return (softGpuV = true);
+      const ext = gl.getExtension('WEBGL_debug_renderer_info'), r = String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+      softGpuV = /swiftshader|llvmpipe|softpipe|microsoft basic|software/i.test(r) || (navigator.deviceMemory && navigator.deviceMemory <= 2);
+      const lose = gl.getExtension('WEBGL_lose_context'); if (lose) lose.loseContext();
+    } catch (e) { softGpuV = false; }
+    return softGpuV;
+  }
   function lesson(g, n, tab) {
     const bk = B[g]; const L = bk.lessons[n - 1]; if (!L) return list(g);
     destroyLab(); // tab almashganda oldingi 3D sahna yashirincha ishlab qolmasin
@@ -350,10 +395,12 @@
     const on = app.querySelector('.navl a.on'); const nl = on && on.closest('.navl');
     if (on && nl) { const d = on.getBoundingClientRect().top - nl.getBoundingClientRect().top; nl.scrollTop += d - nl.clientHeight / 2 + on.offsetHeight / 2; } // faqat ro'yxat suriladi, sahifa sakramaydi
     if (tab === 'lab' && ex.length) {
-      const run = (id) => { destroyLab(); labHandle = Lab.open(document.getElementById('lessonLab'), id, { autoplay: false }); };
+      const run = (id) => { destroyLab(); const hh = document.getElementById('lessonLab'); withLab(hh, () => { destroyLab(); labHandle = Lab.open(hh, id, { autoplay: false }); }); };
       run(ex[0].id);
       app.querySelectorAll('#exSel button').forEach((b) => (b.onclick = () => { app.querySelectorAll('#exSel button').forEach((x) => x.classList.remove('on')); b.classList.add('on'); run(b.dataset.x); }));
     }
+    if (tab === 'quiz' && !window.QB) { const qz = document.getElementById('quiz'); if (qz) qz.innerHTML = lazyBox(); need('tests', () => lesson(g, n, 'quiz')); }
+    if (tab === 'pages' && !window.PAGES_TR) need('tr', () => { if (curTab === 'pages') lesson(g, n, 'pages'); });
     if (tab === 'quiz' && window.QB) { const run = () => runTest(document.getElementById('quiz'), QB.lessonTest(g, n), { mode: 'practice', compact: true, onNew: run, onFinish: (s, tot) => (XPok() ? XP.quiz(g, n, s, tot) : 0) }); run(); document.getElementById('newSet').onclick = run; }
     const tg = document.getElementById('trToggle'); if (tg) tg.onclick = () => { showOrig = !showOrig; lesson(g, n, 'pages'); };
   }
@@ -434,7 +481,7 @@
   const TS = { grade: 'both', sel: null, count: 20, diff: 'mix', mode: 'practice' };
   function allLessons() { const out = []; GRADES.forEach((g) => { if (TS.grade !== 'both' && TS.grade !== g) return; B[g].lessons.forEach((L, i) => out.push([g, i + 1])); }); return out; }
   function testsPage() {
-    if (!window.QB) { app.innerHTML = '<div class="wrap">…</div>'; return; }
+    if (!window.QB) { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('tests', renderRoute); return; }
     if (!TS.sel) TS.sel = new Set(allLessons().map((x) => x.join('-')));
     let bankTotal = 0; GRADES.forEach((g) => B[g].lessons.forEach((L, i) => { const P = QB.pool(g, i + 1); bankTotal += P.easy.length + P.medium.length + P.hard.length; }));
     let hist = []; try { hist = JSON.parse(localStorage.getItem('zk_hist') || '[]'); } catch (e) { }
@@ -503,8 +550,11 @@
       <div id="zkLabGuide"></div>
       <div class="panel" style="margin-top:18px"><h3>📚 ${t('related')}</h3>${ls.map((x) => `<a href="#${x.g}-${x.n}" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span class="lnum" style="width:32px;height:32px;font-size:13px;background:${ucStrong(UC[unitIdx(x.g, x.n) % UC.length])[0]};color:${ucStrong(UC[unitIdx(x.g, x.n) % UC.length])[1]}">${x.n}</span><span><b>${tr(x.L.t)}</b><br><small style="color:var(--muted)">${GN[x.g]}-${t('grade')}</small></span></a>`).join('')}</div>
     </div>`;
-    labHandle = Lab.open(document.getElementById('bigLab'), id, { autoplay: true });
-    if (window.ZKLabGuide && labHandle) ZKLabGuide.mount(document.getElementById('zkLabGuide'), labHandle, { lang });
+    const big = document.getElementById('bigLab');
+    withLab(big, () => {
+      labHandle = Lab.open(big, id, { autoplay: true });
+      if (window.ZKLabGuide && labHandle) ZKLabGuide.mount(document.getElementById('zkLabGuide'), labHandle, { lang });
+    });
   }
   // Klaviatura bilan bosiladigan element (div/img uchun): Enter/Space, fokuslanadi, nomi bor
   function pressable(el, fn, label) {
@@ -533,7 +583,8 @@
     document.getElementById('lmTitle').textContent = tr(e.title); document.getElementById('lmIcon').textContent = e.icon || '🧪';
     const m = document.getElementById('labModal'); m.classList.add('on');
     document.getElementById('lmClose').setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close');
-    modalHandle = Lab.open(document.getElementById('lmHost'), id, { autoplay: !matchMedia('(prefers-reduced-motion: reduce)').matches });
+    const lh = document.getElementById('lmHost');
+    withLab(lh, () => { if (m.classList.contains('on')) modalHandle = Lab.open(lh, id, { autoplay: !matchMedia('(prefers-reduced-motion: reduce)').matches }); });
     dlgOpen(m, document.getElementById('lmClose'));
   }
   function closeModal() { const m = document.getElementById('labModal'); const was = m.classList.contains('on'); m.classList.remove('on'); if (modalHandle) { modalHandle.destroy(); modalHandle = null; } if (was) dlgClose(); }
@@ -544,6 +595,7 @@
   function book(g, p) {
     const max = PMAX[g]; p = Math.max(0, Math.min(max - 1, p || 0)); if (p % 2 && p > 0) p -= 1;
     const origLang = g === 'g6' ? 'uz' : 'en';
+    if (!window.PAGES_TR) need('tr', () => book(g, bookPos[g] != null ? bookPos[g] : p));
     const trOf = (i) => { const T = window.PAGES_TR && window.PAGES_TR[g]; if (!T) return null; const off = g === 'g6' ? 1 : 2; const n = Math.floor((i - off) / 2), k = (i - off) % 2; return n >= 1 && T[n - 1] && T[n - 1][k] ? { n, k, h: T[n - 1][k] } : null; };
     const trAvail = lang !== origLang && ((!altHas(g, p) && trOf(p)) || (p + 1 < max && !altHas(g, p + 1) && trOf(p + 1)));
     const useTr = trAvail && bookTr;
@@ -673,11 +725,11 @@
     else if (h === 'g6' || h === 'g7' || h === 'g8') { list(h); navKey = h; }
     else if ((m = h.match(/^(g[678])-(\d+)$/))) { if (lastRoute.split('-')[0] !== m[1] || !lastRoute.match(/-\d+$/)) curTab = 'content'; lesson(m[1], +m[2], curTab); navKey = m[1]; }
     else if (h === 'tests') { testsPage(); navKey = 'tests'; }
-    else if ((m = h.match(/^ptable(?:-(\d+))?$/))) { if (window.PT) PT.render(app, { lang, t, tr, B, z: m[1] ? +m[1] : null }); else home(); navKey = 'pt'; }
+    else if ((m = h.match(/^ptable(?:-(\d+))?$/))) { if (window.PT) PT.render(app, { lang, t, tr, B, z: m[1] ? +m[1] : null }); else { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('pt', renderRoute); } navKey = 'pt'; }
     else if (h === 'me') { if (XPok()) { XP.page(app, { t, tr, B }); if (window.ZKDashboard) { const ph = app.querySelector('.page-h'); const dash = ZKDashboard.render({ lang, tr, B }); if (ph) ph.insertAdjacentHTML('afterend', dash); else app.insertAdjacentHTML('afterbegin', dash); } } else home(); navKey = 'me'; }
     else if (h === 'certificate') { if (window.ZKCertificate && XPok()) ZKCertificate.render(app, { lang, B }); else home(); navKey = 'me'; }
-    else if (h === 'admin' && window.ZKA && window.ZKAuth && ZKAuth.isAdmin()) { ZKA.render(app, { t, tr, B, lang, GC }); navKey = 'admin'; }
-    else if (h === 'teacher' && window.ZKT && window.ZKAuth && ZKAuth.isStaff()) { ZKT.render(app, { t, tr, B, lang, GC }); navKey = 'teacher'; }
+    else if (h === 'admin' && window.ZKAuth && ZKAuth.isAdmin()) { if (window.ZKA) ZKA.render(app, { t, tr, B, lang, GC }); else { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('staff', renderRoute); } navKey = 'admin'; }
+    else if (h === 'teacher' && window.ZKAuth && ZKAuth.isStaff()) { if (window.ZKT) ZKT.render(app, { t, tr, B, lang, GC }); else { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('staff', renderRoute); } navKey = 'teacher'; }
     else if (h === 'lab') { labList(); navKey = 'lab'; }
     else if ((m = h.match(/^lab-(.+)$/))) { labPage(m[1]); navKey = 'lab'; }
     else if ((m = h.match(/^book-(g[678])$/))) { book(m[1], bookPos[m[1]]); navKey = 'book'; }

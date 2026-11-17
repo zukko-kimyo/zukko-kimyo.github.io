@@ -14,7 +14,7 @@ Zukko Xalqaro Maktabi kimyo darsliklari asosidagi o'quv sayti: darslar (o'zbek/i
 | `auth.js` | Login, chiqish, natijalarni serverga saqlash |
 | `teacher.js` | O'qituvchi paneli (`#teacher`) |
 | `app.js`, `progress.js`, `data-*.js`, `tests*.js`, `lab-*.js`, `ptable.js` | Sayt mazmuni va funksiyalari |
-| `pages/s/` | Darslik sahifalari rasmlari |
+| `pages/p/` | Darslik sahifalari rasmlari (har bir sahifa alohida webp) |
 
 ## Rejimlar
 

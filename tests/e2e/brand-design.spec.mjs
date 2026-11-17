@@ -306,11 +306,14 @@ test('speed: background is not repainted on scroll and hero 3D waits until the p
   const bg = await page.evaluate(() => ({ body: getComputedStyle(document.body).backgroundAttachment, layer: getComputedStyle(document.body, '::before').position }));
   expect(bg.body, 'no background-attachment:fixed (full repaint on every scroll step)').not.toContain('fixed');
   expect(bg.layer).toBe('fixed');
-  // barcha skriptlar boshidan parallel yuklab olinadi
-  expect(await page.locator('link[rel="preload"][as="script"]').count()).toBeGreaterThan(25);
+  // asosiy skriptlar boshidan parallel yuklanadi; testlar bazasi, 3D, tarjima va panellar — faqat kerak bo'lganda
+  const pre = await page.locator('link[rel="preload"][as="script"]').count();
+  expect(pre).toBeGreaterThan(9); expect(pre).toBeLessThan(20);
+  expect(await page.evaluate(() => [!!window.QB, !!window.PAGES_TR, !!window.ZKT, !!window.ZKLazy])).toEqual([false, false, false, true]);
   if (isMobile) return;
   await page.evaluate(() => { location.hash = '#tests'; });
   await expect(page.locator('#app .page-h.tests')).toBeVisible();
+  expect(await page.evaluate(() => !!window.QB), 'testlar bazasi #tests ochilganda yuklandi').toBe(true);
   await page.evaluate(() => { location.hash = '#home'; });
   await expect(page.locator('#heroLab')).toBeAttached();
   expect(await page.locator('#heroLab canvas').count(), 'hero 3D is deferred so navigation is instant').toBe(0);

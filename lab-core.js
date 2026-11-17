@@ -1,11 +1,14 @@
 /* Zukko Kimyo — 3D Laboratoriya dvigateli (Three.js r160, PBR) */
 (function () {
   const T = THREE;
-  const Lab = { lang: 'uz', exps: {}, list: [] };
+  // lab-meta.js oldindan ro'yxatni bergan bo'lsa, o'sha obyektlar to'ldiriladi:
+  // yuklanish davomida ham Lab.list to'liq qoladi (bosh sahifa, qidiruv) va til saqlanadi.
+  const pre = window.Lab && window.Lab.meta ? window.Lab : null;
+  const Lab = { lang: pre ? pre.lang : 'uz', exps: pre ? pre.exps : {}, list: pre ? pre.list : [], ready: false };
   window.Lab = Lab;
   const tr = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[Lab.lang] || o.uz || o.en || ''));
   Lab.tr = tr;
-  Lab.def = (e) => { Lab.exps[e.id] = e; Lab.list.push(e); };
+  Lab.def = (e) => { const old = Lab.exps[e.id]; if (old && old !== e) Object.assign(old, e); else if (!old) { Lab.exps[e.id] = e; Lab.list.push(e); } };
 
   /* ---------- math helpers ---------- */
   const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));

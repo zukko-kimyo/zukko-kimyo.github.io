@@ -327,6 +327,7 @@ Og|Oganesson|Oganesson|[294]`;
           ${z <= 20 && window.Lab && Lab.exps['atom-model'] ? `<a class="btn sec ptbtn" href="#lab-atom-model">${tt('open3d')}</a>` : ''}</div></div>`;
       const sceneHost = det.querySelector('#pt3d');
       if (window.PTAtom3D && window.THREE) active3d = window.PTAtom3D.mount(sceneHost, e, sh, lang);
+      else if (window.PTAtom3D && !window.THREE && window.ZKLazy) { const want = z; ZKLazy.three().then(() => { if (sceneHost.isConnected && det.querySelector('#pt3d') === sceneHost && want === z) show(z); }).catch(() => {}); }
       const pauseBtn = det.querySelector('#pt3dPause');
       const resetBtn = det.querySelector('#pt3dReset');
       if (active3d) {

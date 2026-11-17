@@ -81,6 +81,8 @@ test('3D experiment provides selectable animation steps when WebGL is available'
 // Simulated renderer validates timeline wiring even if CI has no GPU/WebGL.
 test('3D walkthrough lets students select a step on mobile and desktop', async ({ page }) => {
   await bootstrapAdmin(page);
+  // 3D endi kerak bo'lganda yuklanadi: avval haqiqiy Lab yuklansin, keyin uning open() almashtiriladi
+  await page.evaluate(() => window.ZKLazy && window.ZKLazy.three().catch(() => {}));
   const supported = await page.evaluate(() => {
     const id = window.Lab?.list?.find(e => e.id)?.id;
     if (!id) return false;
@@ -88,6 +90,7 @@ test('3D walkthrough lets students select a step on mobile and desktop', async (
       { uz: 'Boshlanish', en: 'Start' },
       { uz: 'Kimyoviy reaksiya', en: 'Reaction' }
     ];
+    window.Lab.ready = true;
     window.Lab.open = () => {
       let current = 0;
       return {
