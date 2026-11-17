@@ -749,7 +749,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261117-perf-01';
+const VER = '20261117-sub-01';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 // Tezlik (2026-11-17): birinchi kirishda faqat sahifani chizish uchun kerakli fayllar yuklanadi (parallel preload,
 // keyin tartib bilan). 3D (three.js + lab-exps), testlar bazasi, darslik tarjimasi, davriy jadval va
@@ -764,7 +764,7 @@ const LAZY = {
   staff: ['attendance.js', 'admin-weekly.js', 'lib/stats.js', 'teacher.js', 'admin-mobile.js', 'admin.js'],
 };
 const pre = (href, rel, as) => { const l = document.createElement('link'); l.rel = rel; if (as) l.as = as; if (rel === 'modulepreload' || as === 'script') l.crossOrigin = /^https?:/.test(href) ? 'anonymous' : null; l.href = href; document.head.appendChild(l); };
-['firebase-config.js', 'icons.js', 'auth.js', ...CONTENT, ...USER].forEach((s) => pre(s + '?v=' + VER, 'preload', 'script'));
+['firebase-config.js', 'icons.js', 'lib/sub.js', 'auth.js', ...CONTENT, ...USER].forEach((s) => pre(s + '?v=' + VER, 'preload', 'script'));
 // Bir marta yuklanadi; tarmoq xatosida keyingi chaqiruv qayta urinadi
 const once = (f) => { let p = null; return () => p || (p = f().catch((e) => { p = null; throw e; })); };
 const seq = async (list) => { for (const s of list) await load(s); };
@@ -790,6 +790,7 @@ window.ZKLazy = {
 };
 await load('firebase-config.js').catch(() => {});
 await load('icons.js').catch(() => {});
+await load('lib/sub.js').catch(() => {});
 await load('auth.js').catch(() => {});
 const authP = window.ZKAuth ? ZKAuth.ready() : Promise.resolve(null);
 const contentP = (async () => {

@@ -163,6 +163,10 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
           <label for="adAnn">${t('ann_l')}</label><textarea id="adAnn" maxlength="300" placeholder="${esc(t('ann_ph'))}">${esc(set.announce || '')}</textarea>
           <label class="ad-chk"><input type="checkbox" id="adAnnOn" ${set.announceOn ? 'checked' : ''}> ${t('ann_on')}</label>
           <label class="ad-chk"><input type="checkbox" id="adReg" ${set.regOpen === false ? '' : 'checked'}> ${t('reg_on')}</label>
+          <fieldset class="ad-prices"><legend>💳 ${L === 'en' ? 'Subscription plans (shown to students on locked pages)' : 'Obuna tariflari (yopiq sahifalarda o‘quvchilarga ko‘rinadi)'}</legend>
+            ${['month', 'quarter', 'year'].map((k) => `<label for="adPr_${k}">${window.ZKSub ? ZKSub.NAMES[L === 'en' ? 'en' : 'uz'][k] : k}</label><input type="text" id="adPr_${k}" maxlength="40" placeholder="${L === 'en' ? 'e.g. 50,000 sum' : 'masalan: 50 000 so‘m'}" value="${esc(((set.prices || {})[k]) || '')}">`).join('')}
+            <label for="adPay">${L === 'en' ? 'How to pay (contacts, account)' : 'Qanday to‘lanadi (aloqa, hisob raqam)'}</label><textarea id="adPay" maxlength="400" placeholder="${L === 'en' ? 'e.g. Pay at the school office, phone +998 …' : 'masalan: Maktab kassasiga to‘lang, tel: +998 …'}">${esc(set.payInfo || '')}</textarea>
+          </fieldset>
           <button class="btn pri sm" id="adSave" style="margin-top:14px">${t('save')}</button><div class="ad-msg" id="adSetMsg"></div></div>
         <div class="panel"><h3>📦 ${t('exp_h')}</h3><div class="ad-sub" style="margin-top:0">${t('exp_p')}</div>
           <div class="btns"><button class="btn sec sm" id="adCsv">${t('exp_csv')}</button><button class="btn sec sm" id="adJson">${t('exp_json')}</button></div></div>
@@ -187,7 +191,8 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
     const $ = (id) => APP.querySelector('#' + id);
     $('adSave').onclick = async () => {
       const msg = $('adSetMsg'); msg.className = 'ad-msg'; msg.textContent = '';
-      const doc = { announce: $('adAnn').value.trim().slice(0, 300), announceOn: $('adAnnOn').checked, regOpen: $('adReg').checked, updated: Date.now(), by: ZKAuth.user.uid };
+      const prices = {}; ['month', 'quarter', 'year'].forEach((k) => { const v = $('adPr_' + k).value.trim().slice(0, 40); if (v) prices[k] = v; });
+      const doc = { announce: $('adAnn').value.trim().slice(0, 300), announceOn: $('adAnnOn').checked, regOpen: $('adReg').checked, prices, payInfo: $('adPay').value.trim().slice(0, 400), updated: Date.now(), by: ZKAuth.user.uid };
       $('adSave').disabled = true;
       try { await ZKAuth.backend.set('settings', 'site', doc, true); st.settings = Object.assign({}, st.settings, doc); msg.className = 'ad-msg ok'; msg.textContent = t('saved'); ZKAuth.applySettings && ZKAuth.applySettings(st.settings); }
       catch (e) { msg.className = 'ad-msg er'; msg.textContent = '⚠ ' + ZKAuth.errMsg(e); }

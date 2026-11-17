@@ -5,7 +5,7 @@
 (function () {
   const S = {
     uz: {
-      h: "👩‍🏫 O'qituvchi paneli", p: "O'quvchilar natijalari, hisoblar va parollar.", tab_res: '📊 Natijalar', tab_add: "➕ O'quvchi qo'shish", tab_tch: "🧑‍🏫 O'qituvchilar", tab_req: '📥 Arizalar', tab_codes: '🔑 Sinf kodlari',
+      h: "👩‍🏫 O'qituvchi paneli", p: "O'quvchilar natijalari, hisoblar va parollar.", tab_res: '📊 Natijalar', tab_sub: '💳 Obunalar', tab_add: "➕ O'quvchi qo'shish", tab_tch: "🧑‍🏫 O'qituvchilar", tab_req: '📥 Arizalar', tab_codes: '🔑 Sinf kodlari',
       rq_none: "Yangi ariza yo'q. O'quvchilar «Sinf kodlari» bo'limidagi kod bilan ro'yxatdan o'tganda shu yerda chiqadi.", rq_ok: '✓ Tasdiqlash', rq_no: '✕ Rad etish', rq_all: '✓ Hammasini tasdiqlash', rq_date: 'Sana', rq_no_q: '{n} arizasini rad etasizmi? Hisob o\'chiriladi.', rq_done: 'Tasdiqlandi',
       cd_h: 'Sinf kodlari', cd_p: "O'quvchilar saytdagi «Ro'yxatdan o'tish» tugmasi orqali shu kod bilan ro'yxatdan o'tadi, so'ng siz «Arizalar» bo'limida tasdiqlaysiz.", cd_new: 'Yangi kod yaratish', cd_cls: 'Sinf', cd_code: 'Kod', cd_state: 'Holati', cd_on: 'faol', cd_off: "to'xtatilgan", cd_dis: "⏸ To'xtatish", cd_en: '▶ Yoqish', cd_del: "🗑 O'chirish", cd_none: "Hali kod yo'q. Sinf nomini yozib, kod yarating.", cd_used: 'ro\'yxatdan o\'tgan', cd_copy: '📋 Nusxa', cd_copied: 'Nusxa olindi', cd_how: "O'quvchilarga ayting: saytga kiring → «Ro'yxatdan o'tish» → sinf kodi: ",
       all: 'Hammasi', students: "o'quvchi", none: "Hali o'quvchi yo'q. «O'quvchi qo'shish» bo'limidan boshlang.", loading: 'Yuklanmoqda…', reload: '↻ Yangilash',
@@ -23,7 +23,7 @@
       self: '(siz)', grade: 'sinf',
     },
     en: {
-      h: '👩‍🏫 Teacher panel', p: 'Student results, accounts and passwords.', tab_res: '📊 Results', tab_add: '➕ Add students', tab_tch: '🧑‍🏫 Teachers', tab_req: '📥 Requests', tab_codes: '🔑 Class codes',
+      h: '👩‍🏫 Teacher panel', p: 'Student results, accounts and passwords.', tab_res: '📊 Results', tab_sub: '💳 Subscriptions', tab_add: '➕ Add students', tab_tch: '🧑‍🏫 Teachers', tab_req: '📥 Requests', tab_codes: '🔑 Class codes',
       rq_none: 'No new requests. Students who sign up with a code from “Class codes” appear here.', rq_ok: '✓ Approve', rq_no: '✕ Reject', rq_all: '✓ Approve all', rq_date: 'Date', rq_no_q: 'Reject the request of {n}? The account will be deleted.', rq_done: 'Approved',
       cd_h: 'Class codes', cd_p: 'Students sign up on the site with “Sign up” and this code; then you approve them under “Requests”.', cd_new: 'Create new code', cd_cls: 'Class', cd_code: 'Code', cd_state: 'Status', cd_on: 'active', cd_off: 'disabled', cd_dis: '⏸ Disable', cd_en: '▶ Enable', cd_del: '🗑 Delete', cd_none: 'No codes yet. Type a class name and create a code.', cd_used: 'signed up', cd_copy: '📋 Copy', cd_copied: 'Copied', cd_how: 'Tell students: open the site → “Sign up” → class code: ',
       all: 'All', students: 'students', none: 'No students yet. Start with “Add students”.', loading: 'Loading…', reload: '↻ Refresh',
@@ -170,7 +170,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
       </div><div id="tcPrint"></div>`;
     tabs();
     const token = (render.n = (render.n || 0) + 1);
-    const go = () => { if (token !== render.n) return; tabs(); return st.tab === 'res' ? (st.detail ? detail() : results()) : st.tab === 'add' ? addView() : st.tab === 'req' ? requests() : st.tab === 'codes' ? codesView() : teachers(); };
+    const go = () => { if (token !== render.n) return; tabs(); return st.tab === 'res' ? (st.detail ? detail() : results()) : st.tab === 'add' ? addView() : st.tab === 'req' ? requests() : st.tab === 'codes' ? codesView() : st.tab === 'sub' && ZKAuth.isAdmin() ? subsView() : teachers(); };
     if (!st.users) ensureLoaded().then(go).catch((e) => { body().innerHTML = `<div class="tc-empty">⚠ ${esc(ZKAuth.errMsg(e))}</div>`; });
     else go();
   }
@@ -178,7 +178,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   function tabs() {
     const el = document.getElementById('tcTabs'); if (!el) return;
     const n = st.users ? pending().length : 0;
-    el.innerHTML = ['res', 'req', 'add', 'codes'].concat(ZKAuth.isAdmin() ? ['tch'] : []).map((k) => `<button data-t="${k}" class="${st.tab === k ? 'on' : ''}">${t('tab_' + k)}${k === 'req' && n ? ` <span class="tc-badge">${n}</span>` : ''}</button>`).join('');
+    el.innerHTML = ['res', 'req', 'add', 'codes'].concat(ZKAuth.isAdmin() ? ['sub', 'tch'] : []).map((k) => `<button data-t="${k}" class="${st.tab === k ? 'on' : ''}">${t('tab_' + k)}${k === 'req' && n ? ` <span class="tc-badge">${n}</span>` : ''}</button>`).join('');
     el.querySelectorAll('button').forEach((b) => (b.onclick = () => { st.tab = b.dataset.t; st.detail = null; render(APP, CTX); }));
   }
 
@@ -203,6 +203,65 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     await Promise.all([Bk.del('progress', u.id).catch(() => {}), Bk.del('secrets', u.id).catch(() => {})]);
     await Bk.del('users', u.id);
     st.users = st.users.filter((x) => x.id !== u.id); delete st.prog[u.id]; delete st.secrets[u.id];
+  }
+
+  /* ---------- obunalar (faqat administrator; firestore.rules o'qituvchiga ruxsat bermaydi) ---------- */
+  const SB = {
+    uz: { tab: '💳 Obunalar', h: 'O‘quvchilar obunasi', p: 'To‘lov qilgan o‘quvchiga tarif tanlang. Faol obuna uzaytirilsa, muddat uning oxiridan qo‘shiladi. «O‘quv yili» — 30-iyungacha. O‘quvchi sahifani yangilaganda (yoki «Tekshirish» tugmasi bilan) bo‘limlar ochiladi.',
+      st: 'Holat', on: 'faol, {d} gacha', exp: 'tugagan {d}', none: 'yo‘q', give: 'Berish', stop: 'To‘xtatish', all: 'Hammasi', act: 'Faol', noact: 'Obunasiz',
+      stop_q: '{n} obunasini to‘xtatasizmi?', cls_q: '{c} sinfidagi {k} o‘quvchiga «{p}» obunasini berasizmi?', cls_b: 'Butun sinfga: ', saved: 'Saqlandi', pick: 'Sinfni tanlang' },
+    en: { tab: '💳 Subscriptions', h: 'Student subscriptions', p: 'Pick a plan for a student who has paid. Extending an active subscription adds time from its end. “School year” runs until 30 June. Locked sections open when the student reloads the page (or presses “Check”).',
+      st: 'Status', on: 'active until {d}', exp: 'ended {d}', none: 'none', give: 'Give', stop: 'Stop', all: 'All', act: 'Active', noact: 'Without',
+      stop_q: 'Stop the subscription of {n}?', cls_q: 'Give the “{p}” plan to {k} students of class {c}?', cls_b: 'Whole class: ', saved: 'Saved', pick: 'Choose a class' },
+  };
+  const sbt = (k, o) => { let x = SB[L][k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
+  async function setSub(u, plan) {
+    const Z = window.ZKSub; const sub = plan ? Z.grant(u.sub, plan, Date.now(), ZKAuth.user.uid) : null;
+    await ZKAuth.backend.set('users', u.id, { sub }, true);
+    u.sub = sub;
+  }
+  function subsView() {
+    const Z = window.ZKSub; if (!Z) { body().innerHTML = '<div class="tc-empty">—</div>'; return; }
+    const now = Date.now(), all = students(), cs = classes();
+    if (st.cls && !cs.includes(st.cls)) st.cls = '';
+    st.subF = st.subF || '';
+    const ofCls = all.filter((u) => !st.cls || (u.cls || '—') === st.cls);
+    const list = ofCls.filter((u) => { const a = Z.status(u.sub, now).active; return !st.subF || (st.subF === 'on' ? a : !a); })
+      .sort((a, b) => sortCls(a.cls || '', b.cls || '') || String(a.name).localeCompare(String(b.name)));
+    const N = Z.NAMES[L];
+    const plans = Z.PLANS.map((k) => `<option value="${k}">${N[k]}</option>`).join('');
+    const stat = (u) => { const s = Z.status(u.sub, now); return s.active ? `<span class="tc-q g">${sbt('on', { d: Z.fmtDate(s.until) })}</span> <span class="tc-mut">${s.plan ? N[s.plan] : ''}</span>` : s.expired ? `<span class="tc-q b">${sbt('exp', { d: Z.fmtDate(s.until) })}</span>` : `<span class="tc-mut">${sbt('none')}</span>`; };
+    const nOn = ofCls.filter((u) => Z.status(u.sub, now).active).length;
+    body().innerHTML = `<div class="panel"><h3>${sbt('h')}</h3><div class="tc-note">${sbt('p')}</div></div>
+      <div class="tc-chips" role="group" aria-label="${t('add_cls')}"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
+      <div class="tc-tools"><div class="tc-chips" role="group" aria-label="${sbt('st')}" style="margin:0">${[['', sbt('all')], ['on', sbt('act') + ` <small>${nOn}</small>`], ['off', sbt('noact') + ` <small>${ofCls.length - nOn}</small>`]].map(([v, l]) => `<button data-f="${v}" class="${st.subF === v ? 'on' : ''}">${l}</button>`).join('')}</div><div class="sp"></div>
+        ${st.cls ? `<label class="tc-mut" for="tcSubCls">${sbt('cls_b')}</label><select id="tcSubCls" class="tc-sel">${plans}</select><button class="btn sec sm" id="tcSubClsGo">${sbt('give')}</button>` : `<span class="tc-mut">${sbt('cls_b')}${sbt('pick')}</span>`}</div>
+      <div class="tc-msg" id="tcSubMsg" role="status"></div>
+      <div class="tc-wrap"><table class="tc resp"><thead><tr><th>${t('c_n')}</th><th>${t('c_name')}</th><th>${t('add_cls')}</th><th>${sbt('st')}</th><th><span class="zk-sr">${sbt('give')}</span></th></tr></thead><tbody>
+      ${list.map((u, i) => `<tr data-id="${u.id}"><td class="tc-mut">${i + 1}</td><td class="nm">${esc(u.name || u.login)}</td><td data-l="${t('add_cls')}">${esc(u.cls || '—')}</td><td data-l="${sbt('st')}">${stat(u)}</td>
+        <td class="act"><div class="tc-act"><select class="tc-sel" aria-label="${esc(sbt('give') + ' — ' + (u.name || u.login))}" data-sel="${u.id}">${plans}</select><button data-give="${u.id}" aria-label="${esc(sbt('give') + ' — ' + (u.name || u.login))}">${sbt('give')}</button>${Z.status(u.sub, now).active ? `<button data-stop="${u.id}" aria-label="${esc(sbt('stop') + ' — ' + (u.name || u.login))}">${sbt('stop')}</button>` : ''}</div></td></tr>`).join('') || `<tr><td colspan="5" class="tc-empty">${t('none')}</td></tr>`}
+      </tbody></table></div>`;
+    const msg = (x, ok) => { const m = document.getElementById('tcSubMsg'); m.className = 'tc-msg ' + (ok ? 'tc-ok' : 'tc-err'); m.textContent = x; };
+    body().querySelectorAll('[data-c]').forEach((b) => (b.onclick = () => { st.cls = b.dataset.c; subsView(); }));
+    body().querySelectorAll('[data-f]').forEach((b) => (b.onclick = () => { st.subF = b.dataset.f; subsView(); }));
+    const byId = (id) => all.find((u) => u.id === id);
+    body().querySelectorAll('[data-give]').forEach((b) => (b.onclick = async () => {
+      const u = byId(b.dataset.give), plan = body().querySelector(`[data-sel="${b.dataset.give}"]`).value; b.disabled = true;
+      try { await setSub(u, plan); subsView(); msg(sbt('saved') + ': ' + (u.name || u.login), true); const nb = body().querySelector(`[data-give="${u.id}"]`); if (nb) nb.focus(); }
+      catch (e) { b.disabled = false; msg('⚠ ' + ZKAuth.errMsg(e)); }
+    }));
+    body().querySelectorAll('[data-stop]').forEach((b) => (b.onclick = async () => {
+      const u = byId(b.dataset.stop); if (!confirm(sbt('stop_q', { n: u.name || u.login }))) return; b.disabled = true;
+      try { await setSub(u, null); subsView(); msg(sbt('saved') + ': ' + (u.name || u.login), true); }
+      catch (e) { b.disabled = false; msg('⚠ ' + ZKAuth.errMsg(e)); }
+    }));
+    const cg = document.getElementById('tcSubClsGo');
+    if (cg) cg.onclick = async () => {
+      const plan = document.getElementById('tcSubCls').value, kids = ofCls;
+      if (!kids.length || !confirm(sbt('cls_q', { c: st.cls, k: kids.length, p: N[plan] }))) return; cg.disabled = true;
+      let ok = 0; for (const u of kids) { try { await setSub(u, plan); ok++; } catch (e) { msg('⚠ ' + ZKAuth.errMsg(e)); break; } }
+      subsView(); if (ok === kids.length) msg(sbt('saved') + `: ${ok}`, true);
+    };
   }
 
   /* ---------- sinf kodlari ---------- */

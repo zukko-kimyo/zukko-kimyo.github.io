@@ -4,6 +4,12 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### O'quvchilar obunasi — 1-bosqich (2026-11-17, ADR-0007)
+- Pullik qismlar (3D laboratoriya, testlar va imtihon, 7–8-sinf darslari, darslik sahifalari) obunasiz o'quvchiga "obuna bilan ochiladi" oynasi bilan yopiq. Oynada tariflar, narxlar va to'lov yo'riqnomasi bor. Bepul: 6-sinf dars matni, davriy jadval, bosh sahifa, profil.
+- Admin: o'qituvchi panelida "Obunalar" tabi (o'quvchiga yoki butun sinfga oylik / choraklik / o'quv yili obunasi, to'xtatish); "Sayt sozlamalari"da narxlar va to'lov ma'lumoti.
+- `firestore.rules`: obunani faqat administrator beradi, maydonlar shakli tekshiriladi; **Firebase Console'da Publish qilish kerak**.
+- `lib/sub.js` + unit testlar, qoidalar testlari, e2e testlar. Profil sahifasida obuna holati.
+
 ### Tezlik: kerak bo'lganda yuklash, darslik rasmlari, sakrashsiz sahifa (2026-11-17)
 O'lchov (sekin 4G, 4× sekinlashtirilgan telefon protsessori, bitta o'lchov):
 | | Oldin | Keyin |

@@ -280,6 +280,51 @@
     app.querySelectorAll('.seg button').forEach((b) => (b.onclick = () => { filter3d = b.dataset.f === '1'; list(g); }));
   }
 
+  /* ---------- obuna: qulflangan bo'lim oynasi (lib/sub.js, firestore.rules: obunani faqat admin beradi) ---------- */
+  const PAY = {
+    uz: {
+      lab: '3D laboratoriya obuna bilan ochiladi', tests: 'Testlar va imtihon obuna bilan ochiladi', g7: '7-sinf darslari obuna bilan ochiladi',
+      g8: '8-sinf darslari obuna bilan ochiladi', pages: 'Darslik sahifalari obuna bilan ochiladi',
+      p: "Obuna bilan saytning barcha bo'limlari ochiladi. 6-sinf darslari matni, davriy jadval va bosh sahifa — bepul.",
+      inc: ['3D laboratoriya — barcha tajribalar', 'Testlar, imtihon rejimi va sertifikat', '7- va 8-sinf darslari', 'Darslik sahifalari va ularning tarjimasi'],
+      plans: 'Tariflar', d_month: '30 kun', d_quarter: '3 oy', d_year: '30-iyungacha', how: 'Qanday olish mumkin?',
+      how_def: "To'lov uchun maktab administratsiyasi yoki o'qituvchingizga murojaat qiling. To'lovdan so'ng administrator obunangizni yoqadi.",
+      exp: 'Obunangiz {d} kuni tugagan.', re: 'Obuna yoqildimi? Tekshirish', free: "Bepul: 6-sinf darslari",
+      me_h: 'Obuna', me_on: 'Faol — {d} gacha', me_left: '{n} kun qoldi', me_off: "Obuna yo'q", me_exp: 'Tugagan: {d}', me_more: 'Batafsil',
+    },
+    en: {
+      lab: 'The 3D lab is available with a subscription', tests: 'Tests and exams are available with a subscription', g7: 'Grade 7 lessons are available with a subscription',
+      g8: 'Grade 8 lessons are available with a subscription', pages: 'Textbook pages are available with a subscription',
+      p: 'A subscription unlocks every part of the site. Grade 6 lesson texts, the periodic table and the home page are free.',
+      inc: ['3D lab — every experiment', 'Tests, exam mode and certificate', 'Grade 7 and 8 lessons', 'Textbook pages and their translation'],
+      plans: 'Plans', d_month: '30 days', d_quarter: '3 months', d_year: 'until 30 June', how: 'How to get it',
+      how_def: 'Contact the school office or your teacher to pay. After payment, the administrator turns your subscription on.',
+      exp: 'Your subscription ended on {d}.', re: 'Subscription turned on? Check', free: 'Free: Grade 6 lessons',
+      me_h: 'Subscription', me_on: 'Active — until {d}', me_left: '{n} days left', me_off: 'No subscription', me_exp: 'Ended: {d}', me_more: 'Details',
+    },
+  };
+  const pt = (k, o) => { let x = (PAY[lang] || PAY.uz)[k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
+  function paywall(feature) {
+    const site = (window.ZKAuth && ZKAuth.site) || {}, prices = site.prices || {}, st = window.ZKAuth ? ZKAuth.subStatus() : {};
+    const esc2 = (v) => (window.ZKAuth ? ZKAuth.esc(v) : String(v));
+    const plans = (window.ZKSub ? ZKSub.PLANS : []).map((k) => `<div class="zk-plan"><b>${ZKSub.NAMES[lang === 'en' ? 'en' : 'uz'][k]}</b>${prices[k] ? `<span>${esc2(prices[k])}</span>` : ''}<small>${pt('d_' + k)}</small></div>`).join('');
+    return `<section class="zk-pay" aria-labelledby="zkPayH"><div class="zk-pay-ic" aria-hidden="true">🔒</div>
+      <h2 id="zkPayH" tabindex="-1">${pt(feature) || pt('lab')}</h2><p>${pt('p')}</p>
+      ${st.expired ? `<p class="zk-pay-exp" role="status">${pt('exp', { d: ZKSub.fmtDate(st.until) })}</p>` : ''}
+      <ul class="zk-pay-inc">${pt('inc').map((x) => `<li>${x}</li>`).join('')}</ul>
+      <h3>${pt('plans')}</h3><div class="zk-pay-plans">${plans}</div>
+      <div class="zk-pay-how"><b>${pt('how')}</b><p>${esc2(site.payInfo || pt('how_def'))}</p></div>
+      <div class="zk-pay-act"><button type="button" class="btn" id="zkPayRe">${pt('re')}</button><a class="btn sec" href="#g6">${pt('free')}</a></div></section>`;
+  }
+  // Obuna yoqilgach profil qayta o'qilishi uchun sahifa yangilanadi
+  function bindPaywall() { const b = document.getElementById('zkPayRe'); if (b) b.onclick = () => location.reload(); }
+  function subCard() {
+    if (!window.ZKAuth || !ZKAuth.enabled || !ZKAuth.user || ZKAuth.isStaff() || !window.ZKSub) return '';
+    const st = ZKAuth.subStatus(), nm = st.plan ? ZKSub.NAMES[lang === 'en' ? 'en' : 'uz'][st.plan] + ' · ' : '';
+    const line = st.active ? `${nm}${pt('me_on', { d: ZKSub.fmtDate(st.until) })} <small>(${pt('me_left', { n: st.daysLeft })})</small>`
+      : st.expired ? pt('me_exp', { d: ZKSub.fmtDate(st.until) }) : pt('me_off');
+    return `<div class="wrap"><div class="panel zk-subcard ${st.active ? 'on' : 'off'}"><h3>💳 ${pt('me_h')}</h3><p>${line}</p>${st.active ? '' : `<a class="btn sec sm" href="#tests">${pt('me_more')}</a>`}</div></div>`;
+  }
   /* ---------- kerak bo'lganda yuklanadigan qismlar (index.html → window.ZKLazy) ---------- */
   // Yuklangach sahifa o'sha joyda qayta chiziladi; foydalanuvchi boshqa sahifaga o'tib ketgan bo'lsa — hech narsa qilinmaydi.
   const lazyBox = () => `<div class="zk-lazy" role="status"><span class="zk-lazy-spin" aria-hidden="true"></span>${lang === 'uz' ? 'Yuklanmoqda…' : 'Loading…'}</div>`;
@@ -327,8 +372,11 @@
     if (XPok()) XP.visit(g, n);
     const col = UC[unitIdx(g, n) % UC.length]; const lst = XPok() ? XP.state(g, n) : '';
     const pg = pagesOf(g, n);
+    // Obuna: 6-sinfda dars matni bepul, darslik sahifalari / 3D / test tablari — obuna bilan (lib/sub.js)
+    const lockF = window.ZKSub && window.ZKAuth && !ZKAuth.canPaid() ? ZKSub.featureOf(g + '-' + n, tab) : null;
     let body = '';
-    if (tab === 'content') {
+    if (lockF) body = paywall(lockF);
+    else if (tab === 'content') {
       body += L.q ? `<div class="keyq"><div class="ic">❓</div><div><b>${t('keyq')}</b>${tr(L.q)}</div></div>` : '';
       body += `<div class="panel prose"><h3>📘 ${tr(L.t)}</h3>${(L.intro ? [].concat(L.intro) : []).map((p) => `<p>${tr(p)}</p>`).join('')}</div>`;
       if (L.pts && L.pts.length) body += `<div class="panel"><h3>💡 ${t('main_ideas')}</h3><ul class="pts">${L.pts.map((p) => `<li>${tr(p)}</li>`).join('')}</ul></div>`;
@@ -394,14 +442,15 @@
     app.querySelectorAll('.xinline').forEach((el) => { const h4 = el.querySelector('h4'); pressable(el, () => openModal(el.dataset.x), (h4 ? h4.textContent.trim() + ' — ' : '') + (lang === 'uz' ? '3D tajribani ochish' : 'open 3D experiment')); });
     const on = app.querySelector('.navl a.on'); const nl = on && on.closest('.navl');
     if (on && nl) { const d = on.getBoundingClientRect().top - nl.getBoundingClientRect().top; nl.scrollTop += d - nl.clientHeight / 2 + on.offsetHeight / 2; } // faqat ro'yxat suriladi, sahifa sakramaydi
-    if (tab === 'lab' && ex.length) {
+    if (lockF) bindPaywall();
+    if (!lockF && tab === 'lab' && ex.length) {
       const run = (id) => { destroyLab(); const hh = document.getElementById('lessonLab'); withLab(hh, () => { destroyLab(); labHandle = Lab.open(hh, id, { autoplay: false }); }); };
       run(ex[0].id);
       app.querySelectorAll('#exSel button').forEach((b) => (b.onclick = () => { app.querySelectorAll('#exSel button').forEach((x) => x.classList.remove('on')); b.classList.add('on'); run(b.dataset.x); }));
     }
-    if (tab === 'quiz' && !window.QB) { const qz = document.getElementById('quiz'); if (qz) qz.innerHTML = lazyBox(); need('tests', () => lesson(g, n, 'quiz')); }
-    if (tab === 'pages' && !window.PAGES_TR) need('tr', () => { if (curTab === 'pages') lesson(g, n, 'pages'); });
-    if (tab === 'quiz' && window.QB) { const run = () => runTest(document.getElementById('quiz'), QB.lessonTest(g, n), { mode: 'practice', compact: true, onNew: run, onFinish: (s, tot) => (XPok() ? XP.quiz(g, n, s, tot) : 0) }); run(); document.getElementById('newSet').onclick = run; }
+    if (!lockF && tab === 'quiz' && !window.QB) { const qz = document.getElementById('quiz'); if (qz) qz.innerHTML = lazyBox(); need('tests', () => lesson(g, n, 'quiz')); }
+    if (!lockF && tab === 'pages' && !window.PAGES_TR) need('tr', () => { if (curTab === 'pages') lesson(g, n, 'pages'); });
+    if (!lockF && tab === 'quiz' && window.QB) { const run = () => runTest(document.getElementById('quiz'), QB.lessonTest(g, n), { mode: 'practice', compact: true, onNew: run, onFinish: (s, tot) => (XPok() ? XP.quiz(g, n, s, tot) : 0) }); run(); document.getElementById('newSet').onclick = run; }
     const tg = document.getElementById('trToggle'); if (tg) tg.onclick = () => { showOrig = !showOrig; lesson(g, n, 'pages'); };
   }
 
@@ -584,6 +633,7 @@
     const m = document.getElementById('labModal'); m.classList.add('on');
     document.getElementById('lmClose').setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close');
     const lh = document.getElementById('lmHost');
+    if (window.ZKAuth && !ZKAuth.canPaid()) { lh.innerHTML = `<div class="zk-pay-modal">${paywall('lab')}</div>`; bindPaywall(); dlgOpen(m, document.getElementById('lmClose')); return; }
     withLab(lh, () => { if (m.classList.contains('on')) modalHandle = Lab.open(lh, id, { autoplay: !matchMedia('(prefers-reduced-motion: reduce)').matches }); });
     dlgOpen(m, document.getElementById('lmClose'));
   }
@@ -721,12 +771,14 @@
     if (newPage) toTop();
     destroyLab(); closeModal(); closeZoom(); document.getElementById('nav').classList.remove('open'); document.getElementById('burger').setAttribute('aria-expanded', 'false');
     let m, navKey = 'home';
-    if (h === 'home' || h === '') home();
+    const lockR = window.ZKSub && window.ZKAuth && !ZKAuth.canPaid() ? ZKSub.featureOf(h, null) : null;
+    if (lockR) { app.innerHTML = `<div class="page-h"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a></div></div></div><div class="wrap" style="padding-bottom:48px">${paywall(lockR)}</div>`; bindPaywall(); navKey = lockR === 'g7' || lockR === 'g8' ? lockR : lockR === 'pages' ? 'book' : lockR; }
+    else if (h === 'home' || h === '') home();
     else if (h === 'g6' || h === 'g7' || h === 'g8') { list(h); navKey = h; }
     else if ((m = h.match(/^(g[678])-(\d+)$/))) { if (lastRoute.split('-')[0] !== m[1] || !lastRoute.match(/-\d+$/)) curTab = 'content'; lesson(m[1], +m[2], curTab); navKey = m[1]; }
     else if (h === 'tests') { testsPage(); navKey = 'tests'; }
     else if ((m = h.match(/^ptable(?:-(\d+))?$/))) { if (window.PT) PT.render(app, { lang, t, tr, B, z: m[1] ? +m[1] : null }); else { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('pt', renderRoute); } navKey = 'pt'; }
-    else if (h === 'me') { if (XPok()) { XP.page(app, { t, tr, B }); if (window.ZKDashboard) { const ph = app.querySelector('.page-h'); const dash = ZKDashboard.render({ lang, tr, B }); if (ph) ph.insertAdjacentHTML('afterend', dash); else app.insertAdjacentHTML('afterbegin', dash); } } else home(); navKey = 'me'; }
+    else if (h === 'me') { if (XPok()) { XP.page(app, { t, tr, B }); if (window.ZKDashboard) { const ph = app.querySelector('.page-h'); const dash = ZKDashboard.render({ lang, tr, B }); if (ph) ph.insertAdjacentHTML('afterend', dash); else app.insertAdjacentHTML('afterbegin', dash); } const sc = subCard(); if (sc) { const ph2 = app.querySelector('.page-h'); if (ph2) ph2.insertAdjacentHTML('afterend', sc); } } else home(); navKey = 'me'; }
     else if (h === 'certificate') { if (window.ZKCertificate && XPok()) ZKCertificate.render(app, { lang, B }); else home(); navKey = 'me'; }
     else if (h === 'admin' && window.ZKAuth && ZKAuth.isAdmin()) { if (window.ZKA) ZKA.render(app, { t, tr, B, lang, GC }); else { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('staff', renderRoute); } navKey = 'admin'; }
     else if (h === 'teacher' && window.ZKAuth && ZKAuth.isStaff()) { if (window.ZKT) ZKT.render(app, { t, tr, B, lang, GC }); else { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('staff', renderRoute); } navKey = 'teacher'; }

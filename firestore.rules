@@ -49,16 +49,27 @@ service cloud.firestore {
         || get(/databases/$(db)/documents/settings/site).data.get('regOpen', true) != false;
     }
 
+    // Obuna (users/{uid}.sub) — faqat administrator beradi. O'qituvchi o'quvchini tahrirlaganda obunasi o'zgarmasligi shart.
+    function subSame() { return request.resource.data.get('sub', null) == resource.data.get('sub', null); }
+    function validSub(d) {
+      return !('sub' in d) || d.sub == null
+        || (d.sub is map && d.sub.keys().hasOnly(['plan', 'until', 'at', 'by'])
+            && d.sub.plan in ['month', 'quarter', 'year']
+            && d.sub.until is number && d.sub.until >= 0 && d.sub.until < 10000000000000
+            && (!('at' in d.sub) || d.sub.at is number) && (!('by' in d.sub) || (d.sub.by is string && d.sub.by.size() <= 128)));
+    }
+
     // Foydalanuvchi profillari: ism, login, sinf, rol
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isStaff());
-      allow create: if (isStaff() && request.resource.data.role == 'student')
+      allow create: if (isStaff() && request.resource.data.role == 'student' && (isAdmin() || !('sub' in request.resource.data)) && validSub(request.resource.data))
                     || (isAdmin() && request.resource.data.role == 'teacher')
                     || (isAdminEmail() && request.auth.uid == uid && request.resource.data.role == 'admin'
                         && !exists(/databases/$(db)/documents/users/$(uid)))
                     || selfSignup(uid);
-      allow update: if (isStaff() && resource.data.role == 'student' && request.resource.data.role == 'student')
-                    || (isAdmin() && resource.data.role != 'admin');
+      allow update: if (isStaff() && resource.data.role == 'student' && request.resource.data.role == 'student'
+                        && (isAdmin() || subSame()) && validSub(request.resource.data))
+                    || (isAdmin() && resource.data.role != 'admin' && validSub(request.resource.data));
       allow delete: if (isStaff() && resource.data.role == 'student') || (isAdmin() && resource.data.role == 'teacher');
     }
 
@@ -98,7 +109,13 @@ service cloud.firestore {
       allow get: if id == 'site';
       allow list: if false;
       allow write: if isAdmin() && id == 'site'
-                   && request.resource.data.keys().hasOnly(['announce', 'announceOn', 'regOpen', 'updated', 'by'])
+                   && request.resource.data.keys().hasOnly(['announce', 'announceOn', 'regOpen', 'updated', 'by', 'prices', 'payInfo'])
+                   && (!('payInfo' in request.resource.data) || (request.resource.data.payInfo is string && request.resource.data.payInfo.size() <= 400))
+                   && (!('prices' in request.resource.data) || (request.resource.data.prices is map
+                        && request.resource.data.prices.keys().hasOnly(['month', 'quarter', 'year'])
+                        && request.resource.data.prices.get('month', '') is string && request.resource.data.prices.get('month', '').size() <= 40
+                        && request.resource.data.prices.get('quarter', '') is string && request.resource.data.prices.get('quarter', '').size() <= 40
+                        && request.resource.data.prices.get('year', '') is string && request.resource.data.prices.get('year', '').size() <= 40))
                    && (!('announce' in request.resource.data) || (request.resource.data.announce is string && request.resource.data.announce.size() <= 300));
     }
 

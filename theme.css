@@ -679,3 +679,31 @@ body.zk-v3 #app > .wrap > .zk-lazy:only-child {min-height:70vh}
 body.zk-v3 main#app {min-height:100vh;min-height:100dvh}
 /* Admin: bo'sh kartalarda tushuntirish */
 body.zk-v3 .ad-empty {padding:14px 2px;font-size:14px;line-height:1.5}
+
+/* ===== 2026-11-17 · obuna: qulflangan bo'lim ===== */
+.zk-pay {max-width:760px;margin:8px auto 0;padding:32px 28px;border-radius:28px;background:var(--zk-surface,#fff);border:1px solid var(--zk-hair);box-shadow:var(--zk-shadow-1,0 18px 40px -24px rgba(0,40,45,.25));text-align:center}
+.zk-pay-ic {width:64px;height:64px;margin:0 auto 12px;border-radius:20px;display:grid;place-items:center;font-size:30px;background:color-mix(in srgb,var(--zk-teal) 10%,transparent)}
+.zk-pay h2 {font:600 clamp(24px,3.4vw,32px)/1.15 var(--fh);letter-spacing:-.02em;margin:0 0 10px;color:var(--zk-ink)}
+.zk-pay h2:focus {outline:none}
+.zk-pay > p {color:var(--zk-muted);font-size:15.5px;line-height:1.55;max-width:56ch;margin:0 auto 14px}
+.zk-pay .zk-pay-exp {color:#b42318;font-weight:600}
+html[data-theme="dark"] .zk-pay .zk-pay-exp {color:#ffb4a8}
+.zk-pay-inc {list-style:none;padding:0;margin:16px auto 22px;display:grid;gap:8px;max-width:440px;text-align:left}
+.zk-pay-inc li {padding:10px 14px 10px 40px;border-radius:14px;background:color-mix(in srgb,var(--zk-teal) 6%,transparent);position:relative;font-size:15px}
+.zk-pay-inc li::before {content:'✓';position:absolute;left:15px;top:9px;color:var(--zk-teal);font-weight:800}
+.zk-pay h3 {font:600 18px var(--fh);margin:6px 0 10px}
+.zk-pay-plans {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.zk-plan {display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:18px;border:1px solid var(--zk-hair);background:color-mix(in srgb,var(--zk-surface,#fff) 70%,transparent)}
+.zk-plan b {font:600 16px var(--f)} .zk-plan span {font:700 18px var(--f);color:var(--zk-teal)} .zk-plan small {color:var(--zk-muted);font-size:13px}
+.zk-pay-how {text-align:left;padding:14px 16px;border-radius:16px;border:1px dashed var(--zk-hair);margin-bottom:18px}
+.zk-pay-how p {margin:6px 0 0;color:var(--zk-muted);white-space:pre-line}
+.zk-pay-act {display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.zk-pay-modal {height:100%;overflow:auto;padding:12px}
+.zk-pay-modal .zk-pay {box-shadow:none;border:0;margin:0 auto}
+.zk-subcard {display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-top:16px}
+.zk-subcard h3 {margin:0} .zk-subcard p {margin:0;flex:1}
+.zk-subcard.on p {color:var(--zk-teal);font-weight:600} .zk-subcard small {color:var(--zk-muted);font-weight:400}
+@media (max-width:600px) { .zk-pay {padding:24px 16px;border-radius:22px} }
+body.zk-v3 .ad-prices {border:0;padding:12px 0 0;margin:14px 0 0;border-top:1px solid var(--zk-hair)}
+body.zk-v3 .ad-prices legend {font:600 15px var(--fh);padding:0;color:var(--zk-ink)}
+body.zk-v3 .tc-sel {border:1px solid var(--zk-hair);border-radius:12px;padding:7px 10px;font:600 14px var(--f);background:var(--zk-surface,#fff);color:var(--zk-ink)}
