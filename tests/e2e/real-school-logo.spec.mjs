@@ -18,7 +18,7 @@ test('original Zukko school emblem loads in the masthead, without placeholder Z'
   expect(img.height).toBeGreaterThan(40);
   expect(img.shownWidth).toBeGreaterThanOrEqual(15); // yangi belgi tik (qalam): ~20×46px
   expect(img.shownHeight).toBeGreaterThanOrEqual(30);
-  await expect(page.locator('header.top .zk-school-name')).toContainText('ZUKKO XALQARO');
+  await expect(page.locator('header.top .zk-school-name')).toContainText('AKADEMIYASI');
 });
 
 test('logo remains visible at small phone widths 320, 360 and 390', async ({ page, isMobile }) => {

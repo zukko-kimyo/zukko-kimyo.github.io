@@ -11,7 +11,7 @@ test('skip-link ko\'rinadi va fokusni sahifa sarlavhasiga o\'tkazadi', async ({ 
 
 test('sahifa almashganda title yangilanadi va nav linkida aria-current bor', async ({ page }) => {
   await page.goto('/index.html#tests'); await waitReady(page);
-  await expect(page).toHaveTitle(/·\s*Zukko Xalqaro Maktabi/);
+  await expect(page).toHaveTitle(/·\s*Zukko Akademiyasi/);
   await expect(page.locator('nav#nav a[aria-current="page"]').first()).toBeAttached();
 });
 

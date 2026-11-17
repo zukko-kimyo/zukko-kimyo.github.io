@@ -38,7 +38,7 @@
       <div class="zk-cert-actions"><a class="btn sec sm" href="#me">${t.back}</a>${eligible?`<button type="button" class="btn pri sm" id="zkCertPrint">${t.print}</button>`:''}</div>
       ${eligible?`<article class="zk-cert-print" aria-label="${t.head}">
         <div class="zk-cert-ornament">⚗️</div>
-        <div class="zk-cert-school">ZUKKO KIMYO</div>
+        <div class="zk-cert-school">ZUKKO AKADEMIYASI</div>
         <div class="zk-cert-sub">${t.subtitle}</div>
         <h1>${t.head}</h1>
         <div class="zk-cert-recipient">${t.recipient}</div>

@@ -161,25 +161,25 @@ test('glass surfaces: translucent header (and floating tab bar on phones)', asyn
   if (isMobile) { expect(s.bBlur).toMatch(/blur/); expect(s.bBottom).toBeGreaterThanOrEqual(6); expect(s.bRadius).toBeGreaterThanOrEqual(16); }
 });
 
-test('school name is shown in full ("ZUKKO XALQARO MAKTABI") together with "Kimyo" on every width', async ({ page }) => {
+test('platform name is shown in full ("ZUKKO AKADEMIYASI") together with "Kimyo" on every width', async ({ page }) => {
   await page.goto('/index.html#home'); await waitReady(page);
   for (const width of [320, 360, 390, 1300]) {
     await page.setViewportSize({ width, height: 760 });
     await expect(page.locator('header.top .zk-school-name strong')).toBeVisible();
     await expect(page.locator('header.top .zk-school-name small')).toBeVisible();
-    await expect(page.locator('header.top .zk-school-name small')).toHaveText('MAKTABI');
+    await expect(page.locator('header.top .zk-school-name small')).toHaveText('AKADEMIYASI');
     await expect(page.locator('header.top .zk-subject')).toBeVisible();
     const ov = await page.evaluate(() => {
       const r = (s) => document.querySelector(s).getBoundingClientRect();
       const a = r('header.top .zk-school-name small'), b = r('header.top .zk-subject');
       return { overlap: !(a.bottom <= b.top + 1 || b.bottom <= a.top + 1 || a.right <= b.left || b.right <= a.left), sw: document.documentElement.scrollWidth - innerWidth };
     });
-    expect(ov.overlap, 'MAKTABI and Kimyo must not overlap at ' + width).toBe(false);
+    expect(ov.overlap, 'AKADEMIYASI and Kimyo must not overlap at ' + width).toBe(false);
     expect(ov.sw).toBeLessThanOrEqual(1);
   }
 });
 
-test('"MAKTABI" is centred under "ZUKKO XALQARO" and uses the same letter size', async ({ page }) => {
+test('"AKADEMIYASI" is centred under "ZUKKO" and uses the same letter size', async ({ page }) => {
   await page.goto('/index.html#home'); await waitReady(page);
   for (const width of [320, 390, 1300]) {
     await page.setViewportSize({ width, height: 760 });
@@ -284,7 +284,7 @@ test('new official logo: mark only in header, login and footer; app icons', asyn
   const mark = page.locator('.zk-gate .mk img');
   await expect(mark).toHaveAttribute('src', /assets\/zukko-mark\.svg/);
   const box = await mark.boundingBox(); expect(box.height).toBeGreaterThan(60);
-  await expect(page.locator('.zk-gate .zk-brand-kicker')).toHaveText('ZUKKO XALQARO MAKTABI');
+  await expect(page.locator('.zk-gate .zk-brand-kicker')).toHaveText('ZUKKO AKADEMIYASI');
   await expect(page.locator('img[src*="zukko-logo"]')).toHaveCount(0);
   await page.goto('/index.html#home'); await waitReady(page);
   await expect(page.locator('header.top .logo .mark img')).toHaveAttribute('src', /zukko-mark\.svg/);
