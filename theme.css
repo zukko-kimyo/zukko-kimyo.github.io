@@ -745,3 +745,13 @@ body.zk-v3 .zk-sjpick a.on {background:var(--sj,var(--zk-teal));color:#fff}
 body.zk-v3 .zk-sjpick a.off:not(.on) {opacity:.45}
 body.zk-v3 .zk-sjhead h1 .zk-sj-ic {display:inline-grid;width:48px;height:48px;font-size:24px;vertical-align:middle;margin-right:4px}
 body.zk-v3 .zk-ngrp-n.zk-sj-n {background:color-mix(in srgb,var(--sj) 14%,transparent);font-size:18px}
+/* Admin: darsliklar yuklash */
+body.zk-v3 .ad-ok {color:var(--zk-teal);font-weight:700} body.zk-v3 .ad-err {color:#b42318;font-weight:600}
+html[data-theme="dark"] body.zk-v3 .ad-err {color:#ffb4a8}
+body.zk-v3 .ad-books progress {display:block;width:100%;max-width:220px;margin-top:6px;accent-color:var(--zk-teal)}
+body.zk-v3 .bk-pick {cursor:pointer;white-space:nowrap} body.zk-v3 .bk-pick.busy {opacity:.5;pointer-events:none}
+body.zk-v3 .bk-pick:focus-within {outline:3px solid #0b6aa8;outline-offset:2px}
+/* Fan mavzusi: darslik sahifalari */
+body.zk-v3 .zk-sjpages {margin-top:12px}
+body.zk-v3 .zk-sjtopic.locked {opacity:.8}
+@media (max-width:700px) { body.zk-v3 .zk-sjimgs {grid-template-columns:1fr} }

@@ -281,3 +281,24 @@ test('har fanga alohida obuna (subs); noto\'g\'ri fan yoki yozuv rad etiladi', a
   await assertFails(setDoc(doc(admin(), 'users/stu1'), { subs: { math: { plan: 'week', until: 1 } } }, { merge: true }));
   await assertFails(setDoc(doc(student(), 'users/stu1'), { subs: { math: S } }, { merge: true }));
 });
+
+// ---------- darslik sahifalari (content) ----------
+const PAGE = (n) => ({ s: 'eng', g: 1, part: 1, p: 5, n, img: 'data:image/webp;base64,AAAA', w: 900, h: 1273, at: 1, by: 'admin1' });
+test('darslik sahifasini faqat admin yozadi; noto\'g\'ri yozuv rad etiladi', async () => {
+  await assertSucceeds(setDoc(doc(admin(), 'content/eng-1-1-5'), PAGE(1)));
+  await assertFails(setDoc(doc(teacher(), 'content/eng-1-1-6'), PAGE(1)));
+  await assertFails(setDoc(doc(admin(), 'content/eng-1-1-7'), { ...PAGE(1), img: 'javascript:alert(1)' }));
+  await assertFails(setDoc(doc(admin(), 'content/eng-1-1-8'), { ...PAGE(1), s: 'art' }));
+});
+test('bepul mavzu sahifasi o\'quvchiga ochiq, pullik — faqat fan obunasi bilan', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'content/eng-1-1-5'), PAGE(1));
+    await setDoc(doc(ctx.firestore(), 'content/eng-1-1-11'), { ...PAGE(4), p: 11 });
+  });
+  await assertSucceeds(getDoc(doc(student(), 'content/eng-1-1-5')));
+  await assertFails(getDoc(doc(student(), 'content/eng-1-1-11')));
+  await assertFails(getDocs(collection(student(), 'content')), 'ro\'yxat yopiq');
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/stu1'), { subs: { eng: { plan: 'month', until: Date.now() + 86400000 } } }, { merge: true }); });
+  await assertSucceeds(getDoc(doc(student(), 'content/eng-1-1-11')));
+  await assertSucceeds(getDoc(doc(admin(), 'content/eng-1-1-11')));
+});

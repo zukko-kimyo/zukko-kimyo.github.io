@@ -98,6 +98,63 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
     document.head.appendChild(s);
   }
 
+  /* ---------- Darsliklar (fanlar): PDF → sahifalar → Firebase (content/…), ADR-0008 ----------
+     Administrator darslik PDF faylini tanlaydi; brauzer har bir sahifani rasmga aylantirib (pdf.js) yuklaydi.
+     Sahifalarni o'qish huquqi firestore.rules'da: bepul mavzular, fan obunasi, xodim. */
+  const PDFJS = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/';
+  let pdfjsP = null;
+  const loadPdfjs = () => pdfjsP || (pdfjsP = import(PDFJS + 'pdf.min.mjs').then((m) => { m.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.mjs'; return m; }).catch((e) => { pdfjsP = null; throw e; }));
+  const BK = {
+    uz: { h: '📚 Darsliklar (fanlar)', p: 'Darslik PDF faylini tanlang — sahifalar rasmga aylantirilib Firebase’ga yuklanadi. O‘quvchilar dastlabki bepul mavzularni va obunasi bor fanni ko‘radi. Yuklash bir necha daqiqa oladi, sahifani yopmang.',
+      book: 'Darslik', st: 'Holat', none: 'Yuklanmagan', done: '{n} sahifa · {d}', pick: 'PDF tanlash', bad: 'Bu fayl tanlangan darslikka mos kelmaydi: {n} sahifa bor, kamida {m} kerak.', go: '{i} / {n} sahifa…', ok: 'Yuklandi: {n} sahifa', again: 'Bu darslik avval yuklangan. Qayta yuklab, eskisini almashtirasizmi?', cdn: 'PDF o‘quvchi (pdf.js) yuklanmadi — internetni tekshiring.' },
+    en: { h: '📚 Textbooks (subjects)', p: 'Choose the textbook PDF — pages are turned into images and uploaded to Firebase. Students see the free first topics and the subjects they subscribe to. Uploading takes a few minutes; keep this page open.',
+      book: 'Textbook', st: 'Status', none: 'Not uploaded', done: '{n} pages · {d}', pick: 'Choose PDF', bad: 'This file does not match the chosen textbook: it has {n} pages, at least {m} needed.', go: '{i} / {n} pages…', ok: 'Uploaded: {n} pages', again: 'This textbook was uploaded before. Upload again and replace it?', cdn: 'The PDF reader (pdf.js) did not load — check the internet.' },
+  };
+  const bk = (k, o) => { let x = BK[L === 'en' ? 'en' : 'uz'][k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
+  async function booksPanel() {
+    const host = APP.querySelector('#adBooks'); if (!host || !window.ZKSubjects) { if (host) host.remove(); return; }
+    const rows = []; ZKSubjects.list.forEach((sj) => (sj.books || []).forEach((b) => rows.push({ sj, b, id: `${sj.id}-${b.grade}-${b.part}` })));
+    const idx = await Promise.all(rows.map((r) => ZKAuth.backend.get('contentIndex', r.id).catch(() => null)));
+    if (!host.isConnected) return;
+    const fmt = (ms) => (window.ZKSub ? ZKSub.fmtDate(ms) : new Date(ms).toLocaleDateString());
+    host.innerHTML = `<h3>${bk('h')}</h3><div class="ad-sub">${bk('p')}</div><div class="ad-tw"><table class="ad ad-books"><thead><tr><th>${bk('book')}</th><th>${bk('st')}</th><th><span class="zk-sr">${bk('pick')}</span></th></tr></thead><tbody>
+      ${rows.map((r, i) => `<tr data-bk="${r.id}"><td><b>${esc(r.sj.name[L === 'en' ? 'en' : 'uz'])} · ${r.b.grade}-${t('grade')}</b><div class="ad-mut">${esc(r.b.title)}</div></td>
+        <td class="bk-st" role="status">${idx[i] ? `<span class="ad-ok">✓ ${bk('done', { n: Number(idx[i].pages) || 0, d: fmt(idx[i].at) })}</span>` : `<span class="ad-mut">${bk('none')}</span>`}</td>
+        <td><label class="btn sec sm bk-pick">${bk('pick')}<input type="file" accept="application/pdf,.pdf" data-i="${i}" class="zk-sr"></label></td></tr>`).join('')}</tbody></table></div>`;
+    host.querySelectorAll('input[type=file]').forEach((inp) => (inp.onchange = () => { const f = inp.files && inp.files[0]; const i = +inp.dataset.i; inp.value = ''; if (f) uploadBook(rows[i], f, !!idx[i], host.querySelector(`tr[data-bk="${rows[i].id}"] .bk-st`), inp); }));
+  }
+  async function uploadBook(row, file, had, out, inp) {
+    if (had && !confirm(bk('again'))) return;
+    const B = ZKAuth.backend, { sj, b } = row, pageTopic = {};
+    b.topics.forEach((tp, i) => tp.p.forEach((p) => { pageTopic[p] = i + 1; }));
+    const printed = Object.keys(pageTopic).map(Number).sort((x, y) => x - y);
+    const lbl = inp.closest('label'); lbl.classList.add('busy'); inp.disabled = true;
+    const say = (h) => { out.innerHTML = h; };
+    try {
+      let pdfjs; try { pdfjs = await loadPdfjs(); } catch (e) { throw new Error(bk('cdn')); }
+      const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+      const need = printed[printed.length - 1] - b.offset;
+      if (pdf.numPages < need) throw new Error(bk('bad', { n: pdf.numPages, m: need }));
+      const cv = document.createElement('canvas'), cx = cv.getContext('2d');
+      for (let k = 0; k < printed.length; k++) {
+        const p = printed[k], page = await pdf.getPage(p - b.offset), v1 = page.getViewport({ scale: 1 });
+        const vp = page.getViewport({ scale: 900 / v1.width });
+        cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+        cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+        await page.render({ canvasContext: cx, viewport: vp }).promise;
+        let q = 0.72, img = cv.toDataURL('image/webp', q);
+        if (!img.startsWith('data:image/webp')) img = cv.toDataURL('image/jpeg', 0.78); // Safari webp yoza olmaydi
+        while (img.length > 950000 && q > 0.35) { q -= 0.1; img = img.startsWith('data:image/webp') ? cv.toDataURL('image/webp', q) : cv.toDataURL('image/jpeg', q); }
+        await B.set('content', `${row.id}-${p}`, { s: sj.id, g: b.grade, part: b.part, p, n: pageTopic[p], img, w: cv.width, h: cv.height, at: Date.now(), by: ZKAuth.user.uid });
+        say(`<span class="ad-mut">${bk('go', { i: k + 1, n: printed.length })}</span><progress max="${printed.length}" value="${k + 1}"></progress>`);
+      }
+      await B.set('contentIndex', row.id, { pages: printed.length, from: printed[0], to: printed[printed.length - 1], at: Date.now(), by: ZKAuth.user.uid, file: String(file.name || '').slice(0, 120) });
+      say(`<span class="ad-ok">✓ ${bk('ok', { n: printed.length })}</span>`);
+    } catch (e) {
+      say(`<span class="ad-err">⚠ ${esc((e && e.message) || ZKAuth.errMsg(e))}</span>`);
+    } finally { lbl.classList.remove('busy'); inp.disabled = false; }
+  }
+
   async function load() {
     const B = ZKAuth.backend;
     const [users, prog, settings] = await Promise.all([B.list('users'), B.list('progress'), B.get('settings', 'site').catch(() => null)]);
@@ -158,6 +215,7 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
       </div>
       <div class="panel" style="margin-top:18px"><h3>🧩 ${t('hard_h')}</h3><div class="ad-sub">${t('hard_p')}</div>${hard.length ? `<div class="ad-tw"><table class="ad" id="adHard"><thead><tr><th>${t('h_lesson')}</th><th>${t('h_avg')}</th><th>${t('h_n')}</th></tr></thead><tbody>
         ${hard.map((h) => `<tr><td><a href="#${esc(h.g)}-${Number(h.n) || 0}"><b>${esc(String(h.g).slice(1))}-${t('grade')}, ${Number(h.n) || 0}</b> — ${esc(lessonTitle(h.g, h.n))}</a></td><td><span class="ad-q ${qcls(h.avg)}">${Number(h.avg) || 0}</span></td><td>${Number(h.attempts) || 0}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut">${t('hard_none')}</div>`}</div>
+      <div class="panel" id="adBooks" style="margin-top:18px"></div>
       <div class="ad-grid" style="margin-top:18px">
         <div class="panel ad-form"><h3>⚙️ ${t('set_h')}</h3>
           <label for="adAnn">${t('ann_l')}</label><textarea id="adAnn" maxlength="300" placeholder="${esc(t('ann_ph'))}">${esc(set.announce || '')}</textarea>
@@ -190,6 +248,7 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
 
   function wire() {
     const $ = (id) => APP.querySelector('#' + id);
+    booksPanel();
     $('adSave').onclick = async () => {
       const msg = $('adSetMsg'); msg.className = 'ad-msg'; msg.textContent = '';
       const fv = Math.round(Number($('adFreeN').value)); const freeN = Number.isFinite(fv) ? Math.max(0, Math.min(50, fv)) : 3;

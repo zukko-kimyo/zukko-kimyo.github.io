@@ -327,7 +327,8 @@
       b.topics.forEach((tp, i) => {
         const n = i + 1, u = (b.units || []).find((x) => x.from === n);
         if (u) html += `<h3 class="zk-sjunit">${esc(uz ? u.t.uz : u.t.orig)}${uz ? ` <small>${esc(u.t.orig)}</small>` : ''}</h3>`;
-        html += `<a class="zk-sjtopic" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}</b>${tp.uz && tp.uz !== tp.t ? `<small>${esc(tp.uz)}</small>` : ''}</span></a>`;
+        const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, n, freeN());
+        html += `<a class="zk-sjtopic${lk ? ' locked' : ''}" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}${lk ? lockIc : ''}</b>${tp.uz && tp.uz !== tp.t ? `<small>${esc(tp.uz)}</small>` : ''}</span></a>`;
       });
       return html + '</section>';
     }).join('') || `<div class="panel tc-empty zk-sjsoon">${uz ? `${g}-sinf uchun ${SN(sj).toLowerCase()} darsligi tez orada qo‘shiladi.` : `The grade ${g} ${SN(sj)} textbook is coming soon.`}</div>`;
@@ -346,8 +347,35 @@
       <h1><span class="zk-sjnum" style="background:${sj.color}">${n}</span> ${esc(tp.t)}</h1>${tp.uz && tp.uz !== tp.t ? `<p>${esc(tp.uz)}</p>` : ''}</div></div>
       <div class="wrap" style="padding-bottom:48px"><div class="panel"><h3>📖 ${uz ? 'Darslikda' : 'In the textbook'}</h3>
         <p>${unit ? esc(uz ? unit.t.uz : unit.t.orig) + ' · ' : ''}${uz ? 'sahifalar' : 'pages'} ${tp.p.join('–')}</p>
-        <div class="zk-lazy" role="status">${uz ? 'Darslik sahifalari, yangi so‘zlar va mashqlar tez orada shu yerda bo‘ladi.' : 'Textbook pages, new words and exercises will appear here soon.'}</div></div>
+        <div id="sjPages" class="zk-sjpages"><div class="zk-lazy" role="status"><span class="zk-lazy-spin" aria-hidden="true"></span>${uz ? 'Yuklanmoqda…' : 'Loading…'}</div></div></div>
         <div class="pn">${prev ? `<a class="btn sec" href="${prev}">← ${uz ? 'Oldingi' : 'Previous'}</a>` : '<span></span>'}${next ? `<a class="btn sec" href="${next}">${uz ? 'Keyingi' : 'Next'} →</a>` : ''}</div></div>`;
+    loadSjPages(document.getElementById('sjPages'), sj, b, n, tp);
+  }
+  // Darslik sahifalari Firebase'dan (content/<fan>-<sinf>-<qism>-<sahifa>); ruxsat — firestore.rules (bepul mavzu, obuna, xodim)
+  const sjPageCache = {};
+  async function loadSjPages(host, sj, b, n, tp) {
+    if (!host) return;
+    const uz = lang === 'uz', bid = `${sj.id}-${b.grade}-${b.part}`;
+    const open = !window.ZKAuth || ZKAuth.canPaid(sj.id) || ZKSub.lessonOpen(false, n, freeN());
+    if (!open) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return; }
+    const B = window.ZKAuth && ZKAuth.backend;
+    if (!B) { host.innerHTML = `<div class="zk-lazy">${uz ? 'Darslik sahifalari kirish bilan ochiladi.' : 'Sign in to see textbook pages.'}</div>`; return; }
+    try {
+      const idx = await B.get('contentIndex', bid);
+      if (!host.isConnected) return;
+      if (!idx) { host.innerHTML = `<div class="zk-lazy">${uz ? 'Bu darslikning sahifalari hali yuklanmagan. Administrator ularni «Admin paneli → Darsliklar» bo‘limidan yuklaydi.' : 'This textbook’s pages have not been uploaded yet. The administrator uploads them in Admin panel → Textbooks.'}</div>`; return; }
+      const docs = await Promise.all(tp.p.map((p) => { const k = `${bid}-${p}`; return sjPageCache[k] ? Promise.resolve(sjPageCache[k]) : B.get('content', k).then((d) => (d && (sjPageCache[k] = d), d)); }));
+      if (!host.isConnected) return;
+      const ok = docs.filter((d) => d && d.img);
+      if (!ok.length) { host.innerHTML = `<div class="zk-lazy">${uz ? 'Sahifalar topilmadi.' : 'Pages not found.'}</div>`; return; }
+      host.innerHTML = `<div class="pages zk-sjimgs">${ok.map((d) => `<img src="${d.img}" alt="${esc((uz ? 'Darslik, ' : 'Textbook, ') + d.p + (uz ? '-sahifa' : ' page'))}" loading="lazy" decoding="async" style="aspect-ratio:${d.w || 900}/${d.h || 1273}">`).join('')}</div>`;
+      host.querySelectorAll('img').forEach((im) => pressable(im, () => zoomImg(im), im.alt));
+    } catch (e) {
+      if (!host.isConnected) return;
+      if (/permission/i.test((e && (e.code || e.message)) || '')) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return; }
+      host.innerHTML = `<div class="zk-lazy zk-lazy-err" role="alert"><b>${uz ? 'Sahifalar yuklanmadi' : 'Pages did not load'}</b><span>${uz ? 'Internet aloqasini tekshiring.' : 'Check your internet connection.'}</span><button type="button" class="btn sec">${uz ? 'Qayta urinish' : 'Try again'}</button></div>`;
+      host.querySelector('button').onclick = () => loadSjPages(host, sj, b, n, tp);
+    }
   }
   /* ---------- obuna: qulflangan bo'lim oynasi (lib/sub.js, firestore.rules: obunani faqat admin beradi) ---------- */
   const PAY = {
@@ -379,17 +407,18 @@
   const labOk = (id) => fullAccess() || !(window.Lab && Lab.exps[id]) || ZKSub.labOpen(false, Lab.exps[id], freeN());
   const lockIc = '<span class="zk-lock" aria-hidden="true">🔒</span>';
   const pt = (k, o) => { let x = (PAY[lang] || PAY.uz)[k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
-  function paywall(feature) {
-    const site = (window.ZKAuth && ZKAuth.site) || {}, prices = site.prices || {}, st = window.ZKAuth ? ZKAuth.subStatus() : {};
+  function paywall(feature, sj) {
+    const site = (window.ZKAuth && ZKAuth.site) || {}, prices = site.prices || {}, st = window.ZKAuth ? ZKAuth.subStatus(sj ? sj.id : 'chem') : {};
     const esc2 = (v) => (window.ZKAuth ? ZKAuth.esc(v) : String(v));
     const plans = (window.ZKSub ? ZKSub.PLANS : []).map((k) => `<div class="zk-plan"><b>${ZKSub.NAMES[lang === 'en' ? 'en' : 'uz'][k]}</b>${prices[k] ? `<span>${esc2(prices[k])}</span>` : ''}<small>${pt('d_' + k)}</small></div>`).join('');
     return `<section class="zk-pay" aria-labelledby="zkPayH"><div class="zk-pay-ic" aria-hidden="true">🔒</div>
-      <h2 id="zkPayH" tabindex="-1">${pt(feature) || pt('lesson')}</h2><p>${pt('p', { n: freeN() })}</p>
+      <h2 id="zkPayH" tabindex="-1">${sj ? (lang === 'uz' ? `Bu mavzu ${SN(sj).toLowerCase()} obunasi bilan ochiladi` : `This topic opens with a ${SN(sj)} subscription`) : pt(feature) || pt('lesson')}</h2>
+      <p>${sj ? (lang === 'uz' ? `Har bir sinfda dastlabki ${freeN()} ta mavzu bepul. Obuna bilan ${SN(sj).toLowerCase()} fanining barcha mavzulari — darslik sahifalari va mashqlari ochiladi.` : `The first ${freeN()} topics of every grade are free. A subscription opens every ${SN(sj)} topic — textbook pages and exercises.`) : pt('p', { n: freeN() })}</p>
       ${st.expired ? `<p class="zk-pay-exp" role="status">${pt('exp', { d: ZKSub.fmtDate(st.until) })}</p>` : ''}
-      <ul class="zk-pay-inc">${pt('inc').map((x) => `<li>${x}</li>`).join('')}</ul>
+      ${sj ? '' : `<ul class="zk-pay-inc">${pt('inc').map((x) => `<li>${x}</li>`).join('')}</ul>`}
       <h3>${pt('plans')}</h3><div class="zk-pay-plans">${plans}</div>
       <div class="zk-pay-how"><b>${pt('how')}</b><p>${esc2(site.payInfo || pt('how_def'))}</p></div>
-      <div class="zk-pay-act"><button type="button" class="btn" id="zkPayRe">${pt('re')}</button><a class="btn sec" href="#g6-1">${pt('free')}</a></div></section>`;
+      <div class="zk-pay-act"><button type="button" class="btn" id="zkPayRe">${pt('re')}</button><a class="btn sec" href="${sj ? `#s/${sj.id}` : '#g6-1'}">${pt('free')}</a></div></section>`;
   }
   // Obuna yoqilgach profil qayta o'qilishi uchun sahifa yangilanadi
   function bindPaywall() { const b = document.getElementById('zkPayRe'); if (b) b.onclick = () => location.reload(); }

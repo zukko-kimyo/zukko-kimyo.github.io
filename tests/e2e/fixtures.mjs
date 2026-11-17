@@ -1,6 +1,7 @@
 // Umumiy test sozlamalari:
 //  - firebase-config.js o'rniga bo'sh sozlama beriladi -> sayt "?mock" bilan sinov rejimida ishlaydi;
 //  - THREE_DIR berilsa (internetsiz muhit), three.js CDN o'rniga lokal nusxadan olinadi;
+//  - PDFJS_DIR (pdfjs-dist paketi papkasi) berilsa, pdf.js CDN o'rniga lokal nusxadan olinadi (admin darslik yuklash);
 //  - OFFLINE=1 bo'lsa, Google Fonts so'rovlari to'xtatiladi.
 import { test as base, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -13,6 +14,12 @@ export const test = base.extend({
       await context.route(/three@0\.160\.0\//, async (r) => {
         const rel = r.request().url().split('three@0.160.0/')[1];
         try { r.fulfill({ contentType: 'application/javascript', body: await readFile(join(process.env.THREE_DIR, rel)) }); } catch { r.abort(); }
+      });
+    }
+    if (process.env.PDFJS_DIR) {
+      await context.route(/pdfjs-dist@4\.10\.38\//, async (r) => {
+        const rel = r.request().url().split('pdfjs-dist@4.10.38/')[1];
+        try { r.fulfill({ contentType: 'application/javascript', headers: { 'Access-Control-Allow-Origin': '*' }, body: await readFile(join(process.env.PDFJS_DIR, rel)) }); } catch { r.abort(); }
       });
     }
     if (process.env.OFFLINE) await context.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());

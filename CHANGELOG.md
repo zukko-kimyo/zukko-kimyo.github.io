@@ -4,6 +4,11 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Fanlar: darslik sahifalari Firebase'da, himoyalangan (2026-11-17, ADR-0008 2-bosqich)
+- Admin paneli → "Darsliklar (fanlar)": administrator darslik PDF'ini tanlaydi, brauzer har bir sahifani rasmga aylantirib (pdf.js) Firebase'ga yuklaydi (`content/<fan>-<sinf>-<qism>-<sahifa>`). Noto'g'ri fayl rad etiladi; jarayon ko'rsatiladi.
+- Mavzu sahifasida darslikning 2 sahifasi (kattalashtirish bilan). Bepul mavzular (har sinfda dastlabki N ta) hammaga, qolganlari — shu fan obunasi bilan; yopiq mavzularda 🔒 va obuna oynasi.
+- `firestore.rules`: sahifani faqat birma-bir o'qish; ruxsat — admin, shu fan o'qituvchisi, bepul mavzu yoki fan obunasi (server vaqti bo'yicha). Firebase bepul tarifida ishlaydi. **Publish kerak**.
+
 ### Zukko Akademiyasi: ko'p fanli platforma asosi (2026-11-17, ADR-0008)
 - Fanlar: Kimyo (mavjud), Matematika, Ingliz tili, Rus tili (1–11-sinf). Menyuda "Sinflar" kabi ochiladigan "Fanlar" ro'yxati; har bir fanning o'z oynasi (`#s/<fan>`), unda faqat bitta sinf: o'quvchiga — o'z sinfi (profildagi sinfdan), admin/o'qituvchi sinfni tanlaydi. Bosh sahifada fanlar bo'limi; sarlavhada joriy fan nomi.
 - 1-sinf, 1-qism darsliklari mundarijasi (har birida 50 mavzu, o'zbekcha tarjimasi bilan): English Pathway 1, Russian Pathway 1, Mathematics Grade 1. Darslik sahifalari va mashqlar — keyingi bosqichda (Firebase'da, himoyalangan).
