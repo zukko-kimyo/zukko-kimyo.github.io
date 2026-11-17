@@ -82,7 +82,9 @@
   function ensureLoaded() { return st.users ? Promise.resolve() : (loading || (loading = loadAll().finally(() => { loading = null; }))); }
   async function loadAll() {
     const Bk = ZKAuth.backend;
-    const [users, prog, secrets, codes] = await Promise.all([Bk.list('users'), Bk.list('progress'), (ZKAuth.isAdmin() ? Bk.list('secrets') : Bk.list('secrets', 'role', 'student')).catch(() => []), Bk.list('classes').catch(() => [])]);
+    // O'qituvchi faqat kuzatadi (foydalanuvchi qarori 2026-11-17): parollar va sinf kodlari faqat administratorga
+    const adm = ZKAuth.isAdmin();
+    const [users, prog, secrets, codes] = await Promise.all([Bk.list('users'), Bk.list('progress'), adm ? Bk.list('secrets').catch(() => []) : [], adm ? Bk.list('classes').catch(() => []) : []]);
     st.codes = codes;
     st.users = users; st.prog = {}; prog.forEach((p) => (st.prog[p.id] = cleanProg(p))); st.secrets = {}; secrets.forEach((s) => (st.secrets[s.id] = s));
   }
@@ -163,14 +165,14 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   function render(app, ctx) {
     APP = app; CTX = ctx; L = ctx.lang === 'en' ? 'en' : 'uz'; css();
     const admin = ZKAuth.isAdmin();
-    app.innerHTML = `<div class="page-h tch"><div class="wrap"><div class="crumbs"><a href="#home">${ctx.t('nav_home')}</a> / ${t('h').replace(/^\S+\s/, '')}</div><h1>${t('h')}</h1><p>${t('p')}</p></div></div>
+    app.innerHTML = `<div class="page-h tch"><div class="wrap"><div class="crumbs"><a href="#home">${ctx.t('nav_home')}</a> / ${t('h').replace(/^\S+\s/, '')}</div><h1>${t('h')}</h1><p>${admin ? t('p') : (L === 'en' ? 'Student progress and results (view only).' : 'O‘quvchilar natijalari va faolligi (faqat ko‘rish).')}</p></div></div>
       <div class="wrap" style="padding-bottom:40px">
         <div class="tc-tabs" id="tcTabs"></div>
         <div id="tcBody"><div class="tc-empty">${t('loading')}</div></div>
       </div><div id="tcPrint"></div>`;
     tabs();
     const token = (render.n = (render.n || 0) + 1);
-    const go = () => { if (token !== render.n) return; tabs(); return st.tab === 'res' ? (st.detail ? detail() : results()) : st.tab === 'add' ? addView() : st.tab === 'req' ? requests() : st.tab === 'codes' ? codesView() : st.tab === 'sub' && ZKAuth.isAdmin() ? subsView() : teachers(); };
+    const go = () => { if (token !== render.n) return; if (!ZKAuth.isAdmin()) st.tab = 'res'; tabs(); return st.tab === 'res' ? (st.detail ? detail() : results()) : st.tab === 'add' ? addView() : st.tab === 'req' ? requests() : st.tab === 'codes' ? codesView() : st.tab === 'sub' && ZKAuth.isAdmin() ? subsView() : teachers(); };
     if (!st.users) ensureLoaded().then(go).catch((e) => { body().innerHTML = `<div class="tc-empty">⚠ ${esc(ZKAuth.errMsg(e))}</div>`; });
     else go();
   }
@@ -178,7 +180,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   function tabs() {
     const el = document.getElementById('tcTabs'); if (!el) return;
     const n = st.users ? pending().length : 0;
-    el.innerHTML = ['res', 'req', 'add', 'codes'].concat(ZKAuth.isAdmin() ? ['sub', 'tch'] : []).map((k) => `<button data-t="${k}" class="${st.tab === k ? 'on' : ''}">${t('tab_' + k)}${k === 'req' && n ? ` <span class="tc-badge">${n}</span>` : ''}</button>`).join('');
+    el.innerHTML = (ZKAuth.isAdmin() ? ['res', 'req', 'add', 'codes', 'sub', 'tch'] : ['res']).map((k) => `<button data-t="${k}" class="${st.tab === k ? 'on' : ''}">${t('tab_' + k)}${k === 'req' && n ? ` <span class="tc-badge">${n}</span>` : ''}</button>`).join('');
     el.querySelectorAll('button').forEach((b) => (b.onclick = () => { st.tab = b.dataset.t; st.detail = null; render(APP, CTX); }));
   }
 
@@ -299,7 +301,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
         <td data-l="${t('c_quiz')}">${p.quizAvg != null ? `<span class="tc-q ${qcls(p.quizAvg)}">${p.quizAvg}</span>` : '<span class="tc-mut">—</span>'}</td>
         <td data-l="${t('c_g6')}">${bar(p.done6 || 0, nLessons('g6'), CTX.GC.g6)}</td><td data-l="${t('c_g7')}">${bar(p.done7 || 0, nLessons('g7'), CTX.GC.g7)}</td><td data-l="${t('c_g8')}">${bar(p.done8 || 0, nLessons('g8'), CTX.GC.g8)}</td>
         <td data-l="${t('c_last')}">${ago(p.updated)}</td>
-        <td class="act"><div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div></td></tr>`;
+        <td class="act">${ZKAuth.isAdmin() ? `<div class="tc-act"><button data-pw="${u.id}" aria-label="${esc(t('pw') + ' — ' + (u.name || u.login))}">${t('pw')}</button><button data-del="${u.id}" aria-label="${esc(t('del') + ' — ' + (u.name || u.login))}">${t('del')}</button></div>` : ''}</td></tr>`;
     }).join('');
   }
   function results() {
@@ -319,13 +321,13 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
        <div class="tc-metric"><span>⭐ ${L === 'en' ? 'Total XP' : 'Jami XP'}</span><b>${totalXp}</b></div>
     </section>`;
     body().innerHTML = summaryHtml + `<div class="tc-chips"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
-      <div class="tc-tools"><button class="btn sec sm" id="tcRe">${t('reload')}</button><button class="btn sec sm" id="tcPw">${st.showPw ? t('hide_pw') : t('show_pw')}</button><div class="sp"></div><button class="btn sec sm" id="tcCsv">${t('csv')}</button><button class="btn sec sm" id="tcCards">${t('print_cards')}</button></div>
+      <div class="tc-tools"><button class="btn sec sm" id="tcRe">${t('reload')}</button>${ZKAuth.isAdmin() ? `<button class="btn sec sm" id="tcPw">${st.showPw ? t('hide_pw') : t('show_pw')}</button>` : ''}<div class="sp"></div><button class="btn sec sm" id="tcCsv">${t('csv')}</button>${ZKAuth.isAdmin() ? `<button class="btn sec sm" id="tcCards">${t('print_cards')}</button>` : ''}</div>
       <div class="tc-wrap"><table class="tc resp"><thead><tr><th>${t('c_n')}</th><th>${t('c_name')}</th><th>${t('c_login')}</th><th>${t('c_xp')}</th><th>${t('c_quiz')}</th><th>${t('c_g6')}</th><th>${t('c_g7')}</th><th>${t('c_g8')}</th><th>${t('c_last')}</th><th></th></tr></thead><tbody>${rows(list)}</tbody></table></div>`;
     body().querySelectorAll('.tc-chips button').forEach((b) => (b.onclick = () => { st.cls = b.dataset.c; results(); }));
     document.getElementById('tcRe').onclick = async () => { body().style.opacity = 0.5; try { await loadAll(); } finally { body().style.opacity = 1; } results(); };
-    document.getElementById('tcPw').onclick = () => { st.showPw = !st.showPw; results(); };
+    const pwb = document.getElementById('tcPw'); if (pwb) pwb.onclick = () => { st.showPw = !st.showPw; results(); };
     document.getElementById('tcCsv').onclick = () => csv(list);
-    document.getElementById('tcCards').onclick = () => cards(list.map((u) => ({ name: u.name, login: u.login, cls: u.cls, pw: (st.secrets[u.id] || {}).pw || '—' })));
+    const cdb = document.getElementById('tcCards'); if (cdb) cdb.onclick = () => cards(list.map((u) => ({ name: u.name, login: u.login, cls: u.cls, pw: (st.secrets[u.id] || {}).pw || '—' })));
     wireActions(body());
   }
   function wireActions(root) {
@@ -368,7 +370,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     const grades = ['g6', 'g7', 'g8'].filter((g) => window.BOOKS && BOOKS[g]);
     const sec = st.secrets[u.id];
     body().innerHTML = `<button class="btn sec sm" id="tcBack">${t('d_back')}</button>
-      <div class="panel" style="margin-top:12px"><div class="tc-det-h"><div class="av">${esc((u.name || u.login)[0] || '?').toUpperCase()}</div><div><h2 style="margin:0;font-size:22px">${esc(u.name || u.login)}</h2><div class="tc-mut"><code>${esc(u.login)}</code> · ${esc(u.cls || '')} ${sec ? `· <span class="tc-pw">${esc(sec.pw)}</span>` : ''}</div></div><div style="flex:1"></div><div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div></div>
+      <div class="panel" style="margin-top:12px"><div class="tc-det-h"><div class="av">${esc((u.name || u.login)[0] || '?').toUpperCase()}</div><div><h2 style="margin:0;font-size:22px">${esc(u.name || u.login)}</h2><div class="tc-mut"><code>${esc(u.login)}</code> · ${esc(u.cls || '')} ${sec ? `· <span class="tc-pw">${esc(sec.pw)}</span>` : ''}</div></div><div style="flex:1"></div>${ZKAuth.isAdmin() ? `<div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div>` : ''}</div>
       <div class="tc-kpi"><div><b>${xp}</b><span>XP · L${lv(xp)}</span></div><div><b>${(p.done6 || 0) + (p.done7 || 0) + (p.done8 || 0)}</b><span>⭐ ${L === 'en' ? 'lessons mastered' : "o'zlashtirilgan dars"}</span></div><div><b>${p.visited || 0}</b><span>${t('d_visited')}</span></div><div><b>${p.quizAvg != null ? p.quizAvg : '—'}</b><span>${t('c_quiz')} (${p.quizN || 0})</span></div><div><b>${p.labs || 0}</b><span>🧪 ${t('d_labs')}</span></div><div><b style="font-size:16px">${ago(p.updated)}</b><span>${t('c_last')}</span></div></div>
       ${grades.map((g) => { const bk = BOOKS[g]; const items = bk.lessons.map((Lz, i) => ({ n: i + 1, r: Ls[g + '-' + (i + 1)], t: CTX.tr(Lz.t) })).filter((x) => x.r); return `<h3 style="margin:16px 0 8px">${g.slice(1)}-${t('grade')} <small class="tc-mut">${items.filter((x) => x.r.done).length}/${bk.lessons.length}</small></h3>${items.length ? `<div class="tc-ls">${items.map((x) => `<div class="${x.r.done ? '' : 'off'}"><span class="n" style="background:${CTX.GC[g]}">${x.n}</span><span>${esc(x.t)}</span><span class="s">${num(x.r.best, 10) ? `<span class="tc-q ${qcls(num(x.r.best, 10))}">${num(x.r.best, 10)}/10</span>` : '👁'}</span></div>`).join('')}</div>` : `<div class="tc-mut">—</div>`}`; }).join('')}
       </div>`;

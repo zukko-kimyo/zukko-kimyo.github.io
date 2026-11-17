@@ -26,7 +26,7 @@ Zukko Xalqaro Maktabi kimyo darsliklari asosidagi o'quv sayti: darslar (o'zbek/i
 
 1. Saytni oching, login: `admin`, o'zingiz o'ylagan parol (kamida 6 belgi) → **Kirish**.
 2. «Administrator hisobini yaratish» tugmasini bosing (faqat birinchi marta chiqadi).
-3. Menyudagi **O'qituvchi paneli** → o'qituvchilar va o'quvchilarni qo'shing.
+3. Menyudagi **O'qituvchi paneli** → o'qituvchilar va o'quvchilarni qo'shing (buni faqat administrator qiladi; o'qituvchi natijalarni kuzatadi).
 
 To'liq qo'llanma: sozlash hujjatida (GitHub + Firebase, qadamma-qadam).
 
