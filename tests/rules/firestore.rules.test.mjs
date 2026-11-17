@@ -223,3 +223,28 @@ test('o‘chirilgan (disabled) o‘qituvchi xodim huquqlarini yo‘qotadi', asyn
   await assertFails(getDocs(collection(teacher(), 'progress')));
   await assertFails(setDoc(doc(teacher(), 'users/stu1'), { login: 'vali.a.7a', name: 'X', role: 'student', cls: '7A' }));
 });
+
+// ---------- obuna (users/{uid}.sub) ----------
+const SUB = { plan: 'month', until: Date.now() + 30 * 86400000, at: Date.now(), by: 'adm1' };
+test('obunani faqat administrator beradi', async () => {
+  await assertSucceeds(setDoc(doc(admin(), 'users/stu1'), { sub: SUB }, { merge: true }));
+});
+test('o\'quvchi o\'ziga obuna bera olmaydi', async () => {
+  await assertFails(setDoc(doc(student(), 'users/stu1'), { sub: SUB }, { merge: true }));
+});
+test('o\'qituvchi obuna bera olmaydi, lekin o\'quvchining boshqa maydonini o\'zgartira oladi', async () => {
+  await assertFails(setDoc(doc(teacher(), 'users/stu1'), { sub: SUB }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'users/new3'), { login: 'new.3', name: 'Yangi', role: 'student', cls: '7A', sub: SUB }));
+  await assertSucceeds(setDoc(doc(teacher(), 'users/stu1'), { name: 'Vali Aliyev' }, { merge: true }));
+});
+test('noto\'g\'ri obuna yozuvi rad etiladi', async () => {
+  await assertFails(setDoc(doc(admin(), 'users/stu1'), { sub: { plan: 'forever', until: 1 } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'users/stu1'), { sub: { plan: 'month', until: 'ertaga' } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'users/stu1'), { sub: { plan: 'month', until: 1, extra: true } }, { merge: true }));
+});
+test('administrator tarif narxlari va to\'lov ma\'lumotini saqlaydi; noto\'g\'risi rad etiladi', async () => {
+  await assertSucceeds(setDoc(doc(admin(), 'settings/site'), { prices: { month: '50 000 so‘m', year: '400 000 so‘m' }, payInfo: 'Maktab kassasi' }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'settings/site'), { prices: { month: 5 } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'settings/site'), { prices: { week: '1' } }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'settings/site'), { prices: { month: '1' } }, { merge: true }));
+});
