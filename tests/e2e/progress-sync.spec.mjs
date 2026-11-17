@@ -7,7 +7,12 @@ const remote = (page) => page.evaluate(() => {
   const p = ((db.col || {}).progress || {})[uid];
   return p ? { xp: p.xp, L: Object.keys(JSON.parse(p.data).L || {}) } : null;
 });
-const visit = async (page, h) => { await page.evaluate((h) => { location.hash = '#' + h; }, h); await expect(page.locator('.lesson-top h1')).toBeVisible(); };
+// Tez almashganda oraliq sahifa o'tkazib yuborilishi mumkin (View Transition), shuning uchun aynan shu dars ochilganini kutamiz
+const visit = async (page, h) => {
+  await page.evaluate((h) => { location.hash = '#' + h; }, h);
+  await expect(page.locator('.lesson-top h1')).toBeVisible();
+  await expect.poll(() => page.evaluate((h) => !!(window.XP && XP.s && (XP.s.L || {})[h]), h), { timeout: 8_000 }).toBe(true);
+};
 const flush = (page) => page.evaluate(() => window.dispatchEvent(new Event('online')));
 
 test('server natijasini o\'qib bo\'lmasa, bo\'sh natija serverdagi XP ustidan yozilmaydi; aloqa tiklanganda birlashtiriladi', async ({ page }) => {

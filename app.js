@@ -642,7 +642,7 @@
         const vt = document.startViewTransition(() => renderRoute());
         // tez-tez almashganda oldingi animatsiya "skipped" bo'ladi — bu xato emas, jim yutiladi;
         // klass faqat oxirgi animatsiya tugaganda olinadi
-        const quiet = () => {}; vt.ready.catch(quiet); vt.updateCallbackDone.catch(quiet);
+        const quiet = () => {}; vt.ready.catch(quiet); vt.updateCallbackDone.catch((e) => console.error('route render', e));
         vt.finished.catch(quiet).finally(() => { if (root.dataset.vtSeq === seq) root.classList.remove(...cls); });
         return;
       } catch (e) { root.classList.remove('zk-vt'); }
