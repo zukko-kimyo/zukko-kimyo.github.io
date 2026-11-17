@@ -84,7 +84,10 @@
     const Bk = ZKAuth.backend;
     // O'qituvchi faqat kuzatadi (foydalanuvchi qarori 2026-11-17): parollar va sinf kodlari faqat administratorga
     const adm = ZKAuth.isAdmin();
-    const [users, prog, secrets, codes] = await Promise.all([Bk.list('users'), Bk.list('progress'), adm ? Bk.list('secrets').catch(() => []) : [], adm ? Bk.list('classes').catch(() => []) : []]);
+    // Kimyo natijalarini faqat admin va kimyo fani biriktirilgan o'qituvchi o'qiydi (firestore.rules)
+    const chemOk = adm || (ZKAuth.mySubjects ? ZKAuth.mySubjects().includes('chem') : true);
+    const [users, prog, secrets, codes] = await Promise.all([Bk.list('users'), chemOk ? Bk.list('progress') : [], adm ? Bk.list('secrets').catch(() => []) : [], adm ? Bk.list('classes').catch(() => []) : []]);
+    st.chemOk = chemOk;
     st.codes = codes;
     st.users = users; st.prog = {}; prog.forEach((p) => (st.prog[p.id] = cleanProg(p))); st.secrets = {}; secrets.forEach((s) => (st.secrets[s.id] = s));
   }
@@ -207,6 +210,12 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     st.users = st.users.filter((x) => x.id !== u.id); delete st.prog[u.id]; delete st.secrets[u.id];
   }
 
+  /* ---------- fanlar (subjects.js): o'qituvchiga biriktirish ---------- */
+  const SJL = () => (window.ZKSubjects ? ZKSubjects.list : [{ id: 'chem', name: { uz: 'Kimyo', en: 'Chemistry' } }]);
+  const sjName = (id) => { const x = SJL().find((s) => s.id === id); return x ? x.name[L] : id; };
+  const tSubj = (u) => (Array.isArray(u.subjects) ? u.subjects : ['chem']);
+  const sjChecks = (pref, cur) => SJL().map((x) => `<label class="tc-sj"><input type="checkbox" data-sj="${x.id}" name="${pref}" ${cur.includes(x.id) ? 'checked' : ''}> ${esc(x.name[L])}</label>`).join('');
+
   /* ---------- obunalar (faqat administrator; firestore.rules o'qituvchiga ruxsat bermaydi) ---------- */
   const SB = {
     uz: { tab: '💳 Obunalar', h: 'O‘quvchilar obunasi', p: 'To‘lov qilgan o‘quvchiga tarif tanlang. Faol obuna uzaytirilsa, muddat uning oxiridan qo‘shiladi. «O‘quv yili» — 30-iyungacha. O‘quvchi sahifani yangilaganda (yoki «Tekshirish» tugmasi bilan) bo‘limlar ochiladi.',
@@ -217,51 +226,58 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
       stop_q: 'Stop the subscription of {n}?', cls_q: 'Give the “{p}” plan to {k} students of class {c}?', cls_b: 'Whole class: ', saved: 'Saved', pick: 'Choose a class' },
   };
   const sbt = (k, o) => { let x = SB[L][k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
-  async function setSub(u, plan) {
-    const Z = window.ZKSub; const sub = plan ? Z.grant(u.sub, plan, Date.now(), ZKAuth.user.uid) : null;
-    await ZKAuth.backend.set('users', u.id, { sub }, true);
-    u.sub = sub;
+  // Har fanga alohida obuna: users.subs[fan]. Eski `sub` (kimyo) kimyo yozilganda tozalanadi.
+  async function setSub(u, plan, subj) {
+    const Z = window.ZKSub; const sj = subj || 'chem';
+    const sub = plan ? Z.grant(Z.subOf(u, sj), plan, Date.now(), ZKAuth.user.uid) : null;
+    const subs = Object.assign({}, u.subs || {}, { [sj]: sub });
+    const data = { subs }; if (sj === 'chem' && u.sub) data.sub = null;
+    await ZKAuth.backend.set('users', u.id, data, true);
+    u.subs = subs; if ('sub' in data) u.sub = null;
   }
   function subsView() {
     const Z = window.ZKSub; if (!Z) { body().innerHTML = '<div class="tc-empty">—</div>'; return; }
     const now = Date.now(), all = students(), cs = classes();
     if (st.cls && !cs.includes(st.cls)) st.cls = '';
-    st.subF = st.subF || '';
+    st.subF = st.subF || ''; st.subS = st.subS || 'chem';
+    const SS = st.subS, cur = (u) => Z.status(Z.subOf(u, SS), now);
     const ofCls = all.filter((u) => !st.cls || (u.cls || '—') === st.cls);
-    const list = ofCls.filter((u) => { const a = Z.status(u.sub, now).active; return !st.subF || (st.subF === 'on' ? a : !a); })
+    const list = ofCls.filter((u) => { const a = cur(u).active; return !st.subF || (st.subF === 'on' ? a : !a); })
       .sort((a, b) => sortCls(a.cls || '', b.cls || '') || String(a.name).localeCompare(String(b.name)));
     const N = Z.NAMES[L];
     const plans = Z.PLANS.map((k) => `<option value="${k}">${N[k]}</option>`).join('');
-    const stat = (u) => { const s = Z.status(u.sub, now); return s.active ? `<span class="tc-q g">${sbt('on', { d: Z.fmtDate(s.until) })}</span> <span class="tc-mut">${s.plan ? N[s.plan] : ''}</span>` : s.expired ? `<span class="tc-q b">${sbt('exp', { d: Z.fmtDate(s.until) })}</span>` : `<span class="tc-mut">${sbt('none')}</span>`; };
-    const nOn = ofCls.filter((u) => Z.status(u.sub, now).active).length;
+    const stat = (u) => { const s = cur(u); return s.active ? `<span class="tc-q g">${sbt('on', { d: Z.fmtDate(s.until) })}</span> <span class="tc-mut">${s.plan ? N[s.plan] : ''}</span>` : s.expired ? `<span class="tc-q b">${sbt('exp', { d: Z.fmtDate(s.until) })}</span>` : `<span class="tc-mut">${sbt('none')}</span>`; };
+    const nOn = ofCls.filter((u) => cur(u).active).length;
     body().innerHTML = `<div class="panel"><h3>${sbt('h')}</h3><div class="tc-note">${sbt('p')}</div></div>
+      <div class="tc-chips" role="group" aria-label="${L === 'en' ? 'Subject' : 'Fan'}">${SJL().map((x) => `<button data-s="${x.id}" class="${SS === x.id ? 'on' : ''}">${esc(x.name[L])}</button>`).join('')}</div>
       <div class="tc-chips" role="group" aria-label="${t('add_cls')}"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
       <div class="tc-tools"><div class="tc-chips" role="group" aria-label="${sbt('st')}" style="margin:0">${[['', sbt('all')], ['on', sbt('act') + ` <small>${nOn}</small>`], ['off', sbt('noact') + ` <small>${ofCls.length - nOn}</small>`]].map(([v, l]) => `<button data-f="${v}" class="${st.subF === v ? 'on' : ''}">${l}</button>`).join('')}</div><div class="sp"></div>
         ${st.cls ? `<label class="tc-mut" for="tcSubCls">${sbt('cls_b')}</label><select id="tcSubCls" class="tc-sel">${plans}</select><button class="btn sec sm" id="tcSubClsGo">${sbt('give')}</button>` : `<span class="tc-mut">${sbt('cls_b')}${sbt('pick')}</span>`}</div>
       <div class="tc-msg" id="tcSubMsg" role="status"></div>
       <div class="tc-wrap"><table class="tc resp"><thead><tr><th>${t('c_n')}</th><th>${t('c_name')}</th><th>${t('add_cls')}</th><th>${sbt('st')}</th><th><span class="zk-sr">${sbt('give')}</span></th></tr></thead><tbody>
       ${list.map((u, i) => `<tr data-id="${u.id}"><td class="tc-mut">${i + 1}</td><td class="nm">${esc(u.name || u.login)}</td><td data-l="${t('add_cls')}">${esc(u.cls || '—')}</td><td data-l="${sbt('st')}">${stat(u)}</td>
-        <td class="act"><div class="tc-act"><select class="tc-sel" aria-label="${esc(sbt('give') + ' — ' + (u.name || u.login))}" data-sel="${u.id}">${plans}</select><button data-give="${u.id}" aria-label="${esc(sbt('give') + ' — ' + (u.name || u.login))}">${sbt('give')}</button>${Z.status(u.sub, now).active ? `<button data-stop="${u.id}" aria-label="${esc(sbt('stop') + ' — ' + (u.name || u.login))}">${sbt('stop')}</button>` : ''}</div></td></tr>`).join('') || `<tr><td colspan="5" class="tc-empty">${t('none')}</td></tr>`}
+        <td class="act"><div class="tc-act"><select class="tc-sel" aria-label="${esc(sbt('give') + ' — ' + (u.name || u.login))}" data-sel="${u.id}">${plans}</select><button data-give="${u.id}" aria-label="${esc(sbt('give') + ' — ' + (u.name || u.login))}">${sbt('give')}</button>${cur(u).active ? `<button data-stop="${u.id}" aria-label="${esc(sbt('stop') + ' — ' + (u.name || u.login))}">${sbt('stop')}</button>` : ''}</div></td></tr>`).join('') || `<tr><td colspan="5" class="tc-empty">${t('none')}</td></tr>`}
       </tbody></table></div>`;
     const msg = (x, ok) => { const m = document.getElementById('tcSubMsg'); m.className = 'tc-msg ' + (ok ? 'tc-ok' : 'tc-err'); m.textContent = x; };
     body().querySelectorAll('[data-c]').forEach((b) => (b.onclick = () => { st.cls = b.dataset.c; subsView(); }));
     body().querySelectorAll('[data-f]').forEach((b) => (b.onclick = () => { st.subF = b.dataset.f; subsView(); }));
+    body().querySelectorAll('[data-s]').forEach((b) => (b.onclick = () => { st.subS = b.dataset.s; subsView(); }));
     const byId = (id) => all.find((u) => u.id === id);
     body().querySelectorAll('[data-give]').forEach((b) => (b.onclick = async () => {
       const u = byId(b.dataset.give), plan = body().querySelector(`[data-sel="${b.dataset.give}"]`).value; b.disabled = true;
-      try { await setSub(u, plan); subsView(); msg(sbt('saved') + ': ' + (u.name || u.login), true); const nb = body().querySelector(`[data-give="${u.id}"]`); if (nb) nb.focus(); }
+      try { await setSub(u, plan, SS); subsView(); msg(sbt('saved') + ': ' + (u.name || u.login), true); const nb = body().querySelector(`[data-give="${u.id}"]`); if (nb) nb.focus(); }
       catch (e) { b.disabled = false; msg('⚠ ' + ZKAuth.errMsg(e)); }
     }));
     body().querySelectorAll('[data-stop]').forEach((b) => (b.onclick = async () => {
       const u = byId(b.dataset.stop); if (!confirm(sbt('stop_q', { n: u.name || u.login }))) return; b.disabled = true;
-      try { await setSub(u, null); subsView(); msg(sbt('saved') + ': ' + (u.name || u.login), true); }
+      try { await setSub(u, null, SS); subsView(); msg(sbt('saved') + ': ' + (u.name || u.login), true); }
       catch (e) { b.disabled = false; msg('⚠ ' + ZKAuth.errMsg(e)); }
     }));
     const cg = document.getElementById('tcSubClsGo');
     if (cg) cg.onclick = async () => {
       const plan = document.getElementById('tcSubCls').value, kids = ofCls;
-      if (!kids.length || !confirm(sbt('cls_q', { c: st.cls, k: kids.length, p: N[plan] }))) return; cg.disabled = true;
-      let ok = 0; for (const u of kids) { try { await setSub(u, plan); ok++; } catch (e) { msg('⚠ ' + ZKAuth.errMsg(e)); break; } }
+      if (!kids.length || !confirm(sbt('cls_q', { c: st.cls, k: kids.length, p: sjName(SS) + ' — ' + N[plan] }))) return; cg.disabled = true;
+      let ok = 0; for (const u of kids) { try { await setSub(u, plan, SS); ok++; } catch (e) { msg('⚠ ' + ZKAuth.errMsg(e)); break; } }
       subsView(); if (ok === kids.length) msg(sbt('saved') + `: ${ok}`, true);
     };
   }
@@ -305,6 +321,11 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     }).join('');
   }
   function results() {
+    if (st.chemOk === false) {
+      const mine = (ZKAuth.mySubjects ? ZKAuth.mySubjects() : []).map(sjName).join(', ') || '—';
+      body().innerHTML = `<div class="panel tc-empty">${L === 'en' ? `Your subjects: <b>${esc(mine)}</b>. Student results for these subjects will appear here once their lessons are online.` : `Sizga biriktirilgan fanlar: <b>${esc(mine)}</b>. Bu fanlar bo‘yicha o‘quvchilar natijalari darslar joylangach shu yerda ko‘rinadi.`}</div>`;
+      return;
+    }
     const cs = classes(); if (st.cls && !cs.includes(st.cls)) st.cls = '';
     const all = students();
     const list = all.filter((u) => !st.cls || (u.cls || '—') === st.cls).sort((a, b) => sortCls(a.cls || '', b.cls || '') || String(a.name).localeCompare(String(b.name)));
@@ -454,9 +475,10 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
         <div><label>${t('t_name')}</label><input id="tcTN" placeholder="Karimova Dilnoza"></div>
         <div><label>${t('t_login')}</label><input id="tcTL" placeholder="dilnoza.k" autocapitalize="none" spellcheck="false"></div>
         <div><label>${t('t_pass')}</label><input id="tcTP" value="${mkPass()}"></div></div>
+        <div class="tc-sjrow" role="group" aria-label="${L === 'en' ? 'Subjects' : 'Fanlari'}"><span class="tc-mut">${L === 'en' ? 'Subjects:' : 'Fanlari:'}</span> ${sjChecks('tcTS', ['chem'])}</div>
         <button class="btn pri" id="tcTGo" style="margin-top:14px">${t('t_add')}</button><div id="tcTOut"></div></div>
-      <div class="panel"><h3>${t('t_list')}</h3><div class="tc-wrap"><table class="tc" style="min-width:0"><thead><tr><th>${t('c_name')}</th><th>${t('c_login')}</th><th>${t('pw_col')}</th><th></th></tr></thead><tbody>
-      ${list.map((u) => `<tr><td><b>${esc(u.name || u.login)}</b> ${u.id === ZKAuth.user.uid ? `<span class="tc-mut">${t('self')}</span>` : ''}${u.role === 'admin' ? ' <span class="tc-mut">· admin</span>' : ''}</td><td><code>${esc(u.login)}</code></td><td>${st.secrets[u.id] ? `<span class="tc-pw">${esc(st.secrets[u.id].pw)}</span>` : '<span class="tc-mut">—</span>'}</td><td>${u.role === 'teacher' ? `<div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div>` : ''}</td></tr>`).join('')}
+      <div class="panel"><h3>${t('t_list')}</h3><div class="tc-wrap"><table class="tc" style="min-width:0"><thead><tr><th>${t('c_name')}</th><th>${L === 'en' ? 'Subjects' : 'Fanlari'}</th><th>${t('c_login')}</th><th>${t('pw_col')}</th><th></th></tr></thead><tbody>
+      ${list.map((u) => `<tr data-tid="${u.id}"><td><b>${esc(u.name || u.login)}</b> ${u.id === ZKAuth.user.uid ? `<span class="tc-mut">${t('self')}</span>` : ''}${u.role === 'admin' ? ' <span class="tc-mut">· admin</span>' : ''}</td><td>${u.role === 'teacher' ? `<div class="tc-sjrow" role="group" aria-label="${esc((L === 'en' ? 'Subjects — ' : 'Fanlari — ') + (u.name || u.login))}">${sjChecks('tcS_' + u.id, tSubj(u))}</div>` : `<span class="tc-mut">${L === 'en' ? 'all' : 'hammasi'}</span>`}</td><td><code>${esc(u.login)}</code></td><td>${st.secrets[u.id] ? `<span class="tc-pw">${esc(st.secrets[u.id].pw)}</span>` : '<span class="tc-mut">—</span>'}</td><td>${u.role === 'teacher' ? `<div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div>` : ''}</td></tr>`).join('')}
       </tbody></table></div></div>`;
     const tl = document.getElementById('tcTL'), tn = document.getElementById('tcTN');
     tn.oninput = () => { if (!tl.dataset.touched) { const p = tn.value.trim().split(/\s+/); tl.value = (latin(p[1] || p[0] || '') + (p[1] ? '.' + latin(p[0])[0] : '')).slice(0, 24); } };
@@ -469,12 +491,22 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
       const b = document.getElementById('tcTGo'); b.disabled = true;
       try {
         const uid = await ZKAuth.backend.createAccount(ZKAuth.emailOf(login), pw);
-        const doc = { login, name: name || login, role: 'teacher', cls: '', created: Date.now(), by: ZKAuth.user.uid };
+        const subjects = [...document.querySelectorAll('input[name="tcTS"]:checked')].map((c) => c.dataset.sj);
+        const doc = { login, name: name || login, role: 'teacher', cls: '', subjects, created: Date.now(), by: ZKAuth.user.uid };
         await ZKAuth.backend.set('users', uid, doc); await ZKAuth.backend.set('secrets', uid, { pw, role: 'teacher', login });
         st.users.push(Object.assign({ id: uid }, doc)); st.secrets[uid] = { pw, role: 'teacher', login };
         teachers(); document.getElementById('tcTOut').innerHTML = `<div class="tc-ok">✅ ${t('ok_t')}: <code>${esc(login)}</code> / <span class="tc-pw">${esc(pw)}</span></div>`;
       } catch (e) { b.disabled = false; out.innerHTML = `<div class="tc-err">⚠ ${esc(/email-already/.test(e.code || '') ? t('e_taken') : ZKAuth.errMsg(e))}</div>`; }
     };
+    // Fan biriktirish: belgi o'zgarishi bilan saqlanadi (faqat admin; firestore.rules)
+    body().querySelectorAll('tr[data-tid] input[data-sj]').forEach((c) => (c.onchange = async () => {
+      const tr = c.closest('tr'), u = st.users.find((x) => x.id === tr.dataset.tid);
+      const subjects = [...tr.querySelectorAll('input[data-sj]:checked')].map((x) => x.dataset.sj);
+      tr.querySelectorAll('input[data-sj]').forEach((x) => (x.disabled = true));
+      try { await ZKAuth.backend.set('users', u.id, { subjects }, true); u.subjects = subjects; }
+      catch (e) { c.checked = !c.checked; alert('⚠ ' + ZKAuth.errMsg(e)); }
+      tr.querySelectorAll('input[data-sj]').forEach((x) => (x.disabled = false));
+    }));
     wireActions(body());
   }
 

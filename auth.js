@@ -196,7 +196,7 @@
     const [prof, remote] = await Promise.all([B.get('users', u.uid), B.get('progress', u.uid).catch(() => { readOk = false; return null; })]);
     if (!prof || prof.disabled) { await B.signOut(); throw Object.assign(new Error(t('e_inactive')), { code: 'inactive' }); }
     if (prof.status === 'pending') { await B.signOut(); throw Object.assign(new Error(t('e_pending')), { code: 'pending' }); }
-    me = { uid: u.uid, login: prof.login || u.email.split('@')[0], name: prof.name || '', role: prof.role || 'student', cls: prof.cls || '', sub: prof.sub || null };
+    me = { uid: u.uid, login: prof.login || u.email.split('@')[0], name: prof.name || '', role: prof.role || 'student', cls: prof.cls || '', sub: prof.sub || null, subs: prof.subs || null, subjects: Array.isArray(prof.subjects) ? prof.subjects : null };
     const sameOwner = LS.get('zk_prog_owner') === u.uid;
     let local = sameOwner ? readLocal() : null; // boshqa odamning natijasi qolib ketmasin
     const bak = parse(LS.get(BAK(u.uid))); if (bak) local = mergeProg(local, bak);
@@ -451,7 +451,9 @@
     get user() { return me; }, get backend() { return B; },
     isStaff: () => !!me && (me.role === 'teacher' || me.role === 'admin'), isAdmin: () => !!me && me.role === 'admin',
     // Obuna (lib/sub.js): pullik qismlar — obunali o'quvchi, o'qituvchi va admin uchun; kirishsiz rejimda hammasi ochiq
-    canPaid: () => (window.ZKSub ? ZKSub.canPaid(me, Date.now(), ON) : true),
-    subStatus: () => (window.ZKSub ? ZKSub.status(me && me.sub, Date.now()) : { active: false, expired: false, plan: null, until: 0, daysLeft: 0 }),
+    canPaid: (subject) => (window.ZKSub ? ZKSub.canPaid(me, Date.now(), ON, subject) : true),
+    subStatus: (subject) => (window.ZKSub ? ZKSub.status(ZKSub.subOf(me, subject), Date.now()) : { active: false, expired: false, plan: null, until: 0, daysLeft: 0 }),
+    // O'qituvchiga biriktirilgan fanlar (admin — hammasi)
+    mySubjects: () => (!me ? [] : me.role === 'admin' ? (window.ZKSubjects ? ZKSubjects.ids : ['chem']) : window.ZKSub ? ZKSub.teacherSubjects(me) : ['chem']),
   };
 })();

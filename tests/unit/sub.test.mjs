@@ -73,3 +73,22 @@ test('sana dd.mm.yyyy', () => {
   assert.equal(S.fmtDate(new Date(2027, 5, 30).getTime()), '30.06.2027');
   assert.equal(S.fmtDate(0), '');
 });
+
+test('har fanga alohida obuna; eski `sub` — kimyo', () => {
+  const u = { role: 'student', sub: { plan: 'month', until: NOW + D }, subs: { math: { plan: 'year', until: NOW + 9 * D } } };
+  assert.equal(S.canPaid(u, NOW, true, 'chem'), true, 'eski yozuv kimyo uchun amal qiladi');
+  assert.equal(S.canPaid(u, NOW, true), true, 'fan ko\'rsatilmasa — kimyo');
+  assert.equal(S.canPaid(u, NOW, true, 'math'), true);
+  assert.equal(S.canPaid(u, NOW, true, 'eng'), false);
+  assert.equal(S.subOf(u, 'math').plan, 'year');
+  assert.equal(S.subOf({ role: 'student', subs: { chem: { until: 5 } }, sub: { until: 9 } }, 'chem').until, 5, 'yangi yozuv ustun');
+});
+
+test('o\'qituvchi faqat biriktirilgan fani bo\'yicha to\'liq ko\'radi; admin — hammasini', () => {
+  assert.deepEqual(S.teacherSubjects({ role: 'teacher' }), ['chem'], 'eski o\'qituvchi — kimyo');
+  const t = { role: 'teacher', subjects: ['math'] };
+  assert.equal(S.canPaid(t, NOW, true, 'math'), true);
+  assert.equal(S.canPaid(t, NOW, true, 'chem'), false);
+  assert.equal(S.canPaid({ role: 'admin' }, NOW, true, 'rus'), true);
+  assert.deepEqual(S.teacherSubjects({ role: 'student', subjects: ['math'] }), []);
+});
