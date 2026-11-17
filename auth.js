@@ -52,9 +52,65 @@
       adm_panel: 'Admin panel', ann_close: 'Close', reg_closed: 'Sign-up is closed for now. Get your login and password from your teacher.',
       mock: 'Test mode — data stays in this browser', saved: 'Saved', offline: 'Offline — results will be saved later', cls: 'Class',
     },
+    ru: {
+      title: "Zukko Akademiyasi",
+      sub: "Международная школа Zukko · Химия, 6–8 классы",
+      login: "Логин",
+      pass: "Пароль",
+      remember: "Запомнить на этом устройстве",
+      enter: "Войти",
+      hint: "Логин и пароль выдаёт учитель.",
+      e_empty: "Введите логин и пароль.",
+      e_bad: "Неверный логин или пароль.",
+      e_net: "Нет подключения к интернету. Попробуйте ещё раз.",
+      e_many: "Слишком много попыток. Попробуйте через несколько минут.",
+      sync_fail: "Ваши результаты ещё не сохранены на сервере — они синхронизируются автоматически, когда появится связь.",
+      logout_unsynced: "Ваши результаты ещё не сохранены на сервере (возможно, нет интернета). Всё равно выйти? Они останутся на этом устройстве и синхронизируются при следующем входе.",
+      e_inactive: "Эта учётная запись не активна. Обратитесь к учителю.",
+      e_cfg: "Сайт не настроен: проверьте firebase-config.js.",
+      mk_admin: "Создать учётную запись администратора",
+      mk_admin_q: "Администратора ещё нет? Можно создать его с этим паролем (только в первый раз).",
+      e_weak: "Пароль должен быть не короче 6 символов.",
+      e_exists: "Администратор уже существует — неверный пароль.",
+      loading: "Загрузка…",
+      logout: "Выйти",
+      panel: "Панель учителя",
+      student: "ученик",
+      teacher: "учитель",
+      admin: "администратор",
+      no_acc: "Нет учётной записи?",
+      reg_go: "Зарегистрироваться",
+      have_acc: "Уже есть учётная запись?",
+      reg_h: "Регистрация",
+      reg_p: "Код класса выдаёт учитель. Войти можно будет после того, как учитель подтвердит регистрацию.",
+      r_name: "Фамилия и имя",
+      r_name_ph: "Алиев Вали",
+      r_code: "Код класса",
+      r_login: "Придумайте логин",
+      r_login_h: "Латинские буквы, цифры, точка. Не меньше 3 символов, например vali.a",
+      r_pass2: "Повторите пароль",
+      reg_btn: "Зарегистрироваться",
+      e_r_name: "Введите фамилию и имя.",
+      e_r_code: "Код класса неверный или устарел. Спросите учителя.",
+      e_r_login: "Логин может содержать только латинские буквы, цифры, точку и дефис (не меньше 3 символов).",
+      e_r_pass2: "Пароли не совпадают.",
+      e_r_taken: "Этот логин занят. Выберите другой.",
+      sent_h: "Заявка отправлена!",
+      sent_p: "{n}, вы зарегистрировались в класс {c}. Войти с этим логином и паролем можно будет после подтверждения учителем.",
+      sent_back: "Вернуться ко входу",
+      e_pending: "Ваша учётная запись ещё не подтверждена. Подождите, пока учитель её подтвердит.",
+      adm_panel: "Панель администратора",
+      ann_close: "Закрыть",
+      reg_closed: "Регистрация сейчас закрыта. Логин и пароль выдаёт учитель.",
+      mock: "Тестовый режим — данные хранятся только в этом браузере",
+      saved: "Сохранено",
+      offline: "Нет сети — результаты сохранятся позже",
+      cls: "Класс",
+    },
   };
-  const lang = () => { try { return localStorage.getItem('zk_lang') === 'en' ? 'en' : 'uz'; } catch (e) { return 'uz'; } };
-  const t = (k) => S[lang()][k] || k;
+  const lang = () => { try { const l = localStorage.getItem('zk_lang'); return l === 'en' || l === 'ru' ? l : 'uz'; } catch (e) { return 'uz'; } };
+  const L3 = (uz, ru, en) => { const l = lang(); return l === 'ru' ? ru : l === 'en' ? en : uz; };
+  const t = (k) => S[lang()][k] || S.uz[k] || k;
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const normLogin = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, '');
   const emailOf = (login) => (login.includes('@') ? login : `${login}@${DOMAIN}`);
@@ -274,23 +330,23 @@
     css();
     const el = document.createElement('div'); el.className = 'zk-gate'; document.body.appendChild(el);
     // Kirish oynasi modal: orqadagi sayt klaviatura va ekran o'quvchidan yashiriladi
-    el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', lang() === 'en' ? 'Sign in' : 'Kirish');
+    el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', L3('Kirish', 'Вход', 'Sign in'));
     const BG = 'header.top,#app,#bnav,footer,#zkSkip';
     document.querySelectorAll(BG).forEach((n) => n.setAttribute('inert', ''));
     const closeGate = () => { document.querySelectorAll(BG).forEach((n) => n.removeAttribute('inert')); el.remove(); };
     let mode = 'login';
     const themeBtn = '<button type="button" class="zk-theme zk-gate-theme" aria-pressed="false" aria-label="Tungi rejimga o‘tish"><svg class="zk-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="zk-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>';
-    const langBar = (L) => themeBtn + `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
-    const head = () => `<div class="lg"><span class="mk zk-mk-mark"><img src="assets/zukko-mark.svg" alt="" width="139" height="314" decoding="async"></span><div><span class="zk-brand-kicker">${lang() === 'en' ? 'ZUKKO ACADEMY' : 'ZUKKO AKADEMIYASI'}</span><h1>${lang() === 'en' ? 'Welcome back' : 'Xush kelibsiz!'}</h1><div class="sb">${t('sub')}</div></div></div>`;
+    const langBar = (L) => themeBtn + `<div class="lng"><button type="button" data-l="uz" class="${L === 'uz' ? 'on' : ''}">UZ</button><button type="button" data-l="ru" class="${L === 'ru' ? 'on' : ''}">RU</button><button type="button" data-l="en" class="${L === 'en' ? 'on' : ''}">EN</button></div>`;
+    const head = () => `<div class="lg"><span class="mk zk-mk-mark"><img src="assets/zukko-mark.svg" alt="" width="139" height="314" decoding="async"></span><div><span class="zk-brand-kicker">${L3('ZUKKO AKADEMIYASI', 'ZUKKO AKADEMIYASI', 'ZUKKO ACADEMY')}</span><h1>${L3('Xush kelibsiz!', 'Добро пожаловать!', 'Welcome back')}</h1><div class="sb">${t('sub')}</div></div></div>`;
     const render = (keep) => {
       const L = lang(); const v = keep || {};
-      el.setAttribute('aria-label', L === 'en' ? (mode === 'reg' ? 'Sign up' : 'Sign in') : (mode === 'reg' ? "Ro'yxatdan o'tish" : 'Kirish'));
+      el.setAttribute('aria-label', mode === 'reg' ? L3("Ro'yxatdan o'tish", 'Регистрация', 'Sign up') : L3('Kirish', 'Вход', 'Sign in'));
       if (mode === 'reg') return renderReg(v);
       if (mode === 'sent') return renderSent(v);
       el.innerHTML = `<form class="card" autocomplete="on" novalidate>
         ${langBar(L)}${head()}${annHtml()}
         <label for="zkL">${t('login')}</label><div class="in"><input id="zkL" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" inputmode="email" value="${esc(v.l || '')}"></div>
-        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="password" autocomplete="current-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="${lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish'}" aria-pressed="false">◉</button></div>
+        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="password" autocomplete="current-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="${L3('Parolni ko‘rsatish', 'Показать пароль', 'Show password')}" aria-pressed="false">◉</button></div>
         <label class="rm"><input type="checkbox" id="zkR" ${v.r === false ? '' : 'checked'}> ${t('remember')}</label>
         <button class="go" type="submit">${t('enter')}</button>
         <div class="er" id="zkE" role="alert"></div><div id="zkX"></div>
@@ -301,7 +357,7 @@
       const f = el.querySelector('form'), iL = el.querySelector('#zkL'), iP = el.querySelector('#zkP'), iR = el.querySelector('#zkR'), E = el.querySelector('#zkE'), X = el.querySelector('#zkX'), go = el.querySelector('.go');
       const showErr = (m) => { E.textContent = m; E.classList.toggle('on', !!m); };
       el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } render({ l: iL.value, p: iP.value, r: iR.checked }); }));
-      el.querySelector('.eye').onclick = (e) => { iP.type = iP.type === 'password' ? 'text' : 'password'; e.currentTarget.setAttribute('aria-pressed', String(iP.type === 'text')); e.currentTarget.setAttribute('aria-label', iP.type === 'text' ? (lang() === 'en' ? 'Hide password' : 'Parolni yashirish') : (lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish')); };
+      el.querySelector('.eye').onclick = (e) => { iP.type = iP.type === 'password' ? 'text' : 'password'; e.currentTarget.setAttribute('aria-pressed', String(iP.type === 'text')); e.currentTarget.setAttribute('aria-label', iP.type === 'text' ? (L3('Parolni yashirish', 'Скрыть пароль', 'Hide password')) : (L3('Parolni ko‘rsatish', 'Показать пароль', 'Show password'))); };
       const rg = el.querySelector('[data-reg]'); if (rg) rg.onclick = () => { mode = 'reg'; render(); };
       // Avoid opening the on-screen keyboard automatically on phones.
       if (!matchMedia('(pointer:coarse)').matches) (v.l ? iP : iL).focus();
@@ -341,7 +397,7 @@
         <label for="zkC">${t('r_code')}</label><div class="in"><input id="zkC" type="text" autocapitalize="characters" spellcheck="false" placeholder="K4M9Q2" value="${esc(v.c || '')}" style="text-transform:uppercase;letter-spacing:.12em"></div>
         <label for="zkL">${t('r_login')}</label><div class="in"><input id="zkL" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="vali.a" value="${esc(v.l || '')}"></div>
         <div class="nt" style="margin-top:4px">${t('r_login_h')}</div>
-        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="new-password" autocomplete="new-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="${lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish'}" aria-pressed="false">◉</button></div>
+        <label for="zkP">${t('pass')}</label><div class="in"><input id="zkP" type="password" name="new-password" autocomplete="new-password" value="${esc(v.p || '')}"><button type="button" class="eye" aria-label="${L3('Parolni ko‘rsatish', 'Показать пароль', 'Show password')}" aria-pressed="false">◉</button></div>
         <label for="zkP2">${t('r_pass2')}</label><div class="in"><input id="zkP2" type="password" autocomplete="new-password" value="${esc(v.p2 || '')}"></div>
         <button class="go" type="submit">${t('reg_btn')}</button>
         <div class="er" id="zkE" role="alert"></div>
@@ -353,7 +409,7 @@
       const keepV = () => ({ n: iN.value, c: iC.value, l: iL.value, p: iP.value, p2: iP2.value });
       const showErr = (m) => { E.textContent = m; E.classList.toggle('on', !!m); };
       el.querySelectorAll('.lng button').forEach((b) => (b.onclick = () => { try { localStorage.setItem('zk_lang', b.dataset.l); } catch (e) { } renderReg(keepV()); }));
-      q('.eye').onclick = (e) => { iP.type = iP2.type = iP.type === 'password' ? 'text' : 'password'; e.currentTarget.setAttribute('aria-pressed', String(iP.type === 'text')); e.currentTarget.setAttribute('aria-label', iP.type === 'text' ? (lang() === 'en' ? 'Hide password' : 'Parolni yashirish') : (lang() === 'en' ? 'Show password' : 'Parolni ko‘rsatish')); };
+      q('.eye').onclick = (e) => { iP.type = iP2.type = iP.type === 'password' ? 'text' : 'password'; e.currentTarget.setAttribute('aria-pressed', String(iP.type === 'text')); e.currentTarget.setAttribute('aria-label', iP.type === 'text' ? (L3('Parolni yashirish', 'Скрыть пароль', 'Hide password')) : (L3('Parolni ko‘rsatish', 'Показать пароль', 'Show password'))); };
       q('[data-login]').onclick = () => { mode = 'login'; render({ l: iL.value }); };
       if (!matchMedia('(pointer:coarse)').matches) iN.focus();
       const busy = (b) => { go.disabled = b; go.textContent = b ? t('loading') : t('reg_btn'); };
@@ -405,7 +461,7 @@
     const nm = me.name || me.login;
     c.innerHTML = `<button type="button" aria-haspopup="true" aria-expanded="false"><span class="av">${esc(nm.trim()[0] || '?').toUpperCase()}</span><span class="nm">${esc(nm)}</span></button>
       <div class="mn"><div class="who"><b>${esc(nm)}</b><small>${esc(me.login)} · ${t(me.role)}${me.cls ? ' · ' + esc(me.cls) : ''}</small></div>
-      ${me.role === 'admin' ? `<a href="#admin">🛡 ${t('adm_panel')}</a>` : ''}${staff ? `<a href="#teacher">👩‍🏫 ${t('panel')}</a>` : ''}<a href="#me">🏆 ${lang() === 'en' ? 'My progress' : 'Mening yutuqlarim'}</a>
+      ${me.role === 'admin' ? `<a href="#admin">🛡 ${t('adm_panel')}</a>` : ''}${staff ? `<a href="#teacher">👩‍🏫 ${t('panel')}</a>` : ''}<a href="#me">🏆 ${L3('Mening yutuqlarim', 'Мои успехи', 'My progress')}</a>
       <button type="button" data-out>🚪 ${t('logout')}</button></div>`;
     const ub = c.querySelector('button'), setOpen = (v) => { c.classList.toggle('open', v); ub.setAttribute('aria-expanded', String(v)); };
     ub.onclick = (e) => { e.stopPropagation(); setOpen(!c.classList.contains('open')); };
@@ -436,7 +492,7 @@
     if (!ON) return (readyP = Promise.resolve(null));
     readyP = new Promise(async (resolve) => {
       css();
-      const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="zk-brand-loader" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="sync"><span class="zk-brand-orbit"></span></div><b>${t('loading')}</b><p class="zk-boot-sub">${lang() === 'en' ? 'Zukko Academy · Chemistry' : 'Zukko Akademiyasi · Kimyo'}</p></div>`; document.body.appendChild(boot);
+      const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="zk-brand-loader" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="sync"><span class="zk-brand-orbit"></span></div><b>${t('loading')}</b><p class="zk-boot-sub">${L3('Zukko Akademiyasi · Kimyo', 'Zukko Akademiyasi · Химия', 'Zukko Academy · Chemistry')}</p></div>`; document.body.appendChild(boot);
       let u = null;
       let setP = null;
       try { u = await B.init(); setP = loadSettings(); if (!u) await setP; } catch (e) { boot.querySelector('.card').innerHTML = `<b>${t('e_cfg')}</b><div class="nt">${esc(e.message || e)}</div>`; return; }

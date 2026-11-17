@@ -63,17 +63,17 @@
 
   const G = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
   const LIST = [
-    { id: 'chem', name: { uz: 'Kimyo', en: 'Chemistry' }, color: '#00555a', icon: '⚗️', grades: [6, 7, 8], native: true, home: '#home' },
-    { id: 'math', name: { uz: 'Matematika', en: 'Mathematics' }, color: '#2563eb', icon: '➗', grades: G(1, 11), books: [
+    { id: 'chem', name: { uz: 'Kimyo', en: 'Chemistry', ru: 'Химия' }, color: '#00555a', icon: '⚗️', grades: [6, 7, 8], native: true, home: '#home' },
+    { id: 'math', name: { uz: 'Matematika', en: 'Mathematics', ru: 'Математика' }, color: '#2563eb', icon: '➗', grades: G(1, 11), books: [
       { grade: 1, part: 1, lang: 'en', title: 'Mathematics Grade 1 · Part 1', file: '1-qism_ingliz.pdf', offset: 0,
         units: [{ t: { orig: 'Chapter 1. Objects, Features and Logical Grouping', uz: '1-bob. Narsalar, belgilar va mantiqiy guruhlash' }, from: 1 },
                 { t: { orig: 'Chapter 2. Numbers from 1 to 5', uz: '2-bob. 1 dan 5 gacha sonlar' }, from: 26 }], topics: MA1 },
     ] },
-    { id: 'eng', name: { uz: 'Ingliz tili', en: 'English' }, color: '#dc2626', icon: '🔤', grades: G(1, 11), speech: 'en-GB', books: [
+    { id: 'eng', name: { uz: 'Ingliz tili', en: 'English', ru: 'Английский язык' }, color: '#dc2626', icon: '🔤', grades: G(1, 11), speech: 'en-GB', books: [
       { grade: 1, part: 1, lang: 'en', title: 'Zukko English Pathway 1 · Part 1', file: 'Part_1.pdf', offset: 2,
         units: [{ t: { orig: 'Unit 1 — My Family', uz: '1-bo‘lim — Mening oilam' }, from: 1 }, { t: { orig: 'Unit 2 — My Home', uz: '2-bo‘lim — Mening uyim' }, from: 26 }], topics: EN1 },
     ] },
-    { id: 'rus', name: { uz: 'Rus tili', en: 'Russian' }, color: '#7c3aed', icon: '🅰️', grades: G(1, 11), speech: 'ru-RU', books: [
+    { id: 'rus', name: { uz: 'Rus tili', en: 'Russian', ru: 'Русский язык' }, color: '#7c3aed', icon: '🅰️', grades: G(1, 11), speech: 'ru-RU', books: [
       { grade: 1, part: 1, lang: 'ru', title: 'Zukko Russian Pathway 1 · Часть 1', file: '1-qism.pdf', offset: 2,
         units: [{ t: { orig: 'Раздел 1. Моя семья', uz: '1-bo‘lim. Mening oilam' }, from: 1 }, { t: { orig: 'Раздел 2. Мой дом', uz: '2-bo‘lim. Mening uyim' }, from: 26 }], topics: RU1 },
     ] },

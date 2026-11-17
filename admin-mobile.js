@@ -9,7 +9,11 @@
     en: { btn:'Students', title:'Students', tag:'SCHOOL MANAGEMENT',
       search:'Search by name, class or login', ph:'Find a student…',
       shown:'Showing', empty:'No students found.', quiz:'Quiz',
-      manage:'Manage student accounts', close:'Close panel' }
+      manage:'Manage student accounts', close:'Close panel' },
+    ru: { btn:'Ученики', title:'Ученики', tag:'УПРАВЛЕНИЕ ШКОЛОЙ',
+      search:'Поиск по имени, классу или логину', ph:'Найти ученика…',
+      shown:'Показано', empty:'Ученики не найдены.', quiz:'Тест',
+      manage:'Управление учениками', close:'Закрыть панель' }
   };
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let current = null;
@@ -26,7 +30,7 @@
     const top = app.querySelector('.ad-top'), directory = app.querySelector('.ad-directory');
     if (!top) return;
     if (directory?.children[1]) directory.children[1].classList.add('ad-students-panel');
-    const T = S[lang === 'en' ? 'en' : 'uz'];
+    const T = S[lang] || S.uz;
     let button = top.querySelector('#adStudentsOpen');
     if (!button) {
       button = document.createElement('button');

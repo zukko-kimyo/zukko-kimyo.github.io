@@ -30,6 +30,40 @@
       caution: "The figures come from your personal learning history.",
       newH: "Three steps to get started", newP: "The chart fills in after you earn your first XP.",
       new1: "Open your first lesson", new2: "Watch a 3D experiment to the end", new3: "Score 7/10 or more on a lesson quiz"
+    },
+    ru: {
+      title: "Мой учебный центр",
+      sub: "Прогресс, активность за неделю и следующий шаг — в одном месте.",
+      xp: "Всего XP",
+      done: "Уроков освоено",
+      labs: "Опытов пройдено",
+      streak: "Дней подряд",
+      week: "Последние 7 дней",
+      weekSub: "XP за каждый день (личная история)",
+      continue: "Продолжить учёбу",
+      start: "Начать первый урок",
+      grade: "По классам",
+      finished: "выполнено",
+      tasks: "Цели на сегодня",
+      task1: "Пройти тест одного урока",
+      task2: "Пройти один 3D-опыт",
+      task3: "Выполнить цель по урокам на день",
+      ready: "Готово",
+      later: "Пока нет",
+      quick: "Быстрые действия",
+      qtest: "Пройти тест",
+      qlab: "3D-лаборатория",
+      qtable: "Таблица Менделеева",
+      qbadge: "Мои успехи",
+      qcert: "Сертификат",
+      qadmin: "Администрирование",
+      qteacher: "Панель учителя",
+      caution: "Данные взяты из вашей личной истории обучения.",
+      newH: "Три шага для начала",
+      newP: "График заполнится после первого XP.",
+      new1: "Откройте первый урок",
+      new2: "Досмотрите 3D-опыт до конца",
+      new3: "Наберите 7/10 и больше в тесте урока"
     }
   };
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -38,14 +72,14 @@
   function render(ctx) {
     const xp = window.XP;
     if (!xp || !ctx || !ctx.B) return '';
-    const L = copy[ctx.lang === 'en' ? 'en' : 'uz'], state = xp.s;
+    const L = copy[ctx.lang] || copy.uz, state = xp.s;
     const days = state.days || {}, now = new Date();
     const weeks = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
       const key = localDate(d);
       const value = safeNum((days[key] || {}).xp);
-      weeks.push({ key, value, text: ctx.lang === 'en' ? d.toLocaleDateString('en-US', { weekday: 'short' }) : ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh'][d.getDay()] });
+      weeks.push({ key, value, text: ctx.lang === 'en' ? d.toLocaleDateString('en-US', { weekday: 'short' }) : ctx.lang === 'ru' ? ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'][d.getDay()] : ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh'][d.getDay()] });
     }
     const max = Math.max(1, ...weeks.map((d) => d.value));
     const totalWeek = weeks.reduce((s, d) => s + d.value, 0);

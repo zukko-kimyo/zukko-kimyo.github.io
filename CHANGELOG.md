@@ -4,6 +4,12 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Uch tilli sayt: o'zbek, rus, ingliz (2026-11-17)
+- Sarlavhada va kirish oynasida **RU** tugmasi; tanlov saqlanadi (`zk_lang`), `html lang="ru"`.
+- Interfeys to'liq ruscha: menyular, bosh sahifa, fanlar, obuna oynasi, "Mening natijalarim" (darajalar, nishonlar), o'quv markazi, sertifikat, davriy jadval (118 element nomi, oilalar), 3D tajriba boshqaruvi, o'qituvchi va admin panellari, davomat, haftalik reyting.
+- Kimyo dars mazmuni, darslik sahifalari va tajriba izohlari hozircha o'zbek/ingliz tilida; rus tilida o'zbekchasi ko'rsatiladi (keyingi bosqichda tarjima qilinadi).
+- Yangi e2e test: `lang-ru.spec.mjs`.
+
 ### Fanlar: darslik sahifalari Firebase'da, himoyalangan (2026-11-17, ADR-0008 2-bosqich)
 - Admin paneli → "Darsliklar (fanlar)": administrator darslik PDF'ini tanlaydi, brauzer har bir sahifani rasmga aylantirib (pdf.js) Firebase'ga yuklaydi (`content/<fan>-<sinf>-<qism>-<sahifa>`). Noto'g'ri fayl rad etiladi; jarayon ko'rsatiladi.
 - Mavzu sahifasida darslikning 2 sahifasi (kattalashtirish bilan). Bepul mavzular (har sinfda dastlabki N ta) hammaga, qolganlari — shu fan obunasi bilan; yopiq mavzularda 🔒 va obuna oynasi.

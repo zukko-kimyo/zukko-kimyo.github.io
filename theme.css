@@ -632,6 +632,7 @@ body.zk-v3 .uchip .av {border-radius:999px}
 body.zk-v3 #bnav .uchip .nm {font-size:0!important;max-width:none}
 body.zk-v3 #bnav .uchip .nm::after {content:'Profil';font-size:10.5px}
 html[lang="en"] body.zk-v3 #bnav .uchip .nm::after {content:'Profile'}
+html[lang="ru"] body.zk-v3 #bnav .uchip .nm::after {content:'Профиль'}
 /* Davriy jadval planshetda to'liq sig'sin */
 @media (min-width:700px) and (max-width:1024px) {
   body.zk-v3 .ptgrid {min-width:0;gap:2px}

@@ -14,7 +14,7 @@
   }
   function refreshMobileNav() {
     if (!gradesToggle || !gradesMenu || !panelLink) return;
-    const en = document.documentElement.lang === 'en';
+    const lg = document.documentElement.lang, L3 = (uz, ru, en) => (lg === 'ru' ? ru : lg === 'en' ? en : uz);
     const h = (location.hash || '#home').slice(1);
     const isAdmin = Boolean(window.ZKAuth && ZKAuth.isAdmin && ZKAuth.isAdmin());
     const isTeacher = !isAdmin && Boolean(window.ZKAuth && ZKAuth.isStaff && ZKAuth.isStaff());
@@ -22,14 +22,14 @@
     panelLink.href = '#' + target;
     panelLink.dataset.nav = target;
     document.getElementById('mobilePanelIcon').textContent = isAdmin ? '🛡️' : isTeacher ? '👩‍🏫' : '👤';
-    document.getElementById('mobilePanelLabel').textContent = (isAdmin || isTeacher) ? (en ? 'Panel' : 'Panel') : (en ? 'Profile' : 'Profil');
-    document.getElementById('mobileGradesLabel').textContent = en ? 'Classes' : 'Sinflar';
-    document.getElementById('mobileGradesTitle').textContent = en ? 'Choose a class' : 'Sinfni tanlang';
-    gradesMenu.setAttribute('aria-label', en ? 'Classes' : 'Sinflar');
+    document.getElementById('mobilePanelLabel').textContent = (isAdmin || isTeacher) ? L3('Panel', 'Панель', 'Panel') : L3('Profil', 'Профиль', 'Profile');
+    document.getElementById('mobileGradesLabel').textContent = L3('Sinflar', 'Классы', 'Classes');
+    document.getElementById('mobileGradesTitle').textContent = L3('Sinfni tanlang', 'Выберите класс', 'Choose a class');
+    gradesMenu.setAttribute('aria-label', L3('Sinflar', 'Классы', 'Classes'));
     gradesMenu.querySelectorAll('a[href^="#g"]').forEach((link) => {
       const number = link.hash.replace('#g', '');
       const text = link.querySelector('span:nth-child(2)');
-      if (text) text.textContent = en ? 'Grade ' + number : number + '-sinf';
+      if (text) text.textContent = L3(number + '-sinf', number + ' класс', 'Grade ' + number);
     });
     gradesToggle.classList.toggle('on', /^(?:g[678](?:-|$)|book-g[678]$)/.test(h));
     panelLink.classList.toggle('on', h === target || (target === 'me' && h === 'certificate'));

@@ -11,12 +11,17 @@
       student:'Top active students',classes:'Class activity comparison',
       who:'Student',cls:'Class',xp:'7-day XP',avg:'Average XP',total:'Total XP',
       n:'Students',active:'Active',none:'No activity data yet.',
-      caution:'Informational only: XP is calculated on the client. Official awards require server-verified results.'}
+      caution:'Informational only: XP is calculated on the client. Official awards require server-verified results.'},
+    ru:{title:'🏆 Рейтинг за 7 дней',sub:'Активность учеников и классов за последние 7 дней.',
+      student:'Самые активные ученики',classes:'Активность классов',
+      who:'Ученик',cls:'Класс',xp:'XP за 7 дней',avg:'Средний XP',total:'Всего XP',
+      n:'Ученики',active:'Активные',none:'Пока нет данных об активности.',
+      caution:'Это только информационная статистика: XP рассчитывается на устройстве пользователя. Для официальных наград и сертификатов нужны результаты, проверенные на сервере.'}
   };
   const esc=(s)=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function mount(el,users,progress,lang){
     if(!el || !window.ZKStats || !window.ZKAuth || !ZKAuth.isAdmin())return;
-    const L=S[lang==='en'?'en':'uz'],Z=ZKStats;
+    const L=S[lang]||S.uz,Z=ZKStats;
     const top=Z.weeklyTopStudents(users,progress,10),classes=Z.weeklyClassBattle(users,progress);
     el.innerHTML=`<section class="zk-weekly">
       <div class="zk-weekly-head"><h3>${L.title}</h3><p>${L.sub}</p></div>

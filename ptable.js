@@ -120,16 +120,16 @@ Ts|Tennessin|Tennessine|[294]
 Og|Oganesson|Oganesson|[294]`;
 
   const CAT = {
-    alkali: { uz: 'Ishqoriy metallar', en: 'Alkali metals', c: '#ff8a80' },
-    alkaline: { uz: 'Ishqoriy-yer metallari', en: 'Alkaline earth metals', c: '#ffcc80' },
-    transition: { uz: "O'tish metallari", en: 'Transition metals', c: '#f8bbd0' },
-    post: { uz: 'Boshqa metallar', en: 'Post-transition metals', c: '#b0bec5' },
-    metalloid: { uz: 'Metalloidlar (yarim metallar)', en: 'Metalloids', c: '#c5e1a5' },
-    nonmetal: { uz: 'Nometallar', en: 'Reactive nonmetals', c: '#a5d6a7' },
-    halogen: { uz: 'Galogenlar', en: 'Halogens', c: '#80deea' },
-    noble: { uz: 'Inert (asil) gazlar', en: 'Noble gases', c: '#b39ddb' },
-    lanth: { uz: 'Lantanoidlar', en: 'Lanthanides', c: '#ffe082' },
-    actin: { uz: 'Aktinoidlar', en: 'Actinides', c: '#ffab91' },
+    alkali: { uz: 'Ishqoriy metallar', en: 'Alkali metals', ru: "Щелочные металлы", c: '#ff8a80' },
+    alkaline: { uz: 'Ishqoriy-yer metallari', en: 'Alkaline earth metals', ru: "Щёлочноземельные металлы", c: '#ffcc80' },
+    transition: { uz: "O'tish metallari", en: 'Transition metals', ru: "Переходные металлы", c: '#f8bbd0' },
+    post: { uz: 'Boshqa metallar', en: 'Post-transition metals', ru: "Другие металлы", c: '#b0bec5' },
+    metalloid: { uz: 'Metalloidlar (yarim metallar)', en: 'Metalloids', ru: "Металлоиды (полуметаллы)", c: '#c5e1a5' },
+    nonmetal: { uz: 'Nometallar', en: 'Reactive nonmetals', ru: "Неметаллы", c: '#a5d6a7' },
+    halogen: { uz: 'Galogenlar', en: 'Halogens', ru: "Галогены", c: '#80deea' },
+    noble: { uz: 'Inert (asil) gazlar', en: 'Noble gases', ru: "Инертные (благородные) газы", c: '#b39ddb' },
+    lanth: { uz: 'Lantanoidlar', en: 'Lanthanides', ru: 'Лантаноиды', c: '#ffe082' },
+    actin: { uz: 'Aktinoidlar', en: 'Actinides', ru: 'Актиноиды', c: '#ffab91' },
   };
   const inR = (z, a, b) => z >= a && z <= b;
   function catOf(z) {
@@ -146,10 +146,10 @@ Og|Oganesson|Oganesson|[294]`;
   }
   const GAS = [1, 2, 7, 8, 9, 10, 17, 18, 36, 54, 86];
   const stateOf = (z) => (z >= 104 ? 'unknown' : GAS.includes(z) ? 'gas' : z === 35 || z === 80 ? 'liquid' : 'solid');
-  const STATE = { solid: { uz: 'Qattiq', en: 'Solid', c: '#90caf9' }, liquid: { uz: 'Suyuq', en: 'Liquid', c: '#4dd0e1' }, gas: { uz: 'Gaz', en: 'Gas', c: '#fff59d' }, unknown: { uz: "Noma'lum", en: 'Unknown', c: '#e0e0e0' } };
-  const MET = { metal: { uz: 'Metall', en: 'Metal', c: '#90caf9' }, metalloid: { uz: 'Metalloid', en: 'Metalloid', c: '#c5e1a5' }, nonmetal: { uz: 'Nometall', en: 'Nonmetal', c: '#ffcc80' } };
+  const STATE = { solid: { uz: 'Qattiq', en: 'Solid', ru: 'Твёрдое', c: '#90caf9' }, liquid: { uz: 'Suyuq', en: 'Liquid', ru: 'Жидкое', c: '#4dd0e1' }, gas: { uz: 'Gaz', en: 'Gas', ru: 'Газ', c: '#fff59d' }, unknown: { uz: "Noma'lum", en: 'Unknown', c: '#e0e0e0' } };
+  const MET = { metal: { uz: 'Metall', en: 'Metal', ru: 'Металл', c: '#90caf9' }, metalloid: { uz: 'Metalloid', en: 'Metalloid', ru: 'Металлоид', c: '#c5e1a5' }, nonmetal: { uz: 'Nometall', en: 'Nonmetal', ru: 'Неметалл', c: '#ffcc80' } };
   const metOf = (c) => (c === 'metalloid' ? 'metalloid' : ['nonmetal', 'halogen', 'noble'].includes(c) ? 'nonmetal' : 'metal');
-  const BLOCK = { s: { uz: 's-blok', en: 's-block', c: '#ef9a9a' }, p: { uz: 'p-blok', en: 'p-block', c: '#fff59d' }, d: { uz: 'd-blok', en: 'd-block', c: '#90caf9' }, f: { uz: 'f-blok', en: 'f-block', c: '#a5d6a7' } };
+  const BLOCK = { s: { uz: 's-blok', en: 's-block', ru: 's-блок', c: '#ef9a9a' }, p: { uz: 'p-blok', en: 'p-block', ru: 'p-блок', c: '#fff59d' }, d: { uz: 'd-blok', en: 'd-block', ru: 'd-блок', c: '#90caf9' }, f: { uz: 'f-blok', en: 'f-block', ru: 'f-блок', c: '#a5d6a7' } };
 
   // grid position (period row 1-7, group col 1-18; f-block rows 9,10)
   function pos(z) {
@@ -234,38 +234,41 @@ Og|Oganesson|Oganesson|[294]`;
     Rn: ['Radioaktiv gaz; yerto\'lalarda to\'planishi xavfli.', 'Radioactive gas; dangerous when it builds up in basements.'],
   };
 
+  // Ruscha nomlar (tartib raqami bo'yicha)
+  const RU_NAMES = ["Водород", "Гелий", "Литий", "Бериллий", "Бор", "Углерод", "Азот", "Кислород", "Фтор", "Неон", "Натрий", "Магний", "Алюминий", "Кремний", "Фосфор", "Сера", "Хлор", "Аргон", "Калий", "Кальций", "Скандий", "Титан", "Ванадий", "Хром", "Марганец", "Железо", "Кобальт", "Никель", "Медь", "Цинк", "Галлий", "Германий", "Мышьяк", "Селен", "Бром", "Криптон", "Рубидий", "Стронций", "Иттрий", "Цирконий", "Ниобий", "Молибден", "Технеций", "Рутений", "Родий", "Палладий", "Серебро", "Кадмий", "Индий", "Олово", "Сурьма", "Теллур", "Иод", "Ксенон", "Цезий", "Барий", "Лантан", "Церий", "Празеодим", "Неодим", "Прометий", "Самарий", "Европий", "Гадолиний", "Тербий", "Диспрозий", "Гольмий", "Эрбий", "Тулий", "Иттербий", "Лютеций", "Гафний", "Тантал", "Вольфрам", "Рений", "Осмий", "Иридий", "Платина", "Золото", "Ртуть", "Таллий", "Свинец", "Висмут", "Полоний", "Астат", "Радон", "Франций", "Радий", "Актиний", "Торий", "Протактиний", "Уран", "Нептуний", "Плутоний", "Америций", "Кюрий", "Берклий", "Калифорний", "Эйнштейний", "Фермий", "Менделевий", "Нобелий", "Лоуренсий", "Резерфордий", "Дубний", "Сиборгий", "Борий", "Хассий", "Мейтнерий", "Дармштадтий", "Рентгений", "Коперниций", "Нихоний", "Флеровий", "Московий", "Ливерморий", "Теннессин", "Оганесон"];
   const EL = RAW.trim().split('\n').map((l, i) => {
     const [s, uz, en, m] = l.split('|'); const z = i + 1; const radio = z === 43 || z === 61 || z >= 84;
     const mass = m.startsWith('[') ? +m.slice(1, -1) : +m;
     const [row, col] = pos(z); const cat = catOf(z);
     const period = row >= 9 ? row - 3 : row; const group = row >= 9 ? 3 : col;
-    return { z, s, uz, en, m, mass, row, col, period, group, cat, state: stateOf(z), met: metOf(cat), radio, block: blockOf(z) };
+    return { z, s, uz, en, ru: RU_NAMES[i], m, mass, row, col, period, group, cat, state: stateOf(z), met: metOf(cat), radio, block: blockOf(z) };
   });
   const BY = Object.fromEntries(EL.map((e) => [e.s, e]));
 
   const T = {
-    title: ['Interaktiv davriy jadval', 'Interactive periodic table'],
-    sub: ["Elementni bosing — tartib raqami, massasi, elektron qavatlari, xossalari va qo'llanilishi chiqadi. Rang rejimini almashtirib, qonuniyatlarni ko'ring.", 'Click an element to see its atomic number, mass, electron shells, properties and uses. Switch the colour mode to see the patterns.'],
-    color: ['Rang bo\'yicha:', 'Colour by:'], m_cat: ['Oilalar', 'Families'], m_met: ['Metall / nometall', 'Metal / nonmetal'], m_state: ['Holati (25 °C)', 'State (25 °C)'], m_block: ['Bloklar', 'Blocks'], swipe: ['👆 Jadvalni barmoq bilan chapga-o\'ngga suring', '👆 Swipe the table left and right'],
-    find: ['Element qidirish (nomi, belgisi yoki raqami)…', 'Find an element (name, symbol or number)…'],
-    game: ['🎯 O\'yin: elementni top', '🎯 Game: find the element'], explore: ['🔍 Tadqiq qilish', '🔍 Explore'],
-    z: ['Tartib raqami (Z)', 'Atomic number (Z)'], ar: ['Nisbiy atom massasi (Aᵣ)', 'Relative atomic mass (Aᵣ)'], period: ['Davr', 'Period'], group: ['Guruh', 'Group'],
-    family: ['Oila', 'Family'], state: ['Holati (25 °C)', 'State (25 °C)'], shells: ['Elektron qavatlar', 'Electron shells'], conf: ['Elektron konfiguratsiya', 'Electron configuration'],
-    pne: ['Zarrachalar (eng ko\'p uchraydigan izotop)', 'Particles (most common isotope)'], val: ['Odatiy valentligi', 'Common valency'], use: ['Qo\'llanilishi', 'Uses'],
-    radio: ['☢ Radioaktiv element', '☢ Radioactive element'], open3d: ['⚛️ 3D atom modelini ochish', '⚛️ Open the 3D atom model'],
-    hint: ['👆 Jadvaldan elementni tanlang', '👆 Pick an element from the table'], lessons: ['Mavzuga oid darslar', 'Related lessons'],
-    q_name: ['{x} elementini toping', 'Find the element {x}'], q_z: ['Tartib raqami {x} bo\'lgan elementni toping', 'Find the element with atomic number {x}'], q_pg: ['{p}-davr, {g}-guruh elementini toping', 'Find the element in period {p}, group {g}'], q_sym: ['Belgisi «{x}» bo\'lgan elementni toping', 'Find the element whose symbol is “{x}”'],
-    right: ['To\'g\'ri! ✅', 'Correct! ✅'], wrong: ['Afsus, bu {x}. To\'g\'ri javob ko\'rsatildi.', 'Not quite — that is {x}. The right answer is highlighted.'], score: ['Natija', 'Score'], again: ['Qaytadan o\'ynash', 'Play again'], round: ['Savol', 'Question'],
-    done: ['O\'yin tugadi!', 'Game over!'], lnf: ['f-elementlar pastda', 'f-block below'],
-    p_count: ['protonlar', 'protons'], n_count: ['neytronlar (taxminiy)', 'neutrons (approx.)'], e_count: ['elektronlar', 'electrons'],
-    pause3d: ['Animatsiyani to‘xtatish', 'Pause animation'], play3d: ['Animatsiyani yoqish', 'Resume animation'], reset3d: ['3D ko‘rinishni tiklash', 'Reset 3D view'],
-    atomNote: ['Bohr sxemasi — elektronlar haqiqiy doiraviy orbitalarda harakatlanmaydi. Neytron soni yumaloqlangan massaga asoslangan taxmin.', 'Bohr schematic — electrons do not move in actual circular orbits. Neutron count is an estimate from rounded mass.'],
-    noUse: ['Batafsil ma’lumot uchun tegishli dars mavzularini ko‘ring.', 'See the related lessons for further details.'],
+    title: ['Interaktiv davriy jadval', 'Interactive periodic table', "Интерактивная таблица Менделеева"],
+    sub: ["Elementni bosing — tartib raqami, massasi, elektron qavatlari, xossalari va qo'llanilishi chiqadi. Rang rejimini almashtirib, qonuniyatlarni ko'ring.", 'Click an element to see its atomic number, mass, electron shells, properties and uses. Switch the colour mode to see the patterns.', "Нажмите на элемент — появятся порядковый номер, масса, электронные слои, свойства и применение. Меняйте режим цвета, чтобы увидеть закономерности."],
+    color: ['Rang bo\'yicha:', 'Colour by:', "Цвет по:"], m_cat: ['Oilalar', 'Families', "Семейства"], m_met: ['Metall / nometall', 'Metal / nonmetal', "Металл / неметалл"], m_state: ['Holati (25 °C)', 'State (25 °C)', "Состояние (25 °C)"], m_block: ['Bloklar', 'Blocks', "Блоки"], swipe: ['👆 Jadvalni barmoq bilan chapga-o\'ngga suring', '👆 Swipe the table left and right', "👆 Листайте таблицу пальцем"],
+    find: ['Element qidirish (nomi, belgisi yoki raqami)…', 'Find an element (name, symbol or number)…', "Поиск элемента (название, символ или номер)…"],
+    game: ['🎯 O\'yin: elementni top', '🎯 Game: find the element', "🎯 Игра: найди элемент"], explore: ['🔍 Tadqiq qilish', '🔍 Explore', "🔍 Исследовать"],
+    z: ['Tartib raqami (Z)', 'Atomic number (Z)', "Порядковый номер (Z)"], ar: ['Nisbiy atom massasi (Aᵣ)', 'Relative atomic mass (Aᵣ)', "Относительная атомная масса (Aᵣ)"], period: ['Davr', 'Period', "Период"], group: ['Guruh', 'Group', "Группа"],
+    family: ['Oila', 'Family', "Семейство"], state: ['Holati (25 °C)', 'State (25 °C)', "Состояние (25 °C)"], shells: ['Elektron qavatlar', 'Electron shells', "Электронные слои"], conf: ['Elektron konfiguratsiya', 'Electron configuration', "Электронная конфигурация"],
+    pne: ['Zarrachalar (eng ko\'p uchraydigan izotop)', 'Particles (most common isotope)', "Частицы (самый распространённый изотоп)"], val: ['Odatiy valentligi', 'Common valency', "Обычная валентность"], use: ['Qo\'llanilishi', 'Uses', "Применение"],
+    radio: ['☢ Radioaktiv element', '☢ Radioactive element', "☢ Радиоактивный элемент"], open3d: ['⚛️ 3D atom modelini ochish', '⚛️ Open the 3D atom model', "⚛️ Открыть 3D-модель атома"],
+    hint: ['👆 Jadvaldan elementni tanlang', '👆 Pick an element from the table', "👆 Выберите элемент в таблице"], lessons: ['Mavzuga oid darslar', 'Related lessons', "Уроки по теме"],
+    q_name: ['{x} elementini toping', 'Find the element {x}', "Найдите элемент {x}"], q_z: ['Tartib raqami {x} bo\'lgan elementni toping', 'Find the element with atomic number {x}', "Найдите элемент с порядковым номером {x}"], q_pg: ['{p}-davr, {g}-guruh elementini toping', 'Find the element in period {p}, group {g}', "Найдите элемент {p} периода, {g} группы"], q_sym: ['Belgisi «{x}» bo\'lgan elementni toping', 'Find the element whose symbol is “{x}”', "Найдите элемент с символом {x}"],
+    right: ['To\'g\'ri! ✅', 'Correct! ✅', "Верно! ✅"], wrong: ['Afsus, bu {x}. To\'g\'ri javob ko\'rsatildi.', 'Not quite — that is {x}. The right answer is highlighted.', "Увы, это {x}. Правильный ответ подсвечен."], score: ['Natija', 'Score', "Результат"], again: ['Qaytadan o\'ynash', 'Play again', "Ещё раз"], round: ['Savol', 'Question', "Раунд"],
+    done: ['O\'yin tugadi!', 'Game over!', "Игра окончена!"], lnf: ['f-elementlar pastda', 'f-block below', "f-элементы внизу"],
+    p_count: ['protonlar', 'protons', "протоны"], n_count: ['neytronlar (taxminiy)', 'neutrons (approx.)', "нейтроны (примерно)"], e_count: ['elektronlar', 'electrons', "электроны"],
+    pause3d: ['Animatsiyani to‘xtatish', 'Pause animation', "Остановить анимацию"], play3d: ['Animatsiyani yoqish', 'Resume animation', "Включить анимацию"], reset3d: ['3D ko‘rinishni tiklash', 'Reset 3D view', "Сбросить 3D-вид"],
+    atomNote: ['Bohr sxemasi — elektronlar haqiqiy doiraviy orbitalarda harakatlanmaydi. Neytron soni yumaloqlangan massaga asoslangan taxmin.', 'Bohr schematic — electrons do not move in actual circular orbits. Neutron count is an estimate from rounded mass.', "Схема Бора — электроны не движутся по настоящим круговым орбитам. Число нейтронов — оценка по округлённой массе."],
+    noUse: ['Batafsil ma’lumot uchun tegishli dars mavzularini ko‘ring.', 'See the related lessons for further details.', "Подробнее смотрите в уроках по этой теме."],
   };
   const LESSONS = [['g7', 17], ['g7', 18], ['g7', 26], ['g7', 27], ['g7', 35], ['g7', 36], ['g7', 37], ['g7', 38]];
 
   function render(host, ctx) {
-    const lang = ctx.lang; const tt = (k) => T[k][lang === 'uz' ? 0 : 1]; const nm = (e) => (lang === 'uz' ? e.uz : e.en);
+    const lang = ['uz', 'en', 'ru'].includes(ctx.lang) ? ctx.lang : 'uz'; const LI = { uz: 0, en: 1, ru: 2 }[lang]; const tt = (k) => T[k][LI] ?? T[k][0]; const nm = (e) => e[lang] || e.uz;
+    const L3 = (uz, ru, en) => (lang === 'ru' ? ru : lang === 'en' ? en : uz); const lbl = (o) => o[lang] || o.uz;
     const st = render.st || (render.st = { mode: 'cat', sel: null, game: null, hl: null });
     const legendOf = () => (st.mode === 'cat' ? CAT : st.mode === 'met' ? MET : st.mode === 'state' ? STATE : BLOCK);
     const keyOf = (e) => (st.mode === 'cat' ? e.cat : st.mode === 'met' ? e.met : st.mode === 'state' ? e.state : e.block);
@@ -273,7 +276,7 @@ Og|Oganesson|Oganesson|[294]`;
 
     host.innerHTML = `<div class="page-h pt"><div class="wrap"><div class="crumbs"><a href="#home">${ctx.t('nav_home')}</a> / ${tt('title')}</div><h1>🧩 ${tt('title')}</h1><p>${tt('sub')}</p></div></div>
       <div class="wrap ptwrap">
-        <div class="pt-overview"><span class="pt-stat">⚛️ <b>118</b> ${lang === 'uz' ? 'element' : 'elements'}</span><span class="pt-stat">🧪 <b>10</b> ${lang === 'uz' ? 'element oilasi' : 'element families'}</span><span class="pt-stat">🎮 <b>10</b> ${lang === 'uz' ? 'savollik o‘yin' : 'game questions'}</span></div>
+        <div class="pt-overview"><span class="pt-stat">⚛️ <b>118</b> ${L3('element', 'элементов', 'elements')}</span><span class="pt-stat">🧪 <b>10</b> ${L3('element oilasi', 'семейств элементов', 'element families')}</span><span class="pt-stat">🎮 <b>10</b> ${L3('savollik o‘yin', 'вопросов в игре', 'game questions')}</span></div>
         <div class="ptbar">
           <div class="seg" id="ptMode"><span class="ptlbl">${tt('color')}</span>${['cat', 'met', 'state', 'block'].map((m) => `<button data-m="${m}" class="${st.mode === m ? 'on' : ''}">${tt('m_' + m)}</button>`).join('')}</div>
           <input id="ptFind" class="ptfind" type="search" aria-label="${tt('find')}" placeholder="${tt('find')}" autocomplete="off">
@@ -296,7 +299,7 @@ Og|Oganesson|Oganesson|[294]`;
 
     function legend() {
       const L = legendOf();
-      host.querySelector('#ptLeg').innerHTML = Object.entries(L).map(([k, v]) => `<button data-k="${k}" class="${st.hl === k ? 'on' : ''}"><i style="background:${v.c}"></i>${v[lang]}</button>`).join('');
+      host.querySelector('#ptLeg').innerHTML = Object.entries(L).map(([k, v]) => `<button data-k="${k}" class="${st.hl === k ? 'on' : ''}"><i style="background:${v.c}"></i>${v[lang] || v.uz}</button>`).join('');
       host.querySelectorAll('#ptLeg button').forEach((b) => (b.onclick = () => { st.hl = st.hl === b.dataset.k ? null : b.dataset.k; paint(); legend(); }));
     }
     function paint() {
@@ -316,13 +319,13 @@ Og|Oganesson|Oganesson|[294]`;
       det.innerHTML = `<div class="ptcard"><div class="ptc1"><div class="ptbig" style="--c:${CAT[e.cat].c}"><i>${e.z}</i><b>${e.s}</b><span>${nm(e)}</span><em>${e.m.replace('.', ',')}</em></div><div class="pt-shell-summary"><b>${tt('shells')}</b><div>${sh.join(' · ')}</div><small>${e.z} ${tt('p_count')} · ${e.z} ${tt('e_count')}</small></div>
           <div class="pt3d" id="pt3d"><div class="pt3d-fallback">⚛️ ${nm(e)}</div><div class="pt3d-note">${tt('atomNote')}</div></div>
           <div class="pt3d-controls"><button type="button" id="pt3dPause">⏸ ${tt('pause3d')}</button><button type="button" id="pt3dReset">↺ ${tt('reset3d')}</button></div></div>
-        <div class="ptinfo"><h3>${nm(e)} <small>${lang === 'uz' ? e.en : e.uz}</small></h3>
-          <div class="ptkv"><span>${tt('z')}</span><b>${e.z}</b><span>${tt('ar')}</span><b>${e.m.replace('.', ',')}</b><span>${tt('period')} / ${tt('group')}</span><b>${e.period} / ${e.row >= 9 ? (lang === 'uz' ? (e.row === 9 ? 'lantanoid' : 'aktinoid') : (e.row === 9 ? 'lanthanide' : 'actinide')) : groupLabel(e.group)}</b>
-          <span>${tt('family')}</span><b><i class="dot" style="background:${CAT[e.cat].c}"></i>${CAT[e.cat][lang]}</b><span>${tt('state')}</span><b>${STATE[e.state][lang]}</b>
+        <div class="ptinfo"><h3>${nm(e)} <small>${lang === 'en' ? e.uz : e.en}</small></h3>
+          <div class="ptkv"><span>${tt('z')}</span><b>${e.z}</b><span>${tt('ar')}</span><b>${e.m.replace('.', ',')}</b><span>${tt('period')} / ${tt('group')}</span><b>${e.period} / ${e.row >= 9 ? (e.row === 9 ? L3('lantanoid', 'лантаноид', 'lanthanide') : L3('aktinoid', 'актиноид', 'actinide')) : groupLabel(e.group)}</b>
+          <span>${tt('family')}</span><b><i class="dot" style="background:${CAT[e.cat].c}"></i>${lbl(CAT[e.cat])}</b><span>${tt('state')}</span><b>${lbl(STATE[e.state])}</b>
           <span>${tt('shells')}</span><b>${sh.join(', ')}</b>${v ? `<span>${tt('val')}</span><b>${v}</b>` : ''}</div></div>
         <div class="ptx"><div class="ptpne"><b>${e.z}</b> ${tt('p_count')} · <b>${e.z}</b> ${tt('e_count')}${e.z <= 103 ? ` · <b>${A - e.z}</b> ${tt('n_count')}` : ''}</div>
           <div class="ptconf">${tt('conf')}:<br><code>${confStr(z)}</code></div>
-          ${u ? `<div class="ptuse"><b>${tt('use')}:</b> ${u[lang === 'uz' ? 0 : 1]}</div>` : `<div class="ptuse"><b>${tt('use')}:</b> ${tt('noUse')}</div>`}
+          ${u ? `<div class="ptuse"><b>${tt('use')}:</b> ${u[lang === 'en' ? 1 : 0]}</div>` : `<div class="ptuse"><b>${tt('use')}:</b> ${tt('noUse')}</div>`}
           ${e.radio ? `<div class="ptradio">${tt('radio')}</div>` : ''}
           ${z <= 20 && window.Lab && Lab.exps['atom-model'] ? `<a class="btn sec ptbtn" href="#lab-atom-model">${tt('open3d')}</a>` : ''}</div></div>`;
       const sceneHost = det.querySelector('#pt3d');
@@ -336,7 +339,7 @@ Og|Oganesson|Oganesson|[294]`;
         pauseBtn.onclick = () => { paused = !paused; active3d.pause(paused); pauseBtn.textContent = (paused ? '▶ ' + tt('play3d') : '⏸ ' + tt('pause3d')); };
         resetBtn.onclick = () => active3d.reset();
       } else {
-        sceneHost.innerHTML = `<div class="pt3d-fallback">${bohr(e)}<span>${lang === 'uz' ? '2D atom sxemasi' : '2D atom schematic'}</span></div><div class="pt3d-note">${tt('atomNote')}</div>`;
+        sceneHost.innerHTML = `<div class="pt3d-fallback">${bohr(e)}<span>${L3('2D atom sxemasi', '2D-схема атома', '2D atom schematic')}</span></div><div class="pt3d-note">${tt('atomNote')}</div>`;
         pauseBtn.hidden = true; resetBtn.hidden = true;
       }
     }
@@ -394,7 +397,7 @@ Og|Oganesson|Oganesson|[294]`;
     const find = host.querySelector('#ptFind');
     find.oninput = () => {
       const s = find.value.trim().toLowerCase(); if (!s) { st.hl = null; cells.forEach((c) => c.classList.remove('dim')); paint(); return; }
-      const hits = EL.filter((e) => String(e.z) === s || e.s.toLowerCase() === s || e.uz.toLowerCase().startsWith(s) || e.en.toLowerCase().startsWith(s));
+      const hits = EL.filter((e) => String(e.z) === s || e.s.toLowerCase() === s || e.uz.toLowerCase().startsWith(s) || e.en.toLowerCase().startsWith(s) || e.ru.toLowerCase().startsWith(s));
       if (hits.length === 1 && !st.game) show(hits[0].z);
       cells.forEach((c) => c.classList.toggle('dim', !hits.some((h) => h.z === +c.dataset.z)));
     };
