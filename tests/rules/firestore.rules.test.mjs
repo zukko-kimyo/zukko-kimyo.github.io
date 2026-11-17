@@ -215,3 +215,11 @@ test('davomatga soxta sana, ortiqcha maydon va boshqa uid orqali yozib bo‘lmay
   await assertFails(setDoc(doc(admin(), 'attendance/bad3'), attendance({ by: 'teach1' })));
   await assertSucceeds(setDoc(doc(admin(), 'attendance/2026-11-12_7A'), attendance()));
 });
+
+test('o‘chirilgan (disabled) o‘qituvchi xodim huquqlarini yo‘qotadi', async () => {
+  await assertSucceeds(getDoc(doc(teacher(), 'secrets/stu1')));
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/teach1'), { login: 'dilnoza.k', name: 'Dilnoza', role: 'teacher', cls: '', disabled: true }); });
+  await assertFails(getDoc(doc(teacher(), 'secrets/stu1')));
+  await assertFails(getDocs(collection(teacher(), 'progress')));
+  await assertFails(setDoc(doc(teacher(), 'users/stu1'), { login: 'vali.a.7a', name: 'X', role: 'student', cls: '7A' }));
+});

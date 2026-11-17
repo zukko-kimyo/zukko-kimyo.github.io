@@ -9,8 +9,10 @@ service cloud.firestore {
     function profile() { return get(/databases/$(db)/documents/users/$(request.auth.uid)).data; }
     function hasProfile() { return signedIn() && exists(/databases/$(db)/documents/users/$(request.auth.uid)); }
     function role() { return hasProfile() ? profile().role : ''; }
-    function isStaff() { return role() == 'teacher' || role() == 'admin'; }
-    function isAdmin() { return role() == 'admin'; }
+    // O'chirilgan (disabled) xodim huquqlarini yo'qotadi — mijoz tekshiruviga tayanilmaydi
+    function activeProfile() { return hasProfile() && profile().get('disabled', false) != true; }
+    function isStaff() { return activeProfile() && (profile().role == 'teacher' || profile().role == 'admin'); }
+    function isAdmin() { return activeProfile() && profile().role == 'admin'; }
     function isAdminEmail() { return signedIn() && request.auth.token.email == 'admin@zukko-kimyo.uz'; }
     function codeDoc(code) { return get(/databases/$(db)/documents/classes/$(code)).data; }
     // Faqat "o'quvchi" profili bor uid (o'qituvchi/admin parol yozuviga o'qituvchi tega olmasin)

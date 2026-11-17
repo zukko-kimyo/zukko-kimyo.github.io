@@ -79,3 +79,32 @@ test('parse buzilgan JSON\'da yiqilmaydi', () => {
 test('toCSV: BOM, ; ajratgich, qo\'shtirnoqni ekranlash', () => {
   assert.equal(S.toCSV([['a', 'b"c'], [1, null]]), '﻿"a";"b""c"\r\n"1";""');
 });
+
+test('progress.data dagi matn/HTML qiymatlar statistikaga o‘tmaydi (XSS himoyasi)', () => {
+  const evil = '<img src=x onerror=alert(1)>';
+  const P = {
+    s1: prog({ state: { days: { [k(0)]: { xp: evil } }, L: { [evil]: { best: 3 }, 'g6-1': { best: evil } } } }),
+    s2: prog({ state: { days: { [k(0)]: { xp: '15' } }, L: { 'g6-1': { best: 4 } } } }),
+    s3: prog({ state: { L: { 'g6-1': { best: 6 } } } }),
+  };
+  const d = S.dailyActivity(users, P, 3, TODAY);
+  for (const x of d) assert.equal(typeof x.xp, 'number');
+  assert.equal(d[2].xp, 15); assert.equal(d[2].active, 1);
+  const h = S.hardestLessons(users, P, 1, 10);
+  assert.ok(h.every((r) => /^g[678]$/.test(r.g) && Number.isFinite(r.n) && typeof r.avg === 'number'));
+  assert.ok(!JSON.stringify(h).includes('<'));
+});
+
+test('bitta o\'quvchining noto\'g\'ri ma\'lumoti admin statistikasini yiqitmaydi', () => {
+  const u = [{ id: 'a', role: 'student', cls: '7A' }, { id: 'b', role: 'student', cls: '7A' }, { id: 'c', role: 'student', cls: '7A' }];
+  const pr = {
+    a: { data: 'null' },
+    b: { data: JSON.stringify({ days: { constructor: { xp: 5 }, toString: { xp: 3 }, __proto__: { xp: 2 } } }) },
+    c: { data: '[1,2]' },
+  };
+  assert.deepEqual(S.parse(pr.a), {});
+  assert.deepEqual(S.parse(pr.c), {});
+  assert.doesNotThrow(() => S.dailyActivity(u, pr, 14, TODAY));
+  assert.doesNotThrow(() => S.kpis(u, pr, TODAY));
+  assert.doesNotThrow(() => S.hardestLessons(u, pr));
+});

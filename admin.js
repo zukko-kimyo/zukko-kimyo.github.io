@@ -120,7 +120,7 @@ table.ad td{padding:8px;border-bottom:1px solid #f4ece1}table.ad tr:last-child t
     const bars = data.map((d, i) => {
       const h = (d.active / max) * (H - pt - pb); const x = pl + i * bw + bw * 0.18; const y = H - pb - h; const w = bw * 0.64;
       const dd = d.date.slice(8, 10) + '.' + d.date.slice(5, 7);
-      return `<g><title>${d.date}: ${d.active} ${t('students_n')}, ${d.xp} XP</title><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(h, d.active ? 2 : 0).toFixed(1)}" rx="5" fill="${i === n - 1 ? '#ff7a1a' : '#a78bfa'}"/>${d.active && (!narrow || bw > 22) ? `<text class="v" x="${(x + w / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle">${d.active}</text>` : ''}${!narrow || i % 2 === (n - 1) % 2 ? `<text x="${(x + w / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle">${dd}</text>` : ''}</g>`;
+      return `<g><title>${esc(d.date)}: ${Number(d.active) || 0} ${t('students_n')}, ${Number(d.xp) || 0} XP</title><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(h, d.active ? 2 : 0).toFixed(1)}" rx="5" fill="${i === n - 1 ? '#ff7a1a' : '#a78bfa'}"/>${d.active && (!narrow || bw > 22) ? `<text class="v" x="${(x + w / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle">${d.active}</text>` : ''}${!narrow || i % 2 === (n - 1) % 2 ? `<text x="${(x + w / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle">${dd}</text>` : ''}</g>`;
     }).join('');
     return `<svg class="ad-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t('act_h'))}"><line x1="${pl}" x2="${W - pr}" y1="${H - pb}" y2="${H - pb}" stroke="#eadfce" stroke-width="2"/>${bars}</svg>`;
   }
@@ -162,7 +162,7 @@ table.ad td{padding:8px;border-bottom:1px solid #f4ece1}table.ad tr:last-child t
           ${top.map((r, i) => `<tr><td class="ad-mut">${i + 1}</td><td><b>${esc(r.name)}</b></td><td>${esc(r.cls)}</td><td><b>${r.xp}</b></td><td>${r.done}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut">—</div>`}</div>
       </div>
       <div class="panel" style="margin-top:18px"><h3>🧩 ${t('hard_h')}</h3><div class="ad-sub">${t('hard_p')}</div>${hard.length ? `<div class="ad-tw"><table class="ad" id="adHard"><thead><tr><th>${t('h_lesson')}</th><th>${t('h_avg')}</th><th>${t('h_n')}</th></tr></thead><tbody>
-        ${hard.map((h) => `<tr><td><a href="#${h.g}-${h.n}"><b>${h.g.slice(1)}-${t('grade')}, ${h.n}</b> — ${esc(lessonTitle(h.g, h.n))}</a></td><td><span class="ad-q ${qcls(h.avg)}">${h.avg}</span></td><td>${h.attempts}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut">${t('hard_none')}</div>`}</div>
+        ${hard.map((h) => `<tr><td><a href="#${esc(h.g)}-${Number(h.n) || 0}"><b>${esc(String(h.g).slice(1))}-${t('grade')}, ${Number(h.n) || 0}</b> — ${esc(lessonTitle(h.g, h.n))}</a></td><td><span class="ad-q ${qcls(h.avg)}">${Number(h.avg) || 0}</span></td><td>${Number(h.attempts) || 0}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut">${t('hard_none')}</div>`}</div>
       <div class="ad-grid" style="margin-top:18px">
         <div class="panel ad-form"><h3>⚙️ ${t('set_h')}</h3>
           <label for="adAnn">${t('ann_l')}</label><textarea id="adAnn" maxlength="300" placeholder="${esc(t('ann_ph'))}">${esc(set.announce || '')}</textarea>
