@@ -94,3 +94,17 @@ test('progress.data dagi matn/HTML qiymatlar statistikaga o‘tmaydi (XSS himoya
   assert.ok(h.every((r) => /^g[678]$/.test(r.g) && Number.isFinite(r.n) && typeof r.avg === 'number'));
   assert.ok(!JSON.stringify(h).includes('<'));
 });
+
+test('bitta o\'quvchining noto\'g\'ri ma\'lumoti admin statistikasini yiqitmaydi', () => {
+  const u = [{ id: 'a', role: 'student', cls: '7A' }, { id: 'b', role: 'student', cls: '7A' }, { id: 'c', role: 'student', cls: '7A' }];
+  const pr = {
+    a: { data: 'null' },
+    b: { data: JSON.stringify({ days: { constructor: { xp: 5 }, toString: { xp: 3 }, __proto__: { xp: 2 } } }) },
+    c: { data: '[1,2]' },
+  };
+  assert.deepEqual(S.parse(pr.a), {});
+  assert.deepEqual(S.parse(pr.c), {});
+  assert.doesNotThrow(() => S.dailyActivity(u, pr, 14, TODAY));
+  assert.doesNotThrow(() => S.kpis(u, pr, TODAY));
+  assert.doesNotThrow(() => S.hardestLessons(u, pr));
+});

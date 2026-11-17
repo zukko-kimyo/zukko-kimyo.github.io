@@ -304,7 +304,8 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   function detail() {
     const u = (st.users || []).find((x) => x.id === st.detail); if (!u) { st.detail = null; return results(); }
     const p = st.prog[u.id] || {}; let s = {}; try { s = JSON.parse(p.data || '{}'); } catch (e) { }
-    const Ls = s.L || {}; const xp = p.xp || 0;
+    if (!s || typeof s !== 'object' || Array.isArray(s)) s = {};
+    const Ls = (s.L && typeof s.L === 'object') ? s.L : {}; const xp = p.xp || 0;
     const grades = ['g6', 'g7', 'g8'].filter((g) => window.BOOKS && BOOKS[g]);
     const sec = st.secrets[u.id];
     body().innerHTML = `<button class="btn sec sm" id="tcBack">${t('d_back')}</button>

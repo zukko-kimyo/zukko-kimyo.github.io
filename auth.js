@@ -175,7 +175,7 @@
     const s = (window.XP && XP.s) || readLocal(); if (!s) { dirty = false; return true; }
     dirty = false;
     try {
-      await B.set('progress', me.uid, Object.assign({ data: JSON.stringify(s), updated: Date.now(), login: me.login, name: me.name || '', cls: me.cls || '', role: me.role }, summary(s)));
+      await B.set('progress', me.uid, Object.assign({ data: JSON.stringify(s), updated: Date.now(), login: String(me.login || '').slice(0, 80), name: String(me.name || '').slice(0, 120), cls: String(me.cls || '').slice(0, 40), role: me.role } /* qoidalardagi chegaralar: uzun ism sinxronlashni to'xtatmasin */, summary(s)));
       LS.del('zk_dirty'); return true;
     } catch (e) {
       dirty = true; LS.set('zk_dirty', me.uid); console.warn('progress push failed', e);
