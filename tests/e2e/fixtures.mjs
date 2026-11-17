@@ -32,7 +32,7 @@ export { expect };
 export const MOCK = '/index.html?mock';
 // Sayt skriptlari yuklanib, sahifa chizilguncha kutish (login oynasi bo'lsa, u chiqguncha).
 export async function waitReady(page) {
-  await page.waitForFunction(() => document.querySelector('.zk-gate form') || (window.XP && window.ZKT !== undefined && document.querySelector('#app')?.children.length), null, { timeout: 30_000 });
+  await page.waitForFunction(() => document.querySelector('.zk-gate form') || (window.XP && window.ZKBooted && document.querySelector('#app')?.children.length), null, { timeout: 30_000 });
 }
 export async function gotoMock(page, hash = 'home') { await page.goto(`${MOCK}#${hash}`); await waitReady(page); }
 export async function login(page, l, pw) {

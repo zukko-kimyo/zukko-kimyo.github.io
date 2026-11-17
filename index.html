@@ -751,33 +751,57 @@ button,a,.ptcell{touch-action:manipulation}
 <script type="module">
 const VER = '20261117-a11y-02';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
-// Tezlik (2026-11-13): hamma fayllar boshidanoq PARALLEL yuklab olinadi (preload), keyin tartib bilan ishga tushadi.
-// 3D, darslar va testlar login tekshiruvi bilan bir vaqtda tayyorlanadi; foydalanuvchiga bog'liq qismlar — logindan keyin.
+// Tezlik (2026-11-17): birinchi kirishda faqat sahifani chizish uchun kerakli fayllar yuklanadi (parallel preload,
+// keyin tartib bilan). 3D (three.js + lab-exps), testlar bazasi, darslik tarjimasi, davriy jadval va
+// o'qituvchi/admin panellari — faqat kerak bo'lganda (window.ZKLazy). Sekin telefonda bosh sahifa ancha tez ochiladi.
 const LABS = ['lab-core.js', 'lab-exps1.js', 'lab-exps2.js', 'lab-exps3.js', 'lab-exps4.js', 'lab-exps5.js', 'lab-exps6.js', 'lab-exps7.js'];
-const CONTENT = ['data-g6.js', 'data-g7.js', 'data-g8.js', 'tests.js', 'tests-g8.js', 'pages-tr.js', 'ptable-3d.js', 'ptable.js'];
-const USER = ['progress.js', 'student-dashboard.js', 'lab-guide.js', 'attendance.js', 'admin-weekly.js', 'certificate.js', 'tilt.js', 'lib/stats.js', 'teacher.js', 'admin-mobile.js', 'admin.js', 'app.js', 'mobile.js'];
+const CONTENT = ['data-g6.js', 'data-g7.js', 'data-g8.js', 'lab-meta.js'];
+const USER = ['progress.js', 'student-dashboard.js', 'lab-guide.js', 'certificate.js', 'tilt.js', 'app.js', 'mobile.js'];
+const LAZY = {
+  tests: ['tests.js', 'tests-g8.js'],
+  tr: ['pages-tr.js'],
+  pt: ['ptable-3d.js', 'ptable.js'],
+  staff: ['attendance.js', 'admin-weekly.js', 'lib/stats.js', 'teacher.js', 'admin-mobile.js', 'admin.js'],
+};
 const pre = (href, rel, as) => { const l = document.createElement('link'); l.rel = rel; if (as) l.as = as; if (rel === 'modulepreload' || as === 'script') l.crossOrigin = /^https?:/.test(href) ? 'anonymous' : null; l.href = href; document.head.appendChild(l); };
-['firebase-config.js', 'icons.js', 'auth.js', ...LABS, ...CONTENT, ...USER].forEach((s) => pre(s + '?v=' + VER, 'preload', 'script'));
-['build/three.module.js', 'examples/jsm/controls/OrbitControls.js', 'examples/jsm/environments/RoomEnvironment.js'].forEach((f) => pre('https://cdn.jsdelivr.net/npm/three@0.160.0/' + f, 'modulepreload'));
+['firebase-config.js', 'icons.js', 'auth.js', ...CONTENT, ...USER].forEach((s) => pre(s + '?v=' + VER, 'preload', 'script'));
+// Bir marta yuklanadi; tarmoq xatosida keyingi chaqiruv qayta urinadi
+const once = (f) => { let p = null; return () => p || (p = f().catch((e) => { p = null; throw e; })); };
+const seq = async (list) => { for (const s of list) await load(s); };
+const three = once(async () => {
+  const [THREE, { OrbitControls }, { RoomEnvironment }] = await Promise.all([import('three'), import('three/addons/controls/OrbitControls.js'), import('three/addons/environments/RoomEnvironment.js')]);
+  window.THREE = Object.assign({}, THREE, { OrbitControls, RoomEnvironment });
+  const lang = window.Lab ? window.Lab.lang : 'uz';
+  await seq(LABS);
+  window.Lab.lang = lang; window.Lab.ready = true;
+});
+window.ZKLazy = {
+  three,
+  tests: once(() => seq(LAZY.tests)),
+  tr: once(() => seq(LAZY.tr)),
+  pt: once(async () => { await seq(LAZY.pt); three().catch(() => {}); }),
+  staff: once(() => seq(LAZY.staff)),
+  // Tez internetda bo'sh paytda 3D'ni oldindan tayyorlab qo'yish (trafikni tejash rejimida emas)
+  prefetch() {
+    const c = navigator.connection;
+    if (c && (c.saveData || /2g|3g/.test(c.effectiveType || ''))) return;
+    (window.requestIdleCallback || ((f) => setTimeout(f, 2500)))(() => three().catch(() => {}), { timeout: 6000 });
+  },
+};
 await load('firebase-config.js').catch(() => {});
 await load('icons.js').catch(() => {});
 await load('auth.js').catch(() => {});
 const authP = window.ZKAuth ? ZKAuth.ready() : Promise.resolve(null);
 const contentP = (async () => {
-  let three = false;
-  try {
-    const [THREE, { OrbitControls }, { RoomEnvironment }] = await Promise.all([import('three'), import('three/addons/controls/OrbitControls.js'), import('three/addons/environments/RoomEnvironment.js')]);
-    window.THREE = Object.assign({}, THREE, { OrbitControls, RoomEnvironment }); three = true;
-  } catch (e) { console.warn('3D unavailable', e); }
-  // bitta 3D fayl yuklanmasa ham sayt ochilaveradi (oldin butun sayt bo'sh qolardi)
-  if (three) { for (const s of LABS) await load(s).catch((e) => console.warn('lab script failed', s, e)); }
-  if (!three || !window.Lab) window.Lab = { lang: 'uz', list: [], exps: {}, tr: (o) => (typeof o === 'string' ? o : o.uz), open: () => null };
   for (const s of CONTENT) await load(s).catch(() => {});
+  if (!window.Lab) window.Lab = { lang: 'uz', list: [], exps: {}, tr: (o) => (typeof o === 'string' ? o : o.uz), open: () => null };
 })();
 await Promise.all([authP.catch(() => null), contentP.catch(() => null)]);
 const failed = [];
 for (const s of USER) await load(s).catch(() => failed.push(s));
+window.ZKBooted = true; // testlar va boshqa skriptlar uchun: asosiy fayllar yuklandi
 if (window.ZKAuth && ZKAuth.user) ZKAuth.chip();
+if (window.ZKAuth && ZKAuth.isStaff && ZKAuth.isStaff()) window.ZKLazy.staff().catch(() => {});
 // Asosiy fayl yuklanmasa — bo'sh sahifa o'rniga tushunarli xabar va "Qayta yuklash" tugmasi
 setTimeout(() => {
   const app = document.getElementById('app');
