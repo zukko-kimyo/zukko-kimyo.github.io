@@ -41,7 +41,7 @@
     nores: { uz: 'Hech narsa topilmadi', en: 'Nothing found' }, no_lesson_n: { uz: '{n}-dars topilmadi (6-sinfda 35, 7-sinfda 72, 8-sinfda 68 ta dars bor)', en: 'Lesson {n} not found (grade 6 has 35, grade 7 has 72, grade 8 has 68 lessons)' }, of_word: { uz: 'dan', en: 'of' }, kb_hint: { uz: 'Klaviaturada ← → tugmalari bilan ham o\'tish mumkin', en: 'You can also use the ← → keys' }, grade: { uz: 'sinf', en: 'grade' },
     exp_word: { uz: 'tajriba', en: 'experiment' }, back_lab: { uz: '← Barcha tajribalar', en: '← All experiments' },
     hero_badge: { uz: '3D • aylantiring', en: '3D • drag to rotate' },
-    nav_tests: { uz: 'Testlar', en: 'Tests' },
+    nav_tests: { uz: 'Testlar', en: 'Tests' }, nav_subj: { uz: 'Fanlar', en: 'Subjects' },
     t_h: { uz: 'Testlar markazi', en: 'Test centre' }, t_p: { uz: "Har bir mavzu bo'yicha kamida 10 ta savol: 3 ta oson, 4 ta o'rtacha, 3 ta qiyin. Har safar yangi tasodifiy to'plam tuziladi.", en: 'At least 10 questions per topic: 3 easy, 4 medium, 3 hard. A new random set is built every time.' },
     t_grade: { uz: 'Sinf', en: 'Grade' }, t_both: { uz: 'Hammasi', en: 'All' }, t_topics: { uz: 'Mavzular', en: 'Topics' }, t_all: { uz: 'Hammasini belgilash', en: 'Select all' }, t_none: { uz: 'Tozalash', en: 'Clear' },
     t_count: { uz: 'Savollar soni', en: 'Number of questions' }, t_diff: { uz: 'Qiyinlik', en: 'Difficulty' }, t_mix: { uz: 'Aralash (3:4:3)', en: 'Mixed (3:4:3)' },
@@ -106,6 +106,7 @@
     document.documentElement.lang = l;
     document.querySelectorAll('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === l));
     document.querySelectorAll('[data-i]').forEach((el) => (el.innerHTML = t(el.dataset.i)));
+    buildSubjMenu();
     document.getElementById('q').placeholder = t('search');
     // ekran o'quvchilar uchun nomlar (til bilan birga almashadi)
     const uz = l === 'uz', setA = (id, v) => { const e = document.getElementById(id); if (e) e.setAttribute('aria-label', v); };
@@ -214,6 +215,7 @@
         <span class="zk-float-eq" aria-hidden="true">2H₂ + O₂ → 2H₂O</span>
       </div>
     </div></section>
+    <section class="blk zk-sj-sec"><div class="wrap"><div class="sec-h"><h2>${lang === 'uz' ? 'Zukko Akademiyasi fanlari' : 'Zukko Academy subjects'}</h2><a href="#fanlar">${lang === 'uz' ? 'Barchasi' : 'All'} →</a></div><div class="zk-sjgrid">${subjectCards()}</div></div></section>
     <section class="zk-home-row"><div class="wrap">
       <div class="zk-stats">
         <div><b>${nL}</b><span>${uz ? 'ta dars, 3 ta darslik' : 'lessons, 3 textbooks'}</span></div>
@@ -281,6 +283,72 @@
     app.querySelectorAll('.seg button').forEach((b) => (b.onclick = () => { filter3d = b.dataset.f === '1'; list(g); }));
   }
 
+  /* ---------- Zukko Akademiyasi: fanlar (subjects.js). Kimyo — mavjud bo'lim; boshqa fanlar — darsliklar asosida ---------- */
+  const SJ = () => window.ZKSubjects || { list: [], get: () => null, books: () => [], book: () => null };
+  const SN = (sj) => (sj ? sj.name[lang === 'en' ? 'en' : 'uz'] : '');
+  const gradeRange = (sj) => (sj.grades.length > 1 ? `${sj.grades[0]}–${sj.grades[sj.grades.length - 1]}` : `${sj.grades[0]}`);
+  function subjectCards() {
+    return SJ().list.map((sj) => {
+      const ready = sj.native ? sj.grades : [...new Set((sj.books || []).map((b) => b.grade))];
+      const href = sj.native ? sj.home : `#s/${sj.id}`;
+      const note = sj.native ? (lang === 'uz' ? '3D tajribalar, testlar, darsliklar' : '3D experiments, tests, textbooks')
+        : ready.length ? (lang === 'uz' ? `Tayyor: ${ready.join(', ')}-sinf` : `Ready: grade ${ready.join(', ')}`) : (lang === 'uz' ? 'Tez orada' : 'Coming soon');
+      return `<a class="zk-sjcard" href="${href}" style="--sj:${sj.color}"><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span><span class="zk-sj-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${lang === 'uz' ? 'sinflar' : 'grades'} · ${note}</small></span></a>`;
+    }).join('');
+  }
+  function subjectsPage() {
+    app.innerHTML = `<div class="page-h"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_subj')}</div><h1>${lang === 'uz' ? 'Fanlar' : 'Subjects'}</h1><p>${lang === 'uz' ? 'Zukko Akademiyasi: fanni tanlang.' : 'Zukko Academy: choose a subject.'}</p></div></div>
+      <div class="wrap" style="padding-bottom:48px"><div class="zk-sjgrid">${subjectCards()}</div></div>`;
+  }
+  // "Fanlar" menyusi (header): har bir fan — o'z oynasi
+  function buildSubjMenu() {
+    const m = document.getElementById('navSubjMenu'); if (!m || !window.ZKSubjects) return;
+    m.innerHTML = ZKSubjects.list.map((sj) => `<a href="#s/${sj.id}" data-nav="fanlar"><span class="zk-ngrp-n zk-sj-n" style="--sj:${sj.color}" aria-hidden="true">${sj.icon}</span><span class="zk-ngrp-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${lang === 'uz' ? 'sinf' : 'grade'}</small></span></a>`).join('');
+  }
+  // O'quvchining sinfi (profil: "7A" → 7). Xodim yoki sinfi noma'lum — null (sinf tanlanadi)
+  function myGrade() {
+    const u = window.ZKAuth && ZKAuth.user; if (!u || u.role !== 'student') return null;
+    const g = parseInt(String(u.cls || ''), 10); return g >= 1 && g <= 11 ? g : null;
+  }
+  const sjPick = {}; // xodim tanlagan sinf (fan bo'yicha)
+  // Fan oynasi: faqat bitta (tanlangan) sinf ko'rinadi. O'quvchi — o'z sinfi; xodim — sinfni tanlaydi.
+  function subjectPage(id, gArg) {
+    const sj = SJ().get(id);
+    if (!sj) return home();
+    const mine = myGrade();
+    if (sj.native) { location.replace(mine >= 6 && mine <= 8 ? `#g${mine}` : '#g6'); return; }
+    const uz = lang === 'uz', withBook = sj.grades.filter((g) => SJ().books(id, g).length);
+    const g = mine || gArg || sjPick[id] || withBook[0] || sj.grades[0];
+    if (!mine) sjPick[id] = g;
+    const bs = SJ().books(id, g);
+    const picker = mine ? '' : `<div class="seg zk-sjpick" role="group" aria-label="${uz ? 'Sinf' : 'Grade'}">${sj.grades.map((x) => `<a href="#s/${id}/${x}" class="${x === g ? 'on' : ''}${SJ().books(id, x).length ? '' : ' off'}" ${x === g ? 'aria-current="page"' : ''}>${x}</a>`).join('')}</div>`;
+    const parts = bs.map((b) => {
+      let html = `<section class="zk-sjbook"><h2>${esc(b.title)}</h2>`;
+      b.topics.forEach((tp, i) => {
+        const n = i + 1, u = (b.units || []).find((x) => x.from === n);
+        if (u) html += `<h3 class="zk-sjunit">${esc(uz ? u.t.uz : u.t.orig)}${uz ? ` <small>${esc(u.t.orig)}</small>` : ''}</h3>`;
+        html += `<a class="zk-sjtopic" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}</b>${tp.uz && tp.uz !== tp.t ? `<small>${esc(tp.uz)}</small>` : ''}</span></a>`;
+      });
+      return html + '</section>';
+    }).join('') || `<div class="panel tc-empty zk-sjsoon">${uz ? `${g}-sinf uchun ${SN(sj).toLowerCase()} darsligi tez orada qo‘shiladi.` : `The grade ${g} ${SN(sj)} textbook is coming soon.`}</div>`;
+    app.innerHTML = `<div class="page-h zk-sjhead" style="--sj:${sj.color}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${SN(sj)}</div>
+      <h1><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span> ${SN(sj)} · ${g}-${uz ? 'sinf' : 'grade'}</h1><p>${uz ? 'Har bir mavzu darslikda 2 sahifa.' : 'Each topic is 2 textbook pages.'}</p>${picker}</div></div>
+      <div class="wrap" style="padding-bottom:48px">${parts}</div>`;
+  }
+  function subjectGrade(id, g) { return subjectPage(id, g); }
+  // Mavzu sahifasi (1-bosqich): nomi, bo'limi, sahifalari. Darslik sahifalari va so'zlar Firebase'dan — keyingi bosqichda.
+  function subjectTopic(id, g, part, n) {
+    { const mine = myGrade(); if (mine && mine !== g) return subjectPage(id); }
+    const sj = SJ().get(id); const b = SJ().book(id, g, part); const tp = b && b.topics[n - 1]; if (!tp) return subjectGrade(id, g);
+    const uz = lang === 'uz'; const unit = (b.units || []).filter((x) => x.from <= n).pop();
+    const prev = n > 1 ? `#s/${id}/${g}/${part}/${n - 1}` : '', next = n < b.topics.length ? `#s/${id}/${g}/${part}/${n + 1}` : '';
+    app.innerHTML = `<div class="page-h" style="--sj:${sj.color}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${uz ? 'sinf' : 'grade'}</a> / ${n}</div>
+      <h1><span class="zk-sjnum" style="background:${sj.color}">${n}</span> ${esc(tp.t)}</h1>${tp.uz && tp.uz !== tp.t ? `<p>${esc(tp.uz)}</p>` : ''}</div></div>
+      <div class="wrap" style="padding-bottom:48px"><div class="panel"><h3>📖 ${uz ? 'Darslikda' : 'In the textbook'}</h3>
+        <p>${unit ? esc(uz ? unit.t.uz : unit.t.orig) + ' · ' : ''}${uz ? 'sahifalar' : 'pages'} ${tp.p.join('–')}</p>
+        <div class="zk-lazy" role="status">${uz ? 'Darslik sahifalari, yangi so‘zlar va mashqlar tez orada shu yerda bo‘ladi.' : 'Textbook pages, new words and exercises will appear here soon.'}</div></div>
+        <div class="pn">${prev ? `<a class="btn sec" href="${prev}">← ${uz ? 'Oldingi' : 'Previous'}</a>` : '<span></span>'}${next ? `<a class="btn sec" href="${next}">${uz ? 'Keyingi' : 'Next'} →</a>` : ''}</div></div>`;
+  }
   /* ---------- obuna: qulflangan bo'lim oynasi (lib/sub.js, firestore.rules: obunani faqat admin beradi) ---------- */
   const PAY = {
     uz: {
@@ -786,6 +854,10 @@
     if (newPage) toTop();
     destroyLab(); closeModal(); closeZoom(); document.getElementById('nav').classList.remove('open'); document.getElementById('burger').setAttribute('aria-expanded', 'false');
     let m, navKey = 'home';
+    { // sarlavhadagi fan nomi: fan sahifalarida — o'sha fan, aks holda — kimyo
+      const chip = document.querySelector('header.top .zk-subject'); const sm = h.match(/^s\/([a-z]+)/); const sj = sm && window.ZKSubjects ? ZKSubjects.get(sm[1]) : null;
+      if (chip) { const nm = sj ? SN(sj) : h === 'fanlar' ? t('nav_subj') : (lang === 'en' ? 'Chemistry' : 'Kimyo'); chip.textContent = nm.toUpperCase(); chip.setAttribute('aria-label', nm); }
+    }
     let lockR = null, lm;
     if (!fullAccess()) {
       if ((lm = h.match(/^(g[678])-(\d+)$/)) && !lessonOk(+lm[2])) lockR = lm[1];
@@ -793,6 +865,11 @@
     }
     if (lockR) { app.innerHTML = `<div class="page-h"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a></div></div></div><div class="wrap" style="padding-bottom:48px">${paywall(lockR === 'lab' ? 'lab' : 'lesson')}</div>`; bindPaywall(); navKey = lockR; }
     else if (h === 'home' || h === '') home();
+    else if (h === 'fanlar') { subjectsPage(); navKey = 'fanlar'; }
+    else if ((m = h.match(/^s\/([a-z]+)(?:\/(\d+)(?:\/(\d+)\/(\d+))?)?$/))) {
+      navKey = 'fanlar';
+      if (m[4]) subjectTopic(m[1], +m[2], +m[3], +m[4]); else if (m[2]) subjectGrade(m[1], +m[2]); else subjectPage(m[1]);
+    }
     else if (h === 'g6' || h === 'g7' || h === 'g8') { list(h); navKey = h; }
     else if ((m = h.match(/^(g[678])-(\d+)$/))) { if (lastRoute.split('-')[0] !== m[1] || !lastRoute.match(/-\d+$/)) curTab = 'content'; lesson(m[1], +m[2], curTab); navKey = m[1]; }
     else if (h === 'tests') { testsPage(); navKey = 'tests'; }
@@ -818,6 +895,7 @@
     }
     lastAnnounced = h;
     const gBtn = document.getElementById('navGradesBtn'); if (gBtn) { gBtn.classList.toggle('on', /^g[678]$/.test(navKey)); gradesMenu(false); }
+    const sBtn = document.getElementById('navSubjBtn'); if (sBtn) sBtn.classList.toggle('on', navKey === 'fanlar');
     if (XPok()) XP.refresh();
     app.classList.remove('enter'); if (!document.documentElement.classList.contains('zk-vt')) { void app.offsetWidth; app.classList.add('enter'); }
   }
@@ -828,25 +906,28 @@
   document.getElementById('nav').addEventListener('keydown', (e) => { const nv = e.currentTarget; if (e.key === 'Escape' && nv.classList.contains('open')) { nv.classList.remove('open'); const bg = document.getElementById('burger'); bg.setAttribute('aria-expanded', 'false'); bg.focus(); } });
   // "Asosiy qismga o'tish": klaviatura foydalanuvchisi header tugmalarini aylanib o'tmaydi
   { const sk = document.getElementById('zkSkip'); if (sk) sk.onclick = () => { const h1 = app.querySelector('h1'); const tg = h1 || app; if (h1) h1.tabIndex = -1; tg.focus(); }; }
-  // "Sinflar" ochiladigan menyusi (header): 6-, 7-, 8-sinf pastga ochiladi.
-  function gradesMenu(open) {
-    const btn = document.getElementById('navGradesBtn'), menu = document.getElementById('navGradesMenu');
+  // Header'dagi ochiladigan menyular: "Sinflar" (kimyo 6–8) va "Fanlar" (Zukko Akademiyasi fanlari)
+  var DD = [['navGrades', 'navGradesBtn', 'navGradesMenu'], ['navSubj', 'navSubjBtn', 'navSubjMenu']];
+  function ddMenu(k, open) {
+    if (!DD) return; // yuklanish boshida (var — hali qiymatsiz)
+    const btn = document.getElementById(DD[k][1]), menu = document.getElementById(DD[k][2]);
     if (!btn || !menu) return;
     menu.hidden = !open; btn.setAttribute('aria-expanded', String(open)); btn.classList.toggle('open', open);
   }
-  (function () {
-    const grp = document.getElementById('navGrades'), btn = document.getElementById('navGradesBtn'), menu = document.getElementById('navGradesMenu');
+  function gradesMenu(open) { ddMenu(0, open); if (!open) ddMenu(1, false); }
+  DD.forEach(([g, b, m], k) => {
+    const grp = document.getElementById(g), btn = document.getElementById(b), menu = document.getElementById(m);
     if (!grp || !btn || !menu) return;
-    btn.onclick = (e) => { e.stopPropagation(); const open = menu.hidden; gradesMenu(open); if (open) menu.querySelector('a').focus({ preventScroll: true }); };
-    menu.addEventListener('click', (e) => { if (e.target.closest('a')) gradesMenu(false); });
-    document.addEventListener('click', (e) => { if (!menu.hidden && !grp.contains(e.target)) gradesMenu(false); });
-    grp.addEventListener('focusout', (e) => { if (!menu.hidden && e.relatedTarget && !grp.contains(e.relatedTarget)) gradesMenu(false); });
+    btn.onclick = (e) => { e.stopPropagation(); const open = menu.hidden; DD.forEach((_, o) => o !== k && ddMenu(o, false)); ddMenu(k, open); if (open) menu.querySelector('a').focus({ preventScroll: true }); };
+    menu.addEventListener('click', (e) => { if (e.target.closest('a')) ddMenu(k, false); });
+    document.addEventListener('click', (e) => { if (!menu.hidden && !grp.contains(e.target)) ddMenu(k, false); });
+    grp.addEventListener('focusout', (e) => { if (!menu.hidden && e.relatedTarget && !grp.contains(e.relatedTarget)) ddMenu(k, false); });
     grp.addEventListener('keydown', (e) => {
-      const L = [...menu.querySelectorAll('a')], i = L.indexOf(document.activeElement);
-      if (e.key === 'Escape' && !menu.hidden) { e.preventDefault(); e.stopPropagation(); gradesMenu(false); btn.focus(); }
-      else if (e.key === 'ArrowDown') { e.preventDefault(); if (menu.hidden) gradesMenu(true); L[(i + 1) % L.length].focus(); }
-      else if (e.key === 'ArrowUp' && !menu.hidden) { e.preventDefault(); L[(i - 1 + L.length) % L.length].focus(); }
+      const Ls = [...menu.querySelectorAll('a')], i = Ls.indexOf(document.activeElement);
+      if (e.key === 'Escape' && !menu.hidden) { e.preventDefault(); e.stopPropagation(); ddMenu(k, false); btn.focus(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); if (menu.hidden) ddMenu(k, true); Ls[(i + 1) % Ls.length].focus(); }
+      else if (e.key === 'ArrowUp' && !menu.hidden) { e.preventDefault(); Ls[(i - 1 + Ls.length) % Ls.length].focus(); }
     });
-  })();
+  });
   setLang(lang);
 })();

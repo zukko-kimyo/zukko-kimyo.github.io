@@ -13,6 +13,7 @@ async function addStudent(page, sub) {
 const go = (page, h) => page.evaluate((h) => { location.hash = '#' + h; }, h);
 
 test('obunasiz o\'quvchi: har sinfda dastlabki 3 mavzu ochiq, qolganlari yopiq', async ({ page }) => {
+  test.slow(); // ko'p sahifani aylanib chiqadi — yuklangan CI'da 60 s yetmasligi mumkin
   await bootstrapAdmin(page);
   await addStudent(page);
   await logout(page);
@@ -82,7 +83,7 @@ test('admin obuna beradi — o\'quvchiga bo\'limlar ochiladi', async ({ page }) 
   await row.locator('select').selectOption('month');
   await row.locator('[data-give]').click();
   await expect(page.locator('tr', { hasText: 'Ali Sobirov' })).toContainText(/faol/);
-  const sub = await page.evaluate(() => JSON.parse(localStorage.getItem('zk_mock_db')).col.users.stu9.sub);
+  const sub = await page.evaluate(() => JSON.parse(localStorage.getItem('zk_mock_db')).col.users.stu9.subs.chem);
   expect(sub.plan).toBe('month');
   expect(sub.until - Date.now()).toBeGreaterThan(29 * 86400000);
 

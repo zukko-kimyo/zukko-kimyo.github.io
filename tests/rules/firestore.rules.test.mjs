@@ -260,3 +260,24 @@ test('administrator bepul mavzular sonini o\'zgartiradi; noto\'g\'ri qiymat rad 
   await assertFails(setDoc(doc(admin(), 'settings/site'), { freeN: 99 }, { merge: true }));
   await assertFails(setDoc(doc(teacher(), 'settings/site'), { freeN: 50 }, { merge: true }));
 });
+
+// ---------- fanlar: o'qituvchiga biriktirish va har fanga obuna ----------
+test('admin o\'qituvchiga fan biriktiradi; noto\'g\'ri fan rad etiladi', async () => {
+  await assertSucceeds(setDoc(doc(admin(), 'users/teach1'), { subjects: ['math', 'eng'] }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'users/teach1'), { subjects: ['history'] }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'users/teach1'), { subjects: ['chem', 'math', 'eng', 'rus'] }, { merge: true }));
+});
+test('kimyo natijalarini faqat kimyo fani biriktirilgan o\'qituvchi o\'qiydi', async () => {
+  await assertSucceeds(getDocs(collection(teacher(), 'progress')), 'eski o\'qituvchi (fani ko\'rsatilmagan) — kimyo');
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/teach1'), { login: 'dilnoza.k', name: 'Dilnoza', role: 'teacher', cls: '', subjects: ['math'] }); });
+  await assertFails(getDocs(collection(teacher(), 'progress')));
+  await assertFails(getDoc(doc(teacher(), 'progress/stu1')));
+  await assertSucceeds(getDocs(collection(admin(), 'progress')));
+});
+test('har fanga alohida obuna (subs); noto\'g\'ri fan yoki yozuv rad etiladi', async () => {
+  const S = { plan: 'quarter', until: Date.now() + 90 * 86400000, at: Date.now(), by: 'admin1' };
+  await assertSucceeds(setDoc(doc(admin(), 'users/stu1'), { subs: { math: S, eng: null } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'users/stu1'), { subs: { art: S } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'users/stu1'), { subs: { math: { plan: 'week', until: 1 } } }, { merge: true }));
+  await assertFails(setDoc(doc(student(), 'users/stu1'), { subs: { math: S } }, { merge: true }));
+});

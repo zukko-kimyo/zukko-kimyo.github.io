@@ -4,6 +4,13 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Zukko Akademiyasi: ko'p fanli platforma asosi (2026-11-17, ADR-0008)
+- Fanlar: Kimyo (mavjud), Matematika, Ingliz tili, Rus tili (1–11-sinf). Menyuda "Sinflar" kabi ochiladigan "Fanlar" ro'yxati; har bir fanning o'z oynasi (`#s/<fan>`), unda faqat bitta sinf: o'quvchiga — o'z sinfi (profildagi sinfdan), admin/o'qituvchi sinfni tanlaydi. Bosh sahifada fanlar bo'limi; sarlavhada joriy fan nomi.
+- 1-sinf, 1-qism darsliklari mundarijasi (har birida 50 mavzu, o'zbekcha tarjimasi bilan): English Pathway 1, Russian Pathway 1, Mathematics Grade 1. Darslik sahifalari va mashqlar — keyingi bosqichda (Firebase'da, himoyalangan).
+- Admin o'qituvchiga fan(lar) biriktiradi; o'qituvchi faqat o'z fani natijalarini ko'radi (kimyo natijalari — faqat kimyo o'qituvchisi va admin).
+- Obuna har fanga alohida (`users.subs`); "Obunalar" tabida fan tanlanadi. Eski kimyo obunalari amal qilaveradi.
+- `firestore.rules`: `subs`, `subjects` tekshiruvi, `teacherOf()`. **Publish kerak**.
+
 ### Yangi nom: Zukko Akademiyasi (2026-11-17)
 - Platforma nomi "Zukko Akademiyasi" (foydalanuvchi tanlovi; kelajakda matematika, ingliz tili, rus tili qo'shiladi). Sarlavha, kirish oynasi, sahifa nomi, ilova (manifest), sertifikat va login varaqalarida. Kimyo — joriy fan sifatida sarlavhada qoladi; Zukko Xalqaro Maktabi pastki qismda. Manzil o'zgarmadi.
 - Kuchsiz grafikali kompyuterlarda bosh sahifadagi "3D modelni ko'rish" tugmasi to'q fonda yaxshi o'qiladi.
