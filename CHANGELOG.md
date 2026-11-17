@@ -4,6 +4,10 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Yangi nom: Zukko Akademiyasi (2026-11-17)
+- Platforma nomi "Zukko Akademiyasi" (foydalanuvchi tanlovi; kelajakda matematika, ingliz tili, rus tili qo'shiladi). Sarlavha, kirish oynasi, sahifa nomi, ilova (manifest), sertifikat va login varaqalarida. Kimyo — joriy fan sifatida sarlavhada qoladi; Zukko Xalqaro Maktabi pastki qismda. Manzil o'zgarmadi.
+- Kuchsiz grafikali kompyuterlarda bosh sahifadagi "3D modelni ko'rish" tugmasi to'q fonda yaxshi o'qiladi.
+
 ### O'qituvchi faqat kuzatadi (2026-11-17)
 - Foydalanuvchi qarori: "oqituvchilarda oquvchi qoshish imkoni bulmasin u faqat nazorat qila olsin xolos".
 - O'qituvchi panelida o'qituvchi uchun faqat "Natijalar" (o'quvchi tafsiloti, CSV eksport). O'quvchi qo'shish, arizalar, sinf kodlari, parollarni ko'rish/tiklash, login varaqalari va o'chirish faqat administratorda.

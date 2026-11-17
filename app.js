@@ -196,7 +196,7 @@
     app.innerHTML = `
     <section class="hero zk-hero-v3"><div class="wrap">
       <div class="zk-hero-content">
-        <div class="zk-hero-kicker"><span class="zk-live-dot"></span>${uz ? 'ZUKKO XALQARO MAKTABI · RAQAMLI KIMYO' : 'ZUKKO INTERNATIONAL SCHOOL · CHEMISTRY'}</div>
+        <div class="zk-hero-kicker"><span class="zk-live-dot"></span>${uz ? 'ZUKKO AKADEMIYASI · KIMYO' : 'ZUKKO ACADEMY · CHEMISTRY'}</div>
         <h1>${uz ? 'Kimyoni ko‘r.' : 'See chemistry.'} <em>${uz ? 'Tajribada kashf et.' : 'Discover it in action.'}</em></h1>
         <p class="lead">${uz ? 'Darsliklardagi har bir mavzu, interaktiv 3D tajribalar va testlar — 6, 7 va 8-sinflar uchun bir joyda.' : 'Every textbook topic, interactive 3D experiments and quizzes — for grades 6, 7 and 8 in one place.'}</p>
         ${hc}
@@ -811,7 +811,7 @@
     // Sahifa sarlavhasi (brauzer tabi) va ekran o'quvchilar uchun e'lon; yangi sahifada fokus sarlavhaga o'tadi
     const h1 = app.querySelector('h1'), hc = h1 && h1.cloneNode(true); if (hc) hc.querySelectorAll('.lnum,.lstat,[aria-hidden="true"]').forEach((x) => x.remove()); const h1t = hc ? hc.textContent.replace(/\s+/g, ' ').trim() : '';
     const isHome = !!app.querySelector('.zk-hero-v3'); const tt = h1t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '').trim();
-    document.title = (tt && !isHome ? tt + ' · ' : '') + 'Zukko Xalqaro Maktabi — Kimyo';
+    document.title = (tt && !isHome ? tt + ' · ' : '') + (lang === 'en' ? 'Zukko Academy — Chemistry' : 'Zukko Akademiyasi — Kimyo');
     if (newPage && lastAnnounced !== '') {
       const an = document.getElementById('zkAnnounce'); if (an) { an.textContent = ''; setTimeout(() => (an.textContent = h1t || document.title), 60); }
       if (h1 && document.activeElement && (document.activeElement === document.body || !document.activeElement.closest('header,#bnav,.zk-gate,.lesson-top .tabs'))) { h1.tabIndex = -1; h1.focus({ preventScroll: true }); }

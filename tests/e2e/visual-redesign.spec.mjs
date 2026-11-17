@@ -5,7 +5,7 @@ test('new premium home renders dark science hero and redesigned grade sections',
   await page.goto('/index.html#home');
   await waitReady(page);
   await expect(page.locator('body')).toHaveClass(/zk-v3/);
-  await expect(page.locator('.top .zk-school-name')).toContainText('ZUKKO XALQARO');
+  await expect(page.locator('.top .zk-school-name')).toContainText('ZUKKO');
   await expect(page.locator('.top .zk-subject')).toHaveText('KIMYO');
   await expect(page.locator('#app .zk-hero-v3')).toBeVisible();
   await expect(page.locator('#app .zk-hero-v3 h1')).toContainText('Kimyoni ko‘r.');

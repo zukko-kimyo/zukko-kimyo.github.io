@@ -5,7 +5,7 @@ test('school-logo login loads, with modern form styling and accessible show-pass
   const card = page.locator('.zk-gate form.card');
   await expect(card).toBeVisible();
   await expect(card.locator('.mk img')).toBeVisible();
-  await expect(card.locator('.zk-brand-kicker')).toContainText('ZUKKO XALQARO MAKTABI');
+  await expect(card.locator('.zk-brand-kicker')).toContainText('ZUKKO AKADEMIYASI');
   const logo = await card.locator('.mk img').evaluate(el => ({
     complete: el.complete, width: el.naturalWidth, height: el.naturalHeight
   }));
@@ -33,11 +33,11 @@ test('registration and language switch preserve the real school brand and existi
   await expect(page.locator('#zkN')).toBeVisible();
   await expect(page.locator('#zkC')).toBeVisible();
   await page.locator('.zk-gate .lng button[data-l="en"]').click();
-  await expect(page.locator('.zk-gate .zk-brand-kicker')).toContainText('ZUKKO INTERNATIONAL SCHOOL');
+  await expect(page.locator('.zk-gate .zk-brand-kicker')).toContainText('ZUKKO ACADEMY');
   await expect(page.locator('.zk-gate .eye')).toHaveAttribute('aria-label','Show password');
   await page.locator('.zk-gate [data-login]').click();
   await expect(page.locator('.zk-gate #zkL')).toBeVisible();
-  await expect(page.locator('.zk-gate .zk-brand-kicker')).toContainText('ZUKKO INTERNATIONAL SCHOOL');
+  await expect(page.locator('.zk-gate .zk-brand-kicker')).toContainText('ZUKKO ACADEMY');
   await login(page, 'admin', 'wrong-password');
   await expect(page.locator('#zkE')).toBeVisible();
   await expect(page.locator('#zkE')).toHaveAttribute('role','alert');
