@@ -707,3 +707,10 @@ html[data-theme="dark"] .zk-pay .zk-pay-exp {color:#ffb4a8}
 body.zk-v3 .ad-prices {border:0;padding:12px 0 0;margin:14px 0 0;border-top:1px solid var(--zk-hair)}
 body.zk-v3 .ad-prices legend {font:600 15px var(--fh);padding:0;color:var(--zk-ink)}
 body.zk-v3 .tc-sel {border:1px solid var(--zk-hair);border-radius:12px;padding:7px 10px;font:600 14px var(--f);background:var(--zk-surface,#fff);color:var(--zk-ink)}
+/* Obuna: qulf belgisi va yopiq kartalar */
+.zk-lock {margin-left:6px;font-size:.85em;opacity:.75}
+body.zk-v3 :is(.lcard,.xcard).locked {opacity:.78}
+body.zk-v3 :is(.lcard,.xcard).locked:hover {opacity:1}
+body.zk-v3 .tl.locked {opacity:.6;cursor:not-allowed}
+body.zk-v3 .zk-lock-note {margin:10px 0 4px;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,var(--zk-teal) 7%,transparent);font-size:14px;line-height:1.5}
+body.zk-v3 .ad-form input[type=number] {width:100%;box-sizing:border-box;border:1px solid var(--zk-hair);border-radius:14px;padding:10px 12px;font:600 15px var(--f);background:var(--zk-surface,#fff);color:var(--zk-ink)}

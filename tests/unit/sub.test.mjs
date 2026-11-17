@@ -49,17 +49,24 @@ test('kim ko\'ra oladi: obunali o\'quvchi, o\'qituvchi, admin; ochiq rejimda ham
   assert.equal(S.canPaid(st, NOW, false), true, 'Firebase sozlanmagan — ochiq');
 });
 
-test('qaysi sahifa pullik', () => {
-  assert.equal(S.featureOf('g6-5', 'content'), null, '6-sinf dars matni bepul');
-  assert.equal(S.featureOf('g6-5', 'lab'), 'lab');
-  assert.equal(S.featureOf('g6-5', 'quiz'), 'tests');
-  assert.equal(S.featureOf('g6-5', 'pages'), 'pages');
-  assert.equal(S.featureOf('g7-3', 'content'), 'g7');
-  assert.equal(S.featureOf('g8-1'), 'g8');
-  assert.equal(S.featureOf('tests'), 'tests');
-  assert.equal(S.featureOf('lab-soda-vinegar'), 'lab');
-  assert.equal(S.featureOf('book-g6'), 'pages');
-  for (const free of ['home', 'g6', 'g7', 'lab', 'ptable', 'ptable-26', 'me', 'certificate']) assert.equal(S.featureOf(free), null, free);
+test('har bir sinfda dastlabki mavzular bepul (standart 3, admin o\'zgartiradi)', () => {
+  assert.equal(S.freeCount({}), 3);
+  assert.equal(S.freeCount({ freeN: 2 }), 2);
+  assert.equal(S.freeCount({ freeN: 0 }), 0);
+  for (const bad of [-1, 2.5, '5', 99, null]) assert.equal(S.freeCount({ freeN: bad }), 3, String(bad));
+  assert.equal(S.lessonOpen(false, 1, 3), true);
+  assert.equal(S.lessonOpen(false, 3, 3), true);
+  assert.equal(S.lessonOpen(false, 4, 3), false);
+  assert.equal(S.lessonOpen(false, 0, 3), false);
+  assert.equal(S.lessonOpen(true, 30, 3), true, 'obuna yoki xodim — hammasi');
+});
+
+test('3D tajriba bepul darsga bog\'langan bo\'lsa ochiq', () => {
+  assert.equal(S.labOpen(false, { lessons: [[6, 9], [7, 2]] }, 3), true, '7-sinf 2-mavzu bepul');
+  assert.equal(S.labOpen(false, { lessons: [[6, 9], [8, 12]] }, 3), false);
+  assert.equal(S.labOpen(false, { lessons: [] }, 3), false);
+  assert.equal(S.labOpen(false, null, 3), false);
+  assert.equal(S.labOpen(true, { lessons: [[8, 12]] }, 3), true);
 });
 
 test('sana dd.mm.yyyy', () => {

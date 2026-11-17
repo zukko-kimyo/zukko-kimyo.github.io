@@ -109,7 +109,8 @@ service cloud.firestore {
       allow get: if id == 'site';
       allow list: if false;
       allow write: if isAdmin() && id == 'site'
-                   && request.resource.data.keys().hasOnly(['announce', 'announceOn', 'regOpen', 'updated', 'by', 'prices', 'payInfo'])
+                   && request.resource.data.keys().hasOnly(['announce', 'announceOn', 'regOpen', 'updated', 'by', 'prices', 'payInfo', 'freeN'])
+                   && (!('freeN' in request.resource.data) || (request.resource.data.freeN is int && request.resource.data.freeN >= 0 && request.resource.data.freeN <= 50))
                    && (!('payInfo' in request.resource.data) || (request.resource.data.payInfo is string && request.resource.data.payInfo.size() <= 400))
                    && (!('prices' in request.resource.data) || (request.resource.data.prices is map
                         && request.resource.data.prices.keys().hasOnly(['month', 'quarter', 'year'])

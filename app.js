@@ -177,7 +177,7 @@
       for (let n = u.from; n < Math.min(next, u.from + 3); n++) {
         const L = bk.lessons[n - 1], st = XPok() ? XP.state(g, n) : '', ex = expsOf(g, n).length;
         const stat = st === 'done' ? `<span class="zk-st done">${uz ? 'Bajarildi' : 'Done'}</span>` : st ? `<span class="zk-st go" style="--uc:${col}">${uz ? 'Davom etmoqda' : 'In progress'}</span>` : `<span class="zk-st">${uz ? 'Yangi' : 'New'}</span>`;
-        ls.push(`<a class="lcard zk-hl ${st}" href="#${g}-${n}" style="--uc:${col};--uc-on:${onCol(col)}"><div class="lnum" style="background:${col};color:${onCol(col)}">${st === 'done' ? '✓' : n}</div><div><h4>${esc(tr(L.t))}</h4><div class="tags">${stat}${ex ? '<span class="zk-st x">3D</span>' : ''}</div></div></a>`);
+        ls.push(`<a class="lcard zk-hl ${st}${lessonOk(n) ? '' : ' locked'}" href="#${g}-${n}" style="--uc:${col};--uc-on:${onCol(col)}"><div class="lnum" style="background:${col};color:${onCol(col)}">${st === 'done' ? '✓' : n}</div><div><h4>${esc(tr(L.t))}${lessonOk(n) ? '' : lockIc}</h4><div class="tags">${stat}${ex ? '<span class="zk-st x">3D</span>' : ''}</div></div></a>`);
       }
       return `<div class="zk-hunit"><div class="unit-h" style="--uc:${col};--uc-on:${onCol(col)}"><span>${i + 1}</span>${esc(tr(u.t))}<i></i><a href="#${g}">${uz ? 'Barchasi' : 'All'} · ${total} ${uz ? 'dars' : 'lessons'}</a></div><div class="zk-hgrid">${ls.join('')}</div></div>`;
     }).join('');
@@ -261,7 +261,8 @@
     const all = lessonsOfExp(e), MAXC = 3;
     const ls = all.slice(0, MAXC).map((x) => `<span class="chip ${x.g === 'g7' ? 'g' : x.g === 'g8' ? 'p' : ''}">${GN[x.g]}-${lang === 'uz' ? 'sinf' : 'gr'} • ${x.n}</span>`).join(' ')
       + (all.length > MAXC ? ` <span class="chip more" title="${esc(all.slice(MAXC).map((x) => GN[x.g] + '-' + x.n).join(', '))}">+${all.length - MAXC}</span>` : '');
-    return `<a class="xcard" href="#lab-${e.id}"><div class="th">${e.icon || '🧪'}</div><div class="bd"><h4>${tr(e.title)}</h4><p>${tr(e.desc)}</p><div class="tags">${ls}</div><span class="go">${t('watch')}</span></div></a>`;
+    const lk = !labOk(e.id);
+    return `<a class="xcard${lk ? ' locked' : ''}" href="#lab-${e.id}"><div class="th">${e.icon || '🧪'}</div><div class="bd"><h4>${tr(e.title)}${lk ? lockIc : ''}</h4><p>${tr(e.desc)}</p><div class="tags">${ls}</div><span class="go">${t('watch')}</span></div></a>`;
   }
 
   let filter3d = false;
@@ -272,7 +273,7 @@
       const n = i + 1; if (bk.units) { const u = bk.units.find((u) => u.from === n); if (u && !filter3d) html += `<div class="unit-h" style="--uc:${UC[unitIdx(g, n) % UC.length]};--uc-on:${onCol(UC[unitIdx(g, n) % UC.length])}"><span>${unitIdx(g, n) + 1}</span>${tr(u.t)}</div>`; }
       const ex = expsOf(g, n); if (filter3d && !ex.length) return;
       const col = UC[unitIdx(g, n) % UC.length]; const ls = XPok() ? XP.state(g, n) : ''; const best = ls ? XP.s.L[g + '-' + n].best : 0;
-      html += `<a class="lcard ${ls}" href="#${g}-${n}" style="--uc:${col};--uc-on:${onCol(col)};--i:${Math.min(cnt++, 24)}"><div class="lnum" style="background:${col};color:${onCol(col)}">${ls === 'done' ? '★' : n}</div><div><h4>${tr(L.t)}</h4><div class="tags">${ls === 'done' ? `<span class="chip ok">⭐ ${best}/10</span>` : ls ? `<span class="chip st">▶ ${XP.t('st_start')}</span>` : ''}${ex.length ? `<span class="chip p">🧪 ${ex.length} 3D</span>` : ''}<span class="chip o">✅ 10+</span></div></div>${ls === 'done' ? '<span class="lstate">✓</span>' : ''}</a>`;
+      html += `<a class="lcard ${ls}${lessonOk(n) ? '' : ' locked'}" href="#${g}-${n}" style="--uc:${col};--uc-on:${onCol(col)};--i:${Math.min(cnt++, 24)}"><div class="lnum" style="background:${col};color:${onCol(col)}">${ls === 'done' ? '★' : n}</div><div><h4>${tr(L.t)}${lessonOk(n) ? '' : lockIc}</h4><div class="tags">${ls === 'done' ? `<span class="chip ok">⭐ ${best}/10</span>` : ls ? `<span class="chip st">▶ ${XP.t('st_start')}</span>` : ''}${ex.length ? `<span class="chip p">🧪 ${ex.length} 3D</span>` : ''}<span class="chip o">✅ 10+</span></div></div>${ls === 'done' ? '<span class="lstate">✓</span>' : ''}</a>`;
     });
     app.innerHTML = `<div class="page-h ${g}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_' + g)}</div><h1>${t(g + '_t')}</h1><p>${t(g + '_d')}</p>${XPok() ? (() => { const o = XP.grade(g, bk.lessons.length); return `<div class="phprog"><div class="xbar big"><div style="width:${o.p}%"></div><i style="width:${Math.round((100 * (o.done + o.started)) / o.total)}%"></i></div><span>⭐ ${o.done} / ${o.total} ${XP.t('st_done').toLowerCase()} • ${o.p}%</span></div>`; })() : ''}</div></div>
       <div class="wrap"><div class="toolbar"><div class="seg"><button data-f="0" class="${filter3d ? '' : 'on'}">${t('all')} (${bk.lessons.length})</button><button data-f="1" class="${filter3d ? 'on' : ''}">🧪 ${t('with3d')}</button></div><a class="btn sec" href="#book-${g}" style="padding:8px 14px;font-size:14px">📖 ${t('nav_book')}</a></div>
@@ -283,38 +284,44 @@
   /* ---------- obuna: qulflangan bo'lim oynasi (lib/sub.js, firestore.rules: obunani faqat admin beradi) ---------- */
   const PAY = {
     uz: {
-      lab: '3D laboratoriya obuna bilan ochiladi', tests: 'Testlar va imtihon obuna bilan ochiladi', g7: '7-sinf darslari obuna bilan ochiladi',
-      g8: '8-sinf darslari obuna bilan ochiladi', pages: 'Darslik sahifalari obuna bilan ochiladi',
-      p: "Obuna bilan saytning barcha bo'limlari ochiladi. 6-sinf darslari matni, davriy jadval va bosh sahifa — bepul.",
-      inc: ['3D laboratoriya — barcha tajribalar', 'Testlar, imtihon rejimi va sertifikat', '7- va 8-sinf darslari', 'Darslik sahifalari va ularning tarjimasi'],
+      lesson: 'Bu dars obuna bilan ochiladi', lab: 'Bu tajriba obuna bilan ochiladi', tests: 'Bu mavzular testi obuna bilan ochiladi', pages: 'Darslikning qolgan sahifalari obuna bilan ochiladi',
+      p: 'Har bir sinfda dastlabki {n} ta mavzu — darsi, 3D tajribasi, testi va darslik sahifalari bilan — bepul. Qolganlari obuna bilan ochiladi.',
+      inc: ['6, 7 va 8-sinflarning barcha darslari', 'Barcha 3D tajribalar', 'Barcha mavzular bo‘yicha testlar va imtihon', 'Darslikning barcha sahifalari va tarjimasi'],
       plans: 'Tariflar', d_month: '30 kun', d_quarter: '3 oy', d_year: '30-iyungacha', how: 'Qanday olish mumkin?',
       how_def: "To'lov uchun maktab administratsiyasi yoki o'qituvchingizga murojaat qiling. To'lovdan so'ng administrator obunangizni yoqadi.",
-      exp: 'Obunangiz {d} kuni tugagan.', re: 'Obuna yoqildimi? Tekshirish', free: "Bepul: 6-sinf darslari",
-      me_h: 'Obuna', me_on: 'Faol — {d} gacha', me_left: '{n} kun qoldi', me_off: "Obuna yo'q", me_exp: 'Tugagan: {d}', me_more: 'Batafsil',
+      exp: 'Obunangiz {d} kuni tugagan.', re: 'Obuna yoqildimi? Tekshirish', free: 'Bepul darslarga qaytish',
+      me_h: 'Obuna', me_on: 'Faol — {d} gacha', me_left: '{n} kun qoldi', me_off: "Obuna yo'q — har sinfda dastlabki {n} ta mavzu bepul", me_exp: 'Tugagan: {d}', me_more: 'Batafsil',
+      t_lock: 'Obunasiz faqat har sinfdagi dastlabki {n} ta mavzu testlari ochiq. Qolganlari 🔒 belgisi bilan.',
     },
     en: {
-      lab: 'The 3D lab is available with a subscription', tests: 'Tests and exams are available with a subscription', g7: 'Grade 7 lessons are available with a subscription',
-      g8: 'Grade 8 lessons are available with a subscription', pages: 'Textbook pages are available with a subscription',
-      p: 'A subscription unlocks every part of the site. Grade 6 lesson texts, the periodic table and the home page are free.',
-      inc: ['3D lab — every experiment', 'Tests, exam mode and certificate', 'Grade 7 and 8 lessons', 'Textbook pages and their translation'],
+      lesson: 'This lesson is available with a subscription', lab: 'This experiment is available with a subscription', tests: 'Tests on these topics are available with a subscription', pages: 'The rest of the textbook is available with a subscription',
+      p: 'The first {n} topics of every grade — lesson, 3D experiment, test and textbook pages — are free. The rest opens with a subscription.',
+      inc: ['Every lesson of grades 6, 7 and 8', 'Every 3D experiment', 'Tests and exams on every topic', 'All textbook pages and their translation'],
       plans: 'Plans', d_month: '30 days', d_quarter: '3 months', d_year: 'until 30 June', how: 'How to get it',
       how_def: 'Contact the school office or your teacher to pay. After payment, the administrator turns your subscription on.',
-      exp: 'Your subscription ended on {d}.', re: 'Subscription turned on? Check', free: 'Free: Grade 6 lessons',
-      me_h: 'Subscription', me_on: 'Active — until {d}', me_left: '{n} days left', me_off: 'No subscription', me_exp: 'Ended: {d}', me_more: 'Details',
+      exp: 'Your subscription ended on {d}.', re: 'Subscription turned on? Check', free: 'Back to free lessons',
+      me_h: 'Subscription', me_on: 'Active — until {d}', me_left: '{n} days left', me_off: 'No subscription — the first {n} topics of every grade are free', me_exp: 'Ended: {d}', me_more: 'Details',
+      t_lock: 'Without a subscription only the tests of the first {n} topics of each grade are open. The rest are marked 🔒.',
     },
   };
+  // Kirish huquqi: obuna yoki xodim — hammasi; aks holda har sinfdagi dastlabki freeN mavzu va ularning tajribalari
+  const fullAccess = () => !window.ZKAuth || !window.ZKSub || ZKAuth.canPaid();
+  const freeN = () => (window.ZKSub ? ZKSub.freeCount(window.ZKAuth && ZKAuth.site) : 999);
+  const lessonOk = (n) => fullAccess() || ZKSub.lessonOpen(false, n, freeN());
+  const labOk = (id) => fullAccess() || !(window.Lab && Lab.exps[id]) || ZKSub.labOpen(false, Lab.exps[id], freeN());
+  const lockIc = '<span class="zk-lock" aria-hidden="true">🔒</span>';
   const pt = (k, o) => { let x = (PAY[lang] || PAY.uz)[k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
   function paywall(feature) {
     const site = (window.ZKAuth && ZKAuth.site) || {}, prices = site.prices || {}, st = window.ZKAuth ? ZKAuth.subStatus() : {};
     const esc2 = (v) => (window.ZKAuth ? ZKAuth.esc(v) : String(v));
     const plans = (window.ZKSub ? ZKSub.PLANS : []).map((k) => `<div class="zk-plan"><b>${ZKSub.NAMES[lang === 'en' ? 'en' : 'uz'][k]}</b>${prices[k] ? `<span>${esc2(prices[k])}</span>` : ''}<small>${pt('d_' + k)}</small></div>`).join('');
     return `<section class="zk-pay" aria-labelledby="zkPayH"><div class="zk-pay-ic" aria-hidden="true">🔒</div>
-      <h2 id="zkPayH" tabindex="-1">${pt(feature) || pt('lab')}</h2><p>${pt('p')}</p>
+      <h2 id="zkPayH" tabindex="-1">${pt(feature) || pt('lesson')}</h2><p>${pt('p', { n: freeN() })}</p>
       ${st.expired ? `<p class="zk-pay-exp" role="status">${pt('exp', { d: ZKSub.fmtDate(st.until) })}</p>` : ''}
       <ul class="zk-pay-inc">${pt('inc').map((x) => `<li>${x}</li>`).join('')}</ul>
       <h3>${pt('plans')}</h3><div class="zk-pay-plans">${plans}</div>
       <div class="zk-pay-how"><b>${pt('how')}</b><p>${esc2(site.payInfo || pt('how_def'))}</p></div>
-      <div class="zk-pay-act"><button type="button" class="btn" id="zkPayRe">${pt('re')}</button><a class="btn sec" href="#g6">${pt('free')}</a></div></section>`;
+      <div class="zk-pay-act"><button type="button" class="btn" id="zkPayRe">${pt('re')}</button><a class="btn sec" href="#g6-1">${pt('free')}</a></div></section>`;
   }
   // Obuna yoqilgach profil qayta o'qilishi uchun sahifa yangilanadi
   function bindPaywall() { const b = document.getElementById('zkPayRe'); if (b) b.onclick = () => location.reload(); }
@@ -322,8 +329,8 @@
     if (!window.ZKAuth || !ZKAuth.enabled || !ZKAuth.user || ZKAuth.isStaff() || !window.ZKSub) return '';
     const st = ZKAuth.subStatus(), nm = st.plan ? ZKSub.NAMES[lang === 'en' ? 'en' : 'uz'][st.plan] + ' · ' : '';
     const line = st.active ? `${nm}${pt('me_on', { d: ZKSub.fmtDate(st.until) })} <small>(${pt('me_left', { n: st.daysLeft })})</small>`
-      : st.expired ? pt('me_exp', { d: ZKSub.fmtDate(st.until) }) : pt('me_off');
-    return `<div class="wrap"><div class="panel zk-subcard ${st.active ? 'on' : 'off'}"><h3>💳 ${pt('me_h')}</h3><p>${line}</p>${st.active ? '' : `<a class="btn sec sm" href="#tests">${pt('me_more')}</a>`}</div></div>`;
+      : st.expired ? pt('me_exp', { d: ZKSub.fmtDate(st.until) }) : pt('me_off', { n: freeN() });
+    return `<div class="wrap"><div class="panel zk-subcard ${st.active ? 'on' : 'off'}"><h3>💳 ${pt('me_h')}</h3><p>${line}</p>${st.active ? '' : `<a class="btn sec sm" href="#g6-${freeN() + 1}">${pt('me_more')}</a>`}</div></div>`;
   }
   /* ---------- kerak bo'lganda yuklanadigan qismlar (index.html → window.ZKLazy) ---------- */
   // Yuklangach sahifa o'sha joyda qayta chiziladi; foydalanuvchi boshqa sahifaga o'tib ketgan bo'lsa — hech narsa qilinmaydi.
@@ -372,8 +379,8 @@
     if (XPok()) XP.visit(g, n);
     const col = UC[unitIdx(g, n) % UC.length]; const lst = XPok() ? XP.state(g, n) : '';
     const pg = pagesOf(g, n);
-    // Obuna: 6-sinfda dars matni bepul, darslik sahifalari / 3D / test tablari — obuna bilan (lib/sub.js)
-    const lockF = window.ZKSub && window.ZKAuth && !ZKAuth.canPaid() ? ZKSub.featureOf(g + '-' + n, tab) : null;
+    // Obuna: har bir sinfda dastlabki mavzular to'liq bepul (barcha tablari bilan), qolganlari — obuna bilan (lib/sub.js)
+    const lockF = lessonOk(n) ? null : 'lesson';
     let body = '';
     if (lockF) body = paywall(lockF);
     else if (tab === 'content') {
@@ -406,7 +413,7 @@
       const c = window.QB ? QB.counts(g, n) : { easy: 0, medium: 0, hard: 0 };
       body += `<div class="panel"><div class="bankline"><b>${t('lesson_bank')}:</b> <span class="dchip easy">${t('easy')}: ${c.easy}</span><span class="dchip medium">${t('medium')}: ${c.medium}</span><span class="dchip hard">${t('hard')}: ${c.hard}</span>${window.QB && QB.hasGen(g, n) ? `<small>∞ — ${t('calc_gen')}</small>` : ''}<button class="btn sec" id="newSet" style="margin-left:auto;padding:7px 12px;font-size:13px">${t('new_set')}</button></div><div id="quiz"></div></div>`;
     }
-    const navl = bk.lessons.map((x, i) => `<a href="#${g}-${i + 1}" class="${i + 1 === n ? 'on' : ''}"><i>${i + 1}</i>${tr(x.t)}</a>`).join('');
+    const navl = bk.lessons.map((x, i) => `<a href="#${g}-${i + 1}" class="${i + 1 === n ? 'on' : ''}"><i>${i + 1}</i>${tr(x.t)}${lessonOk(i + 1) ? '' : lockIc}</a>`).join('');
     const prev = bk.lessons[n - 2], next = bk.lessons[n];
     const TABS = ['content', 'pages', 'lab', 'quiz']; const ti = Math.max(0, TABS.indexOf(tab)); const tp = lastTab && lastTab.key === g + '-' + n ? lastTab.i : ti; lastTab = { key: g + '-' + n, i: ti };
     const ucs = ucStrong(col); const ucv = `--uc:${col};--uc-on:${onCol(col)};--uc-bs:${ucs[0]};--uc-os:${ucs[1]}`;
@@ -531,12 +538,15 @@
   function allLessons() { const out = []; GRADES.forEach((g) => { if (TS.grade !== 'both' && TS.grade !== g) return; B[g].lessons.forEach((L, i) => out.push([g, i + 1])); }); return out; }
   function testsPage() {
     if (!window.QB) { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('tests', renderRoute); return; }
-    if (!TS.sel) TS.sel = new Set(allLessons().map((x) => x.join('-')));
+    // Obunasiz: faqat har sinfdagi dastlabki bepul mavzular tanlanadi (lib/sub.js)
+    const openLessons = () => allLessons().filter((x) => lessonOk(x[1]));
+    if (!TS.sel) TS.sel = new Set(openLessons().map((x) => x.join('-')));
+    if (!fullAccess()) TS.sel = new Set([...TS.sel].filter((k) => lessonOk(+k.split('-')[1])));
     let bankTotal = 0; GRADES.forEach((g) => B[g].lessons.forEach((L, i) => { const P = QB.pool(g, i + 1); bankTotal += P.easy.length + P.medium.length + P.hard.length; }));
     let hist = []; try { hist = JSON.parse(localStorage.getItem('zk_hist') || '[]'); } catch (e) { }
     const groups = GRADES.filter((g) => TS.grade === 'both' || TS.grade === g).map((g) => {
       const bk = B[g]; let html = `<div class="tg-h">${t(g + '_t')}</div>`;
-      bk.lessons.forEach((L, i) => { const n = i + 1; const u = (bk.units || []).find((u) => u.from === n); if (u) html += `<div class="tu-h">${tr(u.t)}</div>`; const key = g + '-' + n; html += `<label class="tl"><input type="checkbox" data-k="${key}" ${TS.sel.has(key) ? 'checked' : ''}><span class="lnum s" style="background:${ucStrong(UC[unitIdx(g, n) % UC.length])[0]};color:${ucStrong(UC[unitIdx(g, n) % UC.length])[1]}">${n}</span><span>${tr(L.t)}</span></label>`; });
+      bk.lessons.forEach((L, i) => { const n = i + 1; const u = (bk.units || []).find((u) => u.from === n); if (u) html += `<div class="tu-h">${tr(u.t)}</div>`; const key = g + '-' + n; const ok = lessonOk(n); html += `<label class="tl${ok ? '' : ' locked'}"><input type="checkbox" data-k="${key}" ${TS.sel.has(key) ? 'checked' : ''} ${ok ? '' : 'disabled'}><span class="lnum s" style="background:${ucStrong(UC[unitIdx(g, n) % UC.length])[0]};color:${ucStrong(UC[unitIdx(g, n) % UC.length])[1]}">${n}</span><span>${tr(L.t)}</span>${ok ? '' : lockIc}</label>`; });
       return html;
     }).join('');
     const seg = (name, val, opts) => `<div class="seg" data-seg="${name}">${opts.map(([v, l]) => `<button data-v="${v}" class="${String(TS[name]) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;
@@ -544,6 +554,7 @@
     <div class="wrap" id="tWrap"><div class="tsetup">
       <div class="panel ts-l"><h3>📚 ${t('t_topics')} <small id="selc" style="font-weight:600;color:var(--muted);font-size:13px"></small></h3>
         <div class="ts-row">${seg('grade', TS.grade, [['both', t('t_both')], ['g6', t('nav_g6')], ['g7', t('nav_g7')], ['g8', t('nav_g8')]])}<button class="btn sec sm" id="sa">${t('t_all')}</button><button class="btn sec sm" id="sn">${t('t_none')}</button></div>
+        ${fullAccess() ? '' : `<div class="zk-lock-note">🔒 ${pt('t_lock', { n: freeN() })} <a href="#g6-${freeN() + 1}">${pt('me_more')}</a></div>`}
         <div class="tlist">${groups}</div></div>
       <div class="ts-r"><div class="panel"><h3>⚙️ ${lang === 'uz' ? 'Sozlamalar' : 'Settings'}</h3>
         <div class="ts-f" role="group" aria-labelledby="tsl1"><label id="tsl1">${t('t_count')}</label>${seg('count', TS.count, [[10, '10'], [20, '20'], [30, '30'], [50, '50']])}</div>
@@ -554,9 +565,9 @@
       </div></div></div>`;
     const updC = () => (document.getElementById('selc').textContent = `(${TS.sel.size} ${t('t_selected')})`); updC();
     app.querySelectorAll('.tlist input').forEach((c) => (c.onchange = () => { c.checked ? TS.sel.add(c.dataset.k) : TS.sel.delete(c.dataset.k); updC(); }));
-    app.querySelectorAll('[data-seg]').forEach((s) => s.querySelectorAll('button').forEach((b) => (b.onclick = () => { const k = s.dataset.seg; TS[k] = k === 'count' ? +b.dataset.v : b.dataset.v; if (k === 'grade') TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); const f = app.querySelector(`[data-seg="${k}"] [data-v="${b.dataset.v}"]`); if (f) f.focus({ preventScroll: true }); })));
+    app.querySelectorAll('[data-seg]').forEach((s) => s.querySelectorAll('button').forEach((b) => (b.onclick = () => { const k = s.dataset.seg; TS[k] = k === 'count' ? +b.dataset.v : b.dataset.v; if (k === 'grade') TS.sel = new Set(openLessons().map((x) => x.join('-'))); testsPage(); const f = app.querySelector(`[data-seg="${k}"] [data-v="${b.dataset.v}"]`); if (f) f.focus({ preventScroll: true }); })));
     app.querySelectorAll('input[name=md]').forEach((r) => (r.onchange = () => (TS.mode = r.value)));
-    document.getElementById('sa').onclick = () => { TS.sel = new Set(allLessons().map((x) => x.join('-'))); testsPage(); const f = document.getElementById('sa'); if (f) f.focus({ preventScroll: true }); };
+    document.getElementById('sa').onclick = () => { TS.sel = new Set(openLessons().map((x) => x.join('-'))); testsPage(); const f = document.getElementById('sa'); if (f) f.focus({ preventScroll: true }); };
     document.getElementById('sn').onclick = () => { TS.sel = new Set(); testsPage(); const f = document.getElementById('sn'); if (f) f.focus({ preventScroll: true }); };
     const start = (sel, count, diff) => {
       if (!sel.length) { document.getElementById('terr').textContent = t('t_pick'); return; }
@@ -564,7 +575,7 @@
       go();
     };
     document.getElementById('tgo').onclick = () => start([...TS.sel].map((k) => { const [g, n] = k.split('-'); return [g, +n]; }), TS.count, TS.diff);
-    document.getElementById('tq').onclick = () => start(allLessons(), 20, 'mix');
+    document.getElementById('tq').onclick = () => start(openLessons(), 20, 'mix');
   }
   let curTab = 'content'; let lastTab = null; let lastAnnounced = '';
   function xinline(e) { return `<div class="xinline" data-x="${e.id}"><div class="ic">${e.icon || '🧪'}</div><div><h4>${tr(e.title)}</h4><p>${tr(e.desc)}</p></div><span class="play">${t('watch')}</span></div>`; }
@@ -633,7 +644,7 @@
     const m = document.getElementById('labModal'); m.classList.add('on');
     document.getElementById('lmClose').setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close');
     const lh = document.getElementById('lmHost');
-    if (window.ZKAuth && !ZKAuth.canPaid()) { lh.innerHTML = `<div class="zk-pay-modal">${paywall('lab')}</div>`; bindPaywall(); dlgOpen(m, document.getElementById('lmClose')); return; }
+    if (!labOk(id)) { lh.innerHTML = `<div class="zk-pay-modal">${paywall('lab')}</div>`; bindPaywall(); dlgOpen(m, document.getElementById('lmClose')); return; }
     withLab(lh, () => { if (m.classList.contains('on')) modalHandle = Lab.open(lh, id, { autoplay: !matchMedia('(prefers-reduced-motion: reduce)').matches }); });
     dlgOpen(m, document.getElementById('lmClose'));
   }
@@ -644,6 +655,9 @@
 
   function book(g, p) {
     const max = PMAX[g]; p = Math.max(0, Math.min(max - 1, p || 0)); if (p % 2 && p > 0) p -= 1;
+    // Obunasiz: darslikning bepul mavzular sahifalarigacha qismi ochiq
+    let lim = Infinity;
+    if (!fullAccess()) { lim = 1; for (let k = 1; k <= Math.min(freeN(), B[g].lessons.length); k++) pagesOf(g, k).forEach((i) => { if (i > lim) lim = i; }); }
     const origLang = g === 'g6' ? 'uz' : 'en';
     if (!window.PAGES_TR) need('tr', () => book(g, bookPos[g] != null ? bookPos[g] : p));
     const trOf = (i) => { const T = window.PAGES_TR && window.PAGES_TR[g]; if (!T) return null; const off = g === 'g6' ? 1 : 2; const n = Math.floor((i - off) / 2), k = (i - off) % 2; return n >= 1 && T[n - 1] && T[n - 1][k] ? { n, k, h: T[n - 1][k] } : null; };
@@ -656,12 +670,13 @@
       <div class="ctl"><button type="button" class="btn sec" id="bp" aria-label="${lang === 'uz' ? 'Oldingi sahifa' : 'Previous page'}">←</button><input id="bi" type="number" min="1" max="${max}" value="${p + 1}" aria-label="${lang === 'uz' ? 'Sahifa raqami' : 'Page number'}"><span style="color:var(--muted)">/ ${max}</span><button type="button" class="btn sec" id="bn" aria-label="${lang === 'uz' ? 'Keyingi sahifa' : 'Next page'}">→</button></div>
       ${trAvail ? `<div class="tr-bar" style="margin:4px 0 12px"><div class="note" style="margin:0;flex:1">${t(g === 'g6' ? 'tr_note_en' : 'tr_note_uz')}</div><button class="btn sec" id="bkTr" style="padding:8px 14px;font-size:13.5px">${bookTr ? t('show_orig') : t('show_tr')}</button></div>` : ''}
       <div class="tr-bar" style="margin:4px 0 12px"><div class="note" style="margin:0;flex:1">${t(pageLang(g, p, bookFlip) === 'uz' ? 'pg_in_uz' : 'pg_in_en')}</div><button class="btn sec" id="bkFlip" style="padding:8px 14px;font-size:13.5px">${t(pageLang(g, p, bookFlip) === 'uz' ? 'see_en' : 'see_uz')}</button></div>
-      <div class="spread${useTr ? ' trspread' : ''}">${cell(p)}${p + 1 < max ? cell(p + 1) : ''}</div>
+      ${p > lim ? paywall('pages') : `<div class="spread${useTr ? ' trspread' : ''}">${cell(p)}${p + 1 < max && p + 1 <= lim ? cell(p + 1) : ''}</div>`}
     </div>`;
     document.getElementById('bkFlip').onclick = () => { bookFlip = !bookFlip; book(g, p); };
     const bt = document.getElementById('bkTr'); if (bt) bt.onclick = () => { bookTr = !bookTr; book(g, p); };
     const go = (q) => { bookPos[g] = q; book(g, q); };
     document.getElementById('bp').onclick = () => go(p - 2); document.getElementById('bn').onclick = () => go(p + 2);
+    bindPaywall();
     document.getElementById('bi').onchange = (e) => go(+e.target.value - 1);
     app.querySelectorAll('[data-b]').forEach((b) => (b.onclick = () => (location.hash = 'book-' + b.dataset.b)));
     app.querySelectorAll('.spread img').forEach((im) => pressable(im, () => zoomImg(im), lang === 'uz' ? 'Sahifani kattalashtirish' : 'Enlarge page'));
@@ -771,8 +786,12 @@
     if (newPage) toTop();
     destroyLab(); closeModal(); closeZoom(); document.getElementById('nav').classList.remove('open'); document.getElementById('burger').setAttribute('aria-expanded', 'false');
     let m, navKey = 'home';
-    const lockR = window.ZKSub && window.ZKAuth && !ZKAuth.canPaid() ? ZKSub.featureOf(h, null) : null;
-    if (lockR) { app.innerHTML = `<div class="page-h"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a></div></div></div><div class="wrap" style="padding-bottom:48px">${paywall(lockR)}</div>`; bindPaywall(); navKey = lockR === 'g7' || lockR === 'g8' ? lockR : lockR === 'pages' ? 'book' : lockR; }
+    let lockR = null, lm;
+    if (!fullAccess()) {
+      if ((lm = h.match(/^(g[678])-(\d+)$/)) && !lessonOk(+lm[2])) lockR = lm[1];
+      else if ((lm = h.match(/^lab-(.+)$/)) && window.Lab && Lab.exps[lm[1]] && !labOk(lm[1])) lockR = 'lab';
+    }
+    if (lockR) { app.innerHTML = `<div class="page-h"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a></div></div></div><div class="wrap" style="padding-bottom:48px">${paywall(lockR === 'lab' ? 'lab' : 'lesson')}</div>`; bindPaywall(); navKey = lockR; }
     else if (h === 'home' || h === '') home();
     else if (h === 'g6' || h === 'g7' || h === 'g8') { list(h); navKey = h; }
     else if ((m = h.match(/^(g[678])-(\d+)$/))) { if (lastRoute.split('-')[0] !== m[1] || !lastRoute.match(/-\d+$/)) curTab = 'content'; lesson(m[1], +m[2], curTab); navKey = m[1]; }

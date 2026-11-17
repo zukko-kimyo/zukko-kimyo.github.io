@@ -248,3 +248,9 @@ test('administrator tarif narxlari va to\'lov ma\'lumotini saqlaydi; noto\'g\'ri
   await assertFails(setDoc(doc(admin(), 'settings/site'), { prices: { week: '1' } }, { merge: true }));
   await assertFails(setDoc(doc(teacher(), 'settings/site'), { prices: { month: '1' } }, { merge: true }));
 });
+test('administrator bepul mavzular sonini o\'zgartiradi; noto\'g\'ri qiymat rad etiladi', async () => {
+  await assertSucceeds(setDoc(doc(admin(), 'settings/site'), { freeN: 2 }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'settings/site'), { freeN: 2.5 }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'settings/site'), { freeN: 99 }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'settings/site'), { freeN: 50 }, { merge: true }));
+});
