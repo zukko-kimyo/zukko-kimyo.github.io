@@ -302,3 +302,32 @@ test('bepul mavzu sahifasi o\'quvchiga ochiq, pullik — faqat fan obunasi bilan
   await assertSucceeds(getDoc(doc(student(), 'content/eng-1-1-11')));
   await assertSucceeds(getDoc(doc(admin(), 'content/eng-1-1-11')));
 });
+
+// ---------- dars mazmuni (lessons) ----------
+const LES = (n, s = 'eng') => ({ s, g: 1, part: 1, n, j: '{"n":' + n + '}', at: 1, by: 'admin1' });
+test('dars mazmunini faqat admin yozadi; noto\'g\'ri yozuv rad etiladi', async () => {
+  await assertSucceeds(setDoc(doc(admin(), 'lessons/eng-1-1-1'), LES(1)));
+  await assertFails(setDoc(doc(teacher(), 'lessons/eng-1-1-2'), LES(2)));
+  await assertFails(setDoc(doc(student(), 'lessons/eng-1-1-2'), LES(2)));
+  await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-3'), { ...LES(3), s: 'art' }));
+  await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-4'), { ...LES(4), extra: 1 }));
+  await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-5'), { ...LES(5), j: 'x'.repeat(200001) }));
+  await assertSucceeds(setDoc(doc(admin(), 'lessonIndex/eng-1-1'), { count: 50, at: 1, by: 'admin1', file: 'a.json' }));
+  await assertFails(setDoc(doc(teacher(), 'lessonIndex/eng-1-1'), { count: 50, at: 1, by: 'x', file: 'a.json' }));
+});
+test('bepul mavzu darsi o\'quvchiga ochiq, pullik — fan obunasi yoki shu fan o\'qituvchisi', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'lessons/eng-1-1-1'), LES(1));
+    await setDoc(doc(ctx.firestore(), 'lessons/eng-1-1-9'), LES(9));
+    await setDoc(doc(ctx.firestore(), 'lessons/math-1-1-9'), LES(9, 'math'));
+  });
+  await assertSucceeds(getDoc(doc(student(), 'lessons/eng-1-1-1')));
+  await assertFails(getDoc(doc(student(), 'lessons/eng-1-1-9')));
+  await assertFails(getDocs(collection(student(), 'lessons')), 'ro\'yxat yopiq');
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/stu1'), { subs: { eng: { plan: 'month', until: Date.now() + 86400000 } } }, { merge: true }); });
+  await assertSucceeds(getDoc(doc(student(), 'lessons/eng-1-1-9')));
+  await assertFails(getDoc(doc(student(), 'lessons/math-1-1-9')));
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/teach1'), { login: 'dilnoza.k', name: 'Dilnoza', role: 'teacher', cls: '', status: 'active', subjects: ['math'] }); });
+  await assertSucceeds(getDoc(doc(teacher(), 'lessons/math-1-1-9')));
+  await assertFails(getDoc(doc(teacher(), 'lessons/eng-1-1-9')));
+});

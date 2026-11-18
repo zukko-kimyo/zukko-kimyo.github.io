@@ -330,7 +330,7 @@
         const n = i + 1, u = (b.units || []).find((x) => x.from === n);
         if (u) html += `<h3 class="zk-sjunit">${esc(uz ? u.t.uz : u.t.orig)}${uz ? ` <small>${esc(u.t.orig)}</small>` : ''}</h3>`;
         const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, n, freeN());
-        html += `<a class="zk-sjtopic${lk ? ' locked' : ''}" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}${lk ? lockIc : ''}</b>${tp.uz && tp.uz !== tp.t ? `<small>${esc(tp.uz)}</small>` : ''}</span></a>`;
+        html += `<a class="zk-sjtopic${lk ? ' locked' : ''}" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}${lk ? lockIc : ''}${sjBest(`${id}-${g}-${b.part}-${n}`) >= 4 ? ' <span class="zk-sjstar" aria-label="' + L3('test topshirilgan', 'тест пройден', 'quiz passed') + '">⭐</span>' : ''}</b>${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? `<small>${esc(tp[lang] || tp.uz)}</small>` : ''}</span></a>`;
       });
       return html + '</section>';
     }).join('') || `<div class="panel tc-empty zk-sjsoon">${L3(`${g}-sinf uchun ${SN(sj).toLowerCase()} darsligi tez orada qo‘shiladi.`, `Учебник «${SN(sj)}» для ${g} класса скоро появится.`, `The grade ${g} ${SN(sj)} textbook is coming soon.`)}</div>`;
@@ -340,18 +340,109 @@
   }
   function subjectGrade(id, g) { return subjectPage(id, g); }
   // Mavzu sahifasi (1-bosqich): nomi, bo'limi, sahifalari. Darslik sahifalari va so'zlar Firebase'dan — keyingi bosqichda.
-  function subjectTopic(id, g, part, n) {
+  // Mavzu sahifasi — kimyo darsi kabi: "Dars mazmuni / Darslik / Test". Mazmun va sahifalar Firebase'da (firestore.rules: bepul mavzu, obuna, xodim).
+  const SJT = ['content', 'pages', 'quiz'];
+  let sjTab = 'content', sjLast = null;
+  const sjSpeech = { eng: 'en-GB', rus: 'ru-RU', math: 'en-GB' };
+  const sjBest = (k, v) => { try { const o = JSON.parse(localStorage.getItem('zk_sjp') || '{}'); if (v == null) return o[k]; if (!(o[k] >= v)) { o[k] = v; localStorage.setItem('zk_sjp', JSON.stringify(o)); } } catch (e) { } return null; };
+  function sjSay(txt, lng) {
+    try { if (!window.speechSynthesis || !txt) return false; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(txt)); u.lang = lng; u.rate = 0.85; speechSynthesis.speak(u); return true; } catch (e) { return false; }
+  }
+  function subjectTopic(id, g, part, n, tab) {
     { const mine = myGrade(); if (mine && mine !== g) return subjectPage(id); }
     const sj = SJ().get(id); const b = SJ().book(id, g, part); const tp = b && b.topics[n - 1]; if (!tp) return subjectGrade(id, g);
+    const key = `${id}-${g}-${part}-${n}`;
+    if (!tab) tab = sjLast === key ? sjTab : 'content';
+    if (!SJT.includes(tab)) tab = 'content';
+    sjLast = key; sjTab = tab;
     const uz = lang === 'uz'; const unit = (b.units || []).filter((x) => x.from <= n).pop();
-    const prev = n > 1 ? `#s/${id}/${g}/${part}/${n - 1}` : '', next = n < b.topics.length ? `#s/${id}/${g}/${part}/${n + 1}` : '';
-    app.innerHTML = `<div class="page-h" style="--sj:${sj.color}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</a> / ${n}</div>
-      <h1><span class="zk-sjnum" style="background:${sj.color}">${n}</span> ${esc(tp.t)}</h1>${tp.uz && tp.uz !== tp.t ? `<p>${esc(tp.uz)}</p>` : ''}</div></div>
-      <div class="wrap" style="padding-bottom:48px"><div class="panel"><h3>📖 ${L3('Darslikda', 'В учебнике', 'In the textbook')}</h3>
-        <p>${unit ? esc(uz ? unit.t.uz : unit.t.orig) + ' · ' : ''}${L3('sahifalar', 'страницы', 'pages')} ${tp.p.join('–')}</p>
-        <div id="sjPages" class="zk-sjpages"><div class="zk-lazy" role="status"><span class="zk-lazy-spin" aria-hidden="true"></span>${L3('Yuklanmoqda…', 'Загрузка…', 'Loading…')}</div></div></div>
-        <div class="pn">${prev ? `<a class="btn sec" href="${prev}">← ${L3('Oldingi', 'Назад', 'Previous')}</a>` : '<span></span>'}${next ? `<a class="btn sec" href="${next}">${L3('Keyingi', 'Далее', 'Next')} →</a>` : ''}</div></div>`;
-    loadSjPages(document.getElementById('sjPages'), sj, b, n, tp);
+    const base = `#s/${id}/${g}/${part}/`, nT = b.topics.length;
+    const prev = n > 1 ? b.topics[n - 2] : null, next = n < nT ? b.topics[n] : null;
+    const sub = (x) => { const v = x[lang] || x.uz; return v && v !== x.t ? v : ''; };
+    const open = !window.ZKAuth || ZKAuth.canPaid(id) || ZKSub.lessonOpen(false, n, freeN());
+    const best = sjBest(key);
+    const TL = { content: ['📘', L3('Dars mazmuni', 'Содержание урока', 'Lesson')], pages: ['📖', L3('Darslik', 'Учебник', 'Textbook')], quiz: ['✅', L3('Test', 'Тест', 'Quiz')] };
+    const ti = SJT.indexOf(tab);
+    const navl = b.topics.map((x, i) => { const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, i + 1, freeN()); return `<a href="${base}${i + 1}" class="${i + 1 === n ? 'on' : ''}"><i>${i + 1}</i>${esc(x.t)}${lk ? lockIc : ''}</a>`; }).join('');
+    const col = sj.color, ucv = `--uc:${col};--uc-on:${onCol(col)};--sj:${col}`;
+    app.innerHTML = `<div class="lesson-top zk-sjlesson" style="${ucv}"><div class="wrap">
+        <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</a> / ${n}</div>
+        <div class="lhead"><h1><span class="zk-sr">${L3(n + '-mavzu: ', 'Тема ' + n + ': ', 'Topic ' + n + ': ')}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${n}</span>${esc(tp.t)}${best >= 4 ? ' <span class="zk-sjstar" title="' + L3('Test topshirildi', 'Тест пройден', 'Quiz passed') + '">⭐</span>' : ''}</h1>
+          <div class="lnav">${prev ? `<a class="lnb" href="${base}${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${n}</b> / ${nT}</span>${next ? `<a class="lnb" href="${base}${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
+        ${sub(tp) ? `<p class="zk-sjsub">${esc(sub(tp))}</p>` : ''}
+        <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${ti}"></span>${SJT.map((k) => `<button data-tab="${k}" role="tab" id="ltab-${k}" aria-controls="lpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" class="${tab === k ? 'on' : ''}"><span aria-hidden="true">${TL[k][0]}</span> ${TL[k][1]}${k === 'quiz' ? ' <span class="cnt">5</span>' : ''}</button>`).join('')}</div>
+      </div></div>
+      <div class="wrap lesson-body" style="${ucv}">
+        <div><div id="lpanel" role="tabpanel" aria-labelledby="ltab-${tab}"><div id="sjBody"></div></div>
+          <div class="pn">${prev ? `<a href="${base}${n - 1}"><small>${t('prev')}</small>${esc(prev.t)}</a>` : '<span style="flex:1"></span>'}${next ? `<a class="r" href="${base}${n + 1}"><small>${t('next')}</small>${esc(next.t)}</a>` : '<span style="flex:1"></span>'}</div>
+        </div>
+        <aside class="side"><div class="panel"><h4>📖 ${L3('Darslikda', 'В учебнике', 'In the textbook')}</h4><p class="zk-sjref">${unit ? esc(uz ? unit.t.uz : unit.t.orig) + '<br>' : ''}${L3('sahifalar', 'страницы', 'pages')} ${tp.p.join(', ')}</p></div>
+          <div class="panel"><h4>📚 ${L3('Barcha mavzular', 'Все темы', 'All topics')}</h4><div class="navl">${navl}</div></div></aside>
+      </div>`;
+    const host = document.getElementById('sjBody');
+    const goTab = (k, focus) => { subjectTopic(id, g, part, n, k); window.scrollTo({ top: 0 }); if (focus) { const nb = document.getElementById('ltab-' + k); if (nb) nb.focus({ preventScroll: true }); } };
+    app.querySelectorAll('.tabs button').forEach((x) => (x.onclick = () => goTab(x.dataset.tab, true)));
+    const tl = app.querySelector('.tabs[role=tablist]');
+    if (tl) tl.onkeydown = (e) => {
+      const bs = [...tl.querySelectorAll('[role=tab]')], cur = bs.indexOf(document.activeElement), i0 = cur >= 0 ? cur : ti;
+      const j = { ArrowRight: i0 + 1, ArrowLeft: i0 - 1, Home: 0, End: bs.length - 1 }[e.key]; if (j == null) return;
+      e.preventDefault(); e.stopPropagation(); const nb = bs[(j + bs.length) % bs.length]; bs.forEach((x) => (x.tabIndex = x === nb ? 0 : -1)); nb.focus();
+    };
+    { const on = app.querySelector('.navl a.on'), nl = on && on.closest('.navl'); if (on && nl) nl.scrollTop += on.getBoundingClientRect().top - nl.getBoundingClientRect().top - nl.clientHeight / 2; }
+    if (!open) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return; }
+    if (tab === 'pages') { host.innerHTML = `<div class="panel"><div id="sjPages" class="zk-sjpages">${lazyBox()}</div></div>`; return loadSjPages(document.getElementById('sjPages'), sj, b, n, tp); }
+    host.innerHTML = `<div class="panel">${lazyBox()}</div>`;
+    loadSjLesson(host, sj, b, n).then((Ls) => { if (Ls && host.isConnected) (tab === 'quiz' ? sjQuiz : sjContent)(host, sj, b, n, tp, Ls, key); });
+  }
+  // Dars mazmuni Firebase'dan: lessons/<fan>-<sinf>-<qism>-<mavzu> (j — JSON matn; faqat admin yozadi)
+  const sjLessonCache = {};
+  async function loadSjLesson(host, sj, b, n) {
+    const k = `${sj.id}-${b.grade}-${b.part}-${n}`;
+    if (sjLessonCache[k]) return sjLessonCache[k];
+    const B = window.ZKAuth && ZKAuth.backend;
+    const msg = (h) => { host.innerHTML = `<div class="panel"><div class="zk-lazy">${h}</div></div>`; return null; };
+    if (!B) return msg(L3('Dars mazmuni kirish bilan ochiladi.', 'Содержание урока открывается после входа.', 'Sign in to see the lesson.'));
+    try {
+      const d = await B.get('lessons', k);
+      if (!host.isConnected) return null;
+      if (!d || !d.j) return msg(L3('Bu mavzuning dars mazmuni hali yuklanmagan. Administrator uni «Admin paneli → Darsliklar» bo‘limidan yuklaydi. Hozircha «Darslik» tabini ko‘ring.', 'Содержание этой темы ещё не загружено. Администратор загружает его в разделе «Панель администратора → Учебники». Пока откройте вкладку «Учебник».', 'This topic’s lesson has not been uploaded yet. The administrator uploads it in Admin panel → Textbooks. Meanwhile, see the Textbook tab.'));
+      const Ls = JSON.parse(d.j); return (sjLessonCache[k] = Ls);
+    } catch (e) {
+      if (!host.isConnected) return null;
+      if (/permission/i.test((e && (e.code || e.message)) || '')) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return null; }
+      host.innerHTML = `<div class="zk-lazy zk-lazy-err" role="alert"><b>${L3('Dars yuklanmadi', 'Урок не загрузился', 'The lesson did not load')}</b><span>${L3('Internet aloqasini tekshiring.', 'Проверьте подключение к интернету.', 'Check your internet connection.')}</span><button type="button" class="btn sec">${L3('Qayta urinish', 'Повторить', 'Try again')}</button></div>`;
+      host.querySelector('button').onclick = () => renderRoute();
+      return null;
+    }
+  }
+  const sjL = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || o.uz || o.en || ''));
+  const arr = (x) => (Array.isArray(x) ? x : []);
+  function sjContent(host, sj, b, n, tp, Ls, key) {
+    const sp = sjSpeech[sj.id] || 'en-GB', isLang = sj.id !== 'math';
+    const say = (w) => `<button type="button" class="zk-say" data-say="${esc(w)}" aria-label="${esc(L3('Tinglash: ', 'Слушать: ', 'Listen: ') + w)}"><span aria-hidden="true">🔊</span></button>`;
+    let h = '';
+    if (Ls.goal) h += `<div class="keyq"><div class="ic">🎯</div><div><b>${L3('Bugun o‘rganamiz', 'Сегодня узнаем', 'Today we learn')}</b>${esc(sjL(Ls.goal))}</div></div>`;
+    const sm = arr(Ls.summary && (Ls.summary[lang] || Ls.summary.uz));
+    if (sm.length) h += `<div class="panel"><h3>💡 ${t('main_ideas')}</h3><ul class="pts">${sm.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`;
+    const ws = arr(Ls.words);
+    if (ws.length) h += `<div class="panel"><h3>${isLang ? '🗣 ' + L3('Yangi so‘zlar', 'Новые слова', 'New words') : '📖 ' + L3('Asosiy tushunchalar', 'Основные понятия', 'Key ideas')}</h3>
+      <div class="zk-words">${ws.map((w) => `<div class="zk-word">${w.emoji ? `<span class="em" aria-hidden="true">${esc(w.emoji)}</span>` : ''}<b lang="${sp.slice(0, 2)}">${esc(w.w)}</b><span>${esc(sjL(w) === w.w ? '' : sjL(w))}</span>${say(w.w)}</div>`).join('')}</div></div>`;
+    const ps = arr(Ls.phrases);
+    if (ps.length) h += `<div class="panel"><h3>💬 ${isLang ? L3('Gaplar', 'Фразы', 'Phrases') : L3('Eslab qoling', 'Запомни', 'Remember')}</h3><ul class="zk-phr">${ps.map((p) => `<li><div><b lang="${sp.slice(0, 2)}">${esc(p.t)}</b>${sjL(p) && sjL(p) !== p.t ? `<span>${esc(sjL(p))}</span>` : ''}</div>${say(p.t)}</li>`).join('')}</ul></div>`;
+    const tk = arr(Ls.tasks);
+    if (tk.length) h += `<div class="panel"><h3>✏️ ${L3('Darslikdagi topshiriqlar', 'Задания в учебнике', 'Textbook activities')}</h3><ol class="zk-tasks">${tk.map((x) => `<li>${esc(sjL(x))}</li>`).join('')}</ol></div>`;
+    h += `<div class="fact"><div class="ic">✅</div><div><b>${L3('Bilimingni sinab ko‘r', 'Проверь себя', 'Check yourself')}</b> ${L3('5 ta savoldan iborat testni yeching.', 'Пройди тест из 5 вопросов.', 'Take the 5-question quiz.')} <button type="button" class="btn pri sm" id="sjGoQuiz">${L3('Testni boshlash', 'Начать тест', 'Start quiz')}</button></div></div>`;
+    host.innerHTML = h;
+    host.querySelectorAll('.zk-say').forEach((x) => (x.onclick = () => { if (!sjSay(x.dataset.say, sp)) x.disabled = true; }));
+    if (!window.speechSynthesis) host.querySelectorAll('.zk-say').forEach((x) => x.remove());
+    const gq = document.getElementById('sjGoQuiz'); if (gq) gq.onclick = () => { subjectTopic(sj.id, b.grade, b.part, n, 'quiz'); window.scrollTo({ top: 0 }); };
+  }
+  function sjQuiz(host, sj, b, n, tp, Ls, key) {
+    const ttl = `${SN(sj)} · ${b.grade}-${L3('sinf', 'класс', 'grade')} • ${n}. ${tp.t}`, href = `#s/${sj.id}/${b.grade}/${b.part}/${n}`;
+    const mix = (q) => { const o = arr(q.o).map((x, i) => [x, i]); if (!o.every((x) => /^\s*\d+\s*$/.test(sjL(x[0])))) for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; } return { q: q.q, o: o.map((x) => x[0]), a: o.findIndex((x) => x[1] === q.a), d: 'easy', g: 's', n, ttl, href }; };
+    host.innerHTML = '<div class="panel"><div id="quiz"></div></div>';
+    const run = () => runTest(document.getElementById('quiz'), arr(Ls.quiz).filter((q) => q && arr(q.o).length && q.a >= 0 && q.a < q.o.length).map(mix), { mode: 'practice', compact: true, title: ttl, onNew: run, onFinish: (s) => { sjBest(key, s); return 0; } });
+    run();
   }
   // Darslik sahifalari Firebase'dan (content/<fan>-<sinf>-<qism>-<sahifa>); ruxsat — firestore.rules (bepul mavzu, obuna, xodim)
   const sjPageCache = {};
@@ -562,7 +653,7 @@
 
   /* ---------- test runner ---------- */
   const DL = { easy: 'easy', medium: 'medium', hard: 'hard' };
-  function lessonTitle(it) { const L = B[it.g].lessons[it.n - 1]; return `${GN[it.g]}-${t('grade')} • ${t('lesson')} ${it.n}: ${tr(L.t)}`; }
+  function lessonTitle(it) { if (it.ttl) return it.ttl; const L = B[it.g].lessons[it.n - 1]; return `${GN[it.g]}-${t('grade')} • ${t('lesson')} ${it.n}: ${tr(L.t)}`; }
   const uzL = () => lang === 'uz';
   function runTest(el, items, opts = {}) {
     const st = { i: 0, ans: items.map(() => null), done: false, start: Date.now(), timer: null };
@@ -577,7 +668,7 @@
       const answered = st.ans.filter((x) => x != null).length;
       el.innerHTML = `<div class="tr-run">
         <div class="tr-top"><div class="tr-prog"><div style="width:${100 * answered / items.length}%"></div></div><span>${t('q_word')} ${st.i + 1} / ${items.length}</span>${exam ? `<span class="tm-box">⏱ <b class="tm">${tmText()}</b></span>` : ''}</div>
-        <div class="tr-meta"><span class="dchip ${it.d}">${t(DL[it.d])}</span><a href="#${it.g}-${it.n}" class="tr-topic">${lessonTitle(it)}</a></div>
+        <div class="tr-meta"><span class="dchip ${it.d}">${t(DL[it.d])}</span><a href="${it.href || `#${it.g}-${it.n}`}" class="tr-topic">${lessonTitle(it)}</a></div>
         <div class="tr-q" id="trq" tabindex="-1">${it.tf ? `<small>${t('tf_hint')}</small>` : ''}${tr(it.q)}</div>
         <div class="tr-opts ${it.tf ? 'tf' : ''}" role="radiogroup" aria-labelledby="trq">${it.o.map((o, k) => { let cls = ''; if (a === k) cls = 'sel'; if (reveal) { if (k === it.a) cls = 'ok'; else if (a === k) cls = 'bad'; } return `<button type="button" role="radio" aria-checked="${a === k}" tabindex="${(a == null ? k === 0 : a === k) ? 0 : -1}" data-k="${k}" class="${cls}" ${reveal ? 'aria-disabled="true"' : ''}><i>${it.tf ? (k ? '✗' : '✓') : letters[k]}</i><span>${tr(o)}</span></button>`; }).join('')}</div>
         ${reveal ? `<div class="tr-fb ${a === it.a ? 'ok' : 'bad'}">${a === it.a ? t('right') : t('wrong') + '<b>' + tr(it.o[it.a]) + '</b>'}${it.e ? ' — ' + tr(it.e) : ''}</div>` : ''}
@@ -621,7 +712,7 @@
           <div><h3>${t('res_h')}: ${s} / ${items.length}</h3><p class="res-mark">${t('res_grade')}: <b class="m${mark}">${mark}</b> &nbsp;•&nbsp; ⏱ ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}${st.gain ? ` &nbsp;<span class="xpgain">⚡ +${st.gain} XP</span>` : ''}</p>
           <div class="btns">${wrong.length ? `<button class="btn grn" id="rw">${t('retry_wrong')} (${wrong.length})</button>` : ''}<button class="btn pri" id="rn">${t('new_test')}</button>${opts.onBack ? `<button class="btn sec" id="rb">${t('back_setup')}</button>` : ''}</div></div></div>
         <h4>${t('by_diff')}</h4><div class="bars">${['easy', 'medium', 'hard'].filter((d) => by[d].n).map((d) => `<div class="bar"><span class="dchip ${d}">${t(d)}</span><div class="bt"><div class="bf ${d}" style="width:${100 * by[d].ok / by[d].n}%"></div></div><b>${by[d].ok}/${by[d].n}</b></div>`).join('')}</div>
-        ${Object.keys(topics).length > 1 ? `<h4>${t('by_topic')}</h4><div class="tops">${Object.values(topics).sort((a, b) => a.ok / a.n - b.ok / b.n).map((x) => `<a href="#${x.it.g}-${x.it.n}" class="top-row"><span>${lessonTitle(x.it)}</span><b class="${x.ok === x.n ? 'g' : x.ok / x.n < 0.5 ? 'r' : ''}">${x.ok}/${x.n}</b></a>`).join('')}</div>` : ''}
+        ${Object.keys(topics).length > 1 ? `<h4>${t('by_topic')}</h4><div class="tops">${Object.values(topics).sort((a, b) => a.ok / a.n - b.ok / b.n).map((x) => `<a href="${x.it.href || `#${x.it.g}-${x.it.n}`}" class="top-row"><span>${lessonTitle(x.it)}</span><b class="${x.ok === x.n ? 'g' : x.ok / x.n < 0.5 ? 'r' : ''}">${x.ok}/${x.n}</b></a>`).join('')}</div>` : ''}
         <h4>${t('review')}</h4><div class="rev">${items.map((it, k) => { const a = st.ans[k], ok = a === it.a; return `<div class="rev-i ${ok ? 'ok' : 'bad'}"><div class="rev-h"><span class="num">${k + 1}</span><span class="dchip ${it.d}">${t(it.d)}</span><span class="rev-q">${tr(it.q)}</span></div>${ok ? `<div class="rev-a ok">✓ ${tr(it.o[it.a])}</div>` : `<div class="rev-a bad">✗ ${t('your')}: ${a == null ? t('noans') : tr(it.o[a])}</div><div class="rev-a ok">✓ ${t('correct_a')}: ${tr(it.o[it.a])}</div><a class="rev-l" href="#${it.g}-${it.n}">📘 ${t('study')}</a>`}</div>`; }).join('')}</div>
       </div>`;
       const rw = el.querySelector('#rw'); if (rw) rw.onclick = () => runTest(el, wrong.map((x) => Object.assign({}, x)), Object.assign({}, opts, { mode: 'practice', onFinish: null }));

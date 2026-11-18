@@ -4,6 +4,13 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### 1-sinf fanlari: kimyo darsi kabi dars sahifalari (2026-11-17, ADR-0008 3-bosqich)
+- Matematika, ingliz va rus tili 1-sinf mavzularida 3 tab: **Dars mazmuni** (maqsad, asosiy fikrlar, yangi so'zlar kartochkalari va gaplar 🔊 talaffuz bilan, darslikdagi topshiriqlar), **Darslik** (sahifalar), **Test** (5 savol, natija ⭐ bilan).
+- Dars mazmuni uch tilda (o'zbek, rus, ingliz) — sayt tiliga qarab ko'rsatiladi.
+- Admin paneli → "Darsliklar": har bir darslik uchun dars mazmuni JSON faylini yuklash ustuni. Mazmun Firebase'da himoyalangan (`lessons/…`), ruxsat — darslik sahifalari bilan bir xil. **Publish kerak**.
+- Mavzu nomlari darslikning o'zidan tekshirilib tuzatildi (rus tili 6–50, matematika 45–50); ingliz tili 43–44-mavzu sahifalari darslikdagi tartibga moslandi.
+- Telefonda admin paneli: yashirin fayl tanlagich sahifani kengaytirib yubormaydi.
+
 ### Uch tilli sayt: o'zbek, rus, ingliz (2026-11-17)
 - Sarlavhada va kirish oynasida **RU** tugmasi; tanlov saqlanadi (`zk_lang`), `html lang="ru"`.
 - Interfeys to'liq ruscha: menyular, bosh sahifa, fanlar, obuna oynasi, "Mening natijalarim" (darajalar, nishonlar), o'quv markazi, sertifikat, davriy jadval (118 element nomi, oilalar), 3D tajriba boshqaruvi, o'qituvchi va admin panellari, davomat, haftalik reyting.
