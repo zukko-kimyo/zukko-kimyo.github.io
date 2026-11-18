@@ -328,31 +328,51 @@
     const items = SJ().list.filter((sj) => ok.includes(sj.id));
     const desc = (sj) => sj.native ? L3('3D tajribalar, darsliklar, testlar va davriy jadval', '3D-опыты, учебники, тесты и таблица Менделеева', '3D experiments, textbooks, quizzes and the periodic table')
       : L3('Darslik, so‘zlar talaffuzi bilan, dars mazmuni va testlar', 'Учебник, слова с произношением, уроки и тесты', 'Textbook, words with pronunciation, lessons and quizzes');
+    // Fan bo'yicha qisqa raqamlar: kimyo — darslar va 3D tajribalar, boshqalar — tayyor mavzular
+    const stat = (sj) => {
+      if (sj.native) { const nL = ['g6', 'g7', 'g8'].reduce((a, g) => a + ((B[g] && B[g].lessons.length) || 0), 0), nX = window.Lab && Lab.exps ? Object.keys(Lab.exps).length : 0;
+        return [[nL, L3('dars', 'уроков', 'lessons')], [nX, L3('3D tajriba', '3D-опытов', '3D labs')]].filter((x) => x[0]); }
+      const nT = sj.grades.reduce((a, g) => a + SJ().books(sj.id, g).reduce((b, k) => b + k.topics.length, 0), 0);
+      return nT ? [[nT, L3('mavzu', 'тем', 'topics')], [3, L3('til', 'языка', 'languages')]] : [];
+    };
+    const GL = { chem: ['H₂O', '⚗', 'O₂', 'NaCl', '⚛', 'CO₂'], math: ['+', '×', '÷', '7', '=', 'π'], eng: ['A', 'b', 'Hi!', 'C', 'cat', 'Z'], rus: ['А', 'Б', 'Я', 'Ж', 'мир', 'Ё'] };
+    const glyphs = (id) => (GL[id] || []).map((g, k) => `<i style="--k:${k}">${g}</i>`).join('');
     const badge = (sj) => { const A = window.ZKAuth; if (!A || !A.user) return ''; if (A.isAdmin && A.isAdmin()) return ''; if (A.isStaff && A.isStaff()) return `<span class="zk-pk-b">${L3('Sizga biriktirilgan', 'Закреплён за вами', 'Assigned to you')}</span>`; return A.canPaid && A.canPaid(sj.id) ? `<span class="zk-pk-b on">${L3('Obuna faol', 'Подписка активна', 'Subscription active')}</span>` : ''; };
-    app.innerHTML = `<section class="zk-pick"><div class="wrap">
-      <div class="zk-pick-h"><span class="zk-pick-k">ZUKKO AKADEMIYASI</span>
+    const A = window.ZKAuth, nm = A && A.user && A.user.name ? String(A.user.name).split(' ')[0] : '';
+    const hi = nm ? L3(`Salom, ${esc(nm)}!`, `Привет, ${esc(nm)}!`, `Hi, ${esc(nm)}!`) : L3('Xush kelibsiz!', 'Добро пожаловать!', 'Welcome!');
+    app.innerHTML = `<section class="zk-pick"><div class="zk-pick-bg" aria-hidden="true"><span></span><span></span><span></span></div><div class="wrap">
+      <div class="zk-pick-h"><span class="zk-pick-k"><span class="zk-pick-wave" aria-hidden="true">👋</span> ${hi}</span>
         <h1>${L3('Qaysi fanni o‘rganamiz?', 'Какой предмет изучаем?', 'Which subject shall we learn?')}</h1>
         <p>${L3('Fanni tanlang va «Davom etish»ni bosing — sayt shu fanga moslashadi. Fanni keyin istalgan vaqtda almashtirish mumkin.', 'Выберите предмет и нажмите «Продолжить» — сайт подстроится под него. Предмет можно сменить в любое время.', 'Choose a subject and press Continue — the site adapts to it. You can change it at any time.')}</p></div>
       <fieldset class="zk-pick-grid"><legend class="zk-sr">${L3('Fanlar', 'Предметы', 'Subjects')}</legend>
-        ${items.map((sj) => `<label class="zk-pcard" style="--sj:${sj.color};--sj-on:${onCol(sj.color)}"><input type="radio" name="zkpick" value="${sj.id}" class="zk-sr"${cs === sj.id ? ' checked' : ''}>
+        ${items.map((sj, i) => `<label class="zk-pcard" style="--sj:${sj.color};--sj-on:${onCol(sj.color)};--i:${i}"><input type="radio" name="zkpick" value="${sj.id}" class="zk-sr"${cs === sj.id ? ' checked' : ''}>
+          <span class="zk-pk-gl" aria-hidden="true">${glyphs(sj.id)}</span>
           <span class="zk-pk-ic" aria-hidden="true">${sj.icon}</span>
           <span class="zk-pk-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${L3('sinflar', 'классы', 'grades')}</small></span>
-          <span class="zk-pk-d">${desc(sj)}</span>${badge(sj)}
+          <span class="zk-pk-d">${desc(sj)}</span>
+          <span class="zk-pk-st">${stat(sj).map((x) => `<span><b>${x[0]}</b> ${x[1]}</span>`).join('')}${badge(sj)}</span>
           <span class="zk-pk-ok" aria-hidden="true">✓</span></label>`).join('')}
       </fieldset>
       <div class="zk-pick-bar"><span class="zk-pick-sel" id="pickSel" aria-live="polite"></span>
-        <button type="button" class="btn pri" id="pickGo">${L3('Davom etish', 'Продолжить', 'Continue')} <span aria-hidden="true">→</span></button></div>
+        <button type="button" class="btn pri" id="pickGo"><span id="pickGoT">${L3('Davom etish', 'Продолжить', 'Continue')}</span> <span class="zk-pick-arr" aria-hidden="true">→</span></button></div>
     </div></section>`;
     const sel = () => { const x = app.querySelector('input[name=zkpick]:checked'); return x && x.value; };
-    const upd = () => {
+    const upd = (anim) => {
       const id = sel(), sj = id && SJ().get(id), go = document.getElementById('pickGo');
-      document.getElementById('pickSel').innerHTML = sj ? `${L3('Tanlandi:', 'Выбрано:', 'Selected:')} <b>${SN(sj)}</b>` : L3('Fan tanlanmagan', 'Предмет не выбран', 'No subject selected');
-      go.disabled = !sj; go.setAttribute('aria-disabled', String(!sj));
-      app.querySelectorAll('.zk-pcard').forEach((c) => c.classList.toggle('on', c.querySelector('input').checked));
+      document.getElementById('pickSel').innerHTML = sj ? `<span class="zk-pick-dot" style="--sj:${sj.color}"></span>${L3('Tanlandi:', 'Выбрано:', 'Selected:')} <b>${SN(sj)}</b>` : L3('Fan tanlanmagan — kartochkani bosing', 'Предмет не выбран — нажмите на карточку', 'No subject yet — tap a card');
+      document.getElementById('pickGoT').textContent = sj ? L3(`${SN(sj)} bilan davom etish`, `Продолжить: ${SN(sj)}`, `Continue with ${SN(sj)}`) : L3('Davom etish', 'Продолжить', 'Continue');
+      go.disabled = !sj; go.setAttribute('aria-disabled', String(!sj)); go.classList.toggle('ready', !!sj);
+      if (sj) go.style.setProperty('--sj', sj.color);
+      app.querySelectorAll('.zk-pcard').forEach((c) => { const on = c.querySelector('input').checked; c.classList.toggle('on', on); if (on && anim) { c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); } });
     };
-    app.querySelectorAll('input[name=zkpick]').forEach((x) => (x.onchange = upd));
-    document.getElementById('pickGo').onclick = () => { const id = sel(); if (!id) return; setSubj(id); if (location.hash === '#home' || !location.hash) renderRoute(); else location.hash = '#home'; };
-    upd();
+    app.querySelectorAll('input[name=zkpick]').forEach((x) => (x.onchange = () => upd(true)));
+    document.getElementById('pickGo').onclick = () => {
+      const id = sel(); if (!id) return;
+      const go = () => { setSubj(id); if (location.hash === '#home' || !location.hash) renderRoute(); else location.hash = '#home'; };
+      const card = app.querySelector('.zk-pcard.on'); const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (card && !calm) { app.querySelector('.zk-pick').classList.add('leaving'); setTimeout(go, 260); } else go();
+    };
+    upd(false);
   }
   // Bosh sahifa: tanlangan fanning sahifasi; fan tanlanmagan bo'lsa — tanlash oynasi
   function homeRoute() {
@@ -560,6 +580,15 @@
   const lockIc = '<span class="zk-lock" aria-hidden="true">🔒</span>';
   const pt = (k, o) => { let x = (PAY[lang] || PAY.uz)[k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
   function paywall(feature, sj) {
+    // Obuna — faqat o'quvchilar uchun. Xodimga hech qachon to'lov oynasi ko'rsatilmaydi.
+    const A = window.ZKAuth;
+    if (A && A.isStaff && A.isStaff()) {
+      const adm = A.isAdmin && A.isAdmin();
+      return `<section class="zk-pay zk-pay-staff" aria-labelledby="zkPayH"><div class="zk-pay-ic" aria-hidden="true">${adm ? '🛡' : '👩‍🏫'}</div>
+        <h2 id="zkPayH">${adm ? L3('Administrator uchun hammasi ochiq', 'Для администратора всё открыто', 'Everything is open for the administrator') : L3('Bu fan sizga biriktirilmagan', 'Этот предмет не закреплён за вами', 'This subject is not assigned to you')}</h2>
+        <p>${adm ? L3('Bu bo‘lim yuklanmadi. Internet aloqasini tekshirib, sahifani yangilang.', 'Раздел не загрузился. Проверьте интернет и обновите страницу.', 'This part did not load. Check your connection and refresh the page.') : L3('Obuna faqat o‘quvchilar uchun. Fanni administrator biriktiradi: «Admin paneli → O‘qituvchilar».', 'Подписка — только для учеников. Предмет закрепляет администратор: «Панель администратора → Учителя».', 'Subscriptions are for students only. The administrator assigns subjects: Admin panel → Teachers.')}</p>
+        <div class="zk-pay-act"><button type="button" class="btn" id="zkPayRe">${L3('Sahifani yangilash', 'Обновить страницу', 'Refresh page')}</button></div></section>`;
+    }
     const site = (window.ZKAuth && ZKAuth.site) || {}, prices = site.prices || {}, st = window.ZKAuth ? ZKAuth.subStatus(sj ? sj.id : 'chem') : {};
     const esc2 = (v) => (window.ZKAuth ? ZKAuth.esc(v) : String(v));
     const plans = (window.ZKSub ? ZKSub.PLANS : []).map((k) => `<div class="zk-plan"><b>${ZKSub.NAMES[lang][k]}</b>${prices[k] ? `<span>${esc2(prices[k])}</span>` : ''}<small>${pt('d_' + k)}</small></div>`).join('');

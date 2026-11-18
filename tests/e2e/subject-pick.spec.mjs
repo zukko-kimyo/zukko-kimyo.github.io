@@ -50,3 +50,23 @@ test('kirish oynasi: fan nomi umumiy, faqat kimyo emas', async ({ page }) => {
   await expect(page.locator('.zk-gate')).toContainText('matematika');
   await expect(page.locator('.zk-gate')).not.toContainText('6–8-sinf');
 });
+
+test('obuna oynasi xodimga chiqmaydi: biriktirilmagan fanda o\'qituvchiga izoh, tanlash oynasida faqat o\'z fani', async ({ page }) => {
+  const { bootstrapAdmin, login, logout } = await import('./fixtures.mjs');
+  await bootstrapAdmin(page);
+  await page.evaluate(() => {
+    const db = JSON.parse(localStorage.getItem('zk_mock_db'));
+    db.auth.tch1 = { email: 'olim.t@zukko-kimyo.uz', pw: 'secret1' };
+    db.col.users.tch1 = { login: 'olim.t', name: 'Olim Toshev', role: 'teacher', cls: '', status: 'active', subjects: ['math', 'chem'] };
+    localStorage.setItem('zk_mock_db', JSON.stringify(db));
+  });
+  await page.evaluate(() => { location.hash = '#fanlar'; });
+  await logout(page);
+  await login(page, 'olim.t', 'secret1'); await waitReady(page);
+  await go(page, 's/eng/1/1/10');
+  await expect(page.locator('#sjBody .zk-pay-staff h2')).toContainText('biriktirilmagan');
+  await expect(page.locator('#sjBody .zk-plan')).toHaveCount(0);
+  await go(page, 'pick');
+  await expect(page.locator('.zk-pcard')).toHaveCount(2);
+  await expect(page.locator('.zk-pick-k')).toContainText('Salom, Olim!');
+});

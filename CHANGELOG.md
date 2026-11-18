@@ -10,6 +10,8 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - «⇄ Fanni almashtirish»: Fanlar menyusida, fan sahifasida, kimyo bosh sahifasida va «Fanlar» sahifasida. O'qituvchi faqat o'ziga biriktirilgan fanlardan tanlaydi (bitta bo'lsa — avtomatik).
 - Kimyo bosh sahifasi endi `#kimyo` manzilida ham. Bosh sahifa va «Fanlar» sahifasida fan nomi ko'rinmaydi, faqat fan tanlanganda.
 - Kirish oynasi va sahifa nomi: «Kimyo, 6–8-sinf» o'rniga barcha fanlar.
+- Tanlash oynasi jonli: salomlashuv (ism bilan), har fanning raqamlari (darslar, 3D tajribalar, mavzular), suzuvchi belgilar, tanlaganda effekt; harakatni kamaytirish sozlamasida animatsiyalar o'chadi.
+- Obuna oynasi xodimga chiqmaydi: admin uchun hammasi ochiq, o'qituvchiga biriktirilmagan fanda «Bu fan sizga biriktirilmagan» izohi.
 
 ### 1-sinf fanlari: kimyo darsi kabi dars sahifalari (2026-11-17, ADR-0008 3-bosqich)
 - Matematika, ingliz va rus tili 1-sinf mavzularida 3 tab: **Dars mazmuni** (maqsad, asosiy fikrlar, yangi so'zlar kartochkalari va gaplar 🔊 talaffuz bilan, darslikdagi topshiriqlar), **Darslik** (sahifalar), **Test** (5 savol, natija ⭐ bilan).
