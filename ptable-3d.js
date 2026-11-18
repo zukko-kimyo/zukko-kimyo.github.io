@@ -20,7 +20,7 @@
       host.insertBefore(renderer.domElement, host.firstChild);
       const placeholder = host.querySelector('.pt3d-fallback');
       if (placeholder) placeholder.remove();
-      renderer.domElement.setAttribute('aria-label', lang === 'en' ? 'Rotatable schematic atom with electrons on shells' : 'Elektron qavatlari aks etgan aylantiriladigan sxematik atom');
+      renderer.domElement.setAttribute('aria-label', lang === 'en' ? 'Rotatable schematic atom with electrons on shells' : lang === 'ru' ? 'Вращаемая схема атома с электронами на слоях' : 'Elektron qavatlari aks etgan aylantiriladigan sxematik atom');
       renderer.domElement.setAttribute('role','img');
       controls = new T.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true; controls.dampingFactor = .055;

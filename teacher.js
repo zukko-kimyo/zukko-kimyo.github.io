@@ -40,9 +40,30 @@
       d_labs: 'labs', d_visited: 'lessons opened', d_best: 'best', d_back: '← Back', d_none: 'No activity in this class yet.', d_streak: 'XP',
       self: '(you)', grade: 'grade',
     },
+    ru: {
+      h: '👩‍🏫 Панель учителя', p: 'Результаты учеников, учётные записи и пароли.', tab_res: '📊 Результаты', tab_sub: '💳 Подписки', tab_add: '➕ Добавить учеников', tab_tch: '🧑‍🏫 Учителя', tab_req: '📥 Заявки', tab_codes: '🔑 Коды классов',
+      rq_none: 'Новых заявок нет. Здесь появятся ученики, зарегистрировавшиеся по коду из раздела «Коды классов».', rq_ok: '✓ Одобрить', rq_no: '✕ Отклонить', rq_all: '✓ Одобрить все', rq_date: 'Дата', rq_no_q: 'Отклонить заявку {n}? Учётная запись будет удалена.', rq_done: 'Одобрено',
+      cd_h: 'Коды классов', cd_p: 'Ученики регистрируются на сайте через кнопку «Регистрация» с этим кодом, затем вы одобряете их в разделе «Заявки».', cd_new: 'Создать новый код', cd_cls: 'Класс', cd_code: 'Код', cd_state: 'Статус', cd_on: 'активен', cd_off: 'приостановлен', cd_dis: '⏸ Приостановить', cd_en: '▶ Включить', cd_del: '🗑 Удалить', cd_none: 'Кодов пока нет. Введите название класса и создайте код.', cd_used: 'зарегистрировались', cd_copy: '📋 Копировать', cd_copied: 'Скопировано', cd_how: 'Скажите ученикам: откройте сайт → «Регистрация» → код класса: ',
+      all: 'Все', students: 'учеников', none: 'Учеников пока нет. Начните с раздела «Добавить учеников».', loading: 'Загрузка…', reload: '↻ Обновить',
+      c_n: '№', c_name: 'Имя', c_login: 'Логин', c_xp: 'XP / уровень', c_g6: '6 класс', c_g7: '7 класс', c_g8: '8 класс', c_quiz: 'Средний балл теста', c_last: 'Последняя активность', c_act: '',
+      never: 'не входил', today: 'сегодня', yday: 'вчера', days: 'дн. назад', lessons: 'уроков',
+      det: 'Подробнее', pw: '🔑 Новый пароль', del: '🗑 Удалить', del_q: 'Удалить учётную запись {n}? Результаты тоже будут удалены.', pw_ok: 'Новый пароль', pw_q: 'Создать новый пароль для {n}?',
+      csv: '⬇ CSV (Excel)', print_cards: '🖨 Карточки с логинами',
+      add_cls: 'Класс', add_cls_ph: 'например 7A', add_names: 'Имена учеников (по одному в строке)', add_names_ph: 'Aliyev Vali\nKarimova Malika\n…', add_go: 'Создать учётные записи',
+      add_note: 'Логины и пароли создаются автоматически. Распечатайте карточки и раздайте их ученикам.', e_cls: 'Введите класс.', e_names: 'Введите хотя бы одно имя.',
+      creating: 'Создание', done_n: 'Создано учётных записей: {n}', fail_n: 'Ошибок: {n}', created_h: 'Созданные учётные записи', keep: '⚠ Распечатайте или сохраните пароли сейчас — позже их также можно посмотреть в разделе «Результаты».',
+      show_pw: '👁 Показать пароли', hide_pw: '🙈 Скрыть пароли', pw_col: 'Пароль',
+      t_name: 'Имя учителя', t_login: 'Логин', t_pass: 'Пароль', t_add: 'Добавить учителя', t_list: 'Список учителей', e_login: 'Логин может содержать только латинские буквы, цифры, точку и дефис.',
+      e_taken: 'Этот логин уже занят.', ok_t: 'Учитель добавлен', site: 'Сайт', card_h: 'Zukko Akademiyasi — данные для входа',
+      d_labs: 'опытов', d_visited: 'открыто уроков', d_best: 'лучший', d_back: '← Назад', d_none: 'В этом классе пока нет активности.', d_streak: 'XP',
+      self: '(вы)', grade: 'класс',
+    },
   };
   let L = 'uz';
-  const t = (k, o) => { let s = S[L][k] || k; if (o) Object.keys(o).forEach((x) => (s = s.replace('{' + x + '}', o[x]))); return s; };
+  // Uch tilli tanlov: ru tarjimasi bo'lmasa o'zbekchaga qaytadi.
+  const L3 = (uz, ru, en) => (L === 'ru' ? ru : L === 'en' ? en : uz);
+  const nm = (o) => (o ? o[L] || o.uz || '' : '');
+  const t = (k, o) => { let s = (S[L] || S.uz)[k] || k; if (o) Object.keys(o).forEach((x) => (s = s.replace('{' + x + '}', o[x]))); return s; };
   const esc = (s) => window.ZKAuth.esc(s);
   // O'quvchi o'zi yozadigan natija qiymatlari ekranga chiqishdan oldin songa aylantiriladi (HTML/kod kiritilmasin).
   const num = (v, max = 1e7) => { v = Number(v); return Number.isFinite(v) && v >= 0 ? Math.min(v, max) : 0; };
@@ -166,9 +187,9 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   /* ---------- render ---------- */
   let APP, CTX;
   function render(app, ctx) {
-    APP = app; CTX = ctx; L = ctx.lang === 'en' ? 'en' : 'uz'; css();
+    APP = app; CTX = ctx; L = ctx.lang === 'en' || ctx.lang === 'ru' ? ctx.lang : 'uz'; css();
     const admin = ZKAuth.isAdmin();
-    app.innerHTML = `<div class="page-h tch"><div class="wrap"><div class="crumbs"><a href="#home">${ctx.t('nav_home')}</a> / ${t('h').replace(/^\S+\s/, '')}</div><h1>${t('h')}</h1><p>${admin ? t('p') : (L === 'en' ? 'Student progress and results (view only).' : 'O‘quvchilar natijalari va faolligi (faqat ko‘rish).')}</p></div></div>
+    app.innerHTML = `<div class="page-h tch"><div class="wrap"><div class="crumbs"><a href="#home">${ctx.t('nav_home')}</a> / ${t('h').replace(/^\S+\s/, '')}</div><h1>${t('h')}</h1><p>${admin ? t('p') : (L3('O‘quvchilar natijalari va faolligi (faqat ko‘rish).', 'Результаты и активность учеников (только просмотр).', 'Student progress and results (view only).'))}</p></div></div>
       <div class="wrap" style="padding-bottom:40px">
         <div class="tc-tabs" id="tcTabs"></div>
         <div id="tcBody"><div class="tc-empty">${t('loading')}</div></div>
@@ -193,7 +214,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     if (!list.length) { body().innerHTML = `<div class="panel tc-empty">📭 ${t('rq_none')}</div>`; return; }
     body().innerHTML = `<div class="tc-tools"><button class="btn sec sm" id="tcRe2">${t('reload')}</button><div class="sp"></div><button class="btn pri sm" id="tcAll">${t('rq_all')} (${list.length})</button></div>
       <div class="tc-wrap"><table class="tc resp" style="min-width:640px"><thead><tr><th>${t('c_n')}</th><th>${t('c_name')}</th><th>${t('c_login')}</th><th>${t('add_cls')}</th><th>${t('rq_date')}</th><th></th></tr></thead><tbody>
-      ${list.map((u, i) => `<tr><td class="tc-mut">${i + 1}</td><td class="nm"><b>${esc(u.name)}</b></td><td class="lg"><code>${esc(u.login)}</code></td><td data-l="${t('add_cls')}"><b>${esc(u.cls)}</b></td><td data-l="${t('rq_date')}">${u.created ? new Date(u.created).toLocaleString(L === 'en' ? 'en-GB' : 'uz-UZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</td>
+      ${list.map((u, i) => `<tr><td class="tc-mut">${i + 1}</td><td class="nm"><b>${esc(u.name)}</b></td><td class="lg"><code>${esc(u.login)}</code></td><td data-l="${t('add_cls')}"><b>${esc(u.cls)}</b></td><td data-l="${t('rq_date')}">${u.created ? new Date(u.created).toLocaleString(L3('uz-UZ', 'ru-RU', 'en-GB'), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''}</td>
         <td class="act"><div class="tc-act"><button class="ok" data-ok="${u.id}">${t('rq_ok')}</button><button data-no="${u.id}">${t('rq_no')}</button></div></td></tr>`).join('')}
       </tbody></table></div>`;
     document.getElementById('tcRe2').onclick = async () => { body().style.opacity = 0.5; try { await loadAll(); } finally { body().style.opacity = 1; } tabs(); requests(); };
@@ -211,10 +232,10 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   }
 
   /* ---------- fanlar (subjects.js): o'qituvchiga biriktirish ---------- */
-  const SJL = () => (window.ZKSubjects ? ZKSubjects.list : [{ id: 'chem', name: { uz: 'Kimyo', en: 'Chemistry' } }]);
-  const sjName = (id) => { const x = SJL().find((s) => s.id === id); return x ? x.name[L] : id; };
+  const SJL = () => (window.ZKSubjects ? ZKSubjects.list : [{ id: 'chem', name: { uz: 'Kimyo', en: 'Chemistry', ru: 'Химия' } }]);
+  const sjName = (id) => { const x = SJL().find((s) => s.id === id); return x ? nm(x.name) : id; };
   const tSubj = (u) => (Array.isArray(u.subjects) ? u.subjects : ['chem']);
-  const sjChecks = (pref, cur) => SJL().map((x) => `<label class="tc-sj"><input type="checkbox" data-sj="${x.id}" name="${pref}" ${cur.includes(x.id) ? 'checked' : ''}> ${esc(x.name[L])}</label>`).join('');
+  const sjChecks = (pref, cur) => SJL().map((x) => `<label class="tc-sj"><input type="checkbox" data-sj="${x.id}" name="${pref}" ${cur.includes(x.id) ? 'checked' : ''}> ${esc(nm(x.name))}</label>`).join('');
 
   /* ---------- obunalar (faqat administrator; firestore.rules o'qituvchiga ruxsat bermaydi) ---------- */
   const SB = {
@@ -224,8 +245,11 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     en: { tab: '💳 Subscriptions', h: 'Student subscriptions', p: 'Pick a plan for a student who has paid. Extending an active subscription adds time from its end. “School year” runs until 30 June. Locked sections open when the student reloads the page (or presses “Check”).',
       st: 'Status', on: 'active until {d}', exp: 'ended {d}', none: 'none', give: 'Give', stop: 'Stop', all: 'All', act: 'Active', noact: 'Without',
       stop_q: 'Stop the subscription of {n}?', cls_q: 'Give the “{p}” plan to {k} students of class {c}?', cls_b: 'Whole class: ', saved: 'Saved', pick: 'Choose a class' },
+    ru: { tab: '💳 Подписки', h: 'Подписки учеников', p: 'Выберите тариф для ученика, который оплатил. При продлении активной подписки срок добавляется к её окончанию. «Учебный год» — до 30 июня. Разделы откроются, когда ученик обновит страницу (или нажмёт «Проверить»).',
+      st: 'Статус', on: 'активна до {d}', exp: 'истекла {d}', none: 'нет', give: 'Выдать', stop: 'Остановить', all: 'Все', act: 'Активные', noact: 'Без подписки',
+      stop_q: 'Остановить подписку {n}?', cls_q: 'Выдать подписку «{p}» {k} ученикам класса {c}?', cls_b: 'Всему классу: ', saved: 'Сохранено', pick: 'Выберите класс' },
   };
-  const sbt = (k, o) => { let x = SB[L][k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
+  const sbt = (k, o) => { let x = (SB[L] || SB.uz)[k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
   // Har fanga alohida obuna: users.subs[fan]. Eski `sub` (kimyo) kimyo yozilganda tozalanadi.
   async function setSub(u, plan, subj) {
     const Z = window.ZKSub; const sj = subj || 'chem';
@@ -244,12 +268,12 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     const ofCls = all.filter((u) => !st.cls || (u.cls || '—') === st.cls);
     const list = ofCls.filter((u) => { const a = cur(u).active; return !st.subF || (st.subF === 'on' ? a : !a); })
       .sort((a, b) => sortCls(a.cls || '', b.cls || '') || String(a.name).localeCompare(String(b.name)));
-    const N = Z.NAMES[L];
+    const N = Z.NAMES[L] || Z.NAMES.uz;
     const plans = Z.PLANS.map((k) => `<option value="${k}">${N[k]}</option>`).join('');
     const stat = (u) => { const s = cur(u); return s.active ? `<span class="tc-q g">${sbt('on', { d: Z.fmtDate(s.until) })}</span> <span class="tc-mut">${s.plan ? N[s.plan] : ''}</span>` : s.expired ? `<span class="tc-q b">${sbt('exp', { d: Z.fmtDate(s.until) })}</span>` : `<span class="tc-mut">${sbt('none')}</span>`; };
     const nOn = ofCls.filter((u) => cur(u).active).length;
     body().innerHTML = `<div class="panel"><h3>${sbt('h')}</h3><div class="tc-note">${sbt('p')}</div></div>
-      <div class="tc-chips" role="group" aria-label="${L === 'en' ? 'Subject' : 'Fan'}">${SJL().map((x) => `<button data-s="${x.id}" class="${SS === x.id ? 'on' : ''}">${esc(x.name[L])}</button>`).join('')}</div>
+      <div class="tc-chips" role="group" aria-label="${L3('Fan', 'Предмет', 'Subject')}">${SJL().map((x) => `<button data-s="${x.id}" class="${SS === x.id ? 'on' : ''}">${esc(nm(x.name))}</button>`).join('')}</div>
       <div class="tc-chips" role="group" aria-label="${t('add_cls')}"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
       <div class="tc-tools"><div class="tc-chips" role="group" aria-label="${sbt('st')}" style="margin:0">${[['', sbt('all')], ['on', sbt('act') + ` <small>${nOn}</small>`], ['off', sbt('noact') + ` <small>${ofCls.length - nOn}</small>`]].map(([v, l]) => `<button data-f="${v}" class="${st.subF === v ? 'on' : ''}">${l}</button>`).join('')}</div><div class="sp"></div>
         ${st.cls ? `<label class="tc-mut" for="tcSubCls">${sbt('cls_b')}</label><select id="tcSubCls" class="tc-sel">${plans}</select><button class="btn sec sm" id="tcSubClsGo">${sbt('give')}</button>` : `<span class="tc-mut">${sbt('cls_b')}${sbt('pick')}</span>`}</div>
@@ -323,7 +347,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   function results() {
     if (st.chemOk === false) {
       const mine = (ZKAuth.mySubjects ? ZKAuth.mySubjects() : []).map(sjName).join(', ') || '—';
-      body().innerHTML = `<div class="panel tc-empty">${L === 'en' ? `Your subjects: <b>${esc(mine)}</b>. Student results for these subjects will appear here once their lessons are online.` : `Sizga biriktirilgan fanlar: <b>${esc(mine)}</b>. Bu fanlar bo‘yicha o‘quvchilar natijalari darslar joylangach shu yerda ko‘rinadi.`}</div>`;
+      body().innerHTML = `<div class="panel tc-empty">${L3(`Sizga biriktirilgan fanlar: <b>${esc(mine)}</b>. Bu fanlar bo‘yicha o‘quvchilar natijalari darslar joylangach shu yerda ko‘rinadi.`, `Ваши предметы: <b>${esc(mine)}</b>. Результаты учеников по этим предметам появятся здесь, когда уроки будут размещены.`, `Your subjects: <b>${esc(mine)}</b>. Student results for these subjects will appear here once their lessons are online.`)}</div>`;
       return;
     }
     const cs = classes(); if (st.cls && !cs.includes(st.cls)) st.cls = '';
@@ -335,11 +359,11 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     const avgQuiz = avgQuizList.length ? (avgQuizList.reduce((a,b)=>a+b,0)/avgQuizList.length).toFixed(1) : '—';
     const active7 = summaries.filter(p => p.updated && Date.now()-Number(p.updated) < 7*86400000).length;
     const totalXp = summaries.reduce((n,p)=>n+(Number(p.xp)||0),0);
-    const summaryHtml = `<section class="tc-overview" aria-label="${L === 'en' ? 'Student summary' : 'O‘quvchilar statistikasi'}">
-       <div class="tc-metric"><span>👥 ${L === 'en' ? 'Students' : 'O‘quvchilar'}</span><b>${list.length}</b></div>
-       <div class="tc-metric"><span>📈 ${L === 'en' ? 'Average quiz' : 'O‘rtacha test'}</span><b>${avgQuiz}${avgQuiz === '—' ? '' : '/10'}</b></div>
-       <div class="tc-metric"><span>✅ ${L === 'en' ? 'Active in 7 days' : '7 kunda faol'}</span><b>${active7}</b></div>
-       <div class="tc-metric"><span>⭐ ${L === 'en' ? 'Total XP' : 'Jami XP'}</span><b>${totalXp}</b></div>
+    const summaryHtml = `<section class="tc-overview" aria-label="${L3('O‘quvchilar statistikasi', 'Статистика учеников', 'Student summary')}">
+       <div class="tc-metric"><span>👥 ${L3('O‘quvchilar', 'Ученики', 'Students')}</span><b>${list.length}</b></div>
+       <div class="tc-metric"><span>📈 ${L3('O‘rtacha test', 'Средний балл теста', 'Average quiz')}</span><b>${avgQuiz}${avgQuiz === '—' ? '' : '/10'}</b></div>
+       <div class="tc-metric"><span>✅ ${L3('7 kunda faol', 'Активны за 7 дней', 'Active in 7 days')}</span><b>${active7}</b></div>
+       <div class="tc-metric"><span>⭐ ${L3('Jami XP', 'Всего XP', 'Total XP')}</span><b>${totalXp}</b></div>
     </section>`;
     body().innerHTML = summaryHtml + `<div class="tc-chips"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
       <div class="tc-tools"><button class="btn sec sm" id="tcRe">${t('reload')}</button>${ZKAuth.isAdmin() ? `<button class="btn sec sm" id="tcPw">${st.showPw ? t('hide_pw') : t('show_pw')}</button>` : ''}<div class="sp"></div><button class="btn sec sm" id="tcCsv">${t('csv')}</button>${ZKAuth.isAdmin() ? `<button class="btn sec sm" id="tcCards">${t('print_cards')}</button>` : ''}</div>
@@ -360,7 +384,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
   async function resetPw(id, btn) {
     const u = st.users.find((x) => x.id === id); const sec = st.secrets[id];
     if (!u || !confirm(t('pw_q', { n: u.name || u.login }))) return;
-    if (!sec) { alert('⚠ ' + (L === 'en' ? 'Stored password not found; the account cannot be changed from the site.' : "Saqlangan parol topilmadi — bu hisobni saytdan o'zgartirib bo'lmaydi.")); return; }
+    if (!sec) { alert('⚠ ' + (L3("Saqlangan parol topilmadi — bu hisobni saytdan o'zgartirib bo'lmaydi.", 'Сохранённый пароль не найден — эту учётную запись нельзя изменить с сайта.', 'Stored password not found; the account cannot be changed from the site.'))); return; }
     btn.disabled = true; const np = mkPass();
     try {
       await ZKAuth.backend.changePassword(ZKAuth.emailOf(u.login), sec.pw, np);
@@ -392,7 +416,7 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
     const sec = st.secrets[u.id];
     body().innerHTML = `<button class="btn sec sm" id="tcBack">${t('d_back')}</button>
       <div class="panel" style="margin-top:12px"><div class="tc-det-h"><div class="av">${esc((u.name || u.login)[0] || '?').toUpperCase()}</div><div><h2 style="margin:0;font-size:22px">${esc(u.name || u.login)}</h2><div class="tc-mut"><code>${esc(u.login)}</code> · ${esc(u.cls || '')} ${sec ? `· <span class="tc-pw">${esc(sec.pw)}</span>` : ''}</div></div><div style="flex:1"></div>${ZKAuth.isAdmin() ? `<div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div>` : ''}</div>
-      <div class="tc-kpi"><div><b>${xp}</b><span>XP · L${lv(xp)}</span></div><div><b>${(p.done6 || 0) + (p.done7 || 0) + (p.done8 || 0)}</b><span>⭐ ${L === 'en' ? 'lessons mastered' : "o'zlashtirilgan dars"}</span></div><div><b>${p.visited || 0}</b><span>${t('d_visited')}</span></div><div><b>${p.quizAvg != null ? p.quizAvg : '—'}</b><span>${t('c_quiz')} (${p.quizN || 0})</span></div><div><b>${p.labs || 0}</b><span>🧪 ${t('d_labs')}</span></div><div><b style="font-size:16px">${ago(p.updated)}</b><span>${t('c_last')}</span></div></div>
+      <div class="tc-kpi"><div><b>${xp}</b><span>XP · L${lv(xp)}</span></div><div><b>${(p.done6 || 0) + (p.done7 || 0) + (p.done8 || 0)}</b><span>⭐ ${L3("o'zlashtirilgan dars", 'уроков освоено', 'lessons mastered')}</span></div><div><b>${p.visited || 0}</b><span>${t('d_visited')}</span></div><div><b>${p.quizAvg != null ? p.quizAvg : '—'}</b><span>${t('c_quiz')} (${p.quizN || 0})</span></div><div><b>${p.labs || 0}</b><span>🧪 ${t('d_labs')}</span></div><div><b style="font-size:16px">${ago(p.updated)}</b><span>${t('c_last')}</span></div></div>
       ${grades.map((g) => { const bk = BOOKS[g]; const items = bk.lessons.map((Lz, i) => ({ n: i + 1, r: Ls[g + '-' + (i + 1)], t: CTX.tr(Lz.t) })).filter((x) => x.r); return `<h3 style="margin:16px 0 8px">${g.slice(1)}-${t('grade')} <small class="tc-mut">${items.filter((x) => x.r.done).length}/${bk.lessons.length}</small></h3>${items.length ? `<div class="tc-ls">${items.map((x) => `<div class="${x.r.done ? '' : 'off'}"><span class="n" style="background:${CTX.GC[g]}">${x.n}</span><span>${esc(x.t)}</span><span class="s">${num(x.r.best, 10) ? `<span class="tc-q ${qcls(num(x.r.best, 10))}">${num(x.r.best, 10)}/10</span>` : '👁'}</span></div>`).join('')}</div>` : `<div class="tc-mut">—</div>`}`; }).join('')}
       </div>`;
     document.getElementById('tcBack').onclick = () => { st.detail = null; results(); };
@@ -475,10 +499,10 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
         <div><label>${t('t_name')}</label><input id="tcTN" placeholder="Karimova Dilnoza"></div>
         <div><label>${t('t_login')}</label><input id="tcTL" placeholder="dilnoza.k" autocapitalize="none" spellcheck="false"></div>
         <div><label>${t('t_pass')}</label><input id="tcTP" value="${mkPass()}"></div></div>
-        <div class="tc-sjrow" role="group" aria-label="${L === 'en' ? 'Subjects' : 'Fanlari'}"><span class="tc-mut">${L === 'en' ? 'Subjects:' : 'Fanlari:'}</span> ${sjChecks('tcTS', ['chem'])}</div>
+        <div class="tc-sjrow" role="group" aria-label="${L3('Fanlari', 'Предметы', 'Subjects')}"><span class="tc-mut">${L3('Fanlari:', 'Предметы:', 'Subjects:')}</span> ${sjChecks('tcTS', ['chem'])}</div>
         <button class="btn pri" id="tcTGo" style="margin-top:14px">${t('t_add')}</button><div id="tcTOut"></div></div>
-      <div class="panel"><h3>${t('t_list')}</h3><div class="tc-wrap"><table class="tc" style="min-width:0"><thead><tr><th>${t('c_name')}</th><th>${L === 'en' ? 'Subjects' : 'Fanlari'}</th><th>${t('c_login')}</th><th>${t('pw_col')}</th><th></th></tr></thead><tbody>
-      ${list.map((u) => `<tr data-tid="${u.id}"><td><b>${esc(u.name || u.login)}</b> ${u.id === ZKAuth.user.uid ? `<span class="tc-mut">${t('self')}</span>` : ''}${u.role === 'admin' ? ' <span class="tc-mut">· admin</span>' : ''}</td><td>${u.role === 'teacher' ? `<div class="tc-sjrow" role="group" aria-label="${esc((L === 'en' ? 'Subjects — ' : 'Fanlari — ') + (u.name || u.login))}">${sjChecks('tcS_' + u.id, tSubj(u))}</div>` : `<span class="tc-mut">${L === 'en' ? 'all' : 'hammasi'}</span>`}</td><td><code>${esc(u.login)}</code></td><td>${st.secrets[u.id] ? `<span class="tc-pw">${esc(st.secrets[u.id].pw)}</span>` : '<span class="tc-mut">—</span>'}</td><td>${u.role === 'teacher' ? `<div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div>` : ''}</td></tr>`).join('')}
+      <div class="panel"><h3>${t('t_list')}</h3><div class="tc-wrap"><table class="tc" style="min-width:0"><thead><tr><th>${t('c_name')}</th><th>${L3('Fanlari', 'Предметы', 'Subjects')}</th><th>${t('c_login')}</th><th>${t('pw_col')}</th><th></th></tr></thead><tbody>
+      ${list.map((u) => `<tr data-tid="${u.id}"><td><b>${esc(u.name || u.login)}</b> ${u.id === ZKAuth.user.uid ? `<span class="tc-mut">${t('self')}</span>` : ''}${u.role === 'admin' ? ' <span class="tc-mut">· admin</span>' : ''}</td><td>${u.role === 'teacher' ? `<div class="tc-sjrow" role="group" aria-label="${esc((L3('Fanlari — ', 'Предметы — ', 'Subjects — ')) + (u.name || u.login))}">${sjChecks('tcS_' + u.id, tSubj(u))}</div>` : `<span class="tc-mut">${L3('hammasi', 'все', 'all')}</span>`}</td><td><code>${esc(u.login)}</code></td><td>${st.secrets[u.id] ? `<span class="tc-pw">${esc(st.secrets[u.id].pw)}</span>` : '<span class="tc-mut">—</span>'}</td><td>${u.role === 'teacher' ? `<div class="tc-act"><button data-pw="${u.id}">${t('pw')}</button><button data-del="${u.id}">${t('del')}</button></div>` : ''}</td></tr>`).join('')}
       </tbody></table></div></div>`;
     const tl = document.getElementById('tcTL'), tn = document.getElementById('tcTN');
     tn.oninput = () => { if (!tl.dataset.touched) { const p = tn.value.trim().split(/\s+/); tl.value = (latin(p[1] || p[0] || '') + (p[1] ? '.' + latin(p[0])[0] : '')).slice(0, 24); } };

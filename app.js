@@ -1,69 +1,71 @@
 (function () {
   const I18N = {
-    school: { uz: 'Zukko Xalqaro Maktabi', en: 'Zukko International School' },
-    nav_home: { uz: 'Bosh sahifa', en: 'Home' }, nav_g6: { uz: '6-sinf', en: 'Grade 6' }, nav_g7: { uz: '7-sinf', en: 'Grade 7' }, nav_g8: { uz: '8-sinf', en: 'Grade 8' }, nav_grades: { uz: 'Sinflar', en: 'Grades' }, ng6: { uz: 'Boshlang‘ich bosqich', en: 'Foundation' }, ng7: { uz: 'Keyingi bosqich', en: 'Intermediate' }, ng8: { uz: 'Chuqurlashtirish', en: 'Advanced' },
-    nav_lab: { uz: '3D laboratoriya', en: '3D Lab' }, nav_pt: { uz: 'Davriy jadval', en: 'Periodic table' }, nav_me: { uz: 'Yutuqlarim', en: 'My progress' }, b_home: { uz: 'Bosh', en: 'Home' }, b_tests: { uz: 'Testlar', en: 'Tests' }, tool_h: { uz: 'Interaktiv vosita', en: 'Interactive tool' }, pt_desc: { uz: "Elementlarni bosib o'rganing: tartib raqami, massa, elektron qavatlar, oilalar va o'yin rejimi.", en: 'Explore elements by clicking: atomic number, mass, shells, families and a game mode.' }, nav_book: { uz: 'Darslik', en: 'Textbook' },
-    search: { uz: 'Qidirish…', en: 'Search…' },
-    foot: { uz: "6–8-sinf kimyo darsliklari asosidagi interaktiv o'quv sayti", en: 'Interactive learning site based on the Grade 6–8 chemistry textbooks' },
-    foot2: { uz: 'Bilim — kuch! Tadqiqot — kelajak!', en: 'Knowledge is power! Research is the future!' },
-    hero_pill: { uz: '🧪 6–8-sinf kimyo • 2 tilda', en: '🧪 Grade 6–8 chemistry • 2 languages' },
-    hero_h: { uz: 'Kimyoni <span>ko\'rib, tajriba qilib</span> o\'rganamiz!', en: 'Learn chemistry by <span>seeing and experimenting!</span>' },
-    hero_p: { uz: "Zukko Xalqaro Maktabi darsliklaridagi barcha mavzular, darslik sahifalari, testlar va har bir tajribaning 3D animatsiyasi — o'zbek va ingliz tillarida.", en: 'Every topic from the Zukko International School textbooks, the original pages, quizzes and a 3D animation of every experiment — in Uzbek and English.' },
-    start6: { uz: '6-sinfdan boshlash', en: 'Start Grade 6' }, start7: { uz: '7-sinf', en: 'Grade 7' }, open_lab: { uz: '3D laboratoriya', en: '3D Lab' },
-    st_lessons: { uz: 'ta dars', en: 'lessons' }, st_exps: { uz: 'ta 3D tajriba', en: '3D experiments' }, st_pages: { uz: 'ta darslik sahifasi', en: 'textbook pages' },
-    books_h: { uz: 'Darsliklar', en: 'Textbooks' }, books_p: { uz: 'Sinfni tanlang va mavzular bo\'yicha o\'rganing', en: 'Choose a grade and study topic by topic' },
-    g6_t: { uz: '6-sinf Kimyo', en: 'Grade 6 Chemistry' }, g7_t: { uz: '7-sinf Kimyo', en: 'Grade 7 Chemistry' }, g8_t: { uz: '8-sinf Kimyo', en: 'Grade 8 Chemistry' }, start8: { uz: '8-sinf', en: 'Grade 8' },
-    g8_d: { uz: "Noorganik birikmalar sinflari, davriy qonun va atom tuzilishi, kimyoviy bog'lanish, oksidlanish-qaytarilish, nometallar va galogenlar, Avogadro qonuni, oltingugurt, azot va fosfor.", en: 'Classes of inorganic compounds, the periodic law and atomic structure, chemical bonding, redox reactions, nonmetals and halogens, Avogadro’s law, sulfur, nitrogen and phosphorus.' },
-    g6_d: { uz: "Modda va uning xossalari, atom, aralashmalar, reaksiyalar, suv, havo, oziq-ovqat, dorilar va ekologiya kimyosi.", en: 'Substances and properties, atoms, mixtures, reactions, water, air, food, medicines and ecology.' },
-    g7_d: { uz: "Atom tuzilishi, element va izotoplar, valentlik, formula va tenglamalar, mol, davriy jadval, kislorod, vodorod, kislotalar va suv.", en: 'Atomic structure, elements and isotopes, valency, formulas and equations, the mole, the periodic table, oxygen, hydrogen, acids and water.' },
-    orig_uz: { uz: 'Asl darslik: o\'zbekcha', en: 'Original: Uzbek' }, orig_en: { uz: 'Asl darslik: inglizcha', en: 'Original: English' },
-    feat_h: { uz: 'Saytda nimalar bor?', en: "What's inside?" },
-    f1: { uz: 'Dars mazmuni', en: 'Lesson content' }, f1d: { uz: 'Asosiy tushunchalar, atamalar va qiziqarli faktlar ikki tilda.', en: 'Key ideas, terms and fun facts in two languages.' },
-    f2: { uz: '3D tajribalar', en: '3D experiments' }, f2d: { uz: 'Har bir tajriba bosqichma-bosqich 3D animatsiyada, mikro-ko\'rinish bilan.', en: 'Every experiment as a step-by-step 3D animation with a micro view.' },
-    f3: { uz: 'Darslik sahifalari', en: 'Textbook pages' }, f3d: { uz: 'Har bir darsning asl sahifalari — rasmlar va topshiriqlar bilan.', en: 'The original pages of every lesson — with pictures and tasks.' },
-    f4: { uz: 'Testlar', en: 'Quizzes' }, f4d: { uz: "Har bir mavzudan 10+ test (oson, o'rtacha, qiyin), tasodifiy to'plamlar va natija tahlili.", en: '10+ questions per topic (easy, medium, hard), random sets and result analysis.' },
-    lab_h: { uz: '3D laboratoriya', en: '3D Laboratory' }, lab_p: { uz: 'Darsliklardagi tajribalarni xavfsiz, istalgancha takrorlang. Sahnani aylantiring, yaqinlashtiring, bosqichlarni o\'tkazing.', en: 'Repeat the textbook experiments safely, as often as you like. Rotate, zoom and step through each stage.' },
-    all: { uz: 'Barchasi', en: 'All' }, with3d: { uz: '3D tajribali', en: 'With 3D' },
-    lessons_of: { uz: 'darslar', en: 'lessons' }, lesson: { uz: 'Dars', en: 'Lesson' },
-    t_content: { uz: 'Dars mazmuni', en: 'Lesson' }, t_pages: { uz: 'Darslik sahifalari', en: 'Textbook pages' }, t_lab: { uz: '3D tajriba', en: '3D experiment' }, t_quiz: { uz: 'Test', en: 'Quiz' }, ts_content: { uz: 'Mazmun', en: 'Lesson' }, ts_pages: { uz: 'Sahifalar', en: 'Pages' }, ts_lab: { uz: '3D tajriba', en: '3D lab' }, ts_quiz: { uz: 'Test', en: 'Quiz' }, swipe_hint: { uz: '👆 Barmoq bilan suring', en: '👆 Swipe to scroll' },
-    keyq: { uz: 'Asosiy savol', en: 'Key question' }, main_ideas: { uz: 'Asosiy fikrlar', en: 'Main ideas' }, terms: { uz: 'Atamalar', en: 'Key terms' }, fact: { uz: 'Bilib oling!', en: 'Did you know?' },
-    exps_here: { uz: 'Bu darsdagi tajribalar', en: 'Experiments in this lesson' }, watch: { uz: '▶ 3D da ko\'rish', en: '▶ Watch in 3D' },
-    pages_note_uz: { uz: 'Darslikning asl sahifalari (o\'zbek tilida). Kattalashtirish uchun bosing.', en: 'Original textbook pages (in Uzbek). Click to enlarge.' },
-    pages_note_en: { uz: 'Darslikning asl sahifalari (ingliz tilida). Kattalashtirish uchun bosing.', en: 'Original textbook pages (in English). Click to enlarge.' },
-    quiz_h: { uz: 'Ha yoki yo\'q?', en: 'True or false?' }, yes: { uz: 'Ha', en: 'True' }, no: { uz: 'Yo\'q', en: 'False' },
-    right: { uz: '✓ To\'g\'ri!', en: '✓ Correct!' }, wrong: { uz: '✗ Noto\'g\'ri. To\'g\'ri javob: ', en: '✗ Not quite. Correct answer: ' },
-    score: { uz: 'Natija', en: 'Score' }, retry: { uz: 'Qayta', en: 'Retry' },
-    prev: { uz: '← Oldingi dars', en: '← Previous' }, next: { uz: 'Keyingi dars →', en: 'Next →' }, all_lessons: { uz: 'Barcha darslar', en: 'All lessons' },
-    no_lab: { uz: "Bu darsda alohida laboratoriya tajribasi yo'q. Boshqa 3D tajribalarni ko'ring:", en: 'This lesson has no separate lab experiment. Explore other 3D experiments:' },
-    safety: { uz: "Xavfsizlik: tajribalar faqat o'qituvchi nazoratida, himoya ko'zoynagi va xalatda o'tkaziladi.", en: 'Safety: carry out experiments only under teacher supervision, wearing goggles and a lab coat.' },
-    related: { uz: 'Bog\'liq darslar', en: 'Related lessons' }, open: { uz: 'Ochish', en: 'Open' },
-    book_h: { uz: 'Darslikni varaqlash', en: 'Flip through the textbook' }, page: { uz: 'bet', en: 'page' },
-    nores: { uz: 'Hech narsa topilmadi', en: 'Nothing found' }, no_lesson_n: { uz: '{n}-dars topilmadi (6-sinfda 35, 7-sinfda 72, 8-sinfda 68 ta dars bor)', en: 'Lesson {n} not found (grade 6 has 35, grade 7 has 72, grade 8 has 68 lessons)' }, of_word: { uz: 'dan', en: 'of' }, kb_hint: { uz: 'Klaviaturada ← → tugmalari bilan ham o\'tish mumkin', en: 'You can also use the ← → keys' }, grade: { uz: 'sinf', en: 'grade' },
-    exp_word: { uz: 'tajriba', en: 'experiment' }, back_lab: { uz: '← Barcha tajribalar', en: '← All experiments' },
-    hero_badge: { uz: '3D • aylantiring', en: '3D • drag to rotate' },
-    nav_tests: { uz: 'Testlar', en: 'Tests' }, nav_subj: { uz: 'Fanlar', en: 'Subjects' },
-    t_h: { uz: 'Testlar markazi', en: 'Test centre' }, t_p: { uz: "Har bir mavzu bo'yicha kamida 10 ta savol: 3 ta oson, 4 ta o'rtacha, 3 ta qiyin. Har safar yangi tasodifiy to'plam tuziladi.", en: 'At least 10 questions per topic: 3 easy, 4 medium, 3 hard. A new random set is built every time.' },
-    t_grade: { uz: 'Sinf', en: 'Grade' }, t_both: { uz: 'Hammasi', en: 'All' }, t_topics: { uz: 'Mavzular', en: 'Topics' }, t_all: { uz: 'Hammasini belgilash', en: 'Select all' }, t_none: { uz: 'Tozalash', en: 'Clear' },
-    t_count: { uz: 'Savollar soni', en: 'Number of questions' }, t_diff: { uz: 'Qiyinlik', en: 'Difficulty' }, t_mix: { uz: 'Aralash (3:4:3)', en: 'Mixed (3:4:3)' },
-    easy: { uz: 'Oson', en: 'Easy' }, medium: { uz: "O'rtacha", en: 'Medium' }, hard: { uz: 'Qiyin', en: 'Hard' },
-    t_mode: { uz: 'Rejim', en: 'Mode' }, t_practice: { uz: 'Mashq — javob darhol ko\'rinadi', en: 'Practice — instant feedback' }, t_exam: { uz: 'Imtihon — natija oxirida, vaqt bilan', en: 'Exam — results at the end, timed' },
-    t_start: { uz: 'Testni boshlash', en: 'Start test' }, t_quick: { uz: '⚡ Tasodifiy 20 ta savol', en: '⚡ Random 20 questions' }, t_bank: { uz: 'Savollar bazasi', en: 'Question bank' },
-    t_selected: { uz: 'ta mavzu tanlandi', en: 'topics selected' }, t_pick: { uz: 'Kamida bitta mavzu tanlang', en: 'Select at least one topic' },
-    q_word: { uz: 'Savol', en: 'Question' }, prev_q: { uz: '← Oldingi', en: '← Previous' }, next_q: { uz: 'Keyingi →', en: 'Next →' }, finish: { uz: 'Yakunlash', en: 'Finish' },
-    check: { uz: 'Tekshirish', en: 'Check' }, res_h: { uz: 'Natija', en: 'Result' }, res_grade: { uz: 'Baho', en: 'Grade' }, by_diff: { uz: 'Qiyinlik bo\'yicha', en: 'By difficulty' }, by_topic: { uz: 'Mavzular bo\'yicha', en: 'By topic' },
-    review: { uz: 'Javoblar tahlili', en: 'Answer review' }, your: { uz: 'Sizning javobingiz', en: 'Your answer' }, correct_a: { uz: "To'g'ri javob", en: 'Correct answer' }, noans: { uz: 'Javob berilmagan', en: 'Not answered' },
-    retry_wrong: { uz: 'Xatolar ustida ishlash', en: 'Practise mistakes' }, new_test: { uz: 'Yangi test', en: 'New test' }, back_setup: { uz: '← Sozlamalar', en: '← Settings' }, history: { uz: 'Oxirgi natijalar', en: 'Recent results' },
-    time_left: { uz: 'Qolgan vaqt', en: 'Time left' }, study: { uz: 'Mavzuni takrorlash', en: 'Review topic' }, new_set: { uz: '🔀 Yangi to\'plam', en: '🔀 New set' },
-    lesson_bank: { uz: "Bu mavzu bo'yicha savollar bazasi", en: 'Question bank for this topic' }, calc_gen: { uz: 'hisoblash masalalari har safar yangidan tuziladi', en: 'calculation problems are generated fresh each time' },
-    tf_hint: { uz: "Ha yoki yo'q?", en: 'True or false?' }, finished_q: { uz: 'Hamma savollarga javob berildi. Natijani ko\'rish uchun «Yakunlash» tugmasini bosing.', en: 'All questions answered. Press "Finish" to see your result.' },
-    pages_tr: { uz: "Sahifalar matni (o'zbekcha tarjima)", en: 'Page text (English translation)' }, show_orig: { uz: '📷 Asl sahifalarni ko\'rish', en: '📷 Show original pages' }, show_tr: { uz: '📝 Tarjima matnini ko\'rish', en: '📝 Show translated text' },
-    pg_in_uz: { uz: "Darslik sahifalari — o'zbek tilida. Kattalashtirish uchun bosing.", en: 'Textbook pages — Uzbek edition. Click to enlarge.' }, pg_in_en: { uz: 'Darslik sahifalari — ingliz tilida. Kattalashtirish uchun bosing.', en: 'Textbook pages — English edition. Click to enlarge.' }, see_en: { uz: '🇬🇧 Inglizcha nusxasi', en: '🇬🇧 English edition' }, see_uz: { uz: "🇺🇿 O'zbekcha nusxasi", en: '🇺🇿 Uzbek edition' }, both_ed: { uz: "📚 O'zbekcha va inglizcha nashr", en: '📚 Uzbek and English editions' },
-    tr_note_uz: { uz: "Darslikning asl sahifalari inglizcha. Quyida ushbu ikki sahifaning to'liq o'zbekcha tarjimasi berilgan.", en: '' }, tr_note_en: { uz: '', en: 'The original pages are in Uzbek. Below is a full English translation of these two pages.' }, page_n: { uz: 'sahifa', en: 'page' }
+    school: { uz: 'Zukko Xalqaro Maktabi', en: 'Zukko International School', ru: "Международная школа Zukko" },
+    nav_home: { uz: 'Bosh sahifa', en: 'Home', ru: "Главная" }, nav_g6: { uz: '6-sinf', en: 'Grade 6', ru: "6 класс" }, nav_g7: { uz: '7-sinf', en: 'Grade 7', ru: "7 класс" }, nav_g8: { uz: '8-sinf', en: 'Grade 8', ru: "8 класс" }, nav_grades: { uz: 'Sinflar', en: 'Grades', ru: "Классы" }, ng6: { uz: 'Boshlang‘ich bosqich', en: 'Foundation', ru: "Начальный уровень" }, ng7: { uz: 'Keyingi bosqich', en: 'Intermediate', ru: "Следующий уровень" }, ng8: { uz: 'Chuqurlashtirish', en: 'Advanced', ru: "Углублённый уровень" },
+    nav_lab: { uz: '3D laboratoriya', en: '3D Lab', ru: "3D-лаборатория" }, nav_pt: { uz: 'Davriy jadval', en: 'Periodic table', ru: "Таблица Менделеева" }, nav_me: { uz: 'Yutuqlarim', en: 'My progress', ru: "Мои успехи" }, b_home: { uz: 'Bosh', en: 'Home', ru: "Главная" }, b_tests: { uz: 'Testlar', en: 'Tests', ru: "Тесты" }, tool_h: { uz: 'Interaktiv vosita', en: 'Interactive tool', ru: "Интерактивный инструмент" }, pt_desc: { uz: "Elementlarni bosib o'rganing: tartib raqami, massa, elektron qavatlar, oilalar va o'yin rejimi.", en: 'Explore elements by clicking: atomic number, mass, shells, families and a game mode.', ru: "Изучайте элементы нажатием: порядковый номер, масса, электронные слои, семейства и режим игры." }, nav_book: { uz: 'Darslik', en: 'Textbook', ru: "Учебник" },
+    search: { uz: 'Qidirish…', en: 'Search…', ru: "Поиск…" },
+    foot: { uz: "6–8-sinf kimyo darsliklari asosidagi interaktiv o'quv sayti", en: 'Interactive learning site based on the Grade 6–8 chemistry textbooks', ru: "Интерактивный учебный сайт по учебникам химии для 6–8 классов" },
+    foot2: { uz: 'Bilim — kuch! Tadqiqot — kelajak!', en: 'Knowledge is power! Research is the future!', ru: "Знание — сила! Исследование — будущее!" },
+    hero_pill: { uz: '🧪 6–8-sinf kimyo • 2 tilda', en: '🧪 Grade 6–8 chemistry • 2 languages', ru: "🧪 Химия, 6–8 классы" },
+    hero_h: { uz: 'Kimyoni <span>ko\'rib, tajriba qilib</span> o\'rganamiz!', en: 'Learn chemistry by <span>seeing and experimenting!</span>', ru: "Изучаем химию, <span>наблюдая и экспериментируя!</span>" },
+    hero_p: { uz: "Zukko Xalqaro Maktabi darsliklaridagi barcha mavzular, darslik sahifalari, testlar va har bir tajribaning 3D animatsiyasi — o'zbek va ingliz tillarida.", en: 'Every topic from the Zukko International School textbooks, the original pages, quizzes and a 3D animation of every experiment — in Uzbek and English.', ru: "Все темы учебников Международной школы Zukko, страницы учебника, тесты и 3D-анимация каждого опыта — на узбекском и английском языках." },
+    start6: { uz: '6-sinfdan boshlash', en: 'Start Grade 6', ru: "Начать с 6 класса" }, start7: { uz: '7-sinf', en: 'Grade 7', ru: "7 класс" }, open_lab: { uz: '3D laboratoriya', en: '3D Lab', ru: "3D-лаборатория" },
+    st_lessons: { uz: 'ta dars', en: 'lessons', ru: "уроков" }, st_exps: { uz: 'ta 3D tajriba', en: '3D experiments', ru: "3D-опытов" }, st_pages: { uz: 'ta darslik sahifasi', en: 'textbook pages', ru: "страниц учебника" },
+    books_h: { uz: 'Darsliklar', en: 'Textbooks', ru: "Учебники" }, books_p: { uz: 'Sinfni tanlang va mavzular bo\'yicha o\'rganing', en: 'Choose a grade and study topic by topic', ru: "Выберите класс и учитесь по темам" },
+    g6_t: { uz: '6-sinf Kimyo', en: 'Grade 6 Chemistry', ru: "Химия, 6 класс" }, g7_t: { uz: '7-sinf Kimyo', en: 'Grade 7 Chemistry', ru: "Химия, 7 класс" }, g8_t: { uz: '8-sinf Kimyo', en: 'Grade 8 Chemistry', ru: "Химия, 8 класс" }, start8: { uz: '8-sinf', en: 'Grade 8', ru: "8 класс" },
+    g8_d: { uz: "Noorganik birikmalar sinflari, davriy qonun va atom tuzilishi, kimyoviy bog'lanish, oksidlanish-qaytarilish, nometallar va galogenlar, Avogadro qonuni, oltingugurt, azot va fosfor.", en: 'Classes of inorganic compounds, the periodic law and atomic structure, chemical bonding, redox reactions, nonmetals and halogens, Avogadro’s law, sulfur, nitrogen and phosphorus.', ru: "Классы неорганических соединений, периодический закон и строение атома, химическая связь, окислительно-восстановительные реакции, неметаллы и галогены, закон Авогадро, сера, азот и фосфор." },
+    g6_d: { uz: "Modda va uning xossalari, atom, aralashmalar, reaksiyalar, suv, havo, oziq-ovqat, dorilar va ekologiya kimyosi.", en: 'Substances and properties, atoms, mixtures, reactions, water, air, food, medicines and ecology.', ru: "Вещество и его свойства, атом, смеси, реакции, вода, воздух, пища, лекарства и химия экологии." },
+    g7_d: { uz: "Atom tuzilishi, element va izotoplar, valentlik, formula va tenglamalar, mol, davriy jadval, kislorod, vodorod, kislotalar va suv.", en: 'Atomic structure, elements and isotopes, valency, formulas and equations, the mole, the periodic table, oxygen, hydrogen, acids and water.', ru: "Строение атома, элементы и изотопы, валентность, формулы и уравнения, моль, периодическая таблица, кислород, водород, кислоты и вода." },
+    orig_uz: { uz: 'Asl darslik: o\'zbekcha', en: 'Original: Uzbek', ru: "Оригинал учебника: на узбекском" }, orig_en: { uz: 'Asl darslik: inglizcha', en: 'Original: English', ru: "Оригинал учебника: на английском" },
+    feat_h: { uz: 'Saytda nimalar bor?', en: "What's inside?", ru: "Что есть на сайте?" },
+    f1: { uz: 'Dars mazmuni', en: 'Lesson content', ru: "Содержание урока" }, f1d: { uz: 'Asosiy tushunchalar, atamalar va qiziqarli faktlar ikki tilda.', en: 'Key ideas, terms and fun facts in two languages.', ru: "Основные понятия, термины и интересные факты." },
+    f2: { uz: '3D tajribalar', en: '3D experiments', ru: "3D-опыты" }, f2d: { uz: 'Har bir tajriba bosqichma-bosqich 3D animatsiyada, mikro-ko\'rinish bilan.', en: 'Every experiment as a step-by-step 3D animation with a micro view.', ru: "Каждый опыт — пошаговая 3D-анимация с микро-видом." },
+    f3: { uz: 'Darslik sahifalari', en: 'Textbook pages', ru: "Страницы учебника" }, f3d: { uz: 'Har bir darsning asl sahifalari — rasmlar va topshiriqlar bilan.', en: 'The original pages of every lesson — with pictures and tasks.', ru: "Оригинальные страницы каждого урока — с рисунками и заданиями." },
+    f4: { uz: 'Testlar', en: 'Quizzes', ru: "Тесты" }, f4d: { uz: "Har bir mavzudan 10+ test (oson, o'rtacha, qiyin), tasodifiy to'plamlar va natija tahlili.", en: '10+ questions per topic (easy, medium, hard), random sets and result analysis.', ru: "10+ вопросов по каждой теме (лёгкие, средние, сложные), случайные наборы и разбор результатов." },
+    lab_h: { uz: '3D laboratoriya', en: '3D Laboratory', ru: "3D-лаборатория" }, lab_p: { uz: 'Darsliklardagi tajribalarni xavfsiz, istalgancha takrorlang. Sahnani aylantiring, yaqinlashtiring, bosqichlarni o\'tkazing.', en: 'Repeat the textbook experiments safely, as often as you like. Rotate, zoom and step through each stage.', ru: "Повторяйте опыты из учебников безопасно и сколько угодно. Вращайте сцену, приближайте, переходите по этапам." },
+    all: { uz: 'Barchasi', en: 'All', ru: "Все" }, with3d: { uz: '3D tajribali', en: 'With 3D', ru: "С 3D-опытом" },
+    lessons_of: { uz: 'darslar', en: 'lessons', ru: "уроки" }, lesson: { uz: 'Dars', en: 'Lesson', ru: "Урок" },
+    t_content: { uz: 'Dars mazmuni', en: 'Lesson', ru: "Содержание урока" }, t_pages: { uz: 'Darslik sahifalari', en: 'Textbook pages', ru: "Страницы учебника" }, t_lab: { uz: '3D tajriba', en: '3D experiment', ru: "3D-опыт" }, t_quiz: { uz: 'Test', en: 'Quiz', ru: "Тест" }, ts_content: { uz: 'Mazmun', en: 'Lesson', ru: "Урок" }, ts_pages: { uz: 'Sahifalar', en: 'Pages', ru: "Страницы" }, ts_lab: { uz: '3D tajriba', en: '3D lab', ru: "3D-опыт" }, ts_quiz: { uz: 'Test', en: 'Quiz', ru: "Тест" }, swipe_hint: { uz: '👆 Barmoq bilan suring', en: '👆 Swipe to scroll', ru: "👆 Листайте пальцем" },
+    keyq: { uz: 'Asosiy savol', en: 'Key question', ru: "Главный вопрос" }, main_ideas: { uz: 'Asosiy fikrlar', en: 'Main ideas', ru: "Основные мысли" }, terms: { uz: 'Atamalar', en: 'Key terms', ru: "Термины" }, fact: { uz: 'Bilib oling!', en: 'Did you know?', ru: "Знаете ли вы?" },
+    exps_here: { uz: 'Bu darsdagi tajribalar', en: 'Experiments in this lesson', ru: "Опыты этого урока" }, watch: { uz: '▶ 3D da ko\'rish', en: '▶ Watch in 3D', ru: "▶ Смотреть в 3D" },
+    pages_note_uz: { uz: 'Darslikning asl sahifalari (o\'zbek tilida). Kattalashtirish uchun bosing.', en: 'Original textbook pages (in Uzbek). Click to enlarge.', ru: "Оригинальные страницы учебника (на узбекском). Нажмите, чтобы увеличить." },
+    pages_note_en: { uz: 'Darslikning asl sahifalari (ingliz tilida). Kattalashtirish uchun bosing.', en: 'Original textbook pages (in English). Click to enlarge.', ru: "Оригинальные страницы учебника (на английском). Нажмите, чтобы увеличить." },
+    quiz_h: { uz: 'Ha yoki yo\'q?', en: 'True or false?', ru: "Да или нет?" }, yes: { uz: 'Ha', en: 'True', ru: "Да" }, no: { uz: 'Yo\'q', en: 'False', ru: "Нет" },
+    right: { uz: '✓ To\'g\'ri!', en: '✓ Correct!', ru: "✓ Верно!" }, wrong: { uz: '✗ Noto\'g\'ri. To\'g\'ri javob: ', en: '✗ Not quite. Correct answer: ', ru: "✗ Неверно. Правильный ответ: " },
+    score: { uz: 'Natija', en: 'Score', ru: "Результат" }, retry: { uz: 'Qayta', en: 'Retry', ru: "Ещё раз" },
+    prev: { uz: '← Oldingi dars', en: '← Previous', ru: "← Предыдущий урок" }, next: { uz: 'Keyingi dars →', en: 'Next →', ru: "Следующий урок →" }, all_lessons: { uz: 'Barcha darslar', en: 'All lessons', ru: "Все уроки" },
+    no_lab: { uz: "Bu darsda alohida laboratoriya tajribasi yo'q. Boshqa 3D tajribalarni ko'ring:", en: 'This lesson has no separate lab experiment. Explore other 3D experiments:', ru: "В этом уроке нет отдельного лабораторного опыта. Посмотрите другие 3D-опыты:" },
+    safety: { uz: "Xavfsizlik: tajribalar faqat o'qituvchi nazoratida, himoya ko'zoynagi va xalatda o'tkaziladi.", en: 'Safety: carry out experiments only under teacher supervision, wearing goggles and a lab coat.', ru: "Безопасность: опыты проводятся только под контролем учителя, в защитных очках и халате." },
+    related: { uz: 'Bog\'liq darslar', en: 'Related lessons', ru: "Связанные уроки" }, open: { uz: 'Ochish', en: 'Open', ru: "Открыть" },
+    book_h: { uz: 'Darslikni varaqlash', en: 'Flip through the textbook', ru: "Листать учебник" }, page: { uz: 'bet', en: 'page', ru: "стр." },
+    nores: { uz: 'Hech narsa topilmadi', en: 'Nothing found', ru: "Ничего не найдено" }, no_lesson_n: { uz: '{n}-dars topilmadi (6-sinfda 35, 7-sinfda 72, 8-sinfda 68 ta dars bor)', en: 'Lesson {n} not found (grade 6 has 35, grade 7 has 72, grade 8 has 68 lessons)', ru: "Урок {n} не найден (в 6 классе 35, в 7 классе 72, в 8 классе 68 уроков)" }, of_word: { uz: 'dan', en: 'of', ru: "из" }, kb_hint: { uz: 'Klaviaturada ← → tugmalari bilan ham o\'tish mumkin', en: 'You can also use the ← → keys', ru: "Можно переключать и клавишами ← →" }, grade: { uz: 'sinf', en: 'grade', ru: "класс" },
+    exp_word: { uz: 'tajriba', en: 'experiment', ru: "опыт" }, back_lab: { uz: '← Barcha tajribalar', en: '← All experiments', ru: "← Все опыты" },
+    hero_badge: { uz: '3D • aylantiring', en: '3D • drag to rotate', ru: "3D • вращайте" },
+    nav_tests: { uz: 'Testlar', en: 'Tests', ru: "Тесты" }, nav_subj: { uz: 'Fanlar', en: 'Subjects', ru: "Предметы" },
+    t_h: { uz: 'Testlar markazi', en: 'Test centre', ru: "Центр тестов" }, t_p: { uz: "Har bir mavzu bo'yicha kamida 10 ta savol: 3 ta oson, 4 ta o'rtacha, 3 ta qiyin. Har safar yangi tasodifiy to'plam tuziladi.", en: 'At least 10 questions per topic: 3 easy, 4 medium, 3 hard. A new random set is built every time.', ru: "По каждой теме не меньше 10 вопросов: 3 лёгких, 4 средних, 3 сложных. Каждый раз составляется новый случайный набор." },
+    t_grade: { uz: 'Sinf', en: 'Grade', ru: "Класс" }, t_both: { uz: 'Hammasi', en: 'All', ru: "Все" }, t_topics: { uz: 'Mavzular', en: 'Topics', ru: "Темы" }, t_all: { uz: 'Hammasini belgilash', en: 'Select all', ru: "Отметить все" }, t_none: { uz: 'Tozalash', en: 'Clear', ru: "Очистить" },
+    t_count: { uz: 'Savollar soni', en: 'Number of questions', ru: "Количество вопросов" }, t_diff: { uz: 'Qiyinlik', en: 'Difficulty', ru: "Сложность" }, t_mix: { uz: 'Aralash (3:4:3)', en: 'Mixed (3:4:3)', ru: "Смешанно (3:4:3)" },
+    easy: { uz: 'Oson', en: 'Easy', ru: "Лёгкий" }, medium: { uz: "O'rtacha", en: 'Medium', ru: "Средний" }, hard: { uz: 'Qiyin', en: 'Hard', ru: "Сложный" },
+    t_mode: { uz: 'Rejim', en: 'Mode', ru: "Режим" }, t_practice: { uz: 'Mashq — javob darhol ko\'rinadi', en: 'Practice — instant feedback', ru: "Тренировка — ответ виден сразу" }, t_exam: { uz: 'Imtihon — natija oxirida, vaqt bilan', en: 'Exam — results at the end, timed', ru: "Экзамен — результат в конце, на время" },
+    t_start: { uz: 'Testni boshlash', en: 'Start test', ru: "Начать тест" }, t_quick: { uz: '⚡ Tasodifiy 20 ta savol', en: '⚡ Random 20 questions', ru: "⚡ Случайные 20 вопросов" }, t_bank: { uz: 'Savollar bazasi', en: 'Question bank', ru: "База вопросов" },
+    t_selected: { uz: 'ta mavzu tanlandi', en: 'topics selected', ru: "тем выбрано" }, t_pick: { uz: 'Kamida bitta mavzu tanlang', en: 'Select at least one topic', ru: "Выберите хотя бы одну тему" },
+    q_word: { uz: 'Savol', en: 'Question', ru: "Вопрос" }, prev_q: { uz: '← Oldingi', en: '← Previous', ru: "← Назад" }, next_q: { uz: 'Keyingi →', en: 'Next →', ru: "Далее →" }, finish: { uz: 'Yakunlash', en: 'Finish', ru: "Завершить" },
+    check: { uz: 'Tekshirish', en: 'Check', ru: "Проверить" }, res_h: { uz: 'Natija', en: 'Result', ru: "Результат" }, res_grade: { uz: 'Baho', en: 'Grade', ru: "Оценка" }, by_diff: { uz: 'Qiyinlik bo\'yicha', en: 'By difficulty', ru: "По сложности" }, by_topic: { uz: 'Mavzular bo\'yicha', en: 'By topic', ru: "По темам" },
+    review: { uz: 'Javoblar tahlili', en: 'Answer review', ru: "Разбор ответов" }, your: { uz: 'Sizning javobingiz', en: 'Your answer', ru: "Ваш ответ" }, correct_a: { uz: "To'g'ri javob", en: 'Correct answer', ru: "Правильный ответ" }, noans: { uz: 'Javob berilmagan', en: 'Not answered', ru: "Нет ответа" },
+    retry_wrong: { uz: 'Xatolar ustida ishlash', en: 'Practise mistakes', ru: "Работа над ошибками" }, new_test: { uz: 'Yangi test', en: 'New test', ru: "Новый тест" }, back_setup: { uz: '← Sozlamalar', en: '← Settings', ru: "← Настройки" }, history: { uz: 'Oxirgi natijalar', en: 'Recent results', ru: "Последние результаты" },
+    time_left: { uz: 'Qolgan vaqt', en: 'Time left', ru: "Осталось времени" }, study: { uz: 'Mavzuni takrorlash', en: 'Review topic', ru: "Повторить тему" }, new_set: { uz: '🔀 Yangi to\'plam', en: '🔀 New set', ru: "🔀 Новый набор" },
+    lesson_bank: { uz: "Bu mavzu bo'yicha savollar bazasi", en: 'Question bank for this topic', ru: "База вопросов по этой теме" }, calc_gen: { uz: 'hisoblash masalalari har safar yangidan tuziladi', en: 'calculation problems are generated fresh each time', ru: "расчётные задачи каждый раз составляются заново" },
+    tf_hint: { uz: "Ha yoki yo'q?", en: 'True or false?', ru: "Да или нет?" }, finished_q: { uz: 'Hamma savollarga javob berildi. Natijani ko\'rish uchun «Yakunlash» tugmasini bosing.', en: 'All questions answered. Press "Finish" to see your result.', ru: "На все вопросы есть ответы. Нажмите «Завершить», чтобы увидеть результат." },
+    pages_tr: { uz: "Sahifalar matni (o'zbekcha tarjima)", en: 'Page text (English translation)', ru: "Текст страниц (перевод на узбекский)" }, show_orig: { uz: '📷 Asl sahifalarni ko\'rish', en: '📷 Show original pages', ru: "📷 Показать оригинальные страницы" }, show_tr: { uz: '📝 Tarjima matnini ko\'rish', en: '📝 Show translated text', ru: "📝 Показать текст перевода" },
+    pg_in_uz: { uz: "Darslik sahifalari — o'zbek tilida. Kattalashtirish uchun bosing.", en: 'Textbook pages — Uzbek edition. Click to enlarge.', ru: "Страницы учебника — узбекское издание. Нажмите, чтобы увеличить." }, pg_in_en: { uz: 'Darslik sahifalari — ingliz tilida. Kattalashtirish uchun bosing.', en: 'Textbook pages — English edition. Click to enlarge.', ru: "Страницы учебника — английское издание. Нажмите, чтобы увеличить." }, see_en: { uz: '🇬🇧 Inglizcha nusxasi', en: '🇬🇧 English edition', ru: "🇬🇧 Английское издание" }, see_uz: { uz: "🇺🇿 O'zbekcha nusxasi", en: '🇺🇿 Uzbek edition', ru: "🇺🇿 Узбекское издание" }, both_ed: { uz: "📚 O'zbekcha va inglizcha nashr", en: '📚 Uzbek and English editions', ru: "📚 Узбекское и английское издания" },
+    tr_note_uz: { uz: "Darslikning asl sahifalari inglizcha. Quyida ushbu ikki sahifaning to'liq o'zbekcha tarjimasi berilgan.", en: '', ru: "Оригинальные страницы учебника на английском. Ниже — полный перевод этих двух страниц на узбекский." }, tr_note_en: { uz: '', en: 'The original pages are in Uzbek. Below is a full English translation of these two pages.', ru: "" }, page_n: { uz: 'sahifa', en: 'page', ru: "стр." }
   };
   const B = window.BOOKS;
   let showOrig = false, bookFlip = false;
   let lang = 'uz'; try { lang = localStorage.getItem('zk_lang') || 'uz'; } catch (e) { }
-  const t = (k) => (I18N[k] ? I18N[k][lang] : k);
+  const t = (k) => (I18N[k] ? (I18N[k][lang] ?? I18N[k].uz) : k);
+  // Uch tilli matn (o'zbek, rus, ingliz): L3('…', '…', '…')
+  const L3 = (uz, ru, en) => (lang === 'ru' ? ru : lang === 'en' ? en : uz);
   const tr = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || o.uz || ''));
   const app = document.getElementById('app');
   let labHandle = null, modalHandle = null;
@@ -93,7 +95,7 @@
   const img = (g, i) => ptag(g, i);
   const ALT = { g6: 'g6en', g7: 'g7uz', g8: 'g8en' }, ORIG = { g6: 'uz', g7: 'en', g8: 'uz' };
   const altHas = (g, i) => (g === 'g6' ? i !== 2 && i >= 0 && i < 75 : i >= 0 && i < PMAX[g]);
-  const pageLang = (g, i, flip) => { const want = flip ? (lang === 'uz' ? 'en' : 'uz') : lang; return want !== ORIG[g] && altHas(g, i) ? want : ORIG[g]; };
+  const pageLang = (g, i, flip) => { const bl = lang === 'en' ? 'en' : 'uz', want = flip ? (bl === 'uz' ? 'en' : 'uz') : bl; return want !== ORIG[g] && altHas(g, i) ? want : ORIG[g]; };
   const pimg = (g, i, flip, extra) => ptag(pageLang(g, i, flip) === ORIG[g] ? g : ALT[g], i, extra);
   const TOOLS = [{ id: 'ptable', href: '#ptable', icon: '🧩', t: 'nav_pt', d: 'pt_desc', lessons: [['g7', 17], ['g7', 18], ['g7', 26], ['g7', 27], ['g7', 35], ['g7', 36], ['g7', 37], ['g7', 38], ['g8', 4], ['g8', 5], ['g8', 6], ['g8', 7], ['g8', 13], ['g8', 26], ['g8', 43], ['g8', 55], ['g7', 13], ['g7', 14], ['g6', 5]] }];
   function toolsOf(g, n) { return TOOLS.filter((x) => x.lessons.some((l) => l[0] === g && l[1] === n)); }
@@ -110,11 +112,11 @@
     document.getElementById('q').placeholder = t('search');
     // ekran o'quvchilar uchun nomlar (til bilan birga almashadi)
     const uz = l === 'uz', setA = (id, v) => { const e = document.getElementById(id); if (e) e.setAttribute('aria-label', v); };
-    setA('zoom', uz ? 'Darslik sahifasi' : 'Textbook page'); setA('sres', uz ? 'Qidiruv natijalari' : 'Search results');
-    setA('q', uz ? 'Mavzu yoki dars raqamini qidirish' : 'Search topics or lesson number');
-    setA('burger', uz ? 'Menyu' : 'Menu'); setA('bnav', uz ? 'Pastki menyu' : 'Bottom navigation'); setA('nav', uz ? 'Asosiy menyu' : 'Main menu');
+    setA('zoom', L3('Darslik sahifasi', 'Страница учебника', 'Textbook page')); setA('sres', L3('Qidiruv natijalari', 'Результаты поиска', 'Search results'));
+    setA('q', L3('Mavzu yoki dars raqamini qidirish', 'Поиск по темам или номеру урока', 'Search topics or lesson number'));
+    setA('burger', L3('Menyu', 'Меню', 'Menu')); setA('bnav', L3('Pastki menyu', 'Нижнее меню', 'Bottom navigation')); setA('nav', L3('Asosiy menyu', 'Главное меню', 'Main menu'));
     document.querySelectorAll('.lang button').forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.lang === l)); b.setAttribute('lang', b.dataset.lang); });
-    const sk = document.getElementById('zkSkip'); if (sk) sk.textContent = uz ? 'Asosiy qismga o‘tish' : 'Skip to main content';
+    const sk = document.getElementById('zkSkip'); if (sk) sk.textContent = L3('Asosiy qismga o‘tish', 'Перейти к основному содержимому', 'Skip to main content');
     if (window.ZKAuth && ZKAuth.user) ZKAuth.chip();
     route();
   }
@@ -131,9 +133,9 @@
     const uz = lang === 'uz', arrow = '<svg class="zi zk-hc-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
     const gp = XP.grade(g, B[g].lessons.length).p, C = 2 * Math.PI * 30;
     return `<a class="zk-hero-cont" href="#${g}-${n}" style="--uc:${col};--uc-on:${onCol(col)}">
-      <span class="zk-hc-ring" title="${GN[g]}-${uz ? 'sinf' : 'grade'}: ${gp}%"><svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="30" class="tr"/><circle cx="36" cy="36" r="30" class="fg" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - gp / 100)).toFixed(1)}" style="stroke:${col}"/></svg><span class="lnum" style="background:${col};color:${onCol(col)}">${n}</span></span>
-      <span class="zk-hc-t"><small>${started ? (uz ? 'DAVOM ETTIRISH' : 'CONTINUE') : (uz ? 'BIRINCHI DARS' : 'FIRST LESSON')} · ${GN[g]}-${uz ? 'SINF' : 'GRADE'}</small><b>${esc(tr(L.t))}</b>${u ? `<span>${esc(tr(u.t))}</span>` : ''}</span>
-      <span class="zk-hc-go">${started ? (uz ? 'Davom etish' : 'Continue') : (uz ? 'Boshlash' : 'Start')}${arrow}</span></a>`;
+      <span class="zk-hc-ring" title="${GN[g]}-${L3('sinf', 'класс', 'grade')}: ${gp}%"><svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="30" class="tr"/><circle cx="36" cy="36" r="30" class="fg" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - gp / 100)).toFixed(1)}" style="stroke:${col}"/></svg><span class="lnum" style="background:${col};color:${onCol(col)}">${n}</span></span>
+      <span class="zk-hc-t"><small>${started ? (L3('DAVOM ETTIRISH', 'ПРОДОЛЖИТЬ', 'CONTINUE')) : (L3('BIRINCHI DARS', 'ПЕРВЫЙ УРОК', 'FIRST LESSON'))} · ${GN[g]}-${L3('SINF', 'КЛАСС', 'GRADE')}</small><b>${esc(tr(L.t))}</b>${u ? `<span>${esc(tr(u.t))}</span>` : ''}</span>
+      <span class="zk-hc-go">${started ? (L3('Davom etish', 'Продолжить', 'Continue')) : (L3('Boshlash', 'Начать', 'Start'))}${arrow}</span></a>`;
   }
 
   // ---- Bosh sahifa (Shisha 2.0 dizayni) yordamchilari ----
@@ -143,20 +145,20 @@
     const uz = lang === 'uz', st = XP.s, days = st.days || {}, goal = Math.max(1, +st.goal || 2);
     const dk = (d) => d.toLocaleDateString('sv'), now = new Date();
     const td = days[dk(now)] || {}, n = Array.isArray(td.ls) ? td.ls.length : 0, p = Math.min(100, Math.round((100 * n) / goal));
-    const names = uz ? ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh'] : ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    const names = L3(['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh'], ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'], ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
     const wk = []; for (let i = 6; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i); const on = +((days[dk(d)] || {}).xp) > 0; wk.push(`<span class="${on ? 'on' : ''}${i === 0 ? ' today' : ''}" title="${dk(d)}">${names[d.getDay()]}</span>`); }
-    return `<a class="zk-goal" href="#me"><div class="zk-goal-h"><b>${uz ? 'Bugungi maqsad' : 'Today’s goal'}</b><span><b>${n}</b> / ${goal} ${uz ? 'dars' : 'lessons'}</span></div>
-      <div class="zk-goal-bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" aria-label="${uz ? 'Bugungi maqsad' : 'Today’s goal'}"><i style="width:${Math.max(p, 3)}%"></i></div>
-      <div class="zk-week" aria-label="${uz ? 'Oxirgi 7 kun faolligi' : 'Activity in the last 7 days'}">${wk.join('')}</div></a>`;
+    return `<a class="zk-goal" href="#me"><div class="zk-goal-h"><b>${L3('Bugungi maqsad', 'Цель на сегодня', 'Today’s goal')}</b><span><b>${n}</b> / ${goal} ${L3('dars', 'урока', 'lessons')}</span></div>
+      <div class="zk-goal-bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" aria-label="${L3('Bugungi maqsad', 'Цель на сегодня', 'Today’s goal')}"><i style="width:${Math.max(p, 3)}%"></i></div>
+      <div class="zk-week" aria-label="${L3('Oxirgi 7 kun faolligi', 'Активность за последние 7 дней', 'Activity in the last 7 days')}">${wk.join('')}</div></a>`;
   }
   function gradeCard(g) {
     const uz = lang === 'uz', n = GN[g], o = XPok() ? XP.grade(g, B[g].lessons.length) : { done: 0, p: 0 };
-    const stage = { g6: uz ? 'Boshlang‘ich bosqich' : 'Foundation', g7: uz ? 'Keyingi bosqich' : 'Intermediate', g8: uz ? 'Chuqurlashtirish' : 'Advanced' }[g];
+    const stage = { g6: L3('Boshlang‘ich bosqich', 'Начальный уровень', 'Foundation'), g7: L3('Keyingi bosqich', 'Следующий уровень', 'Intermediate'), g8: L3('Chuqurlashtirish', 'Углублённый уровень', 'Advanced') }[g];
     return `<a class="gcard ${g}" href="#${g}"><span class="zk-gglow" aria-hidden="true"></span>
       <div class="zk-gtop"><span class="zk-grade-number">${n}</span><span class="zk-ggo" aria-hidden="true"><svg class="zi" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
-      <h3>${n}-${uz ? 'sinf' : 'grade'} · ${stage}</h3><p>${t(g + '_d')}</p>
-      <div class="zk-gmeta"><span><b>${B[g].lessons.length}</b> ${uz ? 'dars' : 'lessons'}</span><span><b>${(B[g].units || []).length}</b> ${uz ? 'bo‘lim' : 'units'}</span><span><b>${o.done}</b> ${uz ? 'bajarildi' : 'done'}</span></div>
-      <div class="zk-gbar" role="progressbar" aria-valuenow="${o.p}" aria-valuemin="0" aria-valuemax="100" aria-label="${n}-${uz ? 'sinf' : 'grade'}"><i style="width:${Math.max(o.p, 2)}%"></i></div></a>`;
+      <h3>${n}-${L3('sinf', 'класс', 'grade')} · ${stage}</h3><p>${t(g + '_d')}</p>
+      <div class="zk-gmeta"><span><b>${B[g].lessons.length}</b> ${L3('dars', 'уроков', 'lessons')}</span><span><b>${(B[g].units || []).length}</b> ${L3('bo‘lim', 'разделов', 'units')}</span><span><b>${o.done}</b> ${L3('bajarildi', 'выполнено', 'done')}</span></div>
+      <div class="zk-gbar" role="progressbar" aria-valuenow="${o.p}" aria-valuemin="0" aria-valuemax="100" aria-label="${n}-${L3('sinf', 'класс', 'grade')}"><i style="width:${Math.max(o.p, 2)}%"></i></div></a>`;
   }
   function miniPt() {
     let h = '';
@@ -170,20 +172,20 @@
   function homeLessons(g, pg) {
     const uz = lang === 'uz', bk = B[g]; if (!bk) return '';
     const units = (bk.units || [{ from: 1, t: { uz: '', en: '' } }]).slice(0, 3);
-    const seg = GRADES.filter((x) => B[x]).map((x) => `<button type="button" data-hg="${x}" class="${x === g ? 'on' : ''}" aria-pressed="${x === g}">${GN[x]}-${uz ? 'sinf' : 'grade'}</button>`).join('');
+    const seg = GRADES.filter((x) => B[x]).map((x) => `<button type="button" data-hg="${x}" class="${x === g ? 'on' : ''}" aria-pressed="${x === g}">${GN[x]}-${L3('sinf', 'класс', 'grade')}</button>`).join('');
     const ui = GRADES.filter((x) => B[x]).indexOf(g);
     const body = units.map((u, i) => {
       const next = (bk.units[i + 1] || {}).from || bk.lessons.length + 1, total = next - u.from;
       const col = UC[i % UC.length], ls = [];
       for (let n = u.from; n < Math.min(next, u.from + 3); n++) {
         const L = bk.lessons[n - 1], st = XPok() ? XP.state(g, n) : '', ex = expsOf(g, n).length;
-        const stat = st === 'done' ? `<span class="zk-st done">${uz ? 'Bajarildi' : 'Done'}</span>` : st ? `<span class="zk-st go" style="--uc:${col}">${uz ? 'Davom etmoqda' : 'In progress'}</span>` : `<span class="zk-st">${uz ? 'Yangi' : 'New'}</span>`;
+        const stat = st === 'done' ? `<span class="zk-st done">${L3('Bajarildi', 'Выполнено', 'Done')}</span>` : st ? `<span class="zk-st go" style="--uc:${col}">${L3('Davom etmoqda', 'В процессе', 'In progress')}</span>` : `<span class="zk-st">${L3('Yangi', 'Новый', 'New')}</span>`;
         ls.push(`<a class="lcard zk-hl ${st}${lessonOk(n) ? '' : ' locked'}" href="#${g}-${n}" style="--uc:${col};--uc-on:${onCol(col)}"><div class="lnum" style="background:${col};color:${onCol(col)}">${st === 'done' ? '✓' : n}</div><div><h4>${esc(tr(L.t))}${lessonOk(n) ? '' : lockIc}</h4><div class="tags">${stat}${ex ? '<span class="zk-st x">3D</span>' : ''}</div></div></a>`);
       }
-      return `<div class="zk-hunit"><div class="unit-h" style="--uc:${col};--uc-on:${onCol(col)}"><span>${i + 1}</span>${esc(tr(u.t))}<i></i><a href="#${g}">${uz ? 'Barchasi' : 'All'} · ${total} ${uz ? 'dars' : 'lessons'}</a></div><div class="zk-hgrid">${ls.join('')}</div></div>`;
+      return `<div class="zk-hunit"><div class="unit-h" style="--uc:${col};--uc-on:${onCol(col)}"><span>${i + 1}</span>${esc(tr(u.t))}<i></i><a href="#${g}">${L3('Barchasi', 'Все', 'All')} · ${total} ${L3('dars', 'уроков', 'lessons')}</a></div><div class="zk-hgrid">${ls.join('')}</div></div>`;
     }).join('');
-    return `<div class="zk-lhead"><div><h2>${GN[g]}-${uz ? 'sinf darslari' : 'grade lessons'}</h2><p>${uz ? 'Bo‘lim ranglari darslikdagidek saqlangan' : 'Unit colours match the textbook'}</p></div>
-      <div class="zk-seg3" role="group" aria-label="${uz ? 'Sinfni tanlash' : 'Choose grade'}"><span class="zk-seg3-t" style="--i:${ui};--p:${pg ? GRADES.filter((x) => B[x]).indexOf(pg) : ui}" aria-hidden="true"></span>${seg}</div></div>${body}`;
+    return `<div class="zk-lhead"><div><h2>${GN[g]}-${L3('sinf darslari', 'класс, уроки', 'grade lessons')}</h2><p>${L3('Bo‘lim ranglari darslikdagidek saqlangan', 'Цвета разделов — как в учебнике', 'Unit colours match the textbook')}</p></div>
+      <div class="zk-seg3" role="group" aria-label="${L3('Sinfni tanlash', 'Выбрать класс', 'Choose grade')}"><span class="zk-seg3-t" style="--i:${ui};--p:${pg ? GRADES.filter((x) => B[x]).indexOf(pg) : ui}" aria-hidden="true"></span>${seg}</div></div>${body}`;
   }
   function bindHomeLessons() {
     const box = document.getElementById('zkLessons'); if (!box) return;
@@ -197,41 +199,41 @@
     app.innerHTML = `
     <section class="hero zk-hero-v3"><div class="wrap">
       <div class="zk-hero-content">
-        <div class="zk-hero-kicker"><span class="zk-live-dot"></span>${uz ? 'ZUKKO AKADEMIYASI · KIMYO' : 'ZUKKO ACADEMY · CHEMISTRY'}</div>
-        <h1>${uz ? 'Kimyoni ko‘r.' : 'See chemistry.'} <em>${uz ? 'Tajribada kashf et.' : 'Discover it in action.'}</em></h1>
-        <p class="lead">${uz ? 'Darsliklardagi har bir mavzu, interaktiv 3D tajribalar va testlar — 6, 7 va 8-sinflar uchun bir joyda.' : 'Every textbook topic, interactive 3D experiments and quizzes — for grades 6, 7 and 8 in one place.'}</p>
+        <div class="zk-hero-kicker"><span class="zk-live-dot"></span>${L3('ZUKKO AKADEMIYASI · KIMYO', 'ZUKKO AKADEMIYASI · ХИМИЯ', 'ZUKKO ACADEMY · CHEMISTRY')}</div>
+        <h1>${L3('Kimyoni ko‘r.', 'Увидь химию.', 'See chemistry.')} <em>${L3('Tajribada kashf et.', 'Открой её на опыте.', 'Discover it in action.')}</em></h1>
+        <p class="lead">${L3('Darsliklardagi har bir mavzu, interaktiv 3D tajribalar va testlar — 6, 7 va 8-sinflar uchun bir joyda.', 'Каждая тема учебников, интерактивные 3D-опыты и тесты — для 6, 7 и 8 классов в одном месте.', 'Every textbook topic, interactive 3D experiments and quizzes — for grades 6, 7 and 8 in one place.')}</p>
         ${hc}
         <div class="btns${hc ? ' zk-btns-sec' : ''}">
-          ${hc ? '' : `<a class="btn pri" href="#g6">${uz ? 'Darslarni boshlash' : 'Start learning'} ${ARR}</a>`}
-          <a class="btn sec" href="#lab">🧪 ${uz ? '3D laboratoriya' : '3D laboratory'}</a>
-          <a class="btn sec" href="#tests">✅ ${uz ? 'Testlar' : 'Quizzes'}</a>
+          ${hc ? '' : `<a class="btn pri" href="#g6">${L3('Darslarni boshlash', 'Начать уроки', 'Start learning')} ${ARR}</a>`}
+          <a class="btn sec" href="#lab">🧪 ${L3('3D laboratoriya', '3D-лаборатория', '3D laboratory')}</a>
+          <a class="btn sec" href="#tests">✅ ${L3('Testlar', 'Тесты', 'Quizzes')}</a>
         </div>
       </div>
-      <button type="button" class="zk-scene-toggle" id="zkSceneToggle" aria-expanded="false" aria-controls="zkScene"><span class="zk-scene-toggle-ic">⚛️</span><span class="zk-scene-toggle-t"><b>${uz ? 'Molekulyar laboratoriya' : 'Molecular laboratory'}</b><small>${uz ? '3D atom modeli — ochish uchun bosing' : '3D atom model — tap to open'}</small></span><span class="zk-scene-toggle-ch" aria-hidden="true">⌄</span></button>
+      <button type="button" class="zk-scene-toggle" id="zkSceneToggle" aria-expanded="false" aria-controls="zkScene"><span class="zk-scene-toggle-ic">⚛️</span><span class="zk-scene-toggle-t"><b>${L3('Molekulyar laboratoriya', 'Молекулярная лаборатория', 'Molecular laboratory')}</b><small>${L3('3D atom modeli — ochish uchun bosing', '3D-модель атома — нажмите, чтобы открыть', '3D atom model — tap to open')}</small></span><span class="zk-scene-toggle-ch" aria-hidden="true">⌄</span></button>
       <div class="zk-hero-scene" id="zkScene">
-        <div class="zk-scene-top"><span>${uz ? 'MOLEKULYAR LABORATORIYA' : 'MOLECULAR LABORATORY'}</span><span class="zk-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
-        <div class="hero-art"><span class="badge3d">✦ ${uz ? 'INTERAKTIV 3D' : 'INTERACTIVE 3D'}</span><div class="lab-host" id="heroLab"></div></div>
-        <div class="zk-scene-bottom"><span>LAB / 001 — ATOM MODEL</span><span class="zk-scene-active">${uz ? 'TADQIQ ETING' : 'EXPLORE'}</span></div>
+        <div class="zk-scene-top"><span>${L3('MOLEKULYAR LABORATORIYA', 'МОЛЕКУЛЯРНАЯ ЛАБОРАТОРИЯ', 'MOLECULAR LABORATORY')}</span><span class="zk-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>
+        <div class="hero-art"><span class="badge3d">✦ ${L3('INTERAKTIV 3D', 'ИНТЕРАКТИВНОЕ 3D', 'INTERACTIVE 3D')}</span><div class="lab-host" id="heroLab"></div></div>
+        <div class="zk-scene-bottom"><span>LAB / 001 — ATOM MODEL</span><span class="zk-scene-active">${L3('TADQIQ ETING', 'ИССЛЕДУЙТЕ', 'EXPLORE')}</span></div>
         <span class="zk-float-eq" aria-hidden="true">2H₂ + O₂ → 2H₂O</span>
       </div>
     </div></section>
-    <section class="blk zk-sj-sec"><div class="wrap"><div class="sec-h"><h2>${lang === 'uz' ? 'Zukko Akademiyasi fanlari' : 'Zukko Academy subjects'}</h2><a href="#fanlar">${lang === 'uz' ? 'Barchasi' : 'All'} →</a></div><div class="zk-sjgrid">${subjectCards()}</div></div></section>
+    <section class="blk zk-sj-sec"><div class="wrap"><div class="sec-h"><h2>${L3('Zukko Akademiyasi fanlari', 'Предметы Zukko Akademiyasi', 'Zukko Academy subjects')}</h2><a href="#fanlar">${L3('Barchasi', 'Все', 'All')} →</a></div><div class="zk-sjgrid">${subjectCards()}</div></div></section>
     <section class="zk-home-row"><div class="wrap">
       <div class="zk-stats">
-        <div><b>${nL}</b><span>${uz ? 'ta dars, 3 ta darslik' : 'lessons, 3 textbooks'}</span></div>
+        <div><b>${nL}</b><span>${L3('ta dars, 3 ta darslik', 'уроков, 3 учебника', 'lessons, 3 textbooks')}</span></div>
         <div><b>${Lab.list.length}</b><span>${t('st_exps')}</span></div>
-        <div><b>2</b><span>${uz ? 'til: o‘zbek, ingliz' : 'languages: Uzbek, English'}</span></div>
+        <div><b>2</b><span>${L3('til: o‘zbek, ingliz', 'языка: узбекский, английский', 'languages: Uzbek, English')}</span></div>
       </div>
       ${homeGoal()}
     </div></section>
     <section class="blk zk-grades2"><div class="wrap">
-      <div class="sec-h"><div><h2>${uz ? 'Sinfingizni tanlang' : 'Choose your grade'}</h2></div><p class="zk-sec-note">${uz ? 'Har bir sinf — o‘z darsligi asosida' : 'Each grade follows its own textbook'}</p></div>
+      <div class="sec-h"><div><h2>${L3('Sinfingizni tanlang', 'Выберите свой класс', 'Choose your grade')}</h2></div><p class="zk-sec-note">${L3('Har bir sinf — o‘z darsligi asosida', 'Каждый класс — по своему учебнику', 'Each grade follows its own textbook')}</p></div>
       <div class="grades">${GRADES.filter((g) => B[g]).map(gradeCard).join('')}</div>
     </div></section>
     <section class="blk zk-bento-sec"><div class="wrap"><div class="zk-bento">
-      <a class="zk-bcard zk-bpt" href="#ptable"><div class="zk-bh"><b>${uz ? 'Davriy jadval' : 'Periodic table'}</b><small>${uz ? '118 element' : '118 elements'}</small></div><div class="zk-minipt" aria-hidden="true">${miniPt()}</div><small>${uz ? 'Elementni bosing — atom tuzilishi 3D ko‘rinishda ochiladi' : 'Tap an element to open its atom in 3D'}</small></a>
-      <a class="zk-bcard" href="#lab"><span class="zk-bic">🧪</span><b>${uz ? '3D laboratoriya' : '3D laboratory'}</b><small>${uz ? `${Lab.list.length} ta tajriba: reaksiyalar, kristall panjaralar va molekulalarni aylantirib ko‘ring.` : `${Lab.list.length} experiments: rotate reactions, crystal lattices and molecules.`}</small><span class="zk-blink">${uz ? 'Laboratoriyaga kirish' : 'Open the lab'} ${ARR}</span></a>
-      <a class="zk-bcard" href="#tests"><span class="zk-bic">✅</span><b>${uz ? 'Testlar' : 'Quizzes'}</b><small>${uz ? 'Har bir darsga 10+ savol, uch darajada. Natija XP ga qo‘shiladi.' : '10+ questions per lesson at three levels. Results add XP.'}</small><span class="zk-lvls"><span class="dchip easy">${t('easy')}</span><span class="dchip medium">${t('medium')}</span><span class="dchip hard">${t('hard')}</span></span></a>
+      <a class="zk-bcard zk-bpt" href="#ptable"><div class="zk-bh"><b>${L3('Davriy jadval', 'Таблица Менделеева', 'Periodic table')}</b><small>${L3('118 element', '118 элементов', '118 elements')}</small></div><div class="zk-minipt" aria-hidden="true">${miniPt()}</div><small>${L3('Elementni bosing — atom tuzilishi 3D ko‘rinishda ochiladi', 'Нажмите на элемент — строение атома откроется в 3D', 'Tap an element to open its atom in 3D')}</small></a>
+      <a class="zk-bcard" href="#lab"><span class="zk-bic">🧪</span><b>${L3('3D laboratoriya', '3D-лаборатория', '3D laboratory')}</b><small>${L3(`${Lab.list.length} ta tajriba: reaksiyalar, kristall panjaralar va molekulalarni aylantirib ko‘ring.`, `${Lab.list.length} опытов: вращайте реакции, кристаллические решётки и молекулы.`, `${Lab.list.length} experiments: rotate reactions, crystal lattices and molecules.`)}</small><span class="zk-blink">${L3('Laboratoriyaga kirish', 'Войти в лабораторию', 'Open the lab')} ${ARR}</span></a>
+      <a class="zk-bcard" href="#tests"><span class="zk-bic">✅</span><b>${L3('Testlar', 'Тесты', 'Quizzes')}</b><small>${L3('Har bir darsga 10+ savol, uch darajada. Natija XP ga qo‘shiladi.', '10+ вопросов к каждому уроку, на трёх уровнях. Результаты добавляют XP.', '10+ questions per lesson at three levels. Results add XP.')}</small><span class="zk-lvls"><span class="dchip easy">${t('easy')}</span><span class="dchip medium">${t('medium')}</span><span class="dchip hard">${t('hard')}</span></span></a>
     </div></div></section>
     <section class="blk zk-lessons-sec"><div class="wrap"><div class="zk-lpanel" id="zkLessons">${homeLessons(homeGrade)}</div></div></section>`;
     bindHomeLessons();
@@ -249,7 +251,7 @@
     // Tezlik: 3D sahna sahifa ko'ringandan keyin, brauzer bo'shaganda quriladi — bosh sahifaga o'tish darhol bo'ladi.
     // Kuchsiz/dasturiy grafikada (maktab kompyuterlari) 3D o'zi boshlanmaydi — sahifa qotmasin; tugma bilan ochiladi
     if (!compact && !softGpu()) { const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200)); setTimeout(() => idle(startHero, { timeout: 800 }), 350); }
-    else if (!compact && host) { host.innerHTML = `<button type="button" class="zk-hero-play">▶ ${uz ? '3D modelni ko‘rish' : 'Show 3D model'}</button>`; host.querySelector('button').onclick = () => { host.innerHTML = lazyBox(); startHero(); }; }
+    else if (!compact && host) { host.innerHTML = `<button type="button" class="zk-hero-play">▶ ${L3('3D modelni ko‘rish', 'Показать 3D-модель', 'Show 3D model')}</button>`; host.querySelector('button').onclick = () => { host.innerHTML = lazyBox(); startHero(); }; }
     if (window.ZKLazy) ZKLazy.prefetch();
     tog.onclick = () => {
       const open = !scene.classList.contains('open');
@@ -261,7 +263,7 @@
   function countExps(gr) { return Lab.list.filter((e) => (e.lessons || []).some((l) => l[0] === gr)).length; }
   function xcard(e) {
     const all = lessonsOfExp(e), MAXC = 3;
-    const ls = all.slice(0, MAXC).map((x) => `<span class="chip ${x.g === 'g7' ? 'g' : x.g === 'g8' ? 'p' : ''}">${GN[x.g]}-${lang === 'uz' ? 'sinf' : 'gr'} • ${x.n}</span>`).join(' ')
+    const ls = all.slice(0, MAXC).map((x) => `<span class="chip ${x.g === 'g7' ? 'g' : x.g === 'g8' ? 'p' : ''}">${GN[x.g]}-${L3('sinf', 'кл.', 'gr')} • ${x.n}</span>`).join(' ')
       + (all.length > MAXC ? ` <span class="chip more" title="${esc(all.slice(MAXC).map((x) => GN[x.g] + '-' + x.n).join(', '))}">+${all.length - MAXC}</span>` : '');
     const lk = !labOk(e.id);
     return `<a class="xcard${lk ? ' locked' : ''}" href="#lab-${e.id}"><div class="th">${e.icon || '🧪'}</div><div class="bd"><h4>${tr(e.title)}${lk ? lockIc : ''}</h4><p>${tr(e.desc)}</p><div class="tags">${ls}</div><span class="go">${t('watch')}</span></div></a>`;
@@ -285,25 +287,25 @@
 
   /* ---------- Zukko Akademiyasi: fanlar (subjects.js). Kimyo — mavjud bo'lim; boshqa fanlar — darsliklar asosida ---------- */
   const SJ = () => window.ZKSubjects || { list: [], get: () => null, books: () => [], book: () => null };
-  const SN = (sj) => (sj ? sj.name[lang === 'en' ? 'en' : 'uz'] : '');
+  const SN = (sj) => (sj ? sj.name[lang] || sj.name.uz : '');
   const gradeRange = (sj) => (sj.grades.length > 1 ? `${sj.grades[0]}–${sj.grades[sj.grades.length - 1]}` : `${sj.grades[0]}`);
   function subjectCards() {
     return SJ().list.map((sj) => {
       const ready = sj.native ? sj.grades : [...new Set((sj.books || []).map((b) => b.grade))];
       const href = sj.native ? sj.home : `#s/${sj.id}`;
-      const note = sj.native ? (lang === 'uz' ? '3D tajribalar, testlar, darsliklar' : '3D experiments, tests, textbooks')
-        : ready.length ? (lang === 'uz' ? `Tayyor: ${ready.join(', ')}-sinf` : `Ready: grade ${ready.join(', ')}`) : (lang === 'uz' ? 'Tez orada' : 'Coming soon');
-      return `<a class="zk-sjcard" href="${href}" style="--sj:${sj.color}"><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span><span class="zk-sj-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${lang === 'uz' ? 'sinflar' : 'grades'} · ${note}</small></span></a>`;
+      const note = sj.native ? (L3('3D tajribalar, testlar, darsliklar', '3D-опыты, тесты, учебники', '3D experiments, tests, textbooks'))
+        : ready.length ? (L3(`Tayyor: ${ready.join(', ')}-sinf`, `Готово: ${ready.join(', ')} класс`, `Ready: grade ${ready.join(', ')}`)) : (L3('Tez orada', 'Скоро', 'Coming soon'));
+      return `<a class="zk-sjcard" href="${href}" style="--sj:${sj.color}"><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span><span class="zk-sj-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${L3('sinflar', 'классы', 'grades')} · ${note}</small></span></a>`;
     }).join('');
   }
   function subjectsPage() {
-    app.innerHTML = `<div class="page-h"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_subj')}</div><h1>${lang === 'uz' ? 'Fanlar' : 'Subjects'}</h1><p>${lang === 'uz' ? 'Zukko Akademiyasi: fanni tanlang.' : 'Zukko Academy: choose a subject.'}</p></div></div>
+    app.innerHTML = `<div class="page-h"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_subj')}</div><h1>${L3('Fanlar', 'Предметы', 'Subjects')}</h1><p>${L3('Zukko Akademiyasi: fanni tanlang.', 'Zukko Akademiyasi: выберите предмет.', 'Zukko Academy: choose a subject.')}</p></div></div>
       <div class="wrap" style="padding-bottom:48px"><div class="zk-sjgrid">${subjectCards()}</div></div>`;
   }
   // "Fanlar" menyusi (header): har bir fan — o'z oynasi
   function buildSubjMenu() {
     const m = document.getElementById('navSubjMenu'); if (!m || !window.ZKSubjects) return;
-    m.innerHTML = ZKSubjects.list.map((sj) => `<a href="#s/${sj.id}" data-nav="fanlar"><span class="zk-ngrp-n zk-sj-n" style="--sj:${sj.color}" aria-hidden="true">${sj.icon}</span><span class="zk-ngrp-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${lang === 'uz' ? 'sinf' : 'grade'}</small></span></a>`).join('');
+    m.innerHTML = ZKSubjects.list.map((sj) => `<a href="#s/${sj.id}" data-nav="fanlar"><span class="zk-ngrp-n zk-sj-n" style="--sj:${sj.color}" aria-hidden="true">${sj.icon}</span><span class="zk-ngrp-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${L3('sinf', 'класс', 'grade')}</small></span></a>`).join('');
   }
   // O'quvchining sinfi (profil: "7A" → 7). Xodim yoki sinfi noma'lum — null (sinf tanlanadi)
   function myGrade() {
@@ -321,33 +323,152 @@
     const g = mine || gArg || sjPick[id] || withBook[0] || sj.grades[0];
     if (!mine) sjPick[id] = g;
     const bs = SJ().books(id, g);
-    const picker = mine ? '' : `<div class="seg zk-sjpick" role="group" aria-label="${uz ? 'Sinf' : 'Grade'}">${sj.grades.map((x) => `<a href="#s/${id}/${x}" class="${x === g ? 'on' : ''}${SJ().books(id, x).length ? '' : ' off'}" ${x === g ? 'aria-current="page"' : ''}>${x}</a>`).join('')}</div>`;
+    const picker = mine ? '' : `<div class="seg zk-sjpick" role="group" aria-label="${L3('Sinf', 'Класс', 'Grade')}">${sj.grades.map((x) => `<a href="#s/${id}/${x}" class="${x === g ? 'on' : ''}${SJ().books(id, x).length ? '' : ' off'}" ${x === g ? 'aria-current="page"' : ''}>${x}</a>`).join('')}</div>`;
     const parts = bs.map((b) => {
       let html = `<section class="zk-sjbook"><h2>${esc(b.title)}</h2>`;
       b.topics.forEach((tp, i) => {
         const n = i + 1, u = (b.units || []).find((x) => x.from === n);
         if (u) html += `<h3 class="zk-sjunit">${esc(uz ? u.t.uz : u.t.orig)}${uz ? ` <small>${esc(u.t.orig)}</small>` : ''}</h3>`;
-        html += `<a class="zk-sjtopic" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}</b>${tp.uz && tp.uz !== tp.t ? `<small>${esc(tp.uz)}</small>` : ''}</span></a>`;
+        const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, n, freeN());
+        html += `<a class="zk-sjtopic${lk ? ' locked' : ''}" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}${lk ? lockIc : ''}${sjBest(`${id}-${g}-${b.part}-${n}`) >= 4 ? ' <span class="zk-sjstar" aria-label="' + L3('test topshirilgan', 'тест пройден', 'quiz passed') + '">⭐</span>' : ''}</b>${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? `<small>${esc(tp[lang] || tp.uz)}</small>` : ''}</span></a>`;
       });
       return html + '</section>';
-    }).join('') || `<div class="panel tc-empty zk-sjsoon">${uz ? `${g}-sinf uchun ${SN(sj).toLowerCase()} darsligi tez orada qo‘shiladi.` : `The grade ${g} ${SN(sj)} textbook is coming soon.`}</div>`;
+    }).join('') || `<div class="panel tc-empty zk-sjsoon">${L3(`${g}-sinf uchun ${SN(sj).toLowerCase()} darsligi tez orada qo‘shiladi.`, `Учебник «${SN(sj)}» для ${g} класса скоро появится.`, `The grade ${g} ${SN(sj)} textbook is coming soon.`)}</div>`;
     app.innerHTML = `<div class="page-h zk-sjhead" style="--sj:${sj.color}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${SN(sj)}</div>
-      <h1><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span> ${SN(sj)} · ${g}-${uz ? 'sinf' : 'grade'}</h1><p>${uz ? 'Har bir mavzu darslikda 2 sahifa.' : 'Each topic is 2 textbook pages.'}</p>${picker}</div></div>
+      <h1><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span> ${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</h1><p>${L3('Har bir mavzu darslikda 2 sahifa.', 'Каждая тема — 2 страницы учебника.', 'Each topic is 2 textbook pages.')}</p>${picker}</div></div>
       <div class="wrap" style="padding-bottom:48px">${parts}</div>`;
   }
   function subjectGrade(id, g) { return subjectPage(id, g); }
   // Mavzu sahifasi (1-bosqich): nomi, bo'limi, sahifalari. Darslik sahifalari va so'zlar Firebase'dan — keyingi bosqichda.
-  function subjectTopic(id, g, part, n) {
+  // Mavzu sahifasi — kimyo darsi kabi: "Dars mazmuni / Darslik / Test". Mazmun va sahifalar Firebase'da (firestore.rules: bepul mavzu, obuna, xodim).
+  const SJT = ['content', 'pages', 'quiz'];
+  let sjTab = 'content', sjLast = null;
+  const sjSpeech = { eng: 'en-GB', rus: 'ru-RU', math: 'en-GB' };
+  const sjBest = (k, v) => { try { const o = JSON.parse(localStorage.getItem('zk_sjp') || '{}'); if (v == null) return o[k]; if (!(o[k] >= v)) { o[k] = v; localStorage.setItem('zk_sjp', JSON.stringify(o)); } } catch (e) { } return null; };
+  function sjSay(txt, lng) {
+    try { if (!window.speechSynthesis || !txt) return false; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(txt)); u.lang = lng; u.rate = 0.85; speechSynthesis.speak(u); return true; } catch (e) { return false; }
+  }
+  function subjectTopic(id, g, part, n, tab) {
     { const mine = myGrade(); if (mine && mine !== g) return subjectPage(id); }
     const sj = SJ().get(id); const b = SJ().book(id, g, part); const tp = b && b.topics[n - 1]; if (!tp) return subjectGrade(id, g);
+    const key = `${id}-${g}-${part}-${n}`;
+    if (!tab) tab = sjLast === key ? sjTab : 'content';
+    if (!SJT.includes(tab)) tab = 'content';
+    sjLast = key; sjTab = tab;
     const uz = lang === 'uz'; const unit = (b.units || []).filter((x) => x.from <= n).pop();
-    const prev = n > 1 ? `#s/${id}/${g}/${part}/${n - 1}` : '', next = n < b.topics.length ? `#s/${id}/${g}/${part}/${n + 1}` : '';
-    app.innerHTML = `<div class="page-h" style="--sj:${sj.color}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${uz ? 'sinf' : 'grade'}</a> / ${n}</div>
-      <h1><span class="zk-sjnum" style="background:${sj.color}">${n}</span> ${esc(tp.t)}</h1>${tp.uz && tp.uz !== tp.t ? `<p>${esc(tp.uz)}</p>` : ''}</div></div>
-      <div class="wrap" style="padding-bottom:48px"><div class="panel"><h3>📖 ${uz ? 'Darslikda' : 'In the textbook'}</h3>
-        <p>${unit ? esc(uz ? unit.t.uz : unit.t.orig) + ' · ' : ''}${uz ? 'sahifalar' : 'pages'} ${tp.p.join('–')}</p>
-        <div class="zk-lazy" role="status">${uz ? 'Darslik sahifalari, yangi so‘zlar va mashqlar tez orada shu yerda bo‘ladi.' : 'Textbook pages, new words and exercises will appear here soon.'}</div></div>
-        <div class="pn">${prev ? `<a class="btn sec" href="${prev}">← ${uz ? 'Oldingi' : 'Previous'}</a>` : '<span></span>'}${next ? `<a class="btn sec" href="${next}">${uz ? 'Keyingi' : 'Next'} →</a>` : ''}</div></div>`;
+    const base = `#s/${id}/${g}/${part}/`, nT = b.topics.length;
+    const prev = n > 1 ? b.topics[n - 2] : null, next = n < nT ? b.topics[n] : null;
+    const sub = (x) => { const v = x[lang] || x.uz; return v && v !== x.t ? v : ''; };
+    const open = !window.ZKAuth || ZKAuth.canPaid(id) || ZKSub.lessonOpen(false, n, freeN());
+    const best = sjBest(key);
+    const TL = { content: ['📘', L3('Dars mazmuni', 'Содержание урока', 'Lesson')], pages: ['📖', L3('Darslik', 'Учебник', 'Textbook')], quiz: ['✅', L3('Test', 'Тест', 'Quiz')] };
+    const ti = SJT.indexOf(tab);
+    const navl = b.topics.map((x, i) => { const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, i + 1, freeN()); return `<a href="${base}${i + 1}" class="${i + 1 === n ? 'on' : ''}"><i>${i + 1}</i>${esc(x.t)}${lk ? lockIc : ''}</a>`; }).join('');
+    const col = sj.color, ucv = `--uc:${col};--uc-on:${onCol(col)};--sj:${col}`;
+    app.innerHTML = `<div class="lesson-top zk-sjlesson" style="${ucv}"><div class="wrap">
+        <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</a> / ${n}</div>
+        <div class="lhead"><h1><span class="zk-sr">${L3(n + '-mavzu: ', 'Тема ' + n + ': ', 'Topic ' + n + ': ')}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${n}</span>${esc(tp.t)}${best >= 4 ? ' <span class="zk-sjstar" title="' + L3('Test topshirildi', 'Тест пройден', 'Quiz passed') + '">⭐</span>' : ''}</h1>
+          <div class="lnav">${prev ? `<a class="lnb" href="${base}${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${n}</b> / ${nT}</span>${next ? `<a class="lnb" href="${base}${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
+        ${sub(tp) ? `<p class="zk-sjsub">${esc(sub(tp))}</p>` : ''}
+        <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${ti}"></span>${SJT.map((k) => `<button data-tab="${k}" role="tab" id="ltab-${k}" aria-controls="lpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" class="${tab === k ? 'on' : ''}"><span aria-hidden="true">${TL[k][0]}</span> ${TL[k][1]}${k === 'quiz' ? ' <span class="cnt">5</span>' : ''}</button>`).join('')}</div>
+      </div></div>
+      <div class="wrap lesson-body" style="${ucv}">
+        <div><div id="lpanel" role="tabpanel" aria-labelledby="ltab-${tab}"><div id="sjBody"></div></div>
+          <div class="pn">${prev ? `<a href="${base}${n - 1}"><small>${t('prev')}</small>${esc(prev.t)}</a>` : '<span style="flex:1"></span>'}${next ? `<a class="r" href="${base}${n + 1}"><small>${t('next')}</small>${esc(next.t)}</a>` : '<span style="flex:1"></span>'}</div>
+        </div>
+        <aside class="side"><div class="panel"><h4>📖 ${L3('Darslikda', 'В учебнике', 'In the textbook')}</h4><p class="zk-sjref">${unit ? esc(uz ? unit.t.uz : unit.t.orig) + '<br>' : ''}${L3('sahifalar', 'страницы', 'pages')} ${tp.p.join(', ')}</p></div>
+          <div class="panel"><h4>📚 ${L3('Barcha mavzular', 'Все темы', 'All topics')}</h4><div class="navl">${navl}</div></div></aside>
+      </div>`;
+    const host = document.getElementById('sjBody');
+    const goTab = (k, focus) => { subjectTopic(id, g, part, n, k); window.scrollTo({ top: 0 }); if (focus) { const nb = document.getElementById('ltab-' + k); if (nb) nb.focus({ preventScroll: true }); } };
+    app.querySelectorAll('.tabs button').forEach((x) => (x.onclick = () => goTab(x.dataset.tab, true)));
+    const tl = app.querySelector('.tabs[role=tablist]');
+    if (tl) tl.onkeydown = (e) => {
+      const bs = [...tl.querySelectorAll('[role=tab]')], cur = bs.indexOf(document.activeElement), i0 = cur >= 0 ? cur : ti;
+      const j = { ArrowRight: i0 + 1, ArrowLeft: i0 - 1, Home: 0, End: bs.length - 1 }[e.key]; if (j == null) return;
+      e.preventDefault(); e.stopPropagation(); const nb = bs[(j + bs.length) % bs.length]; bs.forEach((x) => (x.tabIndex = x === nb ? 0 : -1)); nb.focus();
+    };
+    { const on = app.querySelector('.navl a.on'), nl = on && on.closest('.navl'); if (on && nl) nl.scrollTop += on.getBoundingClientRect().top - nl.getBoundingClientRect().top - nl.clientHeight / 2; }
+    if (!open) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return; }
+    if (tab === 'pages') { host.innerHTML = `<div class="panel"><div id="sjPages" class="zk-sjpages">${lazyBox()}</div></div>`; return loadSjPages(document.getElementById('sjPages'), sj, b, n, tp); }
+    host.innerHTML = `<div class="panel">${lazyBox()}</div>`;
+    loadSjLesson(host, sj, b, n).then((Ls) => { if (Ls && host.isConnected) (tab === 'quiz' ? sjQuiz : sjContent)(host, sj, b, n, tp, Ls, key); });
+  }
+  // Dars mazmuni Firebase'dan: lessons/<fan>-<sinf>-<qism>-<mavzu> (j — JSON matn; faqat admin yozadi)
+  const sjLessonCache = {};
+  async function loadSjLesson(host, sj, b, n) {
+    const k = `${sj.id}-${b.grade}-${b.part}-${n}`;
+    if (sjLessonCache[k]) return sjLessonCache[k];
+    const B = window.ZKAuth && ZKAuth.backend;
+    const msg = (h) => { host.innerHTML = `<div class="panel"><div class="zk-lazy">${h}</div></div>`; return null; };
+    if (!B) return msg(L3('Dars mazmuni kirish bilan ochiladi.', 'Содержание урока открывается после входа.', 'Sign in to see the lesson.'));
+    try {
+      const d = await B.get('lessons', k);
+      if (!host.isConnected) return null;
+      if (!d || !d.j) return msg(L3('Bu mavzuning dars mazmuni hali yuklanmagan. Administrator uni «Admin paneli → Darsliklar» bo‘limidan yuklaydi. Hozircha «Darslik» tabini ko‘ring.', 'Содержание этой темы ещё не загружено. Администратор загружает его в разделе «Панель администратора → Учебники». Пока откройте вкладку «Учебник».', 'This topic’s lesson has not been uploaded yet. The administrator uploads it in Admin panel → Textbooks. Meanwhile, see the Textbook tab.'));
+      const Ls = JSON.parse(d.j); return (sjLessonCache[k] = Ls);
+    } catch (e) {
+      if (!host.isConnected) return null;
+      if (/permission/i.test((e && (e.code || e.message)) || '')) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return null; }
+      host.innerHTML = `<div class="zk-lazy zk-lazy-err" role="alert"><b>${L3('Dars yuklanmadi', 'Урок не загрузился', 'The lesson did not load')}</b><span>${L3('Internet aloqasini tekshiring.', 'Проверьте подключение к интернету.', 'Check your internet connection.')}</span><button type="button" class="btn sec">${L3('Qayta urinish', 'Повторить', 'Try again')}</button></div>`;
+      host.querySelector('button').onclick = () => renderRoute();
+      return null;
+    }
+  }
+  const sjL = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || o.uz || o.en || ''));
+  const arr = (x) => (Array.isArray(x) ? x : []);
+  function sjContent(host, sj, b, n, tp, Ls, key) {
+    const sp = sjSpeech[sj.id] || 'en-GB', isLang = sj.id !== 'math';
+    const say = (w) => `<button type="button" class="zk-say" data-say="${esc(w)}" aria-label="${esc(L3('Tinglash: ', 'Слушать: ', 'Listen: ') + w)}"><span aria-hidden="true">🔊</span></button>`;
+    let h = '';
+    if (Ls.goal) h += `<div class="keyq"><div class="ic">🎯</div><div><b>${L3('Bugun o‘rganamiz', 'Сегодня узнаем', 'Today we learn')}</b>${esc(sjL(Ls.goal))}</div></div>`;
+    const sm = arr(Ls.summary && (Ls.summary[lang] || Ls.summary.uz));
+    if (sm.length) h += `<div class="panel"><h3>💡 ${t('main_ideas')}</h3><ul class="pts">${sm.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div>`;
+    const ws = arr(Ls.words);
+    if (ws.length) h += `<div class="panel"><h3>${isLang ? '🗣 ' + L3('Yangi so‘zlar', 'Новые слова', 'New words') : '📖 ' + L3('Asosiy tushunchalar', 'Основные понятия', 'Key ideas')}</h3>
+      <div class="zk-words">${ws.map((w) => `<div class="zk-word">${w.emoji ? `<span class="em" aria-hidden="true">${esc(w.emoji)}</span>` : ''}<b lang="${sp.slice(0, 2)}">${esc(w.w)}</b><span>${esc(sjL(w) === w.w ? '' : sjL(w))}</span>${say(w.w)}</div>`).join('')}</div></div>`;
+    const ps = arr(Ls.phrases);
+    if (ps.length) h += `<div class="panel"><h3>💬 ${isLang ? L3('Gaplar', 'Фразы', 'Phrases') : L3('Eslab qoling', 'Запомни', 'Remember')}</h3><ul class="zk-phr">${ps.map((p) => `<li><div><b lang="${sp.slice(0, 2)}">${esc(p.t)}</b>${sjL(p) && sjL(p) !== p.t ? `<span>${esc(sjL(p))}</span>` : ''}</div>${say(p.t)}</li>`).join('')}</ul></div>`;
+    const tk = arr(Ls.tasks);
+    if (tk.length) h += `<div class="panel"><h3>✏️ ${L3('Darslikdagi topshiriqlar', 'Задания в учебнике', 'Textbook activities')}</h3><ol class="zk-tasks">${tk.map((x) => `<li>${esc(sjL(x))}</li>`).join('')}</ol></div>`;
+    h += `<div class="fact"><div class="ic">✅</div><div><b>${L3('Bilimingni sinab ko‘r', 'Проверь себя', 'Check yourself')}</b> ${L3('5 ta savoldan iborat testni yeching.', 'Пройди тест из 5 вопросов.', 'Take the 5-question quiz.')} <button type="button" class="btn pri sm" id="sjGoQuiz">${L3('Testni boshlash', 'Начать тест', 'Start quiz')}</button></div></div>`;
+    host.innerHTML = h;
+    host.querySelectorAll('.zk-say').forEach((x) => (x.onclick = () => { if (!sjSay(x.dataset.say, sp)) x.disabled = true; }));
+    if (!window.speechSynthesis) host.querySelectorAll('.zk-say').forEach((x) => x.remove());
+    const gq = document.getElementById('sjGoQuiz'); if (gq) gq.onclick = () => { subjectTopic(sj.id, b.grade, b.part, n, 'quiz'); window.scrollTo({ top: 0 }); };
+  }
+  function sjQuiz(host, sj, b, n, tp, Ls, key) {
+    const ttl = `${SN(sj)} · ${b.grade}-${L3('sinf', 'класс', 'grade')} • ${n}. ${tp.t}`, href = `#s/${sj.id}/${b.grade}/${b.part}/${n}`;
+    const mix = (q) => { const o = arr(q.o).map((x, i) => [x, i]); if (!o.every((x) => /^\s*\d+\s*$/.test(sjL(x[0])))) for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; } return { q: q.q, o: o.map((x) => x[0]), a: o.findIndex((x) => x[1] === q.a), d: 'easy', g: 's', n, ttl, href }; };
+    host.innerHTML = '<div class="panel"><div id="quiz"></div></div>';
+    const run = () => runTest(document.getElementById('quiz'), arr(Ls.quiz).filter((q) => q && arr(q.o).length && q.a >= 0 && q.a < q.o.length).map(mix), { mode: 'practice', compact: true, title: ttl, onNew: run, onFinish: (s) => { sjBest(key, s); return 0; } });
+    run();
+  }
+  // Darslik sahifalari Firebase'dan (content/<fan>-<sinf>-<qism>-<sahifa>); ruxsat — firestore.rules (bepul mavzu, obuna, xodim)
+  const sjPageCache = {};
+  async function loadSjPages(host, sj, b, n, tp) {
+    if (!host) return;
+    const uz = lang === 'uz', bid = `${sj.id}-${b.grade}-${b.part}`;
+    const open = !window.ZKAuth || ZKAuth.canPaid(sj.id) || ZKSub.lessonOpen(false, n, freeN());
+    if (!open) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return; }
+    const B = window.ZKAuth && ZKAuth.backend;
+    if (!B) { host.innerHTML = `<div class="zk-lazy">${L3('Darslik sahifalari kirish bilan ochiladi.', 'Страницы учебника открываются после входа.', 'Sign in to see textbook pages.')}</div>`; return; }
+    try {
+      const idx = await B.get('contentIndex', bid);
+      if (!host.isConnected) return;
+      if (!idx) { host.innerHTML = `<div class="zk-lazy">${L3('Bu darslikning sahifalari hali yuklanmagan. Administrator ularni «Admin paneli → Darsliklar» bo‘limidan yuklaydi.', 'Страницы этого учебника ещё не загружены. Администратор загружает их в разделе «Панель администратора → Учебники».', 'This textbook’s pages have not been uploaded yet. The administrator uploads them in Admin panel → Textbooks.')}</div>`; return; }
+      const docs = await Promise.all(tp.p.map((p) => { const k = `${bid}-${p}`; return sjPageCache[k] ? Promise.resolve(sjPageCache[k]) : B.get('content', k).then((d) => (d && (sjPageCache[k] = d), d)); }));
+      if (!host.isConnected) return;
+      const ok = docs.filter((d) => d && d.img);
+      if (!ok.length) { host.innerHTML = `<div class="zk-lazy">${L3('Sahifalar topilmadi.', 'Страницы не найдены.', 'Pages not found.')}</div>`; return; }
+      host.innerHTML = `<div class="pages zk-sjimgs">${ok.map((d) => `<img src="${d.img}" alt="${esc((L3('Darslik, ', 'Учебник, ', 'Textbook, ')) + d.p + (L3('-sahifa', ' стр.', ' page')))}" loading="lazy" decoding="async" style="aspect-ratio:${d.w || 900}/${d.h || 1273}">`).join('')}</div>`;
+      host.querySelectorAll('img').forEach((im) => pressable(im, () => zoomImg(im), im.alt));
+    } catch (e) {
+      if (!host.isConnected) return;
+      if (/permission/i.test((e && (e.code || e.message)) || '')) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return; }
+      host.innerHTML = `<div class="zk-lazy zk-lazy-err" role="alert"><b>${L3('Sahifalar yuklanmadi', 'Страницы не загрузились', 'Pages did not load')}</b><span>${L3('Internet aloqasini tekshiring.', 'Проверьте подключение к интернету.', 'Check your internet connection.')}</span><button type="button" class="btn sec">${L3('Qayta urinish', 'Повторить', 'Try again')}</button></div>`;
+      host.querySelector('button').onclick = () => loadSjPages(host, sj, b, n, tp);
+    }
   }
   /* ---------- obuna: qulflangan bo'lim oynasi (lib/sub.js, firestore.rules: obunani faqat admin beradi) ---------- */
   const PAY = {
@@ -379,30 +500,31 @@
   const labOk = (id) => fullAccess() || !(window.Lab && Lab.exps[id]) || ZKSub.labOpen(false, Lab.exps[id], freeN());
   const lockIc = '<span class="zk-lock" aria-hidden="true">🔒</span>';
   const pt = (k, o) => { let x = (PAY[lang] || PAY.uz)[k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
-  function paywall(feature) {
-    const site = (window.ZKAuth && ZKAuth.site) || {}, prices = site.prices || {}, st = window.ZKAuth ? ZKAuth.subStatus() : {};
+  function paywall(feature, sj) {
+    const site = (window.ZKAuth && ZKAuth.site) || {}, prices = site.prices || {}, st = window.ZKAuth ? ZKAuth.subStatus(sj ? sj.id : 'chem') : {};
     const esc2 = (v) => (window.ZKAuth ? ZKAuth.esc(v) : String(v));
-    const plans = (window.ZKSub ? ZKSub.PLANS : []).map((k) => `<div class="zk-plan"><b>${ZKSub.NAMES[lang === 'en' ? 'en' : 'uz'][k]}</b>${prices[k] ? `<span>${esc2(prices[k])}</span>` : ''}<small>${pt('d_' + k)}</small></div>`).join('');
+    const plans = (window.ZKSub ? ZKSub.PLANS : []).map((k) => `<div class="zk-plan"><b>${ZKSub.NAMES[lang][k]}</b>${prices[k] ? `<span>${esc2(prices[k])}</span>` : ''}<small>${pt('d_' + k)}</small></div>`).join('');
     return `<section class="zk-pay" aria-labelledby="zkPayH"><div class="zk-pay-ic" aria-hidden="true">🔒</div>
-      <h2 id="zkPayH" tabindex="-1">${pt(feature) || pt('lesson')}</h2><p>${pt('p', { n: freeN() })}</p>
+      <h2 id="zkPayH" tabindex="-1">${sj ? (L3(`Bu mavzu ${SN(sj).toLowerCase()} obunasi bilan ochiladi`, `Эта тема открывается по подписке «${SN(sj)}»`, `This topic opens with a ${SN(sj)} subscription`)) : pt(feature) || pt('lesson')}</h2>
+      <p>${sj ? (L3(`Har bir sinfda dastlabki ${freeN()} ta mavzu bepul. Obuna bilan ${SN(sj).toLowerCase()} fanining barcha mavzulari — darslik sahifalari va mashqlari ochiladi.`, `Первые ${freeN()} темы каждого класса бесплатны. Подписка открывает все темы предмета «${SN(sj)}» — страницы учебника и упражнения.`, `The first ${freeN()} topics of every grade are free. A subscription opens every ${SN(sj)} topic — textbook pages and exercises.`)) : pt('p', { n: freeN() })}</p>
       ${st.expired ? `<p class="zk-pay-exp" role="status">${pt('exp', { d: ZKSub.fmtDate(st.until) })}</p>` : ''}
-      <ul class="zk-pay-inc">${pt('inc').map((x) => `<li>${x}</li>`).join('')}</ul>
+      ${sj ? '' : `<ul class="zk-pay-inc">${pt('inc').map((x) => `<li>${x}</li>`).join('')}</ul>`}
       <h3>${pt('plans')}</h3><div class="zk-pay-plans">${plans}</div>
       <div class="zk-pay-how"><b>${pt('how')}</b><p>${esc2(site.payInfo || pt('how_def'))}</p></div>
-      <div class="zk-pay-act"><button type="button" class="btn" id="zkPayRe">${pt('re')}</button><a class="btn sec" href="#g6-1">${pt('free')}</a></div></section>`;
+      <div class="zk-pay-act"><button type="button" class="btn" id="zkPayRe">${pt('re')}</button><a class="btn sec" href="${sj ? `#s/${sj.id}` : '#g6-1'}">${pt('free')}</a></div></section>`;
   }
   // Obuna yoqilgach profil qayta o'qilishi uchun sahifa yangilanadi
   function bindPaywall() { const b = document.getElementById('zkPayRe'); if (b) b.onclick = () => location.reload(); }
   function subCard() {
     if (!window.ZKAuth || !ZKAuth.enabled || !ZKAuth.user || ZKAuth.isStaff() || !window.ZKSub) return '';
-    const st = ZKAuth.subStatus(), nm = st.plan ? ZKSub.NAMES[lang === 'en' ? 'en' : 'uz'][st.plan] + ' · ' : '';
+    const st = ZKAuth.subStatus(), nm = st.plan ? ZKSub.NAMES[lang][st.plan] + ' · ' : '';
     const line = st.active ? `${nm}${pt('me_on', { d: ZKSub.fmtDate(st.until) })} <small>(${pt('me_left', { n: st.daysLeft })})</small>`
       : st.expired ? pt('me_exp', { d: ZKSub.fmtDate(st.until) }) : pt('me_off', { n: freeN() });
     return `<div class="wrap"><div class="panel zk-subcard ${st.active ? 'on' : 'off'}"><h3>💳 ${pt('me_h')}</h3><p>${line}</p>${st.active ? '' : `<a class="btn sec sm" href="#g6-${freeN() + 1}">${pt('me_more')}</a>`}</div></div>`;
   }
   /* ---------- kerak bo'lganda yuklanadigan qismlar (index.html → window.ZKLazy) ---------- */
   // Yuklangach sahifa o'sha joyda qayta chiziladi; foydalanuvchi boshqa sahifaga o'tib ketgan bo'lsa — hech narsa qilinmaydi.
-  const lazyBox = () => `<div class="zk-lazy" role="status"><span class="zk-lazy-spin" aria-hidden="true"></span>${lang === 'uz' ? 'Yuklanmoqda…' : 'Loading…'}</div>`;
+  const lazyBox = () => `<div class="zk-lazy" role="status"><span class="zk-lazy-spin" aria-hidden="true"></span>${L3('Yuklanmoqda…', 'Загрузка…', 'Loading…')}</div>`;
   function need(key, redo, host) {
     const Z = window.ZKLazy; if (!Z || !Z[key]) return;
     const h = location.hash;
@@ -416,7 +538,7 @@
       if (location.hash !== h || (host && !host.isConnected)) return;
       const box = host || app, d = document.createElement('div');
       d.className = 'zk-lazy zk-lazy-err'; d.setAttribute('role', 'alert');
-      d.innerHTML = `<b>${lang === 'uz' ? 'Bu qism yuklanmadi' : 'This part did not load'}</b><span>${lang === 'uz' ? 'Internet aloqasini tekshiring.' : 'Check your internet connection.'}</span><button type="button" class="btn sec">${lang === 'uz' ? 'Qayta urinish' : 'Try again'}</button>`;
+      d.innerHTML = `<b>${L3('Bu qism yuklanmadi', 'Эта часть не загрузилась', 'This part did not load')}</b><span>${L3('Internet aloqasini tekshiring.', 'Проверьте подключение к интернету.', 'Check your internet connection.')}</span><button type="button" class="btn sec">${L3('Qayta urinish', 'Повторить', 'Try again')}</button>`;
       d.querySelector('button').onclick = () => { d.remove(); need(key, redo, host); };
       if (host) { host.innerHTML = ''; host.appendChild(d); } else { const w = box.querySelector('.zk-lazy'); if (w) w.replaceWith(d); else box.prepend(d); }
     });
@@ -455,7 +577,7 @@
       body += L.q ? `<div class="keyq"><div class="ic">❓</div><div><b>${t('keyq')}</b>${tr(L.q)}</div></div>` : '';
       body += `<div class="panel prose"><h3>📘 ${tr(L.t)}</h3>${(L.intro ? [].concat(L.intro) : []).map((p) => `<p>${tr(p)}</p>`).join('')}</div>`;
       if (L.pts && L.pts.length) body += `<div class="panel"><h3>💡 ${t('main_ideas')}</h3><ul class="pts">${L.pts.map((p) => `<li>${tr(p)}</li>`).join('')}</ul></div>`;
-      if (L.eq) body += `<div class="panel"><h3>⚗️ ${lang === 'uz' ? 'Formulalar va tenglamalar' : 'Formulas and equations'}</h3>${[].concat(L.eq).map((e) => `<div class="eqbox" style="margin-bottom:8px">${e}</div>`).join('')}</div>`;
+      if (L.eq) body += `<div class="panel"><h3>⚗️ ${L3('Formulalar va tenglamalar', 'Формулы и уравнения', 'Formulas and equations')}</h3>${[].concat(L.eq).map((e) => `<div class="eqbox" style="margin-bottom:8px">${e}</div>`).join('')}</div>`;
       if (L.terms && L.terms.length) body += `<div class="panel"><h3>📖 ${t('terms')}</h3><div class="terms">${L.terms.map((x) => `<div class="term"><b>${tr(x[0])}</b><span>${tr(x[1])}</span></div>`).join('')}</div></div>`;
       if (ex.length) body += `<div class="panel"><h3>🧪 ${t('exps_here')}</h3>${ex.map(xinline).join('')}</div>`;
       const tl = toolsOf(g, n); if (tl.length) body += `<div class="panel"><h3>🧩 ${t('tool_h')}</h3>${tl.map(toolCard).join('')}</div>`;
@@ -470,7 +592,7 @@
       const imgs = `<div class="pages">${pg.map((i) => ptag(g, i, `loading="lazy" alt="${t('page')} ${i}"`)).join('')}</div>`;
       if (lang !== origLang && trData) {
         body += `<div class="panel"><div class="tr-bar"><div class="note" style="margin:0;flex:1">${t(g === 'g6' ? 'tr_note_en' : 'tr_note_uz')}</div><button class="btn sec" id="trToggle" style="padding:8px 14px;font-size:13.5px">${showTr ? t('show_orig') : t('show_tr')}</button></div>
-          ${showTr ? `<div class="trpages">${trData.map((p, k) => `<article class="trpage"><div class="trp-h"><span>${GN[g]}-${lang === 'uz' ? 'SINF KIMYO' : 'GRADE CHEMISTRY'}</span><span>${t('lesson')} ${n} • ${pg[k] - (g === 'g6' ? 2 : 3)}-${t('page_n')}</span></div>${p}</article>`).join('')}</div>` : imgs}</div>`;
+          ${showTr ? `<div class="trpages">${trData.map((p, k) => `<article class="trpage"><div class="trp-h"><span>${GN[g]}-${L3('SINF KIMYO', 'КЛАСС, ХИМИЯ', 'GRADE CHEMISTRY')}</span><span>${t('lesson')} ${n} • ${pg[k] - (g === 'g6' ? 2 : 3)}-${t('page_n')}</span></div>${p}</article>`).join('')}</div>` : imgs}</div>`;
       } else body += `<div class="panel"><div class="note">${t(g === 'g6' ? 'pages_note_uz' : 'pages_note_en')}</div>${imgs}</div>`;
     } else if (tab === 'lab') {
       if (ex.length) {
@@ -487,7 +609,7 @@
     const ucs = ucStrong(col); const ucv = `--uc:${col};--uc-on:${onCol(col)};--uc-bs:${ucs[0]};--uc-os:${ucs[1]}`;
     app.innerHTML = `<div class="lesson-top" style="${ucv}"><div class="wrap">
         <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#${g}">${t('nav_' + g)}</a> / ${t('lesson')} ${n}</div>
-        <div class="lhead"><h1><span class="zk-sr">${lang === 'uz' ? n + '-dars: ' : 'Lesson ' + n + ': '}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${n}</span>${tr(L.t)}${lst === 'done' ? `<span class="lstat done">⭐ ${XP.t('st_done')}</span>` : ''}</h1>
+        <div class="lhead"><h1><span class="zk-sr">${L3(n + '-dars: ', 'Урок ' + n + ': ', 'Lesson ' + n + ': ')}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${n}</span>${tr(L.t)}${lst === 'done' ? `<span class="lstat done">⭐ ${XP.t('st_done')}</span>` : ''}</h1>
           <div class="lnav" title="${t('kb_hint')}">${prev ? `<a class="lnb" href="#${g}-${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${n}</b> / ${bk.lessons.length}</span>${next ? `<a class="lnb" href="#${g}-${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
         <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${tp}"></span>${TABS.map((k) => `<button data-tab="${k}" role="tab" id="ltab-${k}" aria-controls="lpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" class="${tab === k ? 'on' : ''}"><i class="ti" aria-hidden="true">${{ content: '📘', pages: '📄', lab: '🧪', quiz: '✅' }[k]}</i><span class="tlong">${t('t_' + k)}</span><span class="tsh">${t('ts_' + k)}</span>${k === 'lab' && (ex.length || toolsOf(g, n).length) ? `<span class="cnt">${ex.length + toolsOf(g, n).length}</span>` : ''}${k === 'quiz' ? `<span class="cnt q">10</span>` : ''}</button>`).join('')}</div>
       </div></div>
@@ -513,8 +635,8 @@
       const jj = { ArrowRight: base + 1, ArrowLeft: base - 1, Home: 0, End: bs.length - 1 }[e.key];
       const nb = bs[(jj + bs.length) % bs.length]; if (nb) { bs.forEach((x) => (x.tabIndex = x === nb ? 0 : -1)); nb.focus(); }
     };
-    app.querySelectorAll('.pages img').forEach((im) => pressable(im, () => zoomImg(im), `${t('page')} ${(im.getAttribute('alt') || '').replace(/\D+/g, '')} — ${lang === 'uz' ? 'kattalashtirish' : 'enlarge'}`));
-    app.querySelectorAll('.xinline').forEach((el) => { const h4 = el.querySelector('h4'); pressable(el, () => openModal(el.dataset.x), (h4 ? h4.textContent.trim() + ' — ' : '') + (lang === 'uz' ? '3D tajribani ochish' : 'open 3D experiment')); });
+    app.querySelectorAll('.pages img').forEach((im) => pressable(im, () => zoomImg(im), `${t('page')} ${(im.getAttribute('alt') || '').replace(/\D+/g, '')} — ${L3('kattalashtirish', 'увеличить', 'enlarge')}`));
+    app.querySelectorAll('.xinline').forEach((el) => { const h4 = el.querySelector('h4'); pressable(el, () => openModal(el.dataset.x), (h4 ? h4.textContent.trim() + ' — ' : '') + (L3('3D tajribani ochish', 'открыть 3D-опыт', 'open 3D experiment'))); });
     const on = app.querySelector('.navl a.on'); const nl = on && on.closest('.navl');
     if (on && nl) { const d = on.getBoundingClientRect().top - nl.getBoundingClientRect().top; nl.scrollTop += d - nl.clientHeight / 2 + on.offsetHeight / 2; } // faqat ro'yxat suriladi, sahifa sakramaydi
     if (lockF) bindPaywall();
@@ -531,7 +653,7 @@
 
   /* ---------- test runner ---------- */
   const DL = { easy: 'easy', medium: 'medium', hard: 'hard' };
-  function lessonTitle(it) { const L = B[it.g].lessons[it.n - 1]; return `${GN[it.g]}-${t('grade')} • ${t('lesson')} ${it.n}: ${tr(L.t)}`; }
+  function lessonTitle(it) { if (it.ttl) return it.ttl; const L = B[it.g].lessons[it.n - 1]; return `${GN[it.g]}-${t('grade')} • ${t('lesson')} ${it.n}: ${tr(L.t)}`; }
   const uzL = () => lang === 'uz';
   function runTest(el, items, opts = {}) {
     const st = { i: 0, ans: items.map(() => null), done: false, start: Date.now(), timer: null };
@@ -546,13 +668,13 @@
       const answered = st.ans.filter((x) => x != null).length;
       el.innerHTML = `<div class="tr-run">
         <div class="tr-top"><div class="tr-prog"><div style="width:${100 * answered / items.length}%"></div></div><span>${t('q_word')} ${st.i + 1} / ${items.length}</span>${exam ? `<span class="tm-box">⏱ <b class="tm">${tmText()}</b></span>` : ''}</div>
-        <div class="tr-meta"><span class="dchip ${it.d}">${t(DL[it.d])}</span><a href="#${it.g}-${it.n}" class="tr-topic">${lessonTitle(it)}</a></div>
+        <div class="tr-meta"><span class="dchip ${it.d}">${t(DL[it.d])}</span><a href="${it.href || `#${it.g}-${it.n}`}" class="tr-topic">${lessonTitle(it)}</a></div>
         <div class="tr-q" id="trq" tabindex="-1">${it.tf ? `<small>${t('tf_hint')}</small>` : ''}${tr(it.q)}</div>
         <div class="tr-opts ${it.tf ? 'tf' : ''}" role="radiogroup" aria-labelledby="trq">${it.o.map((o, k) => { let cls = ''; if (a === k) cls = 'sel'; if (reveal) { if (k === it.a) cls = 'ok'; else if (a === k) cls = 'bad'; } return `<button type="button" role="radio" aria-checked="${a === k}" tabindex="${(a == null ? k === 0 : a === k) ? 0 : -1}" data-k="${k}" class="${cls}" ${reveal ? 'aria-disabled="true"' : ''}><i>${it.tf ? (k ? '✗' : '✓') : letters[k]}</i><span>${tr(o)}</span></button>`; }).join('')}</div>
         ${reveal ? `<div class="tr-fb ${a === it.a ? 'ok' : 'bad'}">${a === it.a ? t('right') : t('wrong') + '<b>' + tr(it.o[it.a]) + '</b>'}${it.e ? ' — ' + tr(it.e) : ''}</div>` : ''}
         ${answered === items.length && !opts.compact ? `<div class="note" style="margin-top:12px">${t('finished_q')}</div>` : ''}
         <div class="tr-nav"><button class="btn sec" id="qp" ${st.i ? '' : 'disabled'}>${t('prev_q')}</button>
-          <div class="tr-pal" role="group" aria-label="${uzL() ? 'Savollar' : 'Questions'}">${items.map((x, k) => { const stt = st.ans[k] == null ? '' : exam ? (uzL() ? ', javob berilgan' : ', answered') : st.ans[k] === x.a ? (uzL() ? ', to‘g‘ri' : ', correct') : (uzL() ? ', noto‘g‘ri' : ', wrong'); return `<button type="button" data-j="${k}" aria-label="${t('q_word')} ${k + 1}${stt}" ${k === st.i ? 'aria-current="step"' : ''} class="${k === st.i ? 'cur' : ''} ${st.ans[k] != null ? (exam ? 'done' : (st.ans[k] === x.a ? 'okk' : 'badd')) : ''}">${k + 1}</button>`; }).join('')}</div>
+          <div class="tr-pal" role="group" aria-label="${L3('Savollar', 'Вопросы', 'Questions')}">${items.map((x, k) => { const stt = st.ans[k] == null ? '' : exam ? (L3(', javob berilgan', ', отвечен', ', answered')) : st.ans[k] === x.a ? (L3(', to‘g‘ri', ', верно', ', correct')) : (L3(', noto‘g‘ri', ', неверно', ', wrong')); return `<button type="button" data-j="${k}" aria-label="${t('q_word')} ${k + 1}${stt}" ${k === st.i ? 'aria-current="step"' : ''} class="${k === st.i ? 'cur' : ''} ${st.ans[k] != null ? (exam ? 'done' : (st.ans[k] === x.a ? 'okk' : 'badd')) : ''}">${k + 1}</button>`; }).join('')}</div>
           ${st.i < items.length - 1 ? `<button class="btn pri" id="qn">${t('next_q')}</button>` : `<button class="btn grn" id="qf">${t('finish')}</button>`}</div>
       </div>`;
       // Klaviatura va ekran o'quvchilar: javobdan keyin natija e'lon qilinadi, fokus mantiqiy joyga o'tadi
@@ -590,7 +712,7 @@
           <div><h3>${t('res_h')}: ${s} / ${items.length}</h3><p class="res-mark">${t('res_grade')}: <b class="m${mark}">${mark}</b> &nbsp;•&nbsp; ⏱ ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}${st.gain ? ` &nbsp;<span class="xpgain">⚡ +${st.gain} XP</span>` : ''}</p>
           <div class="btns">${wrong.length ? `<button class="btn grn" id="rw">${t('retry_wrong')} (${wrong.length})</button>` : ''}<button class="btn pri" id="rn">${t('new_test')}</button>${opts.onBack ? `<button class="btn sec" id="rb">${t('back_setup')}</button>` : ''}</div></div></div>
         <h4>${t('by_diff')}</h4><div class="bars">${['easy', 'medium', 'hard'].filter((d) => by[d].n).map((d) => `<div class="bar"><span class="dchip ${d}">${t(d)}</span><div class="bt"><div class="bf ${d}" style="width:${100 * by[d].ok / by[d].n}%"></div></div><b>${by[d].ok}/${by[d].n}</b></div>`).join('')}</div>
-        ${Object.keys(topics).length > 1 ? `<h4>${t('by_topic')}</h4><div class="tops">${Object.values(topics).sort((a, b) => a.ok / a.n - b.ok / b.n).map((x) => `<a href="#${x.it.g}-${x.it.n}" class="top-row"><span>${lessonTitle(x.it)}</span><b class="${x.ok === x.n ? 'g' : x.ok / x.n < 0.5 ? 'r' : ''}">${x.ok}/${x.n}</b></a>`).join('')}</div>` : ''}
+        ${Object.keys(topics).length > 1 ? `<h4>${t('by_topic')}</h4><div class="tops">${Object.values(topics).sort((a, b) => a.ok / a.n - b.ok / b.n).map((x) => `<a href="${x.it.href || `#${x.it.g}-${x.it.n}`}" class="top-row"><span>${lessonTitle(x.it)}</span><b class="${x.ok === x.n ? 'g' : x.ok / x.n < 0.5 ? 'r' : ''}">${x.ok}/${x.n}</b></a>`).join('')}</div>` : ''}
         <h4>${t('review')}</h4><div class="rev">${items.map((it, k) => { const a = st.ans[k], ok = a === it.a; return `<div class="rev-i ${ok ? 'ok' : 'bad'}"><div class="rev-h"><span class="num">${k + 1}</span><span class="dchip ${it.d}">${t(it.d)}</span><span class="rev-q">${tr(it.q)}</span></div>${ok ? `<div class="rev-a ok">✓ ${tr(it.o[it.a])}</div>` : `<div class="rev-a bad">✗ ${t('your')}: ${a == null ? t('noans') : tr(it.o[a])}</div><div class="rev-a ok">✓ ${t('correct_a')}: ${tr(it.o[it.a])}</div><a class="rev-l" href="#${it.g}-${it.n}">📘 ${t('study')}</a>`}</div>`; }).join('')}</div>
       </div>`;
       const rw = el.querySelector('#rw'); if (rw) rw.onclick = () => runTest(el, wrong.map((x) => Object.assign({}, x)), Object.assign({}, opts, { mode: 'practice', onFinish: null }));
@@ -624,7 +746,7 @@
         <div class="ts-row">${seg('grade', TS.grade, [['both', t('t_both')], ['g6', t('nav_g6')], ['g7', t('nav_g7')], ['g8', t('nav_g8')]])}<button class="btn sec sm" id="sa">${t('t_all')}</button><button class="btn sec sm" id="sn">${t('t_none')}</button></div>
         ${fullAccess() ? '' : `<div class="zk-lock-note">🔒 ${pt('t_lock', { n: freeN() })} <a href="#g6-${freeN() + 1}">${pt('me_more')}</a></div>`}
         <div class="tlist">${groups}</div></div>
-      <div class="ts-r"><div class="panel"><h3>⚙️ ${lang === 'uz' ? 'Sozlamalar' : 'Settings'}</h3>
+      <div class="ts-r"><div class="panel"><h3>⚙️ ${L3('Sozlamalar', 'Настройки', 'Settings')}</h3>
         <div class="ts-f" role="group" aria-labelledby="tsl1"><label id="tsl1">${t('t_count')}</label>${seg('count', TS.count, [[10, '10'], [20, '20'], [30, '30'], [50, '50']])}</div>
         <div class="ts-f" role="group" aria-labelledby="tsl2"><label id="tsl2">${t('t_diff')}</label>${seg('diff', TS.diff, [['mix', t('t_mix')], ['easy', t('easy')], ['medium', t('medium')], ['hard', t('hard')]])}</div>
         <div class="ts-f" role="group" aria-labelledby="tsl3"><label id="tsl3">${t('t_mode')}</label><div class="modes"><label><input type="radio" name="md" value="practice" ${TS.mode === 'practice' ? 'checked' : ''}> ${t('t_practice')}</label><label><input type="radio" name="md" value="exam" ${TS.mode === 'exam' ? 'checked' : ''}> ${t('t_exam')}</label></div></div>
@@ -639,7 +761,7 @@
     document.getElementById('sn').onclick = () => { TS.sel = new Set(); testsPage(); const f = document.getElementById('sn'); if (f) f.focus({ preventScroll: true }); };
     const start = (sel, count, diff) => {
       if (!sel.length) { document.getElementById('terr').textContent = t('t_pick'); return; }
-      const go = () => { const items = QB.build(sel, count, diff); const w = document.getElementById('tWrap'); w.innerHTML = '<div class="panel tr-panel"><div id="tRun"></div></div>'; runTest(document.getElementById('tRun'), items, { mode: TS.mode, title: `${t('nav_tests')} (${sel.length} ${lang === 'uz' ? 'mavzu' : 'topics'})`, onNew: go, onBack: testsPage, focus: true, onFinish: (s) => { if (XPok()) XP.test(s); return s; } }); window.scrollTo({ top: 0 }); };
+      const go = () => { const items = QB.build(sel, count, diff); const w = document.getElementById('tWrap'); w.innerHTML = '<div class="panel tr-panel"><div id="tRun"></div></div>'; runTest(document.getElementById('tRun'), items, { mode: TS.mode, title: `${t('nav_tests')} (${sel.length} ${L3('mavzu', 'тем', 'topics')})`, onNew: go, onBack: testsPage, focus: true, onFinish: (s) => { if (XPok()) XP.test(s); return s; } }); window.scrollTo({ top: 0 }); };
       go();
     };
     document.getElementById('tgo').onclick = () => start([...TS.sel].map((k) => { const [g, n] = k.split('-'); return [g, +n]; }), TS.count, TS.diff);
@@ -710,7 +832,7 @@
     const e = Lab.exps[id]; if (!e) return; destroyLab();
     document.getElementById('lmTitle').textContent = tr(e.title); document.getElementById('lmIcon').textContent = e.icon || '🧪';
     const m = document.getElementById('labModal'); m.classList.add('on');
-    document.getElementById('lmClose').setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close');
+    document.getElementById('lmClose').setAttribute('aria-label', L3('Yopish', 'Закрыть', 'Close'));
     const lh = document.getElementById('lmHost');
     if (!labOk(id)) { lh.innerHTML = `<div class="zk-pay-modal">${paywall('lab')}</div>`; bindPaywall(); dlgOpen(m, document.getElementById('lmClose')); return; }
     withLab(lh, () => { if (m.classList.contains('on')) modalHandle = Lab.open(lh, id, { autoplay: !matchMedia('(prefers-reduced-motion: reduce)').matches }); });
@@ -731,11 +853,11 @@
     const trOf = (i) => { const T = window.PAGES_TR && window.PAGES_TR[g]; if (!T) return null; const off = g === 'g6' ? 1 : 2; const n = Math.floor((i - off) / 2), k = (i - off) % 2; return n >= 1 && T[n - 1] && T[n - 1][k] ? { n, k, h: T[n - 1][k] } : null; };
     const trAvail = lang !== origLang && ((!altHas(g, p) && trOf(p)) || (p + 1 < max && !altHas(g, p + 1) && trOf(p + 1)));
     const useTr = trAvail && bookTr;
-    const cell = (i) => { const x = useTr && !altHas(g, i) && trOf(i); return x ? `<article class="trpage"><div class="trp-h"><span>${GN[g]}-${lang === 'uz' ? 'SINF KIMYO' : 'GRADE CHEMISTRY'}</span><span><a href="#${g}-${x.n}">${t('lesson')} ${x.n}</a> • ${i + 1}</span></div>${x.h}</article>` : pimg(g, i, bookFlip, 'alt=""'); };
+    const cell = (i) => { const x = useTr && !altHas(g, i) && trOf(i); return x ? `<article class="trpage"><div class="trp-h"><span>${GN[g]}-${L3('SINF KIMYO', 'КЛАСС, ХИМИЯ', 'GRADE CHEMISTRY')}</span><span><a href="#${g}-${x.n}">${t('lesson')} ${x.n}</a> • ${i + 1}</span></div>${x.h}</article>` : pimg(g, i, bookFlip, 'alt=""'); };
     app.innerHTML = `<div class="page-h ${g}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${t('nav_book')}</div><h1>📖 ${t(g + '_t')}</h1><p>${t('book_h')}</p></div></div>
     <div class="wrap reader">
       <div class="seg"><button data-b="g6" class="${g === 'g6' ? 'on' : ''}">${t('nav_g6')}</button><button data-b="g7" class="${g === 'g7' ? 'on' : ''}">${t('nav_g7')}</button><button data-b="g8" class="${g === 'g8' ? 'on' : ''}">${t('nav_g8')}</button></div>
-      <div class="ctl"><button type="button" class="btn sec" id="bp" aria-label="${lang === 'uz' ? 'Oldingi sahifa' : 'Previous page'}">←</button><input id="bi" type="number" min="1" max="${max}" value="${p + 1}" aria-label="${lang === 'uz' ? 'Sahifa raqami' : 'Page number'}"><span style="color:var(--muted)">/ ${max}</span><button type="button" class="btn sec" id="bn" aria-label="${lang === 'uz' ? 'Keyingi sahifa' : 'Next page'}">→</button></div>
+      <div class="ctl"><button type="button" class="btn sec" id="bp" aria-label="${L3('Oldingi sahifa', 'Предыдущая страница', 'Previous page')}">←</button><input id="bi" type="number" min="1" max="${max}" value="${p + 1}" aria-label="${L3('Sahifa raqami', 'Номер страницы', 'Page number')}"><span style="color:var(--muted)">/ ${max}</span><button type="button" class="btn sec" id="bn" aria-label="${L3('Keyingi sahifa', 'Следующая страница', 'Next page')}">→</button></div>
       ${trAvail ? `<div class="tr-bar" style="margin:4px 0 12px"><div class="note" style="margin:0;flex:1">${t(g === 'g6' ? 'tr_note_en' : 'tr_note_uz')}</div><button class="btn sec" id="bkTr" style="padding:8px 14px;font-size:13.5px">${bookTr ? t('show_orig') : t('show_tr')}</button></div>` : ''}
       <div class="tr-bar" style="margin:4px 0 12px"><div class="note" style="margin:0;flex:1">${t(pageLang(g, p, bookFlip) === 'uz' ? 'pg_in_uz' : 'pg_in_en')}</div><button class="btn sec" id="bkFlip" style="padding:8px 14px;font-size:13.5px">${t(pageLang(g, p, bookFlip) === 'uz' ? 'see_en' : 'see_uz')}</button></div>
       ${p > lim ? paywall('pages') : `<div class="spread${useTr ? ' trspread' : ''}">${cell(p)}${p + 1 < max && p + 1 <= lim ? cell(p + 1) : ''}</div>`}
@@ -747,7 +869,7 @@
     bindPaywall();
     document.getElementById('bi').onchange = (e) => go(+e.target.value - 1);
     app.querySelectorAll('[data-b]').forEach((b) => (b.onclick = () => (location.hash = 'book-' + b.dataset.b)));
-    app.querySelectorAll('.spread img').forEach((im) => pressable(im, () => zoomImg(im), lang === 'uz' ? 'Sahifani kattalashtirish' : 'Enlarge page'));
+    app.querySelectorAll('.spread img').forEach((im) => pressable(im, () => zoomImg(im), L3('Sahifani kattalashtirish', 'Увеличить страницу', 'Enlarge page')));
   }
   const bookPos = { g6: 0, g7: 0, g8: 0 }; let bookTr = true;
   document.onkeydown = (e) => {
@@ -762,7 +884,7 @@
     }
   };
 
-  function zoomImg(im) { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); zi.src = im.getAttribute('src'); const h = +im.dataset.h || 1273; zi.style.cssText = `aspect-ratio:900/${h};object-fit:cover;object-position:${im.style.objectPosition};height:min(96vh, ${(96 * h / 900).toFixed(1)}vw);width:auto`; z.classList.remove('big'); z.classList.add('on'); zi.alt = im.getAttribute('alt') || ''; const zx = document.getElementById('zoomX'); if (zx) { zx.setAttribute('aria-label', lang === 'uz' ? 'Yopish' : 'Close'); zx.onclick = (e) => { e.stopPropagation(); closeZoom(); }; } dlgOpen(z, zx); }
+  function zoomImg(im) { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); zi.src = im.getAttribute('src'); const h = +im.dataset.h || 1273; zi.style.cssText = `aspect-ratio:900/${h};object-fit:cover;object-position:${im.style.objectPosition};height:min(96vh, ${(96 * h / 900).toFixed(1)}vw);width:auto`; z.classList.remove('big'); z.classList.add('on'); zi.alt = im.getAttribute('alt') || ''; const zx = document.getElementById('zoomX'); if (zx) { zx.setAttribute('aria-label', L3('Yopish', 'Закрыть', 'Close')); zx.onclick = (e) => { e.stopPropagation(); closeZoom(); }; } dlgOpen(z, zx); }
   { const z = document.getElementById('zoom'); const zi = z.querySelector('img'); const touch = matchMedia('(pointer:coarse)').matches;
     z.onclick = (e) => { if (touch && e.target === zi) { const r0 = zi.getBoundingClientRect(); const fx = (e.clientX - r0.left) / r0.width, fy = (e.clientY - r0.top) / r0.height; const big = z.classList.toggle('big'); if (big) { zi.dataset.cs = zi.style.cssText; zi.style.height = 'auto'; zi.style.width = '240vw'; zi.style.maxWidth = 'none'; zi.style.maxHeight = 'none'; requestAnimationFrame(() => { const r = zi.getBoundingClientRect(); z.scrollTo({ left: fx * r.width - innerWidth / 2 + 20, top: fy * r.height - innerHeight / 2 + 20 }); }); } else { zi.style.cssText = zi.dataset.cs || ''; z.scrollTo(0, 0); } return; } z.classList.remove('on', 'big'); z.scrollTo(0, 0); dlgClose(); }; }
 
@@ -795,7 +917,7 @@
     sres.innerHTML = out.slice(0, 14).join('') || `<a class="muted" role="option" aria-disabled="true">${t('nores')}</a>`; sres.classList.add('on');
     links().forEach((a, i) => { a.id = 'sr' + i; a.tabIndex = -1; a.setAttribute('role', 'option'); a.setAttribute('aria-selected', 'false'); });
     q.setAttribute('aria-expanded', 'true'); q.removeAttribute('aria-activedescendant');
-    clearTimeout(srchSay._t); srchSay._t = setTimeout(() => { const an = document.getElementById('zkAnnounce'); if (!an) return; const n = links().length; an.textContent = ''; setTimeout(() => (an.textContent = n ? `${n} ${lang === 'uz' ? 'ta natija' : 'results'}` : t('nores')), 40); }, 450);
+    clearTimeout(srchSay._t); srchSay._t = setTimeout(() => { const an = document.getElementById('zkAnnounce'); if (!an) return; const n = links().length; an.textContent = ''; setTimeout(() => (an.textContent = n ? `${n} ${L3('ta natija', 'результатов', 'results')}` : t('nores')), 40); }, 450);
     if (num && sres.querySelector('a[href]')) { sIdx = 0; mark(); }
   };
   const links = () => [...sres.querySelectorAll('a[href]')]; const srchSay = {};
@@ -856,7 +978,7 @@
     let m, navKey = 'home';
     { // sarlavhadagi fan nomi: fan sahifalarida — o'sha fan, aks holda — kimyo
       const chip = document.querySelector('header.top .zk-subject'); const sm = h.match(/^s\/([a-z]+)/); const sj = sm && window.ZKSubjects ? ZKSubjects.get(sm[1]) : null;
-      if (chip) { const nm = sj ? SN(sj) : h === 'fanlar' ? t('nav_subj') : (lang === 'en' ? 'Chemistry' : 'Kimyo'); chip.textContent = nm.toUpperCase(); chip.setAttribute('aria-label', nm); }
+      if (chip) { const nm = sj ? SN(sj) : h === 'fanlar' ? t('nav_subj') : (L3('Kimyo', 'Химия', 'Chemistry')); chip.textContent = nm.toUpperCase(); chip.setAttribute('aria-label', nm); }
     }
     let lockR = null, lm;
     if (!fullAccess()) {
@@ -888,7 +1010,7 @@
     // Sahifa sarlavhasi (brauzer tabi) va ekran o'quvchilar uchun e'lon; yangi sahifada fokus sarlavhaga o'tadi
     const h1 = app.querySelector('h1'), hc = h1 && h1.cloneNode(true); if (hc) hc.querySelectorAll('.lnum,.lstat,[aria-hidden="true"]').forEach((x) => x.remove()); const h1t = hc ? hc.textContent.replace(/\s+/g, ' ').trim() : '';
     const isHome = !!app.querySelector('.zk-hero-v3'); const tt = h1t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '').trim();
-    document.title = (tt && !isHome ? tt + ' · ' : '') + (lang === 'en' ? 'Zukko Academy — Chemistry' : 'Zukko Akademiyasi — Kimyo');
+    document.title = (tt && !isHome ? tt + ' · ' : '') + (L3('Zukko Akademiyasi — Kimyo', 'Zukko Akademiyasi — Химия', 'Zukko Academy — Chemistry'));
     if (newPage && lastAnnounced !== '') {
       const an = document.getElementById('zkAnnounce'); if (an) { an.textContent = ''; setTimeout(() => (an.textContent = h1t || document.title), 60); }
       if (h1 && document.activeElement && (document.activeElement === document.body || !document.activeElement.closest('header,#bnav,.zk-gate,.lesson-top .tabs'))) { h1.tabIndex = -1; h1.focus({ preventScroll: true }); }

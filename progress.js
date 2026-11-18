@@ -22,24 +22,69 @@
       grade_prog: 'Progress by grade', st_done: 'Mastered', st_start: 'Started', st_new: 'New', hint_goal: 'A lesson counts when you take its quiz or watch its experiment',
       ranks: ['Rookie chemist', 'Lab assistant', 'Researcher', 'Chemist', 'Scientist', 'Professor', 'Academician'], unlocked: 'New badge!', locked: 'Locked', prog_w: 'Progress',
     },
+    ru: {
+      xp: "XP",
+      lvl: "Уровень",
+      streak: "дней подряд",
+      today: "Цель на день",
+      lessons_w: "уроков",
+      goal_done: "🎯 Цель на день выполнена!",
+      lvl_up: "Новый уровень!",
+      visit: "Урок открыт",
+      lab: "Опыт просмотрен",
+      quiz: "Результат теста",
+      passed: "Урок освоен! ⭐",
+      test: "Центр тестов",
+      me: "Мои успехи",
+      me_p: "Набирайте XP, повышайте уровень и собирайте значки!",
+      cont: "Продолжить",
+      start: "Начать",
+      your_path: "Ваш путь",
+      next_lvl: "до следующего уровня",
+      done_l: "уроков освоено",
+      labs_w: "опытов просмотрено",
+      best_streak: "лучшая серия",
+      total_xp: "всего XP",
+      goal_set: "Цель на день",
+      per_day: "уроков в день",
+      ach: "Значки",
+      how: "Как получить XP",
+      reset: "Сбросить результаты",
+      reset_q: "Удалить весь XP и результаты?",
+      r_visit: "Впервые открыть урок",
+      r_lab: "Досмотреть опыт до конца",
+      r_quiz: "Каждый верный ответ в тесте урока (лучший результат)",
+      r_pass: "7/10 и больше в тесте урока — урок освоен",
+      r_goal: "Выполнить цель на день",
+      r_test: "Каждый верный ответ в центре тестов",
+      grade_prog: "Успехи по классам",
+      st_done: "Освоено",
+      st_start: "Начато",
+      st_new: "Новое",
+      hint_goal: "Урок засчитывается, когда вы проходите его тест или смотрите его опыт",
+      ranks: ["Юный химик", "Лаборант", "Исследователь", "Химик", "Учёный", "Профессор", "Академик"],
+      unlocked: "Новый значок!",
+      locked: "Закрыто",
+      prog_w: "Прогресс"
+    },
   };
   const ACH = [
-    { id: 'first', ic: '👣', uz: ['Birinchi qadam', 'Birinchi darsni och'], en: ['First step', 'Open your first lesson'], ok: (s) => Object.keys(s.L).length >= 1 },
-    { id: 'lab1', ic: '🧪', uz: ['Yosh tadqiqotchi', '1 ta tajribani ko‘r'], en: ['Young explorer', 'Watch 1 experiment'], ok: (s) => Object.keys(s.labs).length >= 1 },
-    { id: 'done1', ic: '⭐', uz: ['Birinchi yulduz', '1 ta darsni o‘zlashtir'], en: ['First star', 'Master 1 lesson'], ok: (s) => nDone(s) >= 1 },
-    { id: 'perfect', ic: '💯', uz: ['A’lochi', 'Dars testida 10/10'], en: ['Top marks', '10/10 in a lesson quiz'], ok: (s) => Object.values(s.L).some((x) => x.best >= 10) },
-    { id: 'goal', ic: '🎯', uz: ['Maqsadga erishdim', 'Kunlik maqsadni bajar'], en: ['On target', 'Reach a daily goal'], ok: (s) => Object.keys(s.goalDone).length >= 1 },
-    { id: 'streak3', ic: '🔥', uz: ['Olovli seriya', '3 kun ketma-ket o‘qi'], en: ['On fire', '3-day streak'], ok: (s) => best(s) >= 3 },
-    { id: 'lab10', ic: '🔬', uz: ['Laborant', '10 ta tajribani ko‘r'], en: ['Lab assistant', 'Watch 10 experiments'], ok: (s) => Object.keys(s.labs).length >= 10 },
-    { id: 'done10', ic: '🏅', uz: ['O‘nlik', '10 ta darsni o‘zlashtir'], en: ['Perfect ten', 'Master 10 lessons'], ok: (s) => nDone(s) >= 10 },
-    { id: 'streak7', ic: '🚀', uz: ['Haftalik raketa', '7 kun ketma-ket o‘qi'], en: ['Weekly rocket', '7-day streak'], ok: (s) => best(s) >= 7 },
-    { id: 'g6half', ic: '📗', uz: ['6-sinf yarmi', '6-sinfning yarmini o‘zlashtir'], en: ['Half of Grade 6', 'Master half of Grade 6'], ok: (s) => nDone(s, 'g6') >= 18 },
-    { id: 'g7half', ic: '📘', uz: ['7-sinf yarmi', '7-sinfning yarmini o‘zlashtir'], en: ['Half of Grade 7', 'Master half of Grade 7'], ok: (s) => nDone(s, 'g7') >= 36 },
-    { id: 'g8half', ic: '📙', uz: ['8-sinf yarmi', '8-sinfning yarmini o‘zlashtir'], en: ['Half of Grade 8', 'Master half of Grade 8'], ok: (s) => nDone(s, 'g8') >= 34 },
-    { id: 'lvl5', ic: '👑', uz: ['5-daraja', '5-darajaga chiq'], en: ['Level 5', 'Reach level 5'], ok: (s) => level(s.xp).L >= 5 },
+    { id: 'first', ic: '👣', uz: ['Birinchi qadam', 'Birinchi darsni och'], en: ['First step', 'Open your first lesson'], ru: ["Первый шаг", "Откройте первый урок"], ok: (s) => Object.keys(s.L).length >= 1 },
+    { id: 'lab1', ic: '🧪', uz: ['Yosh tadqiqotchi', '1 ta tajribani ko‘r'], en: ['Young explorer', 'Watch 1 experiment'], ru: ["Юный исследователь", "Посмотрите 1 опыт"], ok: (s) => Object.keys(s.labs).length >= 1 },
+    { id: 'done1', ic: '⭐', uz: ['Birinchi yulduz', '1 ta darsni o‘zlashtir'], en: ['First star', 'Master 1 lesson'], ru: ["Первая звезда", "Освойте 1 урок"], ok: (s) => nDone(s) >= 1 },
+    { id: 'perfect', ic: '💯', uz: ['A’lochi', 'Dars testida 10/10'], en: ['Top marks', '10/10 in a lesson quiz'], ru: ["Отличник", "10/10 в тесте урока"], ok: (s) => Object.values(s.L).some((x) => x.best >= 10) },
+    { id: 'goal', ic: '🎯', uz: ['Maqsadga erishdim', 'Kunlik maqsadni bajar'], en: ['On target', 'Reach a daily goal'], ru: ["В цель", "Выполните цель на день"], ok: (s) => Object.keys(s.goalDone).length >= 1 },
+    { id: 'streak3', ic: '🔥', uz: ['Olovli seriya', '3 kun ketma-ket o‘qi'], en: ['On fire', '3-day streak'], ru: ["В ударе", "3 дня подряд"], ok: (s) => best(s) >= 3 },
+    { id: 'lab10', ic: '🔬', uz: ['Laborant', '10 ta tajribani ko‘r'], en: ['Lab assistant', 'Watch 10 experiments'], ru: ["Лаборант", "Посмотрите 10 опытов"], ok: (s) => Object.keys(s.labs).length >= 10 },
+    { id: 'done10', ic: '🏅', uz: ['O‘nlik', '10 ta darsni o‘zlashtir'], en: ['Perfect ten', 'Master 10 lessons'], ru: ["Десятка", "Освойте 10 уроков"], ok: (s) => nDone(s) >= 10 },
+    { id: 'streak7', ic: '🚀', uz: ['Haftalik raketa', '7 kun ketma-ket o‘qi'], en: ['Weekly rocket', '7-day streak'], ru: ["Недельная ракета", "7 дней подряд"], ok: (s) => best(s) >= 7 },
+    { id: 'g6half', ic: '📗', uz: ['6-sinf yarmi', '6-sinfning yarmini o‘zlashtir'], en: ['Half of Grade 6', 'Master half of Grade 6'], ru: ["Половина 6 класса", "Освойте половину 6 класса"], ok: (s) => nDone(s, 'g6') >= 18 },
+    { id: 'g7half', ic: '📘', uz: ['7-sinf yarmi', '7-sinfning yarmini o‘zlashtir'], en: ['Half of Grade 7', 'Master half of Grade 7'], ru: ["Половина 7 класса", "Освойте половину 7 класса"], ok: (s) => nDone(s, 'g7') >= 36 },
+    { id: 'g8half', ic: '📙', uz: ['8-sinf yarmi', '8-sinfning yarmini o‘zlashtir'], en: ['Half of Grade 8', 'Master half of Grade 8'], ru: ["Половина 8 класса", "Освойте половину 8 класса"], ok: (s) => nDone(s, 'g8') >= 34 },
+    { id: 'lvl5', ic: '👑', uz: ['5-daraja', '5-darajaga chiq'], en: ['Level 5', 'Reach level 5'], ru: ["Уровень 5", "Достигните 5 уровня"], ok: (s) => level(s.xp).L >= 5 },
   ];
-  const lang = () => (document.documentElement.lang === 'en' ? 'en' : 'uz');
-  const t = (k) => S[lang()][k];
+  const lang = () => { const l = document.documentElement.lang; return l === 'en' || l === 'ru' ? l : 'uz'; };
+  const t = (k) => (S[lang()][k] ?? S.uz[k]);
   const day = (d) => (d || new Date()).toLocaleDateString('sv');
   function nDone(s, g) { return Object.entries(s.L).filter(([k, v]) => v.done && (!g || k.startsWith(g + '-'))).length; }
   function load() {
@@ -77,7 +122,7 @@
     const bn = document.querySelector('.bnav [data-nav="me"] i'); if (bn) bn.textContent = sk ? '🔥' : '🏆';
   }
   function checkAch() {
-    ACH.forEach((a) => { if (!st.ach[a.id] && a.ok(st)) { st.ach[a.id] = Date.now(); setTimeout(() => toast(`<span class="big">${a.ic}</span><div><small>${t('unlocked')}</small><b>${a[lang()][0]}</b></div>`, 'ach'), 900); } });
+    ACH.forEach((a) => { if (!st.ach[a.id] && a.ok(st)) { st.ach[a.id] = Date.now(); setTimeout(() => toast(`<span class="big">${a.ic}</span><div><small>${t('unlocked')}</small><b>${(a[lang()] || a.uz)[0]}</b></div>`, 'ach'), 900); } });
   }
 
   /* ---- earning ---- */
@@ -137,7 +182,7 @@
   function homeCard(ctx) {
     const lv = level(st.xp), td = today(), sk = streak();
     const lastK = st.last; let cont = '#g6-1', contT = `${ctx.t('nav_g6')} • 1`;
-    if (lastK) { const [g, n] = lastK.split('-'); const L = ctx.B[g] && ctx.B[g].lessons[n - 1]; if (L) { cont = '#' + lastK; contT = `${g.slice(1)}-${lang() === 'uz' ? 'sinf' : 'gr.'} • ${n}. ${ctx.tr(L.t)}`; } }
+    if (lastK) { const [g, n] = lastK.split('-'); const L = ctx.B[g] && ctx.B[g].lessons[n - 1]; if (L) { cont = '#' + lastK; contT = `${g.slice(1)}-${lang() === 'ru' ? 'кл.' : lang() === 'en' ? 'gr.' : 'sinf'} • ${n}. ${ctx.tr(L.t)}`; } }
     return `<div class="xpcard">
       <div class="xc-lv">${ring(lv.p, `<b>${lv.L}</b><small>${t('lvl')}</small>`, 'big')}<div><small class="xc-k">${t('your_path')}</small><h3>${rank(lv.L)}</h3><div class="xbar"><div style="width:${Math.round(lv.p * 100)}%"></div></div><small class="xc-m">⚡ ${st.xp} XP • ${lv.b - st.xp} XP ${t('next_lvl')}</small></div></div>
       <div class="xc-goal">${ring(Math.min(1, td.n / td.goal), `<b>${Math.min(td.n, td.goal)}/${td.goal}</b>`, 'goal')}<div><small class="xc-k">🎯 ${t('today')}</small><b class="xc-v">${td.goal} ${t('lessons_w')}</b><small class="xc-m">${t('hint_goal')}</small></div></div>
@@ -164,7 +209,7 @@
           <h3 style="margin-top:18px">💡 ${t('how')}</h3><ul class="xrules">
             <li><b>+5</b>${t('r_visit')}</li><li><b>+15</b>${t('r_lab')}</li><li><b>+2</b>${t('r_quiz')}</li><li><b>+20</b>${t('r_pass')}</li><li><b>+10</b>${t('r_goal')}</li><li><b>+1</b>${t('r_test')}</li></ul>
           <button class="btn sec sm" id="xpReset" style="margin-top:10px">🗑 ${t('reset')}</button></div>
-        <div class="panel"><h3>🎖 ${t('ach')} <small style="color:var(--muted)">${Object.keys(st.ach).length}/${ACH.length}</small></h3><div class="achs">${ACH.map((a) => `<div class="achv ${st.ach[a.id] ? 'on' : ''}" title="${st.ach[a.id] ? '' : t('locked')}"><span>${a.ic}</span><b>${a[lang()][0]}</b><small>${a[lang()][1]}</small></div>`).join('')}</div><a href="#certificate" class="btn sec sm" style="margin-top:16px">📜 ${lang() === 'en' ? 'Personal certificate' : 'Shaxsiy sertifikat'}</a></div>
+        <div class="panel"><h3>🎖 ${t('ach')} <small style="color:var(--muted)">${Object.keys(st.ach).length}/${ACH.length}</small></h3><div class="achs">${ACH.map((a) => `<div class="achv ${st.ach[a.id] ? 'on' : ''}" title="${st.ach[a.id] ? '' : t('locked')}"><span>${a.ic}</span><b>${(a[lang()] || a.uz)[0]}</b><small>${(a[lang()] || a.uz)[1]}</small></div>`).join('')}</div><a href="#certificate" class="btn sec sm" style="margin-top:16px">📜 ${lang() === 'en' ? 'Personal certificate' : 'Shaxsiy sertifikat'}</a></div>
       </div>
     </div>`;
     app.querySelectorAll('.goalseg button').forEach((b) => (b.onclick = () => { st.goal = +b.dataset.g; save(); const d = st.days[day()]; if (d && d.ls.length >= st.goal && !st.goalDone[day()]) { st.goalDone[day()] = 1; save(); add(10, t('goal_done')); confetti(120); } page(app, ctx); refresh(); }));

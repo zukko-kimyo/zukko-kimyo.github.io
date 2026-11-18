@@ -68,6 +68,57 @@ service cloud.firestore {
     // O'qituvchi shu fanga biriktirilganmi (maydon yo'q — eski o'qituvchi, kimyo)
     function teacherOf(s) { return activeProfile() && profile().role == 'teacher' && s in profile().get('subjects', ['chem']); }
 
+    // ---------- Darslik sahifalari (ADR-0008): content/<fan>-<sinf>-<qism>-<sahifa> ----------
+    function freeN() {
+      return exists(/databases/$(db)/documents/settings/site)
+        ? get(/databases/$(db)/documents/settings/site).data.get('freeN', 3) : 3;
+    }
+    function hasSubjectSub(s) {
+      let sub = profile().get('subs', {}).get(s, null);
+      return sub != null && sub.until > request.time.toMillis();
+    }
+    function validContent(d) {
+      return d.keys().hasOnly(['s', 'g', 'part', 'p', 'n', 'img', 'w', 'h', 'at', 'by'])
+        && d.s in ['math', 'eng', 'rus'] && d.g is int && d.g >= 1 && d.g <= 11
+        && d.part is int && d.part >= 1 && d.part <= 4 && d.p is int && d.p >= 0 && d.p <= 400
+        && d.n is int && d.n >= 0 && d.n <= 200
+        && d.img is string && d.img.size() < 1000000 && d.img.matches('^data:image/(webp|jpeg);base64,.*');
+    }
+    match /content/{id} {
+      // Bitta sahifani o'qish: admin, shu fan o'qituvchisi, bepul mavzu (dastlabki freeN) yoki shu fan obunasi faol o'quvchi.
+      // Ro'yxat (list) yopiq — sahifalar faqat birma-bir olinadi.
+      allow get: if activeProfile() && (isAdmin() || teacherOf(resource.data.s)
+                   || (resource.data.n >= 1 && resource.data.n <= freeN()) || hasSubjectSub(resource.data.s));
+      allow list: if false;
+      allow create, update: if isAdmin() && validContent(request.resource.data);
+      allow delete: if isAdmin();
+    }
+    // Dars mazmuni (1-sinf va keyingilar): lessons/<fan>-<sinf>-<qism>-<mavzu>; j — dars JSON matni. Ruxsat — darslik sahifalari bilan bir xil.
+    function validLesson(d) {
+      return d.keys().hasOnly(['s', 'g', 'part', 'n', 'j', 'at', 'by'])
+        && d.s in ['math', 'eng', 'rus'] && d.g is int && d.g >= 1 && d.g <= 11
+        && d.part is int && d.part >= 1 && d.part <= 4 && d.n is int && d.n >= 1 && d.n <= 200
+        && d.j is string && d.j.size() < 200000;
+    }
+    match /lessons/{id} {
+      allow get: if activeProfile() && (isAdmin() || teacherOf(resource.data.s)
+                   || resource.data.n <= freeN() || hasSubjectSub(resource.data.s));
+      allow list: if false;
+      allow create, update: if isAdmin() && validLesson(request.resource.data);
+      allow delete: if isAdmin();
+    }
+    match /lessonIndex/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin() && request.resource.data.keys().hasOnly(['count', 'at', 'by', 'file'])
+                   && request.resource.data.count is int && request.resource.data.count <= 200;
+    }
+    // Qaysi darslik yuklangani (kichik hujjat): hamma kirgan foydalanuvchi o'qiydi, faqat admin yozadi
+    match /contentIndex/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin() && request.resource.data.keys().hasOnly(['pages', 'from', 'to', 'at', 'by', 'file'])
+                   && request.resource.data.pages is int && request.resource.data.pages <= 400;
+    }
+
     // Foydalanuvchi profillari: ism, login, sinf, rol
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isStaff());

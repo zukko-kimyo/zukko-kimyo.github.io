@@ -20,10 +20,10 @@ test('fanlar menyusi: har fanning o\'z oynasi, bitta tanlangan sinf; sarlavhada 
   await expect(page.locator('.zk-sjtopic')).toHaveCount(0);
   await expect(page.locator('.zk-sjsoon')).toBeVisible();
   await go(page, 's/rus/1/1/4');
-  await expect(page.locator('.page-h h1')).toContainText('Моя мама');
-  await expect(page.locator('.page-h p')).toContainText('Mening onam');
+  await expect(page.locator('.lesson-top h1')).toContainText('Моя мама');
+  await expect(page.locator('.lesson-top .zk-sjsub')).toContainText('Mening onam');
   await go(page, 's/math/1/1/50');
-  await expect(page.locator('.page-h h1')).toContainText('Logic Tasks with Numbers 1 to 5');
+  await expect(page.locator('.lesson-top h1')).toContainText('My Number Test');
   await go(page, 'home');
   await expect(page.locator('header.top .zk-subject')).toHaveText('KIMYO');
 });

@@ -31,9 +31,24 @@
       e_short: 'The new password must be at least 8 characters.', e_match: 'New passwords do not match.', e_same: 'The new password must differ from the old one.', pw_ok: '✓ Password changed. Use the new password next time.',
       teacher_link: '👩‍🏫 Go to teacher panel', grade: 'grade',
     },
+    ru: {
+      h: '🛡 Панель администратора', p: 'Статистика по всей школе, настройки сайта и безопасность.', loading: 'Загрузка…', reload: '↻ Обновить',
+      k_students: 'Ученики', k_teachers: 'Учителя', k_classes: 'Классы', k_pending: 'Заявки', k_today: 'Активны сегодня', k_week: 'Активны за 7 дней', k_never: 'Ещё не входили', k_mastered: 'Освоено уроков', k_quiz: 'Средний балл теста', k_xp: 'Всего XP',
+      act_h: 'Активность за последние 14 дней', act_p: 'Сколько учеников получали XP каждый день (открыли урок, прошли тест, посмотрели опыт).', act_none: 'Активности пока нет.', students_n: 'учеников',
+      cls_h: 'Сравнение классов', c_cls: 'Класс', c_n: 'Ученики', c_xp: 'Средний XP', c_done: 'В среднем освоено уроков', c_quiz: 'Средний тест', c_act: 'Активны за 7 дней',
+      top_h: 'Самые активные ученики', t_name: 'Имя', t_cls: 'Класс', t_xp: 'XP', t_done: 'Уроки',
+      hard_h: 'Самые сложные уроки', hard_p: 'Тесты, которые прошли не менее 3 учеников, с самым низким средним баллом — эти темы стоит объяснить ещё раз.', h_lesson: 'Урок', h_avg: 'Средний (из 10)', h_n: 'Прошли', hard_none: 'Пока недостаточно данных (каждый урок должны пройти не менее 3 учеников).',
+      set_h: 'Настройки сайта', ann_l: 'Объявление (видно всем пользователям вверху страницы и в окне входа)', ann_ph: 'Например: завтра в 7A классе будет тест по 12-му уроку.', ann_on: 'Показывать объявление', reg_on: 'Ученики могут сами регистрироваться по коду класса', save: 'Сохранить', saved: '✓ Сохранено',
+      exp_h: 'Экспорт', exp_p: 'Без паролей. CSV открывается в Excel; JSON — полная резервная копия.', exp_csv: '⬇ Все ученики (CSV)', exp_json: '⬇ Резервная копия (JSON)',
+      sec_h: 'Безопасность: смена пароля', sec_p: 'Никому не отправляйте пароль администратора и не пишите его в чатах. Если пароль мог стать известен другим, немедленно смените его здесь.', old_pw: 'Текущий пароль', new_pw: 'Новый пароль', new_pw2: 'Повторите новый пароль', change: 'Сменить пароль',
+      e_short: 'Новый пароль должен содержать не менее 8 символов.', e_match: 'Новые пароли не совпадают.', e_same: 'Новый пароль должен отличаться от старого.', pw_ok: '✓ Пароль изменён. В следующий раз входите с новым паролем.',
+      teacher_link: '👩‍🏫 Перейти в панель учителя', grade: 'класс',
+    },
   };
   let L = 'uz', APP, CTX;
-  const t = (k) => S[L][k] || k;
+  // Uch tilli tanlov: ru tarjimasi bo'lmasa o'zbekchaga qaytadi.
+  const L3 = (uz, ru, en) => (L === 'ru' ? ru : L === 'en' ? en : uz);
+  const t = (k) => (S[L] || S.uz)[k] || k;
   const esc = (s) => window.ZKAuth.esc(s);
   // O'quvchi o'zi yozadigan natija qiymatlari ekranga chiqishdan oldin songa aylantiriladi (HTML/kod kiritilmasin).
   const num = (v, max = 1e7) => { v = Number(v); return Number.isFinite(v) && v >= 0 ? Math.min(v, max) : 0; };
@@ -54,7 +69,7 @@
 .ad-kpi div.warn b{color:#dc2626}
 .ad-directory{margin:18px 0}.ad-directory .panel{max-height:410px;overflow:auto}.ad-muted-login{display:block;font-size:11px;color:var(--muted);font-weight:600}.ad-insights{margin:18px 0}.ad-bars{display:grid;gap:12px;margin-top:16px}.ad-bar-row{display:grid;grid-template-columns:minmax(48px,90px) minmax(0,1fr) 55px;align-items:center;gap:10px;font-size:13px;font-weight:800}.ad-bar-track{height:12px;border-radius:99px;background:#f1ecfb;overflow:hidden}.ad-bar-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#20bfc7)}
 .ad-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}.ad-grid>.panel{margin:0;min-width:0}
-.ad-tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ad-tw{overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative}
 @media (min-width:900px){.ad-kpi{grid-template-columns:repeat(5,1fr)}}
 .ad-sub{font-size:13px;color:#7a6f66;font-weight:700;margin:-6px 0 12px}
 .ad-chart{width:100%;height:auto;display:block}.ad-chart text{font:700 10px var(--f);fill:var(--zk-muted,#5b6b6c)}.ad-chart .v{font:900 10.5px var(--f);fill:var(--zk-ink,#0f2a2c)}
@@ -98,6 +113,87 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
     document.head.appendChild(s);
   }
 
+  /* ---------- Darsliklar (fanlar): PDF → sahifalar → Firebase (content/…), ADR-0008 ----------
+     Administrator darslik PDF faylini tanlaydi; brauzer har bir sahifani rasmga aylantirib (pdf.js) yuklaydi.
+     Sahifalarni o'qish huquqi firestore.rules'da: bepul mavzular, fan obunasi, xodim. */
+  const PDFJS = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/';
+  let pdfjsP = null;
+  const loadPdfjs = () => pdfjsP || (pdfjsP = import(PDFJS + 'pdf.min.mjs').then((m) => { m.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.mjs'; return m; }).catch((e) => { pdfjsP = null; throw e; }));
+  const BK = {
+    uz: { les: 'Dars mazmuni', lpick: 'JSON tanlash', lnone: 'Yuklanmagan', ldone: '{n} ta dars · {d}', lbad: 'Bu fayl tanlangan darslikka mos kelmaydi.', lok: 'Yuklandi: {n} ta dars', lgo: '{i} / {n} dars…', ljson: 'Fayl o‘qilmadi (JSON emas).', h: '📚 Darsliklar (fanlar)', p: 'Darslik PDF faylini tanlang — sahifalar rasmga aylantirilib Firebase’ga yuklanadi. O‘quvchilar dastlabki bepul mavzularni va obunasi bor fanni ko‘radi. Yuklash bir necha daqiqa oladi, sahifani yopmang.',
+      book: 'Darslik', st: 'Holat', none: 'Yuklanmagan', done: '{n} sahifa · {d}', pick: 'PDF tanlash', bad: 'Bu fayl tanlangan darslikka mos kelmaydi: {n} sahifa bor, kamida {m} kerak.', go: '{i} / {n} sahifa…', ok: 'Yuklandi: {n} sahifa', again: 'Bu darslik avval yuklangan. Qayta yuklab, eskisini almashtirasizmi?', cdn: 'PDF o‘quvchi (pdf.js) yuklanmadi — internetni tekshiring.' },
+    en: { les: 'Lesson content', lpick: 'Choose JSON', lnone: 'Not uploaded', ldone: '{n} lessons · {d}', lbad: 'This file does not match the chosen textbook.', lok: 'Uploaded: {n} lessons', lgo: '{i} / {n} lessons…', ljson: 'Could not read the file (not JSON).', h: '📚 Textbooks (subjects)', p: 'Choose the textbook PDF — pages are turned into images and uploaded to Firebase. Students see the free first topics and the subjects they subscribe to. Uploading takes a few minutes; keep this page open.',
+      book: 'Textbook', st: 'Status', none: 'Not uploaded', done: '{n} pages · {d}', pick: 'Choose PDF', bad: 'This file does not match the chosen textbook: it has {n} pages, at least {m} needed.', go: '{i} / {n} pages…', ok: 'Uploaded: {n} pages', again: 'This textbook was uploaded before. Upload again and replace it?', cdn: 'The PDF reader (pdf.js) did not load — check the internet.' },
+    ru: { les: 'Содержание уроков', lpick: 'Выбрать JSON', lnone: 'Не загружено', ldone: '{n} уроков · {d}', lbad: 'Этот файл не подходит к выбранному учебнику.', lok: 'Загружено: {n} уроков', lgo: '{i} / {n} уроков…', ljson: 'Файл не прочитан (не JSON).', h: '📚 Учебники (предметы)', p: 'Выберите PDF-файл учебника — страницы будут преобразованы в изображения и загружены в Firebase. Ученики видят первые бесплатные темы и предметы, на которые оформлена подписка. Загрузка занимает несколько минут, не закрывайте страницу.',
+      book: 'Учебник', st: 'Статус', none: 'Не загружен', done: '{n} стр. · {d}', pick: 'Выбрать PDF', bad: 'Этот файл не подходит к выбранному учебнику: в нём {n} стр., нужно не менее {m}.', go: '{i} / {n} стр.…', ok: 'Загружено: {n} стр.', again: 'Этот учебник уже загружен. Загрузить заново и заменить старый?', cdn: 'Не удалось загрузить программу просмотра PDF (pdf.js) — проверьте подключение к интернету.' },
+  };
+  const bk = (k, o) => { let x = (BK[L] || BK.uz)[k]; if (o) Object.keys(o).forEach((q) => (x = x.replace('{' + q + '}', o[q]))); return x; };
+  async function booksPanel() {
+    const host = APP.querySelector('#adBooks'); if (!host || !window.ZKSubjects) { if (host) host.remove(); return; }
+    const rows = []; ZKSubjects.list.forEach((sj) => (sj.books || []).forEach((b) => rows.push({ sj, b, id: `${sj.id}-${b.grade}-${b.part}` })));
+    const idx = await Promise.all(rows.map((r) => ZKAuth.backend.get('contentIndex', r.id).catch(() => null)));
+    const lix = await Promise.all(rows.map((r) => ZKAuth.backend.get('lessonIndex', r.id).catch(() => null)));
+    if (!host.isConnected) return;
+    const fmt = (ms) => (window.ZKSub ? ZKSub.fmtDate(ms) : new Date(ms).toLocaleDateString());
+    host.innerHTML = `<h3>${bk('h')}</h3><div class="ad-sub">${bk('p')}</div><div class="ad-tw"><table class="ad ad-books"><thead><tr><th>${bk('book')}</th><th>${bk('st')}</th><th><span class="zk-sr">${bk('pick')}</span></th><th>${bk('les')}</th></tr></thead><tbody>
+      ${rows.map((r, i) => `<tr data-bk="${r.id}"><td><b>${esc(r.sj.name[L] || r.sj.name.uz)} · ${r.b.grade}-${t('grade')}</b><div class="ad-mut">${esc(r.b.title)}</div></td>
+        <td class="bk-st" role="status">${idx[i] ? `<span class="ad-ok">✓ ${bk('done', { n: Number(idx[i].pages) || 0, d: fmt(idx[i].at) })}</span>` : `<span class="ad-mut">${bk('none')}</span>`}</td>
+        <td><label class="btn sec sm bk-pick">${bk('pick')}<input type="file" accept="application/pdf,.pdf" data-i="${i}" class="zk-sr"></label></td>
+        <td><div class="bk-ls" role="status">${lix[i] ? `<span class="ad-ok">✓ ${bk('ldone', { n: Number(lix[i].count) || 0, d: fmt(lix[i].at) })}</span>` : `<span class="ad-mut">${bk('lnone')}</span>`}</div><label class="btn sec sm bk-pick">${bk('lpick')}<input type="file" accept="application/json,.json" data-l="${i}" class="zk-sr"></label></td></tr>`).join('')}</tbody></table></div>`;
+    host.querySelectorAll('input[data-l]').forEach((inp) => (inp.onchange = () => { const f = inp.files && inp.files[0]; const i = +inp.dataset.l; inp.value = ''; if (f) uploadLessons(rows[i], f, host.querySelector(`tr[data-bk="${rows[i].id}"] .bk-ls`), inp); }));
+    host.querySelectorAll('input[data-i]').forEach((inp) => (inp.onchange = () => { const f = inp.files && inp.files[0]; const i = +inp.dataset.i; inp.value = ''; if (f) uploadBook(rows[i], f, !!idx[i], host.querySelector(`tr[data-bk="${rows[i].id}"] .bk-st`), inp); }));
+  }
+  // Dars mazmuni: { book: "<fan>-<sinf>-<qism>", lessons: [{ n, title, goal, summary, words, phrases, tasks, quiz }] } → lessons/<book>-<n>
+  async function uploadLessons(row, file, out, inp) {
+    const B = ZKAuth.backend, { sj, b } = row, lbl = inp.closest('label'), say = (h) => { out.innerHTML = h; };
+    lbl.classList.add('busy'); inp.disabled = true;
+    try {
+      let data; try { data = JSON.parse(await file.text()); } catch (e) { throw new Error(bk('ljson')); }
+      const Ls = data && Array.isArray(data.lessons) ? data.lessons : null;
+      if (!Ls || data.book !== row.id || Ls.length !== b.topics.length || Ls.some((x, i) => !x || x.n !== i + 1 || !Array.isArray(x.quiz))) throw new Error(bk('lbad'));
+      for (let k = 0; k < Ls.length; k++) {
+        const j = JSON.stringify(Ls[k]); if (j.length >= 200000) throw new Error(bk('lbad'));
+        await B.set('lessons', `${row.id}-${k + 1}`, { s: sj.id, g: b.grade, part: b.part, n: k + 1, j, at: Date.now(), by: ZKAuth.user.uid });
+        say(`<span class="ad-mut">${bk('lgo', { i: k + 1, n: Ls.length })}</span><progress max="${Ls.length}" value="${k + 1}"></progress>`);
+      }
+      await B.set('lessonIndex', row.id, { count: Ls.length, at: Date.now(), by: ZKAuth.user.uid, file: String(file.name || '').slice(0, 120) });
+      say(`<span class="ad-ok">✓ ${bk('lok', { n: Ls.length })}</span>`);
+    } catch (e) {
+      say(`<span class="ad-err">⚠ ${esc((e && e.message) || ZKAuth.errMsg(e))}</span>`);
+    } finally { lbl.classList.remove('busy'); inp.disabled = false; }
+  }
+  async function uploadBook(row, file, had, out, inp) {
+    if (had && !confirm(bk('again'))) return;
+    const B = ZKAuth.backend, { sj, b } = row, pageTopic = {};
+    b.topics.forEach((tp, i) => tp.p.forEach((p) => { pageTopic[p] = i + 1; }));
+    const printed = Object.keys(pageTopic).map(Number).sort((x, y) => x - y);
+    const lbl = inp.closest('label'); lbl.classList.add('busy'); inp.disabled = true;
+    const say = (h) => { out.innerHTML = h; };
+    try {
+      let pdfjs; try { pdfjs = await loadPdfjs(); } catch (e) { throw new Error(bk('cdn')); }
+      const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+      const need = printed[printed.length - 1] - b.offset;
+      if (pdf.numPages < need) throw new Error(bk('bad', { n: pdf.numPages, m: need }));
+      const cv = document.createElement('canvas'), cx = cv.getContext('2d');
+      for (let k = 0; k < printed.length; k++) {
+        const p = printed[k], page = await pdf.getPage(p - b.offset), v1 = page.getViewport({ scale: 1 });
+        const vp = page.getViewport({ scale: 900 / v1.width });
+        cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+        cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+        await page.render({ canvasContext: cx, viewport: vp }).promise;
+        let q = 0.72, img = cv.toDataURL('image/webp', q);
+        if (!img.startsWith('data:image/webp')) img = cv.toDataURL('image/jpeg', 0.78); // Safari webp yoza olmaydi
+        while (img.length > 950000 && q > 0.35) { q -= 0.1; img = img.startsWith('data:image/webp') ? cv.toDataURL('image/webp', q) : cv.toDataURL('image/jpeg', q); }
+        await B.set('content', `${row.id}-${p}`, { s: sj.id, g: b.grade, part: b.part, p, n: pageTopic[p], img, w: cv.width, h: cv.height, at: Date.now(), by: ZKAuth.user.uid });
+        say(`<span class="ad-mut">${bk('go', { i: k + 1, n: printed.length })}</span><progress max="${printed.length}" value="${k + 1}"></progress>`);
+      }
+      await B.set('contentIndex', row.id, { pages: printed.length, from: printed[0], to: printed[printed.length - 1], at: Date.now(), by: ZKAuth.user.uid, file: String(file.name || '').slice(0, 120) });
+      say(`<span class="ad-ok">✓ ${bk('ok', { n: printed.length })}</span>`);
+    } catch (e) {
+      say(`<span class="ad-err">⚠ ${esc((e && e.message) || ZKAuth.errMsg(e))}</span>`);
+    } finally { lbl.classList.remove('busy'); inp.disabled = false; }
+  }
+
   async function load() {
     const B = ZKAuth.backend;
     const [users, prog, settings] = await Promise.all([B.list('users'), B.list('progress'), B.get('settings', 'site').catch(() => null)]);
@@ -137,36 +233,37 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
     APP.querySelector('#adBody').innerHTML = `
       <div class="ad-kpi">${kp.map(([k, v, warn]) => `<div class="${warn ? 'warn' : ''}" data-k="${k}"><b>${esc(v)}</b><span>${t(k)}</span></div>`).join('')}</div>
       <div class="ad-grid ad-directory">
-        <section class="panel"><h3>👩‍🏫 ${L === "en" ? "Teachers directory" : "O‘qituvchilar ma’lumotlari"}</h3>
-          <div class="ad-sub">${L === "en" ? "Registered teacher accounts (no passwords)" : "Ro‘yxatdan o‘tgan o‘qituvchilar (parollarsiz)"}</div>
-          ${st.users.filter(u => u.role === "teacher").length ? `<div class="ad-tw"><table class="ad"><thead><tr><th>${L === "en" ? "Teacher" : "O‘qituvchi"}</th><th>Login</th><th>${L === "en" ? "Status" : "Holat"}</th></tr></thead><tbody>${st.users.filter(u => u.role === "teacher").sort((a,b) => String(a.name||a.login).localeCompare(String(b.name||b.login))).map(u => `<tr><td><b>${esc(u.name || u.login)}</b></td><td>${esc(u.login)}</td><td>${u.disabled ? (L === "en" ? "Disabled" : "O‘chirilgan") : (L === "en" ? "Active" : "Faol")}</td></tr>`).join("")}</tbody></table></div>` : `<div class="ad-mut ad-empty">${L === "en" ? "No teachers yet. Add them in the Teachers section." : "Hali o‘qituvchi qo‘shilmagan. “O‘qituvchilar” bo‘limidan qo‘shing."}</div>`}
+        <section class="panel"><h3>👩‍🏫 ${L3("O‘qituvchilar ma’lumotlari", "Сведения об учителях", "Teachers directory")}</h3>
+          <div class="ad-sub">${L3("Ro‘yxatdan o‘tgan o‘qituvchilar (parollarsiz)", "Зарегистрированные учителя (без паролей)", "Registered teacher accounts (no passwords)")}</div>
+          ${st.users.filter(u => u.role === "teacher").length ? `<div class="ad-tw"><table class="ad"><thead><tr><th>${L3("O‘qituvchi", "Учитель", "Teacher")}</th><th>Login</th><th>${L3("Holat", "Статус", "Status")}</th></tr></thead><tbody>${st.users.filter(u => u.role === "teacher").sort((a,b) => String(a.name||a.login).localeCompare(String(b.name||b.login))).map(u => `<tr><td><b>${esc(u.name || u.login)}</b></td><td>${esc(u.login)}</td><td>${u.disabled ? (L3("O‘chirilgan", "Отключён", "Disabled")) : (L3("Faol", "Активен", "Active"))}</td></tr>`).join("")}</tbody></table></div>` : `<div class="ad-mut ad-empty">${L3("Hali o‘qituvchi qo‘shilmagan. “O‘qituvchilar” bo‘limidan qo‘shing.", "Учителей пока нет. Добавьте их в разделе „Учителя“.", "No teachers yet. Add them in the Teachers section.")}</div>`}
         </section>
-        <section class="panel"><h3>🎓 ${L === "en" ? "Students directory" : "O‘quvchilar ma’lumotlari"}</h3>
-          <div class="ad-sub">${L === "en" ? "Registered students and learning progress" : "Ro‘yxatdagi o‘quvchilar va o‘zlashtirish ko‘rsatkichlari"}</div>
-          ${st.users.filter(u => u.role === "student").length ? `<div class="ad-tw"><table class="ad"><thead><tr><th>${L === "en" ? "Student" : "O‘quvchi"}</th><th>${t("c_cls")}</th><th>XP</th><th>${t("c_quiz")}</th></tr></thead><tbody>${st.users.filter(u => u.role === "student").sort((a,b) => String(a.cls||"").localeCompare(String(b.cls||""),undefined,{numeric:true}) || String(a.name||a.login).localeCompare(String(b.name||b.login))).map(u => { const p=st.prog[u.id]||{};return `<tr><td><b>${esc(u.name || u.login)}</b><small class="ad-muted-login">${esc(u.login)}</small></td><td>${esc(u.cls||"—")}</td><td>${Number(p.xp)||0}</td><td>${p.quizAvg == null ? "—" : esc(p.quizAvg)}</td></tr>`; }).join("")}</tbody></table></div>` : `<div class="ad-mut ad-empty">${L === "en" ? "No students yet. Teachers add students with a class code." : "Hali o‘quvchi yo‘q. O‘qituvchilar sinf kodi orqali o‘quvchi qo‘shadi."}</div>`}
+        <section class="panel"><h3>🎓 ${L3("O‘quvchilar ma’lumotlari", "Сведения об учениках", "Students directory")}</h3>
+          <div class="ad-sub">${L3("Ro‘yxatdagi o‘quvchilar va o‘zlashtirish ko‘rsatkichlari", "Зарегистрированные ученики и их успеваемость", "Registered students and learning progress")}</div>
+          ${st.users.filter(u => u.role === "student").length ? `<div class="ad-tw"><table class="ad"><thead><tr><th>${L3("O‘quvchi", "Ученик", "Student")}</th><th>${t("c_cls")}</th><th>XP</th><th>${t("c_quiz")}</th></tr></thead><tbody>${st.users.filter(u => u.role === "student").sort((a,b) => String(a.cls||"").localeCompare(String(b.cls||""),undefined,{numeric:true}) || String(a.name||a.login).localeCompare(String(b.name||b.login))).map(u => { const p=st.prog[u.id]||{};return `<tr><td><b>${esc(u.name || u.login)}</b><small class="ad-muted-login">${esc(u.login)}</small></td><td>${esc(u.cls||"—")}</td><td>${Number(p.xp)||0}</td><td>${p.quizAvg == null ? "—" : esc(p.quizAvg)}</td></tr>`; }).join("")}</tbody></table></div>` : `<div class="ad-mut ad-empty">${L3("Hali o‘quvchi yo‘q. O‘qituvchilar sinf kodi orqali o‘quvchi qo‘shadi.", "Учеников пока нет. Учителя добавляют учеников по коду класса.", "No students yet. Teachers add students with a class code.")}</div>`}
         </section>
       </div>
-      <section class="panel ad-insights"><h3>📊 ${L === "en" ? "Class performance" : "Sinflar natijalari"}</h3>
-        <div class="ad-bars">${cls.map(c => `<div class="ad-bar-row"><span>${esc(c.cls)}</span><div class="ad-bar-track" role="img" aria-label="${esc(c.cls)}: ${c.avgQuiz == null ? "—" : c.avgQuiz + "/10"}"><i style="width:${Math.max(0,Math.min(100,(c.avgQuiz||0)*10))}%"></i></div><b>${c.avgQuiz == null ? "—" : c.avgQuiz + "/10"}</b></div>`).join("") || `<div class="ad-mut ad-empty">${L === "en" ? "Class results appear once students take tests." : "Sinflar bo‘yicha natija o‘quvchilar test yechgach ko‘rinadi."}</div>`}</div>
+      <section class="panel ad-insights"><h3>📊 ${L3("Sinflar natijalari", "Результаты классов", "Class performance")}</h3>
+        <div class="ad-bars">${cls.map(c => `<div class="ad-bar-row"><span>${esc(c.cls)}</span><div class="ad-bar-track" role="img" aria-label="${esc(c.cls)}: ${c.avgQuiz == null ? "—" : c.avgQuiz + "/10"}"><i style="width:${Math.max(0,Math.min(100,(c.avgQuiz||0)*10))}%"></i></div><b>${c.avgQuiz == null ? "—" : c.avgQuiz + "/10"}</b></div>`).join("") || `<div class="ad-mut ad-empty">${L3("Sinflar bo‘yicha natija o‘quvchilar test yechgach ko‘rinadi.", "Результаты классов появятся, когда ученики пройдут тесты.", "Class results appear once students take tests.")}</div>`}</div>
       </section>
       <div class="panel"><h3>📈 ${t('act_h')}</h3><div class="ad-sub">${t('act_p')}</div>${act.some((d) => d.active) ? chart(act) : `<div class="ad-mut">${t('act_none')}</div>`}</div>
       <div class="ad-grid">
         <div class="panel"><h3>🏫 ${t('cls_h')}</h3>${cls.length ? `<div class="ad-tw"><table class="ad" id="adCls"><thead><tr><th>${t('c_cls')}</th><th>${t('c_n')}</th><th>${t('c_xp')}</th><th>${t('c_done')}</th><th>${t('c_quiz')}</th><th>${t('c_act')}</th></tr></thead><tbody>
-          ${cls.map((c) => `<tr><td><b>${esc(c.cls)}</b></td><td>${c.n}</td><td>${c.avgXp}</td><td>${c.avgDone}</td><td>${c.avgQuiz == null ? '—' : `<span class="ad-q ${qcls(c.avgQuiz)}">${c.avgQuiz}</span>`}</td><td>${c.active7}/${c.n}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut ad-empty">${L === "en" ? "Class results appear once students take tests." : "Sinflar bo‘yicha natija o‘quvchilar test yechgach ko‘rinadi."}</div>`}</div>
+          ${cls.map((c) => `<tr><td><b>${esc(c.cls)}</b></td><td>${c.n}</td><td>${c.avgXp}</td><td>${c.avgDone}</td><td>${c.avgQuiz == null ? '—' : `<span class="ad-q ${qcls(c.avgQuiz)}">${c.avgQuiz}</span>`}</td><td>${c.active7}/${c.n}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut ad-empty">${L3("Sinflar bo‘yicha natija o‘quvchilar test yechgach ko‘rinadi.", "Результаты классов появятся, когда ученики пройдут тесты.", "Class results appear once students take tests.")}</div>`}</div>
         <div class="panel"><h3>🏆 ${t('top_h')}</h3>${top.length ? `<div class="ad-tw"><table class="ad" id="adTop"><thead><tr><th>#</th><th>${t('t_name')}</th><th>${t('t_cls')}</th><th>${t('t_xp')}</th><th>${t('t_done')}</th></tr></thead><tbody>
-          ${top.map((r, i) => `<tr><td class="ad-mut">${i + 1}</td><td><b>${esc(r.name)}</b></td><td>${esc(r.cls)}</td><td><b>${r.xp}</b></td><td>${r.done}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut ad-empty">${L === "en" ? "The ranking appears once students earn XP." : "Reyting o‘quvchilar XP to‘plaganda paydo bo‘ladi."}</div>`}</div>
+          ${top.map((r, i) => `<tr><td class="ad-mut">${i + 1}</td><td><b>${esc(r.name)}</b></td><td>${esc(r.cls)}</td><td><b>${r.xp}</b></td><td>${r.done}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut ad-empty">${L3("Reyting o‘quvchilar XP to‘plaganda paydo bo‘ladi.", "Рейтинг появится, когда ученики наберут XP.", "The ranking appears once students earn XP.")}</div>`}</div>
       </div>
       <div class="panel" style="margin-top:18px"><h3>🧩 ${t('hard_h')}</h3><div class="ad-sub">${t('hard_p')}</div>${hard.length ? `<div class="ad-tw"><table class="ad" id="adHard"><thead><tr><th>${t('h_lesson')}</th><th>${t('h_avg')}</th><th>${t('h_n')}</th></tr></thead><tbody>
         ${hard.map((h) => `<tr><td><a href="#${esc(h.g)}-${Number(h.n) || 0}"><b>${esc(String(h.g).slice(1))}-${t('grade')}, ${Number(h.n) || 0}</b> — ${esc(lessonTitle(h.g, h.n))}</a></td><td><span class="ad-q ${qcls(h.avg)}">${Number(h.avg) || 0}</span></td><td>${Number(h.attempts) || 0}</td></tr>`).join('')}</tbody></table></div>` : `<div class="ad-mut">${t('hard_none')}</div>`}</div>
+      <div class="panel" id="adBooks" style="margin-top:18px"></div>
       <div class="ad-grid" style="margin-top:18px">
         <div class="panel ad-form"><h3>⚙️ ${t('set_h')}</h3>
           <label for="adAnn">${t('ann_l')}</label><textarea id="adAnn" maxlength="300" placeholder="${esc(t('ann_ph'))}">${esc(set.announce || '')}</textarea>
           <label class="ad-chk"><input type="checkbox" id="adAnnOn" ${set.announceOn ? 'checked' : ''}> ${t('ann_on')}</label>
           <label class="ad-chk"><input type="checkbox" id="adReg" ${set.regOpen === false ? '' : 'checked'}> ${t('reg_on')}</label>
-          <fieldset class="ad-prices"><legend>💳 ${L === 'en' ? 'Subscription plans (shown to students on locked pages)' : 'Obuna tariflari (yopiq sahifalarda o‘quvchilarga ko‘rinadi)'}</legend>
-            <label for="adFreeN">${L === 'en' ? 'Free topics in each grade (lesson, 3D, test and textbook pages)' : 'Har bir sinfda bepul mavzular soni (dars, 3D, test va darslik sahifalari)'}</label><input type="number" id="adFreeN" min="0" max="50" step="1" value="${window.ZKSub ? ZKSub.freeCount(set) : 3}" style="max-width:120px">
-            ${['month', 'quarter', 'year'].map((k) => `<label for="adPr_${k}">${window.ZKSub ? ZKSub.NAMES[L === 'en' ? 'en' : 'uz'][k] : k}</label><input type="text" id="adPr_${k}" maxlength="40" placeholder="${L === 'en' ? 'e.g. 50,000 sum' : 'masalan: 50 000 so‘m'}" value="${esc(((set.prices || {})[k]) || '')}">`).join('')}
-            <label for="adPay">${L === 'en' ? 'How to pay (contacts, account)' : 'Qanday to‘lanadi (aloqa, hisob raqam)'}</label><textarea id="adPay" maxlength="400" placeholder="${L === 'en' ? 'e.g. Pay at the school office, phone +998 …' : 'masalan: Maktab kassasiga to‘lang, tel: +998 …'}">${esc(set.payInfo || '')}</textarea>
+          <fieldset class="ad-prices"><legend>💳 ${L3('Obuna tariflari (yopiq sahifalarda o‘quvchilarga ko‘rinadi)', 'Тарифы подписки (показываются ученикам на закрытых страницах)', 'Subscription plans (shown to students on locked pages)')}</legend>
+            <label for="adFreeN">${L3('Har bir sinfda bepul mavzular soni (dars, 3D, test va darslik sahifalari)', 'Количество бесплатных тем в каждом классе (урок, 3D, тест и страницы учебника)', 'Free topics in each grade (lesson, 3D, test and textbook pages)')}</label><input type="number" id="adFreeN" min="0" max="50" step="1" value="${window.ZKSub ? ZKSub.freeCount(set) : 3}" style="max-width:120px">
+            ${['month', 'quarter', 'year'].map((k) => `<label for="adPr_${k}">${window.ZKSub ? (ZKSub.NAMES[L] || ZKSub.NAMES.uz)[k] : k}</label><input type="text" id="adPr_${k}" maxlength="40" placeholder="${L3('masalan: 50 000 so‘m', 'например: 50 000 сум', 'e.g. 50,000 sum')}" value="${esc(((set.prices || {})[k]) || '')}">`).join('')}
+            <label for="adPay">${L3('Qanday to‘lanadi (aloqa, hisob raqam)', 'Как оплатить (контакты, номер счёта)', 'How to pay (contacts, account)')}</label><textarea id="adPay" maxlength="400" placeholder="${L3('masalan: Maktab kassasiga to‘lang, tel: +998 …', 'например: оплатите в кассе школы, тел.: +998 …', 'e.g. Pay at the school office, phone +998 …')}">${esc(set.payInfo || '')}</textarea>
           </fieldset>
           <button class="btn pri sm" id="adSave" style="margin-top:14px">${t('save')}</button><div class="ad-msg" id="adSetMsg"></div></div>
         <div class="panel"><h3>📦 ${t('exp_h')}</h3><div class="ad-sub" style="margin-top:0">${t('exp_p')}</div>
@@ -190,6 +287,7 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
 
   function wire() {
     const $ = (id) => APP.querySelector('#' + id);
+    booksPanel();
     $('adSave').onclick = async () => {
       const msg = $('adSetMsg'); msg.className = 'ad-msg'; msg.textContent = '';
       const fv = Math.round(Number($('adFreeN').value)); const freeN = Number.isFinite(fv) ? Math.max(0, Math.min(50, fv)) : 3;
@@ -226,7 +324,7 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
   }
 
   function render(app, ctx) {
-    APP = app; CTX = ctx; L = ctx.lang === 'en' ? 'en' : 'uz'; css();
+    APP = app; CTX = ctx; L = ctx.lang === 'en' || ctx.lang === 'ru' ? ctx.lang : 'uz'; css();
     app.innerHTML = `<div class="page-h adm"><div class="wrap"><div class="crumbs"><a href="#home">${ctx.t('nav_home')}</a> / ${t('h').replace(/^\S+\s/, '')}</div><h1>${t('h')}</h1><p>${t('p')}</p></div></div>
       <div class="wrap" style="padding-bottom:40px"><div class="ad-top"><button class="btn sec sm" id="adRe">${t('reload')}</button><div class="sp"></div><a class="btn sec sm" href="#teacher">${t('teacher_link')}</a></div>
       <div id="adBody"><div class="panel tc-empty" style="text-align:center">${t('loading')}</div></div></div>`;

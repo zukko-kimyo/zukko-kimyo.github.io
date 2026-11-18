@@ -455,7 +455,7 @@
     const W = () => Math.max(50, wrap.clientWidth), H = () => Math.max(50, wrap.clientHeight);
     let renderer;
     try { renderer = new T.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' }); }
-    catch (e) { wrap.innerHTML = '<div class="lab-err">WebGL ' + (Lab.lang === 'uz' ? "qo'llab-quvvatlanmaydi" : 'is not supported') + '</div>'; return null; }
+    catch (e) { wrap.innerHTML = '<div class="lab-err">WebGL ' + (Lab.lang === 'en' ? 'is not supported' : Lab.lang === 'ru' ? 'не поддерживается' : "qo'llab-quvvatlanmaydi") + '</div>'; return null; }
     const mobile = /Mobi|Android/i.test(navigator.userAgent);
     const lite = gpuTier() === 'lite';
     const basePR = Math.min(opts.quiet ? 1.25 : (lite ? 1 : (mobile ? 1.5 : 2)), window.devicePixelRatio || 1);
@@ -512,7 +512,8 @@
     const starts = []; steps.reduce((a, s) => (starts.push(a), a + s.dur), 0);
 
     const uzl = Lab.lang === 'uz';
-    const L = uzl ? { play: 'Ijro / pauza', pause: 'Pauza', playOnly: 'Ijro etish', prev: 'Oldingi bosqich', next: 'Keyingi bosqich', restart: 'Boshidan', track: 'Tajriba vaqt chizig‘i', speed: 'Tezlik', full: 'To‘liq ekran', canvas: '3D tajriba modeli' }
+    const L = Lab.lang === 'ru' ? { play: 'Пуск / пауза', pause: 'Пауза', playOnly: 'Пуск', prev: 'Предыдущий этап', next: 'Следующий этап', restart: 'Сначала', track: 'Шкала времени опыта', speed: 'Скорость', full: 'Во весь экран', canvas: '3D-модель опыта' }
+                  : uzl ? { play: 'Ijro / pauza', pause: 'Pauza', playOnly: 'Ijro etish', prev: 'Oldingi bosqich', next: 'Keyingi bosqich', restart: 'Boshidan', track: 'Tajriba vaqt chizig‘i', speed: 'Tezlik', full: 'To‘liq ekran', canvas: '3D tajriba modeli' }
                   : { play: 'Play / pause', pause: 'Pause', playOnly: 'Play', prev: 'Previous step', next: 'Next step', restart: 'Restart', track: 'Experiment timeline', speed: 'Speed', full: 'Fullscreen', canvas: '3D experiment model' };
     const ui = document.createElement('div'); ui.className = 'lab-ui'; host.appendChild(ui);
     try { renderer.domElement.setAttribute('role', 'img'); renderer.domElement.setAttribute('aria-label', L.canvas + ': ' + tr(ex.title)); } catch (e) { }
@@ -529,7 +530,7 @@
       <div class="lab-cap"><div class="lc-step"></div><div class="lc-text"></div><div class="lc-eq"></div></div>`;
     const $ = (s) => ui.querySelector(s);
     const ticks = $('.lb-ticks'); starts.forEach((s, i) => { const d = document.createElement('i'); d.style.left = (100 * s / total) + '%'; d.title = String(i + 1); ticks.appendChild(d); });
-    const hint = document.createElement('div'); hint.className = 'lab-hint'; hint.textContent = matchMedia('(pointer:coarse)').matches ? (Lab.lang === 'uz' ? "👆 Barmoq bilan aylantiring • ikki barmoq bilan yaqinlashtiring" : '👆 Drag to rotate • pinch to zoom') : (Lab.lang === 'uz' ? "🖱 Aylantirish uchun suring • g'ildirak bilan yaqinlashtiring" : '🖱 Drag to rotate • scroll to zoom'); wrap.appendChild(hint);
+    const hint = document.createElement('div'); hint.className = 'lab-hint'; hint.textContent = matchMedia('(pointer:coarse)').matches ? (Lab.lang === 'en' ? '👆 Drag to rotate • pinch to zoom' : Lab.lang === 'ru' ? '👆 Вращайте пальцем • сводите два пальца для масштаба' : "👆 Barmoq bilan aylantiring • ikki barmoq bilan yaqinlashtiring") : (Lab.lang === 'en' ? '🖱 Drag to rotate • scroll to zoom' : Lab.lang === 'ru' ? '🖱 Тяните для вращения • колесо для масштаба' : "🖱 Aylantirish uchun suring • g'ildirak bilan yaqinlashtiring"); wrap.appendChild(hint);
 
     let t = 0, playing = !!opts.autoplay && !matchMedia('(prefers-reduced-motion: reduce)').matches, speed = 1, curStep = -1, alive = true, last = performance.now(); let endFired = false;
     let camAnim = null;
@@ -552,7 +553,7 @@
 
     function updateCaption(i) {
       const s = steps[i]; if (!s) return;
-      $('.lc-step').textContent = (Lab.lang === 'uz' ? 'Bosqich ' : 'Step ') + (i + 1) + ' / ' + steps.length;
+      $('.lc-step').textContent = (Lab.lang === 'en' ? 'Step ' : Lab.lang === 'ru' ? 'Этап ' : 'Bosqich ') + (i + 1) + ' / ' + steps.length;
       $('.lc-text').innerHTML = tr(s.cap);
       $('.lc-eq').innerHTML = s.eq ? tr(s.eq) : ''; $('.lc-eq').style.display = s.eq ? '' : 'none';
       if (s.cam) moveCam(s.cam);
