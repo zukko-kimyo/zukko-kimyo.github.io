@@ -976,9 +976,10 @@
     if (newPage) toTop();
     destroyLab(); closeModal(); closeZoom(); document.getElementById('nav').classList.remove('open'); document.getElementById('burger').setAttribute('aria-expanded', 'false');
     let m, navKey = 'home';
-    { // sarlavhadagi fan nomi: fan sahifalarida — o'sha fan, aks holda — kimyo
+    { // sarlavhadagi fan nomi faqat fan tanlanganda: fan sahifalari (#s/<fan>) va kimyo bo'limlari; bosh sahifa va boshqa joylarda — yashirin
       const chip = document.querySelector('header.top .zk-subject'); const sm = h.match(/^s\/([a-z]+)/); const sj = sm && window.ZKSubjects ? ZKSubjects.get(sm[1]) : null;
-      if (chip) { const nm = sj ? SN(sj) : h === 'fanlar' ? t('nav_subj') : (L3('Kimyo', 'Химия', 'Chemistry')); chip.textContent = nm.toUpperCase(); chip.setAttribute('aria-label', nm); }
+      const chem = /^(g[678](-\d+)?|lab(-.+)?|tests|ptable(-\d+)?|book-g[678])$/.test(h);
+      if (chip) { const nm = sj ? SN(sj) : chem ? L3('Kimyo', 'Химия', 'Chemistry') : ''; chip.hidden = !nm; chip.textContent = nm.toUpperCase(); if (nm) chip.setAttribute('aria-label', nm); else chip.removeAttribute('aria-label'); }
     }
     let lockR = null, lm;
     if (!fullAccess()) {

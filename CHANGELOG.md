@@ -4,6 +4,9 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Sarlavha: fan nomi faqat fan tanlanganda (2026-11-18)
+- Logotip yonidagi «KIMYO» belgisi bosh sahifada va «Fanlar» sahifasida ko'rinmaydi; fan sahifasiga (masalan, Matematika) yoki kimyo bo'limlariga (sinflar, darslar, 3D laboratoriya, testlar, davriy jadval) kirganda o'sha fan nomi chiqadi.
+
 ### 1-sinf fanlari: kimyo darsi kabi dars sahifalari (2026-11-17, ADR-0008 3-bosqich)
 - Matematika, ingliz va rus tili 1-sinf mavzularida 3 tab: **Dars mazmuni** (maqsad, asosiy fikrlar, yangi so'zlar kartochkalari va gaplar 🔊 talaffuz bilan, darslikdagi topshiriqlar), **Darslik** (sahifalar), **Test** (5 savol, natija ⭐ bilan).
 - Dars mazmuni uch tilda (o'zbek, rus, ingliz) — sayt tiliga qarab ko'rsatiladi.

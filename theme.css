@@ -785,3 +785,4 @@ body.zk-v3 .zk-sjtopic.locked {opacity:.8}
 /* yashirin fayl tanlagich jadval chegarasidan chiqib, telefonda sahifani kengaytirmasin */
 .ad-books .bk-pick {position:relative;overflow:hidden}
 .ad-books .bk-ls {margin-bottom:6px;font-size:13.5px}
+header.top .zk-subject[hidden] {display:none !important}

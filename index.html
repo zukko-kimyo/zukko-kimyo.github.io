@@ -706,7 +706,7 @@ button,a,.ptcell{touch-action:manipulation}
 <div class="zk-sr" id="zkAnnounce" role="status" aria-live="polite"></div>
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#home" aria-label="Zukko Akademiyasi — Kimyo"><span class="mark" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="async" fetchpriority="high"></span><div class="zk-school-name"><strong>ZUKKO</strong><small>AKADEMIYASI</small></div><span class="zk-subject" aria-label="Kimyo fani">KIMYO</span></a>
+    <a class="logo" href="#home" aria-label="Zukko Akademiyasi"><span class="mark" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="async" fetchpriority="high"></span><div class="zk-school-name"><strong>ZUKKO</strong><small>AKADEMIYASI</small></div><span class="zk-subject" hidden></span></a>
     <nav class="main" id="nav">
       <div class="zk-ngrp" id="navGrades">
         <button type="button" class="zk-ngrp-btn" id="navGradesBtn" aria-haspopup="true" aria-expanded="false" aria-controls="navGradesMenu"><span data-i="nav_grades"></span><svg class="zi zk-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
@@ -753,7 +753,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261117-g1-01';
+const VER = '20261118-hdr-01';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 // Tezlik (2026-11-17): birinchi kirishda faqat sahifani chizish uchun kerakli fayllar yuklanadi (parallel preload,
 // keyin tartib bilan). 3D (three.js + lab-exps), testlar bazasi, darslik tarjimasi, davriy jadval va

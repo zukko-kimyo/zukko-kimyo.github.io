@@ -81,7 +81,7 @@ test('mobile: molecular lab is collapsed and opens on tap; header stays one row'
   await expect(page.locator('#zkScene')).toBeHidden();
   const h = await page.evaluate(() => document.querySelector('header.top').getBoundingClientRect().height);
   expect(h).toBeLessThan(80);
-  await expect(page.locator('.top .zk-subject')).toBeVisible();
+  await expect(page.locator('.top .zk-subject')).toBeHidden(); // fan tanlanmagan — bosh sahifa
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });
@@ -162,7 +162,7 @@ test('glass surfaces: translucent header (and floating tab bar on phones)', asyn
 });
 
 test('platform name is shown in full ("ZUKKO AKADEMIYASI") together with "Kimyo" on every width', async ({ page }) => {
-  await page.goto('/index.html#home'); await waitReady(page);
+  await page.goto('/index.html#g7'); await waitReady(page); // fan nomi kimyo bo'limida ko'rinadi
   for (const width of [320, 360, 390, 1300]) {
     await page.setViewportSize({ width, height: 760 });
     await expect(page.locator('header.top .zk-school-name strong')).toBeVisible();
