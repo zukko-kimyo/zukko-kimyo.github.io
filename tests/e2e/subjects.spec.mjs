@@ -8,7 +8,7 @@ test('fanlar menyusi: har fanning o\'z oynasi, bitta tanlangan sinf; sarlavhada 
   const desktop = await page.evaluate(() => innerWidth > 900);
   if (desktop) {
     await page.click('#navSubjBtn');
-    await expect(page.locator('#navSubjMenu a')).toHaveCount(4);
+    await expect(page.locator('#navSubjMenu a[data-nav=fanlar]')).toHaveCount(4);
     await page.locator('#navSubjMenu a', { hasText: 'Rus tili' }).click();
   } else await go(page, 's/rus');
   await expect(page.locator('header.top .zk-subject')).toHaveText('RUS TILI');
@@ -25,7 +25,7 @@ test('fanlar menyusi: har fanning o\'z oynasi, bitta tanlangan sinf; sarlavhada 
   await go(page, 's/math/1/1/50');
   await expect(page.locator('.lesson-top h1')).toContainText('My Number Test');
   await go(page, 'home');
-  await expect(page.locator('header.top .zk-subject')).toBeHidden();
+  await expect(page.locator('header.top .zk-subject')).toHaveText('KIMYO'); // tanlangan fan
   await go(page, 'g7');
   await expect(page.locator('header.top .zk-subject')).toHaveText('KIMYO');
   await go(page, 'fanlar');

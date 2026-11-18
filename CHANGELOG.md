@@ -4,8 +4,12 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
-### Sarlavha: fan nomi faqat fan tanlanganda (2026-11-18)
-- Logotip yonidagi «KIMYO» belgisi bosh sahifada va «Fanlar» sahifasida ko'rinmaydi; fan sahifasiga (masalan, Matematika) yoki kimyo bo'limlariga (sinflar, darslar, 3D laboratoriya, testlar, davriy jadval) kirganda o'sha fan nomi chiqadi.
+### Fan tanlash oynasi (2026-11-18, ADR-0008 4-bosqich)
+- Kirgandan keyin «Qaysi fanni o'rganamiz?» oynasi: fanni tanlab, «Davom etish» bilan tasdiqlanadi. Bosh sahifa (logotip) tanlangan fanga olib boradi, sarlavhada shu fan nomi.
+- Menyu fanga moslashadi: kimyo bo'limlari (sinflar, testlar, 3D laboratoriya, davriy jadval, darslik) faqat kimyoda; boshqa fanlarda telefon menyusida «Fanlar».
+- «⇄ Fanni almashtirish»: Fanlar menyusida, fan sahifasida, kimyo bosh sahifasida va «Fanlar» sahifasida. O'qituvchi faqat o'ziga biriktirilgan fanlardan tanlaydi (bitta bo'lsa — avtomatik).
+- Kimyo bosh sahifasi endi `#kimyo` manzilida ham. Bosh sahifa va «Fanlar» sahifasida fan nomi ko'rinmaydi, faqat fan tanlanganda.
+- Kirish oynasi va sahifa nomi: «Kimyo, 6–8-sinf» o'rniga barcha fanlar.
 
 ### 1-sinf fanlari: kimyo darsi kabi dars sahifalari (2026-11-17, ADR-0008 3-bosqich)
 - Matematika, ingliz va rus tili 1-sinf mavzularida 3 tab: **Dars mazmuni** (maqsad, asosiy fikrlar, yangi so'zlar kartochkalari va gaplar 🔊 talaffuz bilan, darslikdagi topshiriqlar), **Darslik** (sahifalar), **Test** (5 savol, natija ⭐ bilan).

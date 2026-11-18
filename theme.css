@@ -786,3 +786,43 @@ body.zk-v3 .zk-sjtopic.locked {opacity:.8}
 .ad-books .bk-pick {position:relative;overflow:hidden}
 .ad-books .bk-ls {margin-bottom:6px;font-size:13.5px}
 header.top .zk-subject[hidden] {display:none !important}
+
+/* ---------- Fan tanlash oynasi (#pick) va fanga moslashgan menyu ---------- */
+body:not(.zk-chemctx) [data-chem] {display:none !important}
+body.zk-chemctx [data-nochem] {display:none !important}
+.zk-pick {padding:clamp(28px,6vw,72px) 0 120px;min-height:calc(100vh - 140px)}
+.zk-pick-h {max-width:640px;margin:0 auto 28px;text-align:center}
+.zk-pick-k {display:inline-block;font:700 12px/1 var(--f);letter-spacing:.16em;color:var(--zk-teal,#00555a);padding:7px 12px;border-radius:999px;background:color-mix(in srgb,var(--zk-teal,#00555a) 10%,transparent)}
+.zk-pick-h h1 {margin:14px 0 10px;font:700 clamp(30px,5vw,48px)/1.1 var(--fh,var(--f));color:var(--zk-ink);letter-spacing:-.01em}
+.zk-pick-h p {margin:0;color:var(--zk-muted);font-size:17px;line-height:1.55}
+.zk-pick-grid {border:0;margin:0 auto;padding:0;max-width:880px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.zk-pcard {position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"ic t" "ic d" "ic b";column-gap:16px;row-gap:4px;align-items:start;padding:22px 52px 22px 20px;border-radius:22px;border:2px solid var(--zk-hair);background:var(--zk-surface,#fff);cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}
+.zk-pcard::before {content:"";position:absolute;inset:0 auto 0 0;width:6px;border-radius:22px 0 0 22px;background:var(--sj)}
+.zk-pcard:hover {border-color:color-mix(in srgb,var(--sj) 45%,var(--zk-hair));transform:translateY(-2px);box-shadow:0 10px 28px -16px color-mix(in srgb,var(--sj) 60%,transparent)}
+.zk-pcard.on {border-color:var(--sj);box-shadow:0 0 0 4px color-mix(in srgb,var(--sj) 18%,transparent),0 14px 30px -18px color-mix(in srgb,var(--sj) 70%,transparent)}
+.zk-pcard:has(input:focus-visible) {outline:3px solid var(--sj);outline-offset:3px}
+.zk-pk-ic {grid-area:ic;display:grid;place-items:center;width:58px;height:58px;border-radius:18px;font-size:30px;background:color-mix(in srgb,var(--sj) 14%,transparent)}
+.zk-pk-t {grid-area:t;display:flex;flex-direction:column;gap:2px}
+.zk-pk-t b {font:700 21px/1.2 var(--fh,var(--f));color:var(--zk-ink)}
+.zk-pk-t small {font-size:13px;font-weight:600;color:var(--sj);letter-spacing:.02em}
+.zk-pk-d {grid-area:d;color:var(--zk-muted);font-size:14.5px;line-height:1.45}
+.zk-pk-b {grid-area:b;justify-self:start;margin-top:6px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--zk-surface-2,#eef3f2);color:var(--zk-muted)}
+.zk-pk-b.on {background:color-mix(in srgb,#1a7f4b 14%,transparent);color:#146c3f}
+.zk-pk-ok {position:absolute;top:18px;right:18px;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:2px solid var(--zk-hair);color:transparent;font-weight:800;font-size:14px;transition:all .18s}
+.zk-pcard.on .zk-pk-ok {background:var(--sj);border-color:var(--sj);color:var(--sj-on,#fff)}
+.zk-pick-bar {position:sticky;bottom:18px;z-index:5;max-width:880px;margin:24px auto 0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 14px 14px 22px;border-radius:20px;border:1px solid var(--zk-hair);background:color-mix(in srgb,var(--zk-surface,#fff) 92%,transparent);backdrop-filter:blur(10px);box-shadow:0 18px 40px -24px rgba(0,0,0,.35)}
+.zk-pick-sel {color:var(--zk-muted);font-size:15px}
+.zk-pick-sel b {color:var(--zk-ink)}
+.zk-pick-bar .btn {min-height:48px;padding-inline:24px}
+.zk-pick-bar .btn[disabled] {opacity:.45;cursor:not-allowed}
+.zk-chg {display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:13px;font-weight:600;color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:.85}
+.zk-chg:hover {opacity:1}
+.zk-ngrp-pick {border-top:1px solid var(--zk-hair);margin-top:4px;padding-top:10px !important}
+@media (max-width:640px){
+  .zk-pick-grid {grid-template-columns:1fr;gap:12px}
+  .zk-pcard {padding:18px 48px 18px 18px}
+  .zk-pk-ic {width:50px;height:50px;font-size:26px;border-radius:15px}
+  .zk-pick-bar {bottom:calc(76px + env(safe-area-inset-bottom,0px));padding:12px 12px 12px 16px}
+  .zk-pick-bar .btn {padding-inline:18px}
+}
+@media (prefers-reduced-motion:reduce){.zk-pcard,.zk-pk-ok{transition:none}.zk-pcard:hover{transform:none}}

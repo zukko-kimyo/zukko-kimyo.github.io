@@ -81,7 +81,7 @@ test('mobile: molecular lab is collapsed and opens on tap; header stays one row'
   await expect(page.locator('#zkScene')).toBeHidden();
   const h = await page.evaluate(() => document.querySelector('header.top').getBoundingClientRect().height);
   expect(h).toBeLessThan(80);
-  await expect(page.locator('.top .zk-subject')).toBeHidden(); // fan tanlanmagan — bosh sahifa
+  await expect(page.locator('.top .zk-subject')).toHaveText('KIMYO'); // bosh sahifa — tanlangan fan
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });

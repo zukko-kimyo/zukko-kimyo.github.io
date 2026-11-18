@@ -13,7 +13,7 @@
 
   const S = {
     uz: {
-      title: 'Zukko Akademiyasi', sub: 'Zukko Xalqaro Maktabi · Kimyo, 6–8-sinf', login: 'Login', pass: 'Parol', remember: 'Shu qurilmada eslab qolish',
+      title: 'Zukko Akademiyasi', sub: 'Zukko Xalqaro Maktabi · kimyo, matematika, ingliz va rus tili', login: 'Login', pass: 'Parol', remember: 'Shu qurilmada eslab qolish',
       enter: 'Kirish', hint: "Login va parolni o'qituvchingizdan oling.", e_empty: 'Login va parolni kiriting.', e_bad: "Login yoki parol noto'g'ri.",
       e_net: "Internet bilan aloqa yo'q. Qayta urinib ko'ring.", e_many: "Juda ko'p urinish. Bir necha daqiqadan so'ng qayta urinib ko'ring.",
       sync_fail: "Natijalar hozircha serverga saqlanmadi — internet tiklanganda avtomatik saqlanadi.",
@@ -33,7 +33,7 @@
       mock: 'Sinov rejimi — maʼlumotlar faqat shu brauzerda', saved: 'Saqlandi', offline: 'Internet yo‘q — natijalar keyin saqlanadi', cls: 'Sinf',
     },
     en: {
-      title: 'Zukko Academy', sub: 'Zukko International School · Chemistry, grades 6–8', login: 'Login', pass: 'Password', remember: 'Remember me on this device',
+      title: 'Zukko Academy', sub: 'Zukko International School · chemistry, maths, English and Russian', login: 'Login', pass: 'Password', remember: 'Remember me on this device',
       enter: 'Sign in', hint: 'Get your login and password from your teacher.', e_empty: 'Enter your login and password.', e_bad: 'Wrong login or password.',
       e_net: 'No internet connection. Please try again.', e_many: 'Too many attempts. Try again in a few minutes.',
       sync_fail: 'Your progress is not saved to the server yet — it will sync automatically when the connection returns.',
@@ -54,7 +54,7 @@
     },
     ru: {
       title: "Zukko Akademiyasi",
-      sub: "Международная школа Zukko · Химия, 6–8 классы",
+      sub: "Международная школа Zukko · химия, математика, английский и русский язык",
       login: "Логин",
       pass: "Пароль",
       remember: "Запомнить на этом устройстве",
@@ -492,7 +492,7 @@
     if (!ON) return (readyP = Promise.resolve(null));
     readyP = new Promise(async (resolve) => {
       css();
-      const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="zk-brand-loader" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="sync"><span class="zk-brand-orbit"></span></div><b>${t('loading')}</b><p class="zk-boot-sub">${L3('Zukko Akademiyasi · Kimyo', 'Zukko Akademiyasi · Химия', 'Zukko Academy · Chemistry')}</p></div>`; document.body.appendChild(boot);
+      const boot = document.createElement('div'); boot.className = 'zk-gate boot'; boot.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="zk-brand-loader" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="sync"><span class="zk-brand-orbit"></span></div><b>${t('loading')}</b><p class="zk-boot-sub">${L3('Zukko Xalqaro Maktabi', 'Международная школа Zukko', 'Zukko International School')}</p></div>`; document.body.appendChild(boot);
       let u = null;
       let setP = null;
       try { u = await B.init(); setP = loadSettings(); if (!u) await setP; } catch (e) { boot.querySelector('.card').innerHTML = `<b>${t('e_cfg')}</b><div class="nt">${esc(e.message || e)}</div>`; return; }
