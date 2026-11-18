@@ -22,15 +22,33 @@
       print:'🖨 Print / Save PDF',
       warning:'UNOFFICIAL personal learning certificate based on client-recorded progress. This is not a school-issued credential. Official certificates require server-verified results.',
       footer:'Explore · Learn · Experiment',anon:'Chemistry learner'
+    },
+    ru: {
+      head: "Личный сертификат достижений",
+      subtitle: "Запись об изучении химии",
+      recipient: "Ученик",
+      done: "Уроков освоено",
+      xp: "Очки XP",
+      level: "Уровень",
+      lab: "3D-опытов пройдено",
+      issued: "Создан",
+      unlock: "Освойте не меньше 10 уроков, чтобы открыть сертификат.",
+      count: "Осталось уроков",
+      back: "← К моим успехам",
+      continue: "Открыть урок",
+      print: "🖨 Печать / Сохранить в PDF",
+      warning: "НЕОФИЦИАЛЬНЫЙ личный сертификат на основе прогресса, сохранённого в браузере. Это не документ, выданный школой. Официальные сертификаты требуют результатов, проверенных сервером.",
+      footer: "Исследуй · Учись · Экспериментируй",
+      anon: "Ученик-химик"
     }
   };
   const esc=(s)=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function render(app,ctx){
     if(!app||!window.XP)return;
-    const xp=window.XP,lang=ctx.lang==='en'?'en':'uz', t=S[lang],s=xp.s;
+    const xp=window.XP,lang=S[ctx.lang]?ctx.lang:'uz', t=S[lang],s=xp.s;
     const finished=Object.values(s.L||{}).filter(x=>x&&x.done).length;
     const eligible=finished>=10, username=(window.ZKAuth&&window.ZKAuth.user&&(window.ZKAuth.user.name||window.ZKAuth.user.login))||t.anon;
-    const date=new Intl.DateTimeFormat(lang==='en'?'en-US':'uz-UZ',{year:'numeric',month:'long',day:'numeric'}).format(new Date());
+    const date=new Intl.DateTimeFormat(lang==='en'?'en-US':lang==='ru'?'ru-RU':'uz-UZ',{year:'numeric',month:'long',day:'numeric'}).format(new Date());
     const level=xp.level(Math.max(0,Number(s.xp)||0)).L;
     const labs=Object.keys(s.labs||{}).length;
     const escName=esc(String(username).slice(0,160));

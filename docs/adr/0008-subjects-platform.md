@@ -44,6 +44,12 @@ Birinchi bo'lib uchta darslik keldi, hammasi 1-sinf, 1-qism, har biri 104 sahifa
 - Yuklashni administrator admin paneldagi "Darslik yuklash" orqali qiladi: Claude parol bilan kira olmaydi.
 - Yangi so'zlar kartochkalari, brauzer orqali talaffuz (ru-RU / en-GB), mavzu bo'yicha kichik o'yin-test. Natijalar fan bo'yicha alohida hujjatda saqlanadi, shuning uchun o'qituvchi faqat o'z fanini ko'radi.
 
+**3-bosqich: 1-sinf dars mazmuni (kimyo darsi kabi).**
+- Mavzu sahifasida 3 tab: "Dars mazmuni" (maqsad, asosiy fikrlar, yangi so'zlar va gaplar talaffuzi bilan, darslikdagi topshiriqlar), "Darslik" (2-bosqich sahifalari), "Test" (5 savol).
+- Mazmun uch tilda (uz/ru/en) tayyorlanadi va `lessons/<fan>-<sinf>-<qism>-<mavzu>` hujjatlarida (`j` — dars JSON matni) saqlanadi. O'qish qoidasi darslik sahifalari bilan bir xil; yozish — faqat admin.
+- Administrator admin panelda har bir darslik uchun JSON faylni yuklaydi. Dars matni ochiq repozitoriyga joylanmaydi.
+- Test natijasi hozircha brauzerda saqlanadi (⭐ belgisi). Fan bo'yicha natijalarni o'qituvchiga ko'rsatish — keyingi bosqich.
+
 ## Oqibatlar
 - Mavzu nomlari ochiq, darslik sahifalari esa yopiq bo'ladi.
 - Har bir yangi fan uchun `firestore.rules` dagi fanlar ro'yxatini (`chem`, `math`, `eng`, `rus`) kengaytirish kerak.

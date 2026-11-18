@@ -632,6 +632,7 @@ body.zk-v3 .uchip .av {border-radius:999px}
 body.zk-v3 #bnav .uchip .nm {font-size:0!important;max-width:none}
 body.zk-v3 #bnav .uchip .nm::after {content:'Profil';font-size:10.5px}
 html[lang="en"] body.zk-v3 #bnav .uchip .nm::after {content:'Profile'}
+html[lang="ru"] body.zk-v3 #bnav .uchip .nm::after {content:'Профиль'}
 /* Davriy jadval planshetda to'liq sig'sin */
 @media (min-width:700px) and (max-width:1024px) {
   body.zk-v3 .ptgrid {min-width:0;gap:2px}
@@ -755,3 +756,32 @@ body.zk-v3 .bk-pick:focus-within {outline:3px solid #0b6aa8;outline-offset:2px}
 body.zk-v3 .zk-sjpages {margin-top:12px}
 body.zk-v3 .zk-sjtopic.locked {opacity:.8}
 @media (max-width:700px) { body.zk-v3 .zk-sjimgs {grid-template-columns:1fr} }
+
+/* ---------- Fanlar: 1-sinf dars mazmuni (so'zlar, gaplar, topshiriqlar) ---------- */
+.zk-sjsub {margin:-4px 0 10px;color:var(--zk-muted);font-size:15px}
+.zk-sjstar {font-size:.85em}
+.zk-sjref {margin:0;color:var(--zk-muted);font-size:14px;line-height:1.5}
+.zk-words {display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.zk-word {position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 10px 12px;border-radius:18px;border:1px solid var(--zk-hair);background:var(--zk-surface,#fff);text-align:center}
+.zk-word .em {font-size:34px;line-height:1.1}
+.zk-word b {font:700 19px var(--fh,var(--f));color:var(--zk-ink)}
+.zk-word > span:not(.em) {color:var(--zk-muted);font-size:14px;min-height:1.2em}
+.zk-say {display:inline-grid;place-items:center;width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--zk-hair);background:var(--zk-surface-2,#f3f7f6);font-size:18px;cursor:pointer;transition:transform .15s var(--zk-ease,ease)}
+.zk-say:hover {border-color:var(--sj,var(--zk-teal))}
+.zk-say:active {transform:scale(.92)}
+.zk-say:focus-visible {outline:3px solid var(--sj,var(--zk-teal));outline-offset:2px}
+.zk-word .zk-say {margin-top:4px}
+.zk-phr {list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.zk-phr li {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--zk-surface-2,#f3f7f6)}
+.zk-phr li div {display:flex;flex-direction:column;gap:2px}
+.zk-phr b {font-size:17px;color:var(--zk-ink)}
+.zk-phr span {color:var(--zk-muted);font-size:14px}
+.zk-tasks {margin:0;padding-left:22px;display:grid;gap:6px;line-height:1.5}
+.zk-sjlesson .tabs button {min-height:44px}
+@media (max-width:560px){.zk-words{grid-template-columns:repeat(2,minmax(0,1fr))}.zk-word b{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.zk-say{transition:none}}
+.zk-sjlesson ~ .lesson-body .keyq .ic, .lesson-body .keyq .ic {flex:none;min-width:44px}
+.zk-sjlesson ~ .lesson-body .keyq .ic {font-size:22px}
+/* yashirin fayl tanlagich jadval chegarasidan chiqib, telefonda sahifani kengaytirmasin */
+.ad-books .bk-pick {position:relative;overflow:hidden}
+.ad-books .bk-ls {margin-bottom:6px;font-size:13.5px}

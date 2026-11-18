@@ -9,14 +9,24 @@
     en:{title:'🧭 Experiment walkthrough',sub:'Choose a step to jump to that part of the 3D scene.',
         step:'Step',replay:'↻ Restart experiment',eq:'Chemical equation',noeq:'No equation is shown for this step.',
         hint:'Rotate the 3D scene with your mouse or finger; you can also use the scene controls to change steps.',
-        conclusion:'This is a virtual experiment. Perform real chemistry only under teacher supervision.'}
+        conclusion:'This is a virtual experiment. Perform real chemistry only under teacher supervision.'},
+    ru: {
+      title: "🧭 Ход опыта",
+      sub: "Выберите этап, чтобы перейти к этой части 3D-сцены.",
+      step: "Этап",
+      replay: "↻ Начать опыт заново",
+      eq: "Химическое уравнение",
+      noeq: "На этом этапе уравнение не показано.",
+      hint: "Вращайте 3D-сцену мышью или пальцем; этапы можно менять и кнопками сцены.",
+      conclusion: "Это виртуальный опыт. Настоящие химические опыты проводятся только под контролем учителя."
+    }
   };
   const esc=(s)=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const plain=(s)=>String(s||'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
   const tr=(s,L)=>typeof s==='string'?s:(s&&s[L]||s&&s.uz||'');
   function mount(host,handle,opts={}){
     if(!host || !handle || !Array.isArray(handle.steps) || !handle.steps.length)return;
-    const L=opts.lang==='en'?'en':'uz', S=STR[L],steps=handle.steps;
+    const L=STR[opts.lang]?opts.lang:'uz', S=STR[L],steps=handle.steps;
     let last=-1;
     const tok=(host.__zkGuideTok=(host.__zkGuideTok||0)+1); // qayta mount bo'lsa eski kuzatuv sikli to'xtaydi
     host.innerHTML=`<section class="zk-lab-guide" aria-label="${esc(S.title)}">

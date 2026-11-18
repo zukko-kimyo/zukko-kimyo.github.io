@@ -230,10 +230,10 @@
       function drawGraph(k) {
         g2.clearRect(0, 0, 260, 150); g2.fillStyle = 'rgba(255,255,255,.92)'; g2.fillRect(0, 0, 260, 150); g2.strokeStyle = '#94a3b8'; g2.lineWidth = 1;
         g2.beginPath(); g2.moveTo(30, 10); g2.lineTo(30, 130); g2.lineTo(250, 130); g2.stroke(); g2.fillStyle = '#334155'; g2.font = '10px Inter,Arial';
-        g2.fillText('°C', 6, 14); g2.fillText('100', 6, 34); g2.fillText('0', 18, 112); g2.fillText(Lab.lang === 'uz' ? 'vaqt' : 'time', 220, 145);
+        g2.fillText('°C', 6, 14); g2.fillText('100', 6, 34); g2.fillText('0', 18, 112); g2.fillText(Lab.lang !== 'en' ? 'vaqt' : 'time', 220, 145);
         const y = (c) => 112 - c * 0.8; g2.setLineDash([3, 3]); g2.beginPath(); g2.moveTo(30, y(0)); g2.lineTo(250, y(0)); g2.moveTo(30, y(100)); g2.lineTo(250, y(100)); g2.stroke(); g2.setLineDash([]);
         g2.strokeStyle = '#0ea5e9'; g2.lineWidth = 3; g2.beginPath(); for (let i = 0; i <= 100; i++) { const kk = i / 100 * k; const X = 30 + 220 * kk; const Y = y(curve(kk)); i ? g2.lineTo(X, Y) : g2.moveTo(X, Y); } g2.stroke();
-        g2.fillStyle = '#0369a1'; g2.font = '700 10px Inter,Arial'; if (k > 0.2) g2.fillText(Lab.lang === 'uz' ? 'erish' : 'melting', 60, y(0) - 6); if (k > 0.7) g2.fillText(Lab.lang === 'uz' ? 'qaynash' : 'boiling', 175, y(100) - 6);
+        g2.fillStyle = '#0369a1'; g2.font = '700 10px Inter,Arial'; if (k > 0.2) g2.fillText(Lab.lang !== 'en' ? 'erish' : 'melting', 60, y(0) - 6); if (k > 0.7) g2.fillText(Lab.lang !== 'en' ? 'qaynash' : 'boiling', 175, y(100) - 6);
       }
       let gk = 0, phase = 0;
       return {
@@ -293,7 +293,7 @@
         });
         ui.querySelectorAll('button').forEach((b) => b.classList.toggle('on', +b.dataset.z === z));
         const cfg = shells.reduce((acc, cap) => { const used = acc.reduce((a, b) => a + b, 0); if (used < p) acc.push(Math.min(cap, p - used)); return acc; }, []);
-        info.innerHTML = `<b>${e[0]} — ${Lab.lang === 'uz' ? e[1] : e[2]}</b><br>Z = ${p} &nbsp; A ≈ ${p + n}<br><span style="color:#ff6b61">p⁺ = ${p}</span> &nbsp; <span style="color:#cbd5e1">n⁰ = ${n}</span> &nbsp; <span style="color:#7dd3fc">e⁻ = ${p}</span><br>${Lab.lang === 'uz' ? 'Qavatlar' : 'Shells'}: ${cfg.join(', ')}`;
+        info.innerHTML = `<b>${e[0]} — ${Lab.lang !== 'en' ? e[1] : e[2]}</b><br>Z = ${p} &nbsp; A ≈ ${p + n}<br><span style="color:#ff6b61">p⁺ = ${p}</span> &nbsp; <span style="color:#cbd5e1">n⁰ = ${n}</span> &nbsp; <span style="color:#7dd3fc">e⁻ = ${p}</span><br>${Lab.lang !== 'en' ? 'Qavatlar' : 'Shells'}: ${cfg.join(', ')}`;
       }
       ui.addEventListener('click', (ev) => { const b = ev.target.closest('button'); if (b) build(+b.dataset.z); });
       build(3);

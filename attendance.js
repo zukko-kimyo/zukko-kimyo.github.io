@@ -14,14 +14,20 @@
       reload:'↻ Reload', empty:'No active students in this class.', choose:'Select a class first.',
       loading:'Loading attendance…', saved:'Attendance saved.', failed:'Could not load attendance. Check Firestore rules.',
       unsaved:'There are unsaved changes. Continue?', present:'Present', late:'Late', absent:'Absent', unknown:'Unmarked',
-      name:'Student', total:'Total', security:'Attendance must be restricted to authorized staff. Publish the Firestore rules separately.' }
+      name:'Student', total:'Total', security:'Attendance must be restricted to authorized staff. Publish the Firestore rules separately.' },
+    ru: { title:'📋 Посещаемость классов', sub:'Выберите класс и дату, отметьте каждого ученика и сохраните.',
+      cls:'Класс', date:'Дата', save:'☁️ Сохранить посещаемость', export:'⬇ Экспорт CSV',
+      reload:'↻ Обновить', empty:'В этом классе нет активных учеников.', choose:'Сначала выберите класс.',
+      loading:'Загрузка посещаемости…', saved:'Посещаемость сохранена.', failed:'Не удалось загрузить посещаемость. Проверьте правила Firestore.',
+      unsaved:'Есть несохранённые изменения. Продолжить?', present:'Присутствовал', late:'Опоздал', absent:'Отсутствовал', unknown:'Не отмечен',
+      name:'Ученик', total:'Всего', security:'Посещаемость должна быть доступна только уполномоченным сотрудникам. Правила Firebase публикуются отдельно.' }
   };
   const esc=(s)=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const localDate=(d)=>d.toLocaleDateString('sv');
   const statuses=['present','late','absent'];
   function mount(host, users, lang) {
     if (!host || !window.ZKAuth || !ZKAuth.isAdmin || !ZKAuth.isAdmin() || !ZKAuth.backend) return;
-    const T=i18n[lang==='en'?'en':'uz'], B=ZKAuth.backend;
+    const T=i18n[lang]||i18n.uz, B=ZKAuth.backend;
     const students=(users||[]).filter(u=>u.role==='student' && u.status!=='pending' && u.status!=='inactive' && u.id);
     const classes=[...new Set(students.map(u=>u.cls || '—'))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
     const state={cls:classes[0]||'',date:localDate(new Date()),entries:{},dirty:false,loading:false,loadError:false,request:0};

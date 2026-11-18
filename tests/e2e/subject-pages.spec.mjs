@@ -11,10 +11,10 @@ test('admin darslik PDF\'ini yuklaydi; o\'quvchi bepul mavzu sahifalarini ko\'ra
   const row = page.locator('tr[data-bk="eng-1-1"]');
   await expect(row).toContainText('Yuklanmagan', { timeout: 20_000 });
   // mos kelmaydigan fayl rad etiladi
-  await row.locator('input[type=file]').setInputFiles(fx('book-short.pdf'));
+  await row.locator('input[data-i]').setInputFiles(fx('book-short.pdf'));
   await expect(row.locator('.bk-st')).toContainText('mos kelmaydi', { timeout: 30_000 });
   // to'liq darslik
-  await row.locator('input[type=file]').setInputFiles(fx('book-104.pdf'));
+  await row.locator('input[data-i]').setInputFiles(fx('book-104.pdf'));
   await expect(row.locator('.bk-st')).toContainText('Yuklandi: 100 sahifa', { timeout: 90_000 });
   const doc = await page.evaluate(() => { const c = JSON.parse(localStorage.getItem('zk_mock_db')).col; return [Object.keys(c.content || {}).length, c.content['eng-1-1-5'], c.contentIndex['eng-1-1']]; });
   expect(doc[0]).toBe(100);
@@ -24,6 +24,7 @@ test('admin darslik PDF\'ini yuklaydi; o\'quvchi bepul mavzu sahifalarini ko\'ra
 
   // admin: mavzu sahifalari ko'rinadi
   await go(page, 's/eng/1/1/1');
+  await page.locator('.tabs button[data-tab=pages]').click();
   await expect(page.locator('#sjPages img')).toHaveCount(2);
 
   // obunasiz o'quvchi: 1-mavzu ochiq, 4-mavzu yopiq
@@ -37,16 +38,19 @@ test('admin darslik PDF\'ini yuklaydi; o\'quvchi bepul mavzu sahifalarini ko\'ra
   await login(page, 'laylo.s', 'secret1');
   await waitReady(page);
   await go(page, 's/eng/1/1/2');
+  await page.locator('.tabs button[data-tab=pages]').click();
   await expect(page.locator('#sjPages img')).toHaveCount(2);
   await go(page, 's/eng/1');
   await expect(page.locator('a.zk-sjtopic[href="#s/eng/1/1/4"].locked')).toHaveCount(1);
   await go(page, 's/eng/1/1/4');
-  await expect(page.locator('#sjPages .zk-pay h2')).toContainText(/ingliz tili obunasi/i);
+  await expect(page.locator('#sjBody .zk-pay h2')).toContainText(/ingliz tili obunasi/i);
   await expect(page.locator('#sjPages img')).toHaveCount(0);
 });
 
 test('darslik yuklanmagan bo\'lsa — tushunarli xabar', async ({ page }) => {
   await bootstrapAdmin(page);
   await go(page, 's/math/1/1/1');
+  await expect(page.locator('#sjBody')).toContainText('hali yuklanmagan');
+  await page.locator('.tabs button[data-tab=pages]').click();
   await expect(page.locator('#sjPages')).toContainText('hali yuklanmagan');
 });
