@@ -6,7 +6,7 @@ test('mobile bottom navigation groups grades and places personal panel at far ri
   await waitReady(page);
   const nav = page.locator('#bnav');
   await expect(nav).toBeVisible();
-  await expect(nav.locator(':scope > a')).toHaveCount(4);
+  await expect(nav.locator(':scope > a:visible')).toHaveCount(4);
   await expect(nav.locator('#mobileGradesToggle')).toBeVisible();
   await expect(nav.locator('#mobilePanelLink')).toHaveAttribute('href', '#me');
   await expect(nav.locator('#mobilePanelLink')).toHaveText(/Profil|Profile/);
@@ -115,7 +115,7 @@ test('admin page and 5-button mobile bar fit narrow 320, 360 and 390 pixel scree
         scrollWidth: document.documentElement.scrollWidth,
         viewport: innerWidth,
         navWidth: rect.width, navLeft: rect.left, navRight: innerWidth - rect.right,
-        buttons: [...nav.children].filter(el => el.matches('a,button')).length,
+        buttons: [...nav.children].filter(el => el.matches('a,button') && !el.hasAttribute('data-nochem')).length,
         panelVisible: !!document.querySelector('#adStudentsOpen')?.getClientRects().length
       };
     });

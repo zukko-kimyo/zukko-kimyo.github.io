@@ -185,6 +185,8 @@ body.zk-v3 .zk-hero-v3 .btns.zk-btns-sec .btn {min-height:48px;padding-inline:20
 .zk-float-eq {position:absolute;top:-16px;right:-14px;z-index:3;padding:10px 16px;border-radius:18px;font:600 17px/1.2 var(--fh);color:var(--zk-ink);
   background:var(--zk-glass-strong);border:1px solid var(--zk-glass-line);box-shadow:var(--zk-glass-shadow);-webkit-backdrop-filter:var(--zk-glass-blur);backdrop-filter:var(--zk-glass-blur);
   animation:zkFloat 7s ease-in-out infinite alternate}
+.zk-pk-gl i:nth-child(3n+2) {bottom:20px}
+.zk-pk-gl i:nth-child(3n) {bottom:46px}
 @keyframes zkFloat {to {transform:translateY(-10px)}}
 body.zk-v3 .zk-hero-scene {position:relative;overflow:visible}
 @media (max-width:760px) { .zk-float-eq {display:none} }
@@ -785,3 +787,93 @@ body.zk-v3 .zk-sjtopic.locked {opacity:.8}
 /* yashirin fayl tanlagich jadval chegarasidan chiqib, telefonda sahifani kengaytirmasin */
 .ad-books .bk-pick {position:relative;overflow:hidden}
 .ad-books .bk-ls {margin-bottom:6px;font-size:13.5px}
+header.top .zk-subject[hidden] {display:none !important}
+
+/* ---------- Fan tanlash oynasi (#pick) va fanga moslashgan menyu ---------- */
+body:not(.zk-chemctx) [data-chem] {display:none !important}
+body.zk-chemctx [data-nochem] {display:none !important}
+.zk-pick {padding:clamp(28px,6vw,72px) 0 120px;min-height:calc(100vh - 140px)}
+.zk-pick-h {max-width:640px;margin:0 auto 28px;text-align:center}
+.zk-pick-k {display:inline-block;font:700 12px/1 var(--f);letter-spacing:.16em;color:var(--zk-teal,#00555a);padding:7px 12px;border-radius:999px;background:color-mix(in srgb,var(--zk-teal,#00555a) 10%,transparent)}
+.zk-pick-h h1 {margin:14px 0 10px;font:700 clamp(30px,5vw,48px)/1.1 var(--fh,var(--f));color:var(--zk-ink);letter-spacing:-.01em}
+.zk-pick-h p {margin:0;color:var(--zk-muted);font-size:17px;line-height:1.55}
+.zk-pick-grid {border:0;margin:0 auto;padding:0;max-width:880px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.zk-pcard {position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"ic t" "ic d" "ic b";column-gap:16px;row-gap:4px;align-items:start;padding:22px 52px 22px 20px;border-radius:22px;border:2px solid var(--zk-hair);background:var(--zk-surface,#fff);cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}
+.zk-pcard::before {content:"";position:absolute;inset:0 auto 0 0;width:6px;border-radius:22px 0 0 22px;background:var(--sj)}
+.zk-pcard:hover {border-color:color-mix(in srgb,var(--sj) 45%,var(--zk-hair));transform:translateY(-2px);box-shadow:0 10px 28px -16px color-mix(in srgb,var(--sj) 60%,transparent)}
+.zk-pcard.on {border-color:var(--sj);box-shadow:0 0 0 4px color-mix(in srgb,var(--sj) 18%,transparent),0 14px 30px -18px color-mix(in srgb,var(--sj) 70%,transparent)}
+.zk-pcard:has(input:focus-visible) {outline:3px solid var(--sj);outline-offset:3px}
+.zk-pk-ic {grid-area:ic;display:grid;place-items:center;width:58px;height:58px;border-radius:18px;font-size:30px;background:color-mix(in srgb,var(--sj) 14%,transparent)}
+.zk-pk-t {grid-area:t;display:flex;flex-direction:column;gap:2px}
+.zk-pk-t b {font:700 21px/1.2 var(--fh,var(--f));color:var(--zk-ink)}
+.zk-pk-t small {font-size:13px;font-weight:600;color:var(--sj);letter-spacing:.02em}
+.zk-pk-d {grid-area:d;color:var(--zk-muted);font-size:14.5px;line-height:1.45}
+.zk-pk-b {grid-area:b;justify-self:start;margin-top:6px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--zk-surface-2,#eef3f2);color:var(--zk-muted)}
+.zk-pk-b.on {background:color-mix(in srgb,#1a7f4b 14%,transparent);color:#146c3f}
+.zk-pk-ok {position:absolute;top:18px;right:18px;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:2px solid var(--zk-hair);color:transparent;font-weight:800;font-size:14px;transition:all .18s}
+.zk-pcard.on .zk-pk-ok {background:var(--sj);border-color:var(--sj);color:var(--sj-on,#fff)}
+.zk-pick-bar {position:sticky;bottom:18px;z-index:5;max-width:880px;margin:24px auto 0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 14px 14px 22px;border-radius:20px;border:1px solid var(--zk-hair);background:color-mix(in srgb,var(--zk-surface,#fff) 92%,transparent);backdrop-filter:blur(10px);box-shadow:0 18px 40px -24px rgba(0,0,0,.35)}
+.zk-pick-sel {color:var(--zk-muted);font-size:15px}
+.zk-pick-sel b {color:var(--zk-ink)}
+.zk-pick-bar .btn {min-height:48px;padding-inline:24px}
+.zk-pick-bar .btn[disabled] {opacity:.45;cursor:not-allowed}
+.zk-chg {display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:13px;font-weight:600;color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:.85}
+.zk-chg:hover {opacity:1}
+.zk-ngrp-pick {border-top:1px solid var(--zk-hair);margin-top:4px;padding-top:10px !important}
+@media (max-width:640px){
+  .zk-pick-grid {grid-template-columns:1fr;gap:12px}
+  .zk-pcard {padding:18px 48px 18px 18px}
+  .zk-pk-ic {width:50px;height:50px;font-size:26px;border-radius:15px}
+  .zk-pick-bar {bottom:calc(76px + env(safe-area-inset-bottom,0px));padding:12px 12px 12px 16px}
+  .zk-pick-bar .btn {padding-inline:18px}
+}
+@media (prefers-reduced-motion:reduce){.zk-pcard,.zk-pk-ok{transition:none}.zk-pcard:hover{transform:none}}
+/* Fan tanlash — jonli qatlam: fon, kirish animatsiyasi, suzuvchi belgilar, tanlash effekti */
+.zk-pick {position:relative;overflow:clip;isolation:isolate}
+.zk-pick-bg {position:absolute;inset:0;z-index:-1;pointer-events:none}
+.zk-pick-bg span {position:absolute;width:42vmax;height:42vmax;border-radius:50%;filter:blur(60px);opacity:.28;animation:zkBlob 22s ease-in-out infinite alternate}
+.zk-pick-bg span:nth-child(1) {background:#0f766e;top:-18vmax;left:-12vmax}
+.zk-pick-bg span:nth-child(2) {background:#2563eb;top:10vmax;right:-16vmax;animation-delay:-7s;opacity:.18}
+.zk-pick-bg span:nth-child(3) {background:#dc2626;bottom:-22vmax;left:28%;animation-delay:-13s;opacity:.12}
+@keyframes zkBlob {0%{transform:translate(0,0) scale(1)}50%{transform:translate(4vmax,3vmax) scale(1.08)}100%{transform:translate(-3vmax,5vmax) scale(.95)}}
+.zk-pick-k {font-size:13px;letter-spacing:.04em;padding:8px 14px;display:inline-flex;align-items:center;gap:6px}
+.zk-pick-wave {display:inline-block;transform-origin:70% 80%;animation:zkWave 2.4s ease-in-out 0.6s 2}
+@keyframes zkWave {0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(16deg)}20%,40%{transform:rotate(-8deg)}}
+.zk-pick-h > * {animation:zkUp .55s cubic-bezier(.2,.8,.2,1) both}
+.zk-pick-h > :nth-child(2) {animation-delay:.06s}
+.zk-pick-h > :nth-child(3) {animation-delay:.12s}
+.zk-pcard {overflow:hidden;animation:zkUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(.16s + var(--i,0) * .08s)}
+@keyframes zkUp {from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.zk-pcard::after {content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--sj) 16%,transparent),transparent 60%);opacity:0;transition:opacity .25s}
+.zk-pcard:hover::after, .zk-pcard.on::after {opacity:1}
+.zk-pcard.on {background:linear-gradient(160deg,color-mix(in srgb,var(--sj) 7%,var(--zk-surface,#fff)),var(--zk-surface,#fff) 70%)}
+.zk-pk-gl {position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.zk-pk-gl i {position:absolute;font-style:normal;font-weight:800;color:var(--sj);opacity:.09;font-size:calc(16px + var(--k) * 3px);right:calc(8px + var(--k) * 34px);bottom:-6px;animation:zkFloat calc(7s + var(--k) * 1.3s) ease-in-out infinite alternate;animation-delay:calc(var(--k) * -1.7s)}
+.zk-pcard:hover .zk-pk-gl i, .zk-pcard.on .zk-pk-gl i {opacity:.16}
+@keyframes zkFloat {from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-14px) rotate(8deg)}}
+.zk-pcard > :not(.zk-pk-gl) {position:relative;z-index:1}
+.zk-pcard > .zk-pk-ok {position:absolute;top:18px;right:18px;z-index:2}
+.zk-pk-ic {transition:transform .35s cubic-bezier(.3,1.6,.5,1),box-shadow .25s}
+.zk-pcard:hover .zk-pk-ic {transform:translateY(-3px) rotate(-6deg)}
+.zk-pcard.on .zk-pk-ic {transform:scale(1.06);box-shadow:0 10px 22px -12px var(--sj);background:var(--sj);filter:saturate(1.1)}
+.zk-pcard.pop .zk-pk-ic {animation:zkBounce .55s cubic-bezier(.3,1.6,.5,1)}
+.zk-pcard.pop .zk-pk-ok {animation:zkPop .4s cubic-bezier(.3,1.8,.5,1)}
+@keyframes zkBounce {0%{transform:scale(.85) rotate(-10deg)}60%{transform:scale(1.14) rotate(4deg)}100%{transform:scale(1.06)}}
+@keyframes zkPop {0%{transform:scale(.3)}100%{transform:scale(1)}}
+.zk-pk-st {grid-area:b;display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.zk-pk-st > span:not(.zk-pk-b) {font-size:12.5px;color:var(--zk-muted);padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--sj) 8%,var(--zk-surface-2,#eef3f2))}
+.zk-pk-st b {color:var(--sj);font-weight:800}
+.zk-pk-st .zk-pk-b {margin-top:0}
+.zk-pick-dot {display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--sj);margin-right:8px;vertical-align:middle;box-shadow:0 0 0 4px color-mix(in srgb,var(--sj) 22%,transparent)}
+#pickGo {transition:background-color .25s,transform .2s,box-shadow .25s}
+#pickGo.ready {background:var(--sj,var(--zk-teal));color:#fff;box-shadow:0 12px 26px -14px var(--sj,#000);animation:zkReady 2.2s ease-in-out .3s 2}
+#pickGo.ready:hover {transform:translateY(-1px)}
+#pickGo.ready .zk-pick-arr {display:inline-block;animation:zkNudge 1.2s ease-in-out infinite}
+@keyframes zkReady {0%,100%{box-shadow:0 12px 26px -14px var(--sj,#000)}50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--sj,#000) 18%,transparent),0 12px 26px -14px var(--sj,#000)}}
+@keyframes zkNudge {0%,100%{transform:none}50%{transform:translateX(4px)}}
+.zk-pick-bar {animation:zkUp .6s cubic-bezier(.2,.8,.2,1) .5s both}
+.zk-pick.leaving .wrap {transition:opacity .25s,transform .25s;opacity:0;transform:translateY(-10px) scale(.99)}
+@media (prefers-reduced-motion:reduce){
+  .zk-pick-bg span,.zk-pick-wave,.zk-pick-h > *,.zk-pcard,.zk-pk-gl i,.zk-pcard.pop .zk-pk-ic,.zk-pcard.pop .zk-pk-ok,#pickGo.ready,#pickGo.ready .zk-pick-arr,.zk-pick-bar {animation:none !important}
+  .zk-pk-ic,.zk-pcard::after {transition:none}
+}

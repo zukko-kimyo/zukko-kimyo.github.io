@@ -126,7 +126,7 @@
 
   const G = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
   const LIST = [
-    { id: 'chem', name: { uz: 'Kimyo', en: 'Chemistry', ru: 'Химия' }, color: '#00555a', icon: '⚗️', grades: [6, 7, 8], native: true, home: '#home' },
+    { id: 'chem', name: { uz: 'Kimyo', en: 'Chemistry', ru: 'Химия' }, color: '#00555a', icon: '⚗️', grades: [6, 7, 8], native: true, home: '#kimyo' },
     { id: 'math', name: { uz: 'Matematika', en: 'Mathematics', ru: 'Математика' }, color: '#2563eb', icon: '➗', grades: G(1, 11), books: [
       { grade: 1, part: 1, lang: 'en', title: 'Mathematics Grade 1 · Part 1', file: '1-qism_ingliz.pdf', offset: 0,
         units: [{ t: { orig: 'Chapter 1. Objects, Features and Logical Grouping', uz: '1-bob. Narsalar, belgilar va mantiqiy guruhlash' }, from: 1 },

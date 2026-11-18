@@ -58,7 +58,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/zukko-school-app-icon.svg?v=20261113-logo-03">
 <link rel="alternate icon" type="image/png" href="assets/zukko-app-192.png">
 <link rel="apple-touch-icon" href="assets/zukko-apple-180.png">
-<title>Zukko Akademiyasi — Kimyo | 6–8-sinf</title>
+<title>Zukko Akademiyasi — kimyo, matematika, ingliz va rus tili</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -706,9 +706,9 @@ button,a,.ptcell{touch-action:manipulation}
 <div class="zk-sr" id="zkAnnounce" role="status" aria-live="polite"></div>
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#home" aria-label="Zukko Akademiyasi — Kimyo"><span class="mark" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="async" fetchpriority="high"></span><div class="zk-school-name"><strong>ZUKKO</strong><small>AKADEMIYASI</small></div><span class="zk-subject" aria-label="Kimyo fani">KIMYO</span></a>
+    <a class="logo" href="#home" aria-label="Zukko Akademiyasi"><span class="mark" aria-hidden="true"><img src="assets/zukko-mark.svg" width="139" height="314" alt="" decoding="async" fetchpriority="high"></span><div class="zk-school-name"><strong>ZUKKO</strong><small>AKADEMIYASI</small></div><span class="zk-subject" hidden></span></a>
     <nav class="main" id="nav">
-      <div class="zk-ngrp" id="navGrades">
+      <div class="zk-ngrp" id="navGrades" data-chem>
         <button type="button" class="zk-ngrp-btn" id="navGradesBtn" aria-haspopup="true" aria-expanded="false" aria-controls="navGradesMenu"><span data-i="nav_grades"></span><svg class="zi zk-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="zk-ngrp-menu" id="navGradesMenu" role="group" hidden>
           <a href="#g6" data-nav="g6"><span class="zk-ngrp-n g6">06</span><span class="zk-ngrp-t"><b data-i="nav_g6"></b><small data-i="ng6"></small></span></a>
@@ -720,10 +720,10 @@ button,a,.ptcell{touch-action:manipulation}
         <button type="button" class="zk-ngrp-btn" id="navSubjBtn" aria-haspopup="true" aria-expanded="false" aria-controls="navSubjMenu"><span data-i="nav_subj"></span><svg class="zi zk-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="zk-ngrp-menu" id="navSubjMenu" role="group" hidden></div>
       </div>
-      <a href="#tests" data-nav="tests" data-i="nav_tests"></a>
-      <a href="#lab" data-nav="lab" data-i="nav_lab"></a>
-      <a href="#ptable" data-nav="pt" data-i="nav_pt"></a>
-      <a href="#book-g6" data-nav="book" data-i="nav_book"></a>
+      <a href="#tests" data-nav="tests" data-i="nav_tests" data-chem></a>
+      <a href="#lab" data-nav="lab" data-i="nav_lab" data-chem></a>
+      <a href="#ptable" data-nav="pt" data-i="nav_pt" data-chem></a>
+      <a href="#book-g6" data-nav="book" data-i="nav_book" data-chem></a>
     </nav>
     <div class="spacer"></div>
     <div class="search" role="search"><input id="q" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="sres" aria-expanded="false" aria-label="Mavzu yoki dars raqamini qidirish"><div class="sres" id="sres" tabindex="-1" role="listbox" aria-label="Qidiruv natijalari"></div></div>
@@ -736,9 +736,10 @@ button,a,.ptcell{touch-action:manipulation}
 <main id="app" tabindex="-1"></main>
 <nav class="bnav zk-mnav" id="bnav" aria-label="Mobil navigatsiya">
   <a href="#home" data-nav="home"><i aria-hidden="true">🏠</i><span data-i="b_home"></span></a>
-  <button type="button" id="mobileGradesToggle" aria-controls="mobileGradesMenu" aria-expanded="false" aria-haspopup="true"><i aria-hidden="true">📚</i><span id="mobileGradesLabel">Sinflar</span></button>
-  <a href="#lab" data-nav="lab"><i aria-hidden="true">🧪</i><span data-i="nav_lab"></span></a>
-  <a href="#tests" data-nav="tests"><i aria-hidden="true">✅</i><span data-i="b_tests"></span></a>
+  <button type="button" data-chem id="mobileGradesToggle" aria-controls="mobileGradesMenu" aria-expanded="false" aria-haspopup="true"><i aria-hidden="true">📚</i><span id="mobileGradesLabel">Sinflar</span></button>
+  <a href="#lab" data-nav="lab" data-chem><i aria-hidden="true">🧪</i><span data-i="nav_lab"></span></a>
+  <a href="#tests" data-nav="tests" data-chem><i aria-hidden="true">✅</i><span data-i="b_tests"></span></a>
+  <a href="#fanlar" data-nav="fanlar" data-nochem><i aria-hidden="true">📚</i><span data-i="nav_subj"></span></a>
   <a href="#me" data-nav="me" id="mobilePanelLink"><i id="mobilePanelIcon" aria-hidden="true">👤</i><span id="mobilePanelLabel">Profil</span></a>
   <div class="zk-mnav-menu" id="mobileGradesMenu" hidden role="group" aria-label="Sinflar">
     <div class="zk-mnav-menu-title" id="mobileGradesTitle">Sinflar</div>
@@ -753,7 +754,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261117-g1-01';
+const VER = '20261118-pick-01';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 // Tezlik (2026-11-17): birinchi kirishda faqat sahifani chizish uchun kerakli fayllar yuklanadi (parallel preload,
 // keyin tartib bilan). 3D (three.js + lab-exps), testlar bazasi, darslik tarjimasi, davriy jadval va

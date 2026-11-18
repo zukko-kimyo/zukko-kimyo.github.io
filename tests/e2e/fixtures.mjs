@@ -2,7 +2,8 @@
 //  - firebase-config.js o'rniga bo'sh sozlama beriladi -> sayt "?mock" bilan sinov rejimida ishlaydi;
 //  - THREE_DIR berilsa (internetsiz muhit), three.js CDN o'rniga lokal nusxadan olinadi;
 //  - PDFJS_DIR (pdfjs-dist paketi papkasi) berilsa, pdf.js CDN o'rniga lokal nusxadan olinadi (admin darslik yuklash);
-//  - OFFLINE=1 bo'lsa, Google Fonts so'rovlari to'xtatiladi.
+//  - OFFLINE=1 bo'lsa, Google Fonts so'rovlari to'xtatiladi;
+//  - fan tanlanmagan bo'lsa, kimyo tanlangan deb olinadi (zk_subj).
 import { test as base, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -23,6 +24,8 @@ export const test = base.extend({
       });
     }
     if (process.env.OFFLINE) await context.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
+    // Eski testlar kimyo bosh sahifasidan boshlanadi: fan tanlanmagan bo'lsa — kimyo (fan tanlash testi kalitni o'zi o'zgartiradi)
+    await context.addInitScript(() => { try { if (localStorage.getItem('zk_subj') === null) localStorage.setItem('zk_subj', 'chem'); } catch (e) { } });
     await use(context);
   },
   page: async ({ page }, use, testInfo) => {
