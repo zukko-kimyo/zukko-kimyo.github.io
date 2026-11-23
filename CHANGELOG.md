@@ -4,6 +4,10 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Matematika 1-sinf: o‘zbek tilidagi darslik, 3 qism (2026-11-23)
+- Inglizcha 1-qism o‘rniga «Zukko Matematika» o‘zbekcha darsligi: 1–3-qism, 150 mavzu (narsalar va guruhlash, 1–10 sonlar, 10 ichida qo‘shish-ayirish, 11–20 sonlar, o‘nlikdan o‘tib hisoblash, 100 gacha sonlar).
+- Har mavzuda dars mazmuni (uz/ru/en), darslik sahifalari va 10 savollik test (3 oson, 4 o‘rtacha, 3 qiyin).
+
 ### Rus tili 1-sinf: 5-qism (2026-11-23)
 - 50 ta yangi mavzu (201–250): «Моё сообщество и мир» va «Хорошие манеры, безопасность и счастливая жизнь». Har birida dars mazmuni (uz/ru/en), darslik sahifalari va 3 darajali test.
 - Fan sahifasida 5-qismga tez o'tish tugmasi, testlar markazida 5-qism guruhi.

@@ -23,7 +23,11 @@ test('fanlar menyusi: har fanning o\'z oynasi, bitta tanlangan sinf; sarlavhada 
   await expect(page.locator('.lesson-top h1')).toContainText('Моя мама');
   await expect(page.locator('.lesson-top .zk-sjsub')).toContainText('Mening onam');
   await go(page, 's/math/1/1/50');
-  await expect(page.locator('.lesson-top h1')).toContainText('My Number Test');
+  await expect(page.locator('.lesson-top h1')).toContainText('1 dan 5 gacha sonlar bo‘yicha mantiqiy topshiriqlar');
+  await go(page, 's/math/1');
+  await expect(page.locator('.zk-sjparts button')).toHaveCount(3);
+  await expect(page.locator('.zk-sjtopic')).toHaveCount(150);
+  await expect(page.locator('a.zk-sjtopic[href="#s/math/1/3/50"] .n')).toHaveText('150');
   await go(page, 'home');
   await expect(page.locator('header.top .zk-subject')).toHaveText('KIMYO'); // tanlangan fan
   await go(page, 'g7');
