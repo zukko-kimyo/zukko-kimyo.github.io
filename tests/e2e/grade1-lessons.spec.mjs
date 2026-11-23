@@ -116,4 +116,8 @@ test('admin dars mazmunini yuklaydi; o\'quvchi bepul mavzuni o\'qiydi va test ye
   await page.locator('.tabs button[data-tab=quiz]').click();
   await expect(page.locator('#sjBody .zk-pay')).toBeVisible();
   await expect(page.locator('#quiz')).toHaveCount(0);
+  // rus tili 2-qism: mavzu raqami kitobdagidek (51), 1-mavzu bo'lsa ham bepul emas
+  await go(page, 's/rus/1/2/1');
+  await expect(page.locator('.lesson-top .lnum')).toHaveText('51');
+  await expect(page.locator('#sjBody .zk-pay')).toBeVisible();
 });

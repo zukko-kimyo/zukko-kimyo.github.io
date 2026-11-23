@@ -884,3 +884,12 @@ body.zk-chemctx [data-nochem] {display:none !important}
 .zk-sjmore {margin:12px 2px 0;color:var(--zk-muted);font-size:14px}
 .zk-sjmore a {font-weight:700}
 .zk-sjact {margin:12px 0 0}
+/* Darslik qismlari (bir sinfda bir nechta qism) — tez o'tish tugmalari */
+.zk-sjparts {display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 20px;position:sticky;top:96px;z-index:4}
+.zk-sjparts button {display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:48px;padding:8px 16px;border-radius:14px;border:1px solid var(--zk-hair);background:var(--zk-surface,#fff);cursor:pointer;box-shadow:0 6px 18px -14px rgba(0,0,0,.4)}
+.zk-sjparts button b {font-size:14px;color:var(--zk-ink)}
+.zk-sjparts button small {font-size:12px;color:var(--sj,var(--zk-muted));font-weight:700}
+.zk-sjparts button:hover {border-color:var(--sj,var(--zk-teal))}
+.zk-sjparts button:focus-visible {outline:3px solid var(--sj,var(--zk-teal));outline-offset:2px}
+.zk-sjbook {scroll-margin-top:170px}
+@media (max-width:640px){.zk-sjparts{top:78px}.zk-sjparts button{flex:1 1 calc(50% - 10px)}}

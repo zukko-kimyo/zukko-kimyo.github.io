@@ -124,6 +124,98 @@
     "Compare numbers", "Number line", "My number test",
   ], 3);
 
+  // ---------- Rus tili: Zukko Russian Pathway 1, 2-qism (51–100-mavzular) ----------
+  const RU2 = mk([
+    "Моя школа", "Мой класс", "Мой учитель", "Мои друзья", "Моя парта", "Мой стул в школе", "Моя книга", "Моя тетрадь", "Мой карандаш", "Моя ручка",
+    "Мой ластик", "Моя линейка", "Мой школьный портфель", "Я поднимаю руку", "Я слушаю на уроке", "Я сижу красиво", "Я делюсь своими вещами",
+    "Я помогаю другу", "Мы читаем вместе", "Мы пишем вместе", "Мы считаем вместе", "Мы рисуем вместе", "Школьный звонок",
+    "Веселье на игровой площадке", "Я люблю свою школу", "Моё Тело", "Моя Голова", "Мои Глаза", "Мои Уши", "Мой Нос", "Мой Рот", "Мои Руки",
+    "Мои Пальцы", "Мои Ноги", "Мои ступни", "Я мою руки", "Я чищу зубы", "Я расчёсываю волосы", "Я принимаю ванну", "Чистая одежда", "Здоровая еда",
+    "Фрукты полезны", "Овощи полезны", "Я пью воду", "Я рано ложусь спать", "Я рано просыпаюсь", "Я делаю зарядку", "Я бегаю и прыгаю",
+    "Я чувствую себя счастливым", "Я здоров",
+  ], [
+    "Mening maktabim", "Mening sinfim", "Mening ustozim", "Mening do‘stlarim", "Mening partam", "Maktabdagi stulim", "Mening kitobim",
+    "Mening daftarim", "Mening qalamim", "Mening ruchkam", "Mening o‘chirg‘ichim", "Mening chizg‘ichim", "Mening maktab sumkam",
+    "Men qo‘l ko‘taraman", "Men darsda tinglayman", "Men chiroyli o‘tiraman", "Men narsalarimni baham ko‘raman", "Men do‘stimga yordam beraman",
+    "Biz birga o‘qiymiz", "Biz birga yozamiz", "Biz birga sanaymiz", "Biz birga rasm chizamiz", "Maktab qo‘ng‘irog‘i",
+    "O‘yin maydonchasidagi quvnoqlik", "Men maktabimni yaxshi ko‘raman", "Mening tanam", "Mening boshim", "Mening ko‘zlarim", "Mening quloqlarim",
+    "Mening burnim", "Mening og‘zim", "Mening qo‘llarim", "Mening barmoqlarim", "Mening oyoqlarim", "Mening oyoq panjalarim",
+    "Men qo‘llarimni yuvaman", "Men tishlarimni tozalayman", "Men sochimni tarayman", "Men vannada yuvinaman", "Toza kiyim", "Foydali ovqat",
+    "Mevalar foydali", "Sabzavotlar foydali", "Men suv ichaman", "Men erta uxlashga yotaman", "Men erta uyg‘onaman", "Men badantarbiya qilaman",
+    "Men yuguraman va sakrayman", "Men o‘zimni baxtli his qilaman", "Men sog‘lomman",
+  ], [
+    "Моя школа", "Мой класс", "Мой учитель", "Мои друзья", "Моя парта", "Мой стул в школе", "Моя книга", "Моя тетрадь", "Мой карандаш", "Моя ручка",
+    "Мой ластик", "Моя линейка", "Мой школьный портфель", "Я поднимаю руку", "Я слушаю на уроке", "Я сижу красиво", "Я делюсь своими вещами",
+    "Я помогаю другу", "Мы читаем вместе", "Мы пишем вместе", "Мы считаем вместе", "Мы рисуем вместе", "Школьный звонок",
+    "Веселье на игровой площадке", "Я люблю свою школу", "Моё тело", "Моя голова", "Мои глаза", "Мои уши", "Мой нос", "Мой рот", "Мои руки",
+    "Мои пальцы", "Мои ноги", "Мои ступни", "Я мою руки", "Я чищу зубы", "Я расчёсываю волосы", "Я принимаю ванну", "Чистая одежда", "Здоровая еда",
+    "Фрукты полезны", "Овощи полезны", "Я пью воду", "Я рано ложусь спать", "Я рано просыпаюсь", "Я делаю зарядку", "Я бегаю и прыгаю",
+    "Я чувствую себя счастливым", "Я здоров",
+  ], [
+    "My school", "My classroom", "My teacher", "My friends", "My desk", "My chair at school", "My book", "My notebook", "My pencil", "My pen",
+    "My eraser", "My ruler", "My school bag", "I raise my hand", "I listen in class", "I sit nicely", "I share my things", "I help my friend",
+    "We read together", "We write together", "We count together", "We draw together", "The school bell", "Fun on the playground", "I love my school",
+    "My body", "My head", "My eyes", "My ears", "My nose", "My mouth", "My hands", "My fingers", "My legs", "My feet", "I wash my hands",
+    "I brush my teeth", "I comb my hair", "I take a bath", "Clean clothes", "Healthy food", "Fruit is healthy", "Vegetables are healthy",
+    "I drink water", "I go to bed early", "I wake up early", "I do morning exercises", "I run and jump", "I feel happy", "I am healthy",
+  ], 105, { 8: [120, 119], 44: [192, 191], 45: [194, 193] }); // darslikda bu mavzular sahifalari almashib qolgan
+
+  // ---------- Rus tili: Zukko Russian Pathway 1, 3-qism (101–150-mavzular) ----------
+  const RU3 = mk([
+    "Животные вокруг меня", "Моя кошка", "Моя собака", "Маленький щенок", "Маленький котёнок", "Корова", "Овца", "Коза", "Лошадь", "Ослик", "Курица",
+    "Петух", "Утка", "Птица", "Рыба", "Кролик", "Пчела", "Бабочка", "Лягушка", "Черепаха", "Лев", "Слон", "Обезьяна", "Будь добр к животным",
+    "Животным нужна забота", "Природа вокруг меня", "Солнце", "Луна", "Звёзды", "Небо", "Облака", "Дождь", "Снег", "Ветер", "Вода", "Дерево",
+    "Цветок", "Зелёная трава", "Лист", "Сад", "Фрукты на деревьях", "Цветы весной", "Жаркое лето", "Жёлтая осень", "Холодная зима", "Я люблю дождь",
+    "Я вижу радугу", "Мы сажаем дерево", "Сохраняем природу чистой", "Природа — наш друг",
+  ], [
+    "Atrofimdagi hayvonlar", "Mening mushugim", "Mening itim", "Kichkina kuchukcha", "Kichkina mushukcha", "Sigir", "Qo‘y", "Echki", "Ot",
+    "Eshakcha", "Tovuq", "Xo‘roz", "O‘rdak", "Qush", "Baliq", "Quyon", "Asalari", "Kapalak", "Qurbaqa", "Toshbaqa", "Sher", "Fil", "Maymun",
+    "Hayvonlarga mehribon bo‘l", "Hayvonlarga g‘amxo‘rlik kerak", "Atrofimdagi tabiat", "Quyosh", "Oy", "Yulduzlar", "Osmon", "Bulutlar", "Yomg‘ir",
+    "Qor", "Shamol", "Suv", "Daraxt", "Gul", "Yashil o‘t", "Barg", "Bog‘", "Daraxtlardagi mevalar", "Bahorda gullar", "Issiq yoz", "Sariq kuz",
+    "Sovuq qish", "Men yomg‘irni yaxshi ko‘raman", "Men kamalakni ko‘ryapman", "Biz daraxt ekamiz", "Tabiatni toza saqlaymiz",
+    "Tabiat — bizning do‘stimiz",
+  ], [
+    "Животные вокруг меня", "Моя кошка", "Моя собака", "Маленький щенок", "Маленький котёнок", "Корова", "Овца", "Коза", "Лошадь", "Ослик", "Курица",
+    "Петух", "Утка", "Птица", "Рыба", "Кролик", "Пчела", "Бабочка", "Лягушка", "Черепаха", "Лев", "Слон", "Обезьяна", "Будь добр к животным",
+    "Животным нужна забота", "Природа вокруг меня", "Солнце", "Луна", "Звёзды", "Небо", "Облака", "Дождь", "Снег", "Ветер", "Вода", "Дерево",
+    "Цветок", "Зелёная трава", "Лист", "Сад", "Фрукты на деревьях", "Цветы весной", "Жаркое лето", "Жёлтая осень", "Холодная зима", "Я люблю дождь",
+    "Я вижу радугу", "Мы сажаем дерево", "Сохраняем природу чистой", "Природа — наш друг",
+  ], [
+    "Animals around me", "My cat", "My dog", "A little puppy", "A little kitten", "The cow", "The sheep", "The goat", "The horse",
+    "The little donkey", "The hen", "The rooster", "The duck", "The bird", "The fish", "The rabbit", "The bee", "The butterfly", "The frog",
+    "The tortoise", "The lion", "The elephant", "The monkey", "Be kind to animals", "Animals need care", "Nature around me", "The sun", "The moon",
+    "Stars", "The sky", "Clouds", "Rain", "Snow", "The wind", "Water", "The tree", "The flower", "Green grass", "The leaf", "The garden",
+    "Fruit on the trees", "Flowers in spring", "Hot summer", "Yellow autumn", "Cold winter", "I love rain", "I see a rainbow", "We plant a tree",
+    "We keep nature clean", "Nature is our friend",
+  ], 205);
+
+  // ---------- Rus tili: Zukko Russian Pathway 1, 4-qism (151–200-mavzular) ----------
+  const RU4 = mk([
+    "Моя еда", "Хлеб", "Вода", "Молоко", "Чай", "Суп", "Рис", "Яблоко", "Банан", "Апельсин", "Виноград", "Морковь", "Картофель", "Помидор", "Огурец",
+    "Сладкий и кислый", "Горячий и холодный", "Красный", "Синий", "Жёлтый", "Зелёный", "Белый и чёрный", "Большой и маленький", "Длинный и короткий",
+    "Мой любимый цвет", "Люди помогают нам", "Мой учитель", "Доктор", "Медсестра", "Водитель", "Фермер", "Пекарь", "Повар", "Уборщик", "Строитель",
+    "Полицейский", "Пожарный", "Продавец", "Портной", "Парикмахер", "Садовник", "Почтальон", "Библиотекарь", "Музыкант", "Художник", "Дантист",
+    "Пилот", "Машинист поезда", "Каждая работа важна", "Я хочу стать…",
+  ], [
+    "Mening ovqatim", "Non", "Suv", "Sut", "Choy", "Sho‘rva", "Guruch", "Olma", "Banan", "Apelsin", "Uzum", "Sabzi", "Kartoshka", "Pomidor",
+    "Bodring", "Shirin va nordon", "Issiq va sovuq", "Qizil", "Ko‘k", "Sariq", "Yashil", "Oq va qora", "Katta va kichik", "Uzun va qisqa",
+    "Mening sevimli rangim", "Odamlar bizga yordam beradi", "Mening o‘qituvchim", "Shifokor", "Hamshira", "Haydovchi", "Dehqon", "Nonvoy", "Oshpaz",
+    "Farrosh", "Quruvchi", "Politsiyachi", "O‘t o‘chiruvchi", "Sotuvchi", "Tikuvchi", "Sartarosh", "Bog‘bon", "Pochtachi", "Kutubxonachi",
+    "Musiqachi", "Rassom", "Tish shifokori", "Uchuvchi", "Poyezd mashinisti", "Har bir ish muhim", "Men … bo‘lishni xohlayman",
+  ], [
+    "Моя еда", "Хлеб", "Вода", "Молоко", "Чай", "Суп", "Рис", "Яблоко", "Банан", "Апельсин", "Виноград", "Морковь", "Картофель", "Помидор", "Огурец",
+    "Сладкий и кислый", "Горячий и холодный", "Красный", "Синий", "Жёлтый", "Зелёный", "Белый и чёрный", "Большой и маленький", "Длинный и короткий",
+    "Мой любимый цвет", "Люди помогают нам", "Мой учитель", "Доктор", "Медсестра", "Водитель", "Фермер", "Пекарь", "Повар", "Уборщик", "Строитель",
+    "Полицейский", "Пожарный", "Продавец", "Портной", "Парикмахер", "Садовник", "Почтальон", "Библиотекарь", "Музыкант", "Художник", "Дантист",
+    "Пилот", "Машинист поезда", "Каждая работа важна", "Я хочу стать…",
+  ], [
+    "My food", "Bread", "Water", "Milk", "Tea", "Soup", "Rice", "Apple", "Banana", "Orange", "Grapes", "Carrot", "Potato", "Tomato", "Cucumber",
+    "Sweet and sour", "Hot and cold", "Red", "Blue", "Yellow", "Green", "White and black", "Big and small", "Long and short", "My favourite colour",
+    "People help us", "My teacher", "Doctor", "Nurse", "Driver", "Farmer", "Baker", "Cook", "Cleaner", "Builder", "Police officer", "Firefighter",
+    "Shop assistant", "Tailor", "Hairdresser", "Gardener", "Postman", "Librarian", "Musician", "Artist", "Dentist", "Pilot", "Train driver",
+    "Every job is important", "I want to be…",
+  ], 55);
+
   const G = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
   const LIST = [
     { id: 'chem', name: { uz: 'Kimyo', en: 'Chemistry', ru: 'Химия' }, color: '#00555a', icon: '⚗️', grades: [6, 7, 8], native: true, home: '#kimyo' },
@@ -139,6 +231,12 @@
     { id: 'rus', name: { uz: 'Rus tili', en: 'Russian', ru: 'Русский язык' }, color: '#7c3aed', icon: '🅰️', grades: G(1, 11), speech: 'ru-RU', books: [
       { grade: 1, part: 1, lang: 'ru', title: 'Zukko Russian Pathway 1 · Часть 1', file: '1-qism.pdf', offset: 2,
         units: [{ t: { orig: 'Раздел 1. Моя семья', uz: '1-bo‘lim. Mening oilam' }, from: 1 }, { t: { orig: 'Раздел 2. Мой дом', uz: '2-bo‘lim. Mening uyim' }, from: 26 }], topics: RU1 },
+      { grade: 1, part: 2, lang: 'ru', title: 'Zukko Russian Pathway 1 · Часть 2', file: '1-sinf_Russian_Patway_часть-2_1.pdf', offset: 102, first: 51,
+        units: [{ t: { orig: "Раздел 3. Моя школа", uz: "3-bo‘lim. Mening maktabim" }, from: 1 }, { t: { orig: "Раздел 4. Моё тело и здоровье", uz: "4-bo‘lim. Mening tanam va sog‘ligim" }, from: 26 }], topics: RU2 },
+      { grade: 1, part: 3, lang: 'ru', title: 'Zukko Russian Pathway 1 · Часть 3', file: '1-sinf_Russian_Patway_часть-3_1.pdf', offset: 202, first: 101,
+        units: [{ t: { orig: "Раздел 5. Животные вокруг меня", uz: "5-bo‘lim. Atrofimdagi hayvonlar" }, from: 1 }, { t: { orig: "Раздел 6. Природа вокруг меня", uz: "6-bo‘lim. Atrofimdagi tabiat" }, from: 26 }], topics: RU3 },
+      { grade: 1, part: 4, lang: 'ru', title: 'Zukko Russian Pathway 1 · Часть 4', file: '1-sinf_Russian_Patway_часть-4_1.pdf', offset: 52, first: 151,
+        units: [{ t: { orig: "Раздел 7. Еда, цвета и предметы", uz: "7-bo‘lim. Ovqat, ranglar va buyumlar" }, from: 1 }, { t: { orig: "Раздел 8. Люди и профессии", uz: "8-bo‘lim. Odamlar va kasblar" }, from: 26 }], topics: RU4 },
     ] },
   ];
   const byId = {}; LIST.forEach((s) => { byId[s.id] = s; });
