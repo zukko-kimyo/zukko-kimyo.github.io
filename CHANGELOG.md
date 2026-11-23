@@ -4,6 +4,10 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Rus tili 1-sinf: 5-qism (2026-11-23)
+- 50 ta yangi mavzu (201–250): «Моё сообщество и мир» va «Хорошие манеры, безопасность и счастливая жизнь». Har birida dars mazmuni (uz/ru/en), darslik sahifalari va 3 darajali test.
+- Fan sahifasida 5-qismga tez o'tish tugmasi, testlar markazida 5-qism guruhi.
+
 ### Yangi fanlar: Tasviriy san'at, Jismoniy tarbiya, Tarbiya (2026-11-23)
 - 1-sinf darsliklari: «Zukko San'at olami», «Zukko Sport olami», «Zukko Hayot saboqlari» — har birida 40 mavzu, dars mazmuni (uz/ru/en), darslik sahifalari va 3 darajali test.
 - Bu fanlar o'zbek tilida: test savollari darslik asosida tuzilgan (har darsda 3 oson, 4 o'rtacha, 3 qiyin); xavfsizlik mavzularida to'g'ri javob — har doim xavfsiz xatti-harakat.
