@@ -150,10 +150,10 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
     try {
       let data; try { data = JSON.parse(await file.text()); } catch (e) { throw new Error(bk('ljson')); }
       const Ls = data && Array.isArray(data.lessons) ? data.lessons : null;
-      if (!Ls || data.book !== row.id || Ls.length !== b.topics.length || Ls.some((x, i) => !x || x.n !== i + 1 || !Array.isArray(x.quiz))) throw new Error(bk('lbad'));
+      if (!Ls || data.book !== row.id || Ls.length !== b.topics.length || Ls.some((x, i) => !x || (x.n !== i + 1 && x.n !== (b.first || 1) + i) || !Array.isArray(x.quiz))) throw new Error(bk('lbad'));
       for (let k = 0; k < Ls.length; k++) {
         const j = JSON.stringify(Ls[k]); if (j.length >= 200000) throw new Error(bk('lbad'));
-        await B.set('lessons', `${row.id}-${k + 1}`, { s: sj.id, g: b.grade, part: b.part, n: k + 1, j, at: Date.now(), by: ZKAuth.user.uid });
+        await B.set('lessons', `${row.id}-${k + 1}`, { s: sj.id, g: b.grade, part: b.part, n: (b.first || 1) + k, j, at: Date.now(), by: ZKAuth.user.uid });
         say(`<span class="ad-mut">${bk('lgo', { i: k + 1, n: Ls.length })}</span><progress max="${Ls.length}" value="${k + 1}"></progress>`);
       }
       await B.set('lessonIndex', row.id, { count: Ls.length, at: Date.now(), by: ZKAuth.user.uid, file: String(file.name || '').slice(0, 120) });
@@ -165,7 +165,7 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
   async function uploadBook(row, file, had, out, inp) {
     if (had && !confirm(bk('again'))) return;
     const B = ZKAuth.backend, { sj, b } = row, pageTopic = {};
-    b.topics.forEach((tp, i) => tp.p.forEach((p) => { pageTopic[p] = i + 1; }));
+    b.topics.forEach((tp, i) => tp.p.forEach((p) => { pageTopic[p] = (b.first || 1) + i; })); // n — kitobdagi mavzu raqami (bepul mavzular shu bo'yicha)
     const printed = Object.keys(pageTopic).map(Number).sort((x, y) => x - y);
     const lbl = inp.closest('label'); lbl.classList.add('busy'); inp.disabled = true;
     const say = (h) => { out.innerHTML = h; };

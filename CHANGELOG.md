@@ -4,6 +4,11 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Rus tili 1-sinf: 2-, 3- va 4-qismlar (2026-11-23)
+- 150 ta yangi mavzu (51–200): «Моя школа», «Моё тело и здоровье», «Животные вокруг меня», «Природа вокруг меня», «Еда, цвета и предметы», «Люди и профессии». Har birida dars mazmuni (uz/ru/en), darslik sahifalari va 3 darajali test.
+- Mavzu raqamlari kitobdagidek davom etadi; bepul mavzular faqat 1-qism boshidagilar. Fan sahifasida qismlarga tez o'tish tugmalari, testlar markazida qismlar bo'yicha guruhlash.
+- Darslikdagi almashib qolgan sahifalar (58, 94, 95-mavzular) to'g'ri tartibda ko'rsatiladi.
+
 ### Fan testlari: kimyodagi kabi 3 darajali savollar va testlar markazi (2026-11-23)
 - Matematika, ingliz va rus tili darsining testi endi 10 savol: **3 oson, 4 o'rtacha, 3 qiyin** (avval 5 ta tayyor savol).
 - Savollar dars mazmunidan tuziladi: oson — so'zning ma'nosi, rasmga mos so'z; o'rtacha — ma'nosiga mos so'z, gap tarjimasi, darsdagi tayyor savollar; qiyin — 🔊 tinglab so'z yoki gapni topish, gapni to'ldirish. Variantlar har safar aralashadi.

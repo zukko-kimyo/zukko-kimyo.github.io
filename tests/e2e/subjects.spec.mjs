@@ -13,7 +13,7 @@ test('fanlar menyusi: har fanning o\'z oynasi, bitta tanlangan sinf; sarlavhada 
   } else await go(page, 's/rus');
   await expect(page.locator('header.top .zk-subject')).toHaveText('RUS TILI');
   await expect(page.locator('.page-h h1')).toContainText('Rus tili · 1-sinf');
-  await expect(page.locator('.zk-sjtopic')).toHaveCount(50);
+  await expect(page.locator('.zk-sjtopic')).toHaveCount(200);
   // xodim sinfni tanlaydi; darsligi yo'q sinf — "tez orada", boshqa sinf mavzulari ko'rinmaydi
   await page.locator('.zk-sjpick a', { hasText: /^5$/ }).click();
   await expect(page.locator('.page-h h1')).toContainText('5-sinf');
@@ -87,4 +87,21 @@ test('admin o\'qituvchiga fan biriktiradi; matematika o\'qituvchisi kimyo natija
   await go(page, 'teacher');
   await expect(page.locator('.tc-empty')).toContainText('Matematika');
   await expect(page.locator('.tc-name')).toHaveCount(0);
+});
+
+test('rus tili 1-sinf: 4 qism, mavzu raqamlari kitobdagidek (1–200), qismlarga tez o\'tish', async ({ page }) => {
+  await page.goto('/index.html#s/rus/1'); await waitReady(page);
+  await expect(page.locator('.zk-sjparts button')).toHaveCount(4);
+  await expect(page.locator('.zk-sjparts button').nth(3)).toContainText('151–200');
+  await expect(page.locator('.zk-sjtopic')).toHaveCount(200);
+  await expect(page.locator('a.zk-sjtopic[href="#s/rus/1/2/1"] .n')).toHaveText('51');
+  await expect(page.locator('a.zk-sjtopic[href="#s/rus/1/4/50"] .n')).toHaveText('200');
+  await page.locator('.zk-sjparts button').nth(2).click();
+  await expect(page.locator('#zkbook-3')).toBeInViewport();
+  await page.evaluate(() => { location.hash = '#s/rus/1/2/8'; });
+  await expect(page.locator('.lesson-top .lnum')).toHaveText('58');
+  await expect(page.locator('.lesson-top .lpos')).toContainText('58 / 100');
+  await expect(page.locator('.zk-sjref')).toContainText('120, 119');
+  await page.evaluate(() => { location.hash = '#s/rus/1/test'; });
+  await expect(page.locator('.tlist .tg-h')).toHaveCount(4);
 });

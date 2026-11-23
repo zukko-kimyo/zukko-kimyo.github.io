@@ -404,18 +404,19 @@
     const bs = SJ().books(id, g);
     const picker = mine ? '' : `<div class="seg zk-sjpick" role="group" aria-label="${L3('Sinf', 'Класс', 'Grade')}">${sj.grades.map((x) => `<a href="#s/${id}/${x}" class="${x === g ? 'on' : ''}${SJ().books(id, x).length ? '' : ' off'}" ${x === g ? 'aria-current="page"' : ''}>${x}</a>`).join('')}</div>`;
     const parts = bs.map((b) => {
-      let html = `<section class="zk-sjbook"><h2>${esc(b.title)}</h2>`;
+      let html = `<section class="zk-sjbook" id="zkbook-${b.part}"><h2>${esc(b.title)}</h2>`;
       b.topics.forEach((tp, i) => {
         const n = i + 1, u = (b.units || []).find((x) => x.from === n);
         if (u) html += `<h3 class="zk-sjunit">${esc(uz ? u.t.uz : u.t.orig)}${uz ? ` <small>${esc(u.t.orig)}</small>` : ''}</h3>`;
-        const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, n, freeN());
-        html += `<a class="zk-sjtopic${lk ? ' locked' : ''}" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}${lk ? lockIc : ''}${sjBest(`${id}-${g}-${b.part}-${n}`) >= 70 ? ' <span class="zk-sjstar" aria-label="' + L3('test topshirilgan', 'тест пройден', 'quiz passed') + '">⭐</span>' : ''}</b>${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? `<small>${esc(tp[lang] || tp.uz)}</small>` : ''}</span></a>`;
+        const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, gnum(b, n), freeN());
+        html += `<a class="zk-sjtopic${lk ? ' locked' : ''}" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${gnum(b, n)}</span><span class="tt"><b>${esc(tp.t)}${lk ? lockIc : ''}${sjBest(`${id}-${g}-${b.part}-${n}`) >= 70 ? ' <span class="zk-sjstar" aria-label="' + L3('test topshirilgan', 'тест пройден', 'quiz passed') + '">⭐</span>' : ''}</b>${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? `<small>${esc(tp[lang] || tp.uz)}</small>` : ''}</span></a>`;
       });
       return html + '</section>';
     }).join('') || `<div class="panel tc-empty zk-sjsoon">${L3(`${g}-sinf uchun ${SN(sj).toLowerCase()} darsligi tez orada qo‘shiladi.`, `Учебник «${SN(sj)}» для ${g} класса скоро появится.`, `The grade ${g} ${SN(sj)} textbook is coming soon.`)}</div>`;
     app.innerHTML = `<div class="page-h zk-sjhead" style="--sj:${sj.color}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${SN(sj)}</div>
       <h1><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span> ${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</h1><p>${L3('Har bir mavzu: dars mazmuni, darslik sahifalari va test.', 'Каждая тема: содержание урока, страницы учебника и тест.', 'Each topic: the lesson, textbook pages and a quiz.')} <a class="zk-chg" href="#pick">⇄ ${t('b_pick')}</a></p><p class="zk-sjact"><a class="btn pri sm" href="#s/${id}/${g}/test">✅ ${L3('Testlar markazi', 'Центр тестов', 'Test centre')}</a></p>${picker}</div></div>
-      <div class="wrap" style="padding-bottom:48px">${parts}</div>`;
+      <div class="wrap" style="padding-bottom:48px">${bs.length > 1 ? `<nav class="zk-sjparts" aria-label="${L3('Darslik qismlari', 'Части учебника', 'Textbook parts')}">${bs.map((b) => `<button type="button" data-part="${b.part}"><b>${b.part}-${L3('qism', 'часть', 'part')}</b><small>${gnum(b, 1)}–${gnum(b, b.topics.length)}</small></button>`).join('')}</nav>` : ''}${parts}</div>`;
+    app.querySelectorAll('.zk-sjparts button').forEach((x) => (x.onclick = () => { const el = document.getElementById('zkbook-' + x.dataset.part); if (el) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); }));
   }
   function subjectGrade(id, g) { return subjectPage(id, g); }
   // Mavzu sahifasi (1-bosqich): nomi, bo'limi, sahifalari. Darslik sahifalari va so'zlar Firebase'dan — keyingi bosqichda.
@@ -423,6 +424,8 @@
   const SJT = ['content', 'pages', 'quiz'];
   let sjTab = 'content', sjLast = null;
   const sjSpeech = { eng: 'en-GB', rus: 'ru-RU', math: 'en-GB' };
+  // Mavzu raqami kitobdagidek: 2-qism 51-mavzudan boshlanadi (book.first). Bepul mavzular — shu raqam bo'yicha (faqat 1-qism boshi)
+  const gnum = (b, n) => (b && b.first ? b.first : 1) + n - 1;
   // Eng yaxshi natija foizda (0–100); eski 5 savollik natijalar (0–5) foizga aylantiriladi. ⭐ — 70% va undan yuqori
   const sjBest = (k, v) => { try { const o = JSON.parse(localStorage.getItem('zk_sjp') || '{}'); const cur = o[k] == null ? null : (o[k] <= 5 ? o[k] * 20 : o[k]); if (v == null) return cur; if (!(cur >= v)) { o[k] = v; localStorage.setItem('zk_sjp', JSON.stringify(o)); } } catch (e) { } return null; };
   function sjSay(txt, lng) {
@@ -439,16 +442,16 @@
     const base = `#s/${id}/${g}/${part}/`, nT = b.topics.length;
     const prev = n > 1 ? b.topics[n - 2] : null, next = n < nT ? b.topics[n] : null;
     const sub = (x) => { const v = x[lang] || x.uz; return v && v !== x.t ? v : ''; };
-    const open = !window.ZKAuth || ZKAuth.canPaid(id) || ZKSub.lessonOpen(false, n, freeN());
+    const gn = gnum(b, n), open = !window.ZKAuth || ZKAuth.canPaid(id) || ZKSub.lessonOpen(false, gn, freeN());
     const best = sjBest(key);
     const TL = { content: ['📘', L3('Dars mazmuni', 'Содержание урока', 'Lesson')], pages: ['📖', L3('Darslik', 'Учебник', 'Textbook')], quiz: ['✅', L3('Test', 'Тест', 'Quiz')] };
     const ti = SJT.indexOf(tab);
-    const navl = b.topics.map((x, i) => { const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, i + 1, freeN()); return `<a href="${base}${i + 1}" class="${i + 1 === n ? 'on' : ''}"><i>${i + 1}</i>${esc(x.t)}${lk ? lockIc : ''}</a>`; }).join('');
+    const navl = b.topics.map((x, i) => { const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, gnum(b, i + 1), freeN()); return `<a href="${base}${i + 1}" class="${i + 1 === n ? 'on' : ''}"><i>${gnum(b, i + 1)}</i>${esc(x.t)}${lk ? lockIc : ''}</a>`; }).join('');
     const col = sj.color, ucv = `--uc:${col};--uc-on:${onCol(col)};--sj:${col}`;
     app.innerHTML = `<div class="lesson-top zk-sjlesson" style="${ucv}"><div class="wrap">
-        <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</a> / ${n}</div>
-        <div class="lhead"><h1><span class="zk-sr">${L3(n + '-mavzu: ', 'Тема ' + n + ': ', 'Topic ' + n + ': ')}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${n}</span>${esc(tp.t)}${best >= 70 ? ' <span class="zk-sjstar" title="' + L3('Test topshirildi', 'Тест пройден', 'Quiz passed') + '">⭐</span>' : ''}</h1>
-          <div class="lnav">${prev ? `<a class="lnb" href="${base}${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${n}</b> / ${nT}</span>${next ? `<a class="lnb" href="${base}${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
+        <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</a>${SJ().books(id, g).length > 1 ? ` / ${b.part}-${L3('qism', 'часть', 'part')}` : ''} / ${gn}</div>
+        <div class="lhead"><h1><span class="zk-sr">${L3(gn + '-mavzu: ', 'Тема ' + gn + ': ', 'Topic ' + gn + ': ')}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${gn}</span>${esc(tp.t)}${best >= 70 ? ' <span class="zk-sjstar" title="' + L3('Test topshirildi', 'Тест пройден', 'Quiz passed') + '">⭐</span>' : ''}</h1>
+          <div class="lnav">${prev ? `<a class="lnb" href="${base}${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${gn}</b> / ${gnum(b, nT)}</span>${next ? `<a class="lnb" href="${base}${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
         ${sub(tp) ? `<p class="zk-sjsub">${esc(sub(tp))}</p>` : ''}
         <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${ti}"></span>${SJT.map((k) => `<button data-tab="${k}" role="tab" id="ltab-${k}" aria-controls="lpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" class="${tab === k ? 'on' : ''}"><span aria-hidden="true">${TL[k][0]}</span> ${TL[k][1]}${k === 'quiz' ? ' <span class="cnt">10</span>' : ''}</button>`).join('')}</div>
       </div></div>
@@ -582,7 +585,7 @@
     return { pool, take, merge, plan, size: (P) => P.easy.length + P.medium.length + P.hard.length };
   })();
   function sjQuiz(host, sj, b, n, tp, Ls, key) {
-    const ttl = `${SN(sj)} · ${b.grade}-${L3('sinf', 'класс', 'grade')} • ${n}. ${tp.t}`, href = `#s/${sj.id}/${b.grade}/${b.part}/${n}`;
+    const ttl = `${SN(sj)} · ${b.grade}-${L3('sinf', 'класс', 'grade')} • ${gnum(b, n)}. ${tp.t}`, href = `#s/${sj.id}/${b.grade}/${b.part}/${n}`;
     const P = SJQ.pool(sj.id, Ls);
     host.innerHTML = `<div class="panel"><div id="quiz"></div></div><p class="zk-sjmore">${L3('Ko‘proq savol va bir nechta mavzu bo‘yicha test:', 'Больше вопросов и тест по нескольким темам:', 'More questions and tests across topics:')} <a href="#s/${sj.id}/${b.grade}/test">✅ ${L3('Testlar markazi', 'Центр тестов', 'Test centre')}</a></p>`;
     const run = () => { const items = SJQ.take(P, { easy: 3, medium: 4, hard: 3 }).map((x) => Object.assign(x, { g: 's', n, ttl, href }));
@@ -595,21 +598,21 @@
     const sj = SJ().get(id); if (!sj || sj.native) return homeRoute();
     { const mine = myGrade(); if (mine && mine !== g) return subjectTests(id, mine); }
     const books = SJ().books(id, g); const S = SJTS[id + g] || (SJTS[id + g] = { sel: null, count: 10, diff: 'mix', mode: 'practice' });
-    const ok = (n) => !window.ZKAuth || ZKAuth.canPaid(id) || ZKSub.lessonOpen(false, n, freeN());
+    const ok = (b, n) => !window.ZKAuth || ZKAuth.canPaid(id) || ZKSub.lessonOpen(false, gnum(b, n), freeN());
     const all = []; books.forEach((b) => b.topics.forEach((tp, i) => all.push({ b, n: i + 1, tp, k: b.part + '-' + (i + 1) })));
-    if (!S.sel) S.sel = new Set(all.filter((x) => ok(x.n)).map((x) => x.k));
-    S.sel = new Set([...S.sel].filter((k) => { const x = all.find((y) => y.k === k); return x && ok(x.n); }));
+    if (!S.sel) S.sel = new Set(all.filter((x) => ok(x.b, x.n)).map((x) => x.k));
+    S.sel = new Set([...S.sel].filter((k) => { const x = all.find((y) => y.k === k); return x && ok(x.b, x.n); }));
     const col = sj.color;
     const seg = (name, opts) => `<div class="seg" data-seg="${name}">${opts.map(([v, l]) => `<button data-v="${v}" class="${String(S[name]) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;
-    const list = books.map((b) => b.topics.map((tp, i) => { const n = i + 1, k = b.part + '-' + n, u = (b.units || []).find((x) => x.from === n), o = ok(n);
-      return `${u ? `<div class="tu-h">${esc(lang === 'uz' ? u.t.uz : u.t.orig)}</div>` : ''}<label class="tl${o ? '' : ' locked'}"><input type="checkbox" data-k="${k}" ${S.sel.has(k) ? 'checked' : ''} ${o ? '' : 'disabled'}><span class="lnum s" style="background:${col};color:${onCol(col)}">${n}</span><span>${esc(tp.t)}${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? ` <small style="color:var(--muted)">· ${esc(tp[lang] || tp.uz)}</small>` : ''}</span>${o ? '' : lockIc}</label>`; }).join('')).join('');
+    const list = books.map((b) => (books.length > 1 ? `<div class="tg-h">${esc(b.title)}</div>` : '') + b.topics.map((tp, i) => { const n = i + 1, k = b.part + '-' + n, u = (b.units || []).find((x) => x.from === n), o = ok(b, n);
+      return `${u ? `<div class="tu-h">${esc(lang === 'uz' ? u.t.uz : u.t.orig)}</div>` : ''}<label class="tl${o ? '' : ' locked'}"><input type="checkbox" data-k="${k}" ${S.sel.has(k) ? 'checked' : ''} ${o ? '' : 'disabled'}><span class="lnum s" style="background:${col};color:${onCol(col)}">${gnum(b, n)}</span><span>${esc(tp.t)}${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? ` <small style="color:var(--muted)">· ${esc(tp[lang] || tp.uz)}</small>` : ''}</span>${o ? '' : lockIc}</label>`; }).join('')).join('');
     app.innerHTML = `<div class="page-h tests zk-sjhead" style="--sj:${col}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</a> / ${L3('Testlar', 'Тесты', 'Tests')}</div>
       <h1>✅ ${SN(sj)}: ${L3('testlar markazi', 'центр тестов', 'test centre')}</h1><p>${L3('Mavzularni, savollar sonini va qiyinligini tanlang. Har bir darsdan oson, o‘rtacha va qiyin savollar tuziladi.', 'Выберите темы, количество и сложность вопросов. По каждому уроку составляются лёгкие, средние и трудные вопросы.', 'Choose topics, number and difficulty. Easy, medium and hard questions are made from every lesson.')}</p>
       <div class="stats" style="margin-top:14px"><div><b>${all.length}</b><span>${t('t_topics')}</span></div><div><b>3 : 4 : 3</b><span>${t('easy')} : ${t('medium')} : ${t('hard')}</span></div><div><b>🔊</b><span>${L3('tinglab topish', 'на слух', 'listening')}</span></div></div></div></div>
       <div class="wrap" id="tWrap"><div class="tsetup">
         <div class="panel ts-l"><h3>📚 ${t('t_topics')} <small id="selc" style="font-weight:600;color:var(--muted);font-size:13px"></small></h3>
           <div class="ts-row"><button class="btn sec sm" id="sa">${t('t_all')}</button><button class="btn sec sm" id="sn">${t('t_none')}</button></div>
-          ${all.some((x) => !ok(x.n)) ? `<div class="zk-lock-note">🔒 ${L3(`Obunasiz dastlabki ${freeN()} ta mavzu ochiq.`, `Без подписки открыты первые ${freeN()} темы.`, `Without a subscription the first ${freeN()} topics are open.`)}</div>` : ''}
+          ${all.some((x) => !ok(x.b, x.n)) ? `<div class="zk-lock-note">🔒 ${L3(`Obunasiz dastlabki ${freeN()} ta mavzu ochiq.`, `Без подписки открыты первые ${freeN()} темы.`, `Without a subscription the first ${freeN()} topics are open.`)}</div>` : ''}
           <div class="tlist">${list}</div></div>
         <div class="ts-r"><div class="panel"><h3>⚙️ ${L3('Sozlamalar', 'Настройки', 'Settings')}</h3>
           <div class="ts-f" role="group" aria-labelledby="tsl1"><label id="tsl1">${t('t_count')}</label>${seg('count', [[10, '10'], [20, '20'], [30, '30'], [50, '50']])}</div>
@@ -620,7 +623,7 @@
     app.querySelectorAll('.tlist input').forEach((c) => (c.onchange = () => { c.checked ? S.sel.add(c.dataset.k) : S.sel.delete(c.dataset.k); updC(); }));
     app.querySelectorAll('[data-seg]').forEach((sg) => sg.querySelectorAll('button').forEach((bt) => (bt.onclick = () => { const k = sg.dataset.seg; S[k] = k === 'count' ? +bt.dataset.v : bt.dataset.v; sg.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === bt)); })));
     app.querySelectorAll('input[name=md]').forEach((r) => (r.onchange = () => (S.mode = r.value)));
-    document.getElementById('sa').onclick = () => { S.sel = new Set(all.filter((x) => ok(x.n)).map((x) => x.k)); app.querySelectorAll('.tlist input:not(:disabled)').forEach((c) => (c.checked = true)); updC(); };
+    document.getElementById('sa').onclick = () => { S.sel = new Set(all.filter((x) => ok(x.b, x.n)).map((x) => x.k)); app.querySelectorAll('.tlist input:not(:disabled)').forEach((c) => (c.checked = true)); updC(); };
     document.getElementById('sn').onclick = () => { S.sel = new Set(); app.querySelectorAll('.tlist input').forEach((c) => (c.checked = false)); updC(); };
     document.getElementById('tgo').onclick = async () => {
       const err = document.getElementById('terr'), btn = document.getElementById('tgo');
@@ -630,7 +633,7 @@
       const ready = got.filter(Boolean); btn.disabled = false; btn.textContent = txt;
       if (!ready.length) { err.textContent = L3('Tanlangan mavzularning dars mazmuni hali yuklanmagan yoki ochilmadi.', 'Содержание выбранных тем ещё не загружено или недоступно.', 'The selected topics are not uploaded yet or are not available.'); return; }
       const lessons = ready.map((r) => r.Ls);
-      const Ps = ready.map((r) => { const P = SJQ.pool(id, r.Ls, lessons); const meta = { g: 's', n: r.x.n, ttl: `${r.x.n}. ${r.x.tp.t}`, href: `#s/${id}/${g}/${r.x.b.part}/${r.x.n}` }; ['easy', 'medium', 'hard'].forEach((d) => P[d].forEach((q) => Object.assign(q, meta))); return P; });
+      const Ps = ready.map((r) => { const P = SJQ.pool(id, r.Ls, lessons); const meta = { g: 's', n: r.x.n, ttl: `${gnum(r.x.b, r.x.n)}. ${r.x.tp.t}`, href: `#s/${id}/${g}/${r.x.b.part}/${r.x.n}` }; ['easy', 'medium', 'hard'].forEach((d) => P[d].forEach((q) => Object.assign(q, meta))); return P; });
       const P = SJQ.merge(Ps), want = SJQ.plan(S.count, S.diff);
       const go = () => { const items = SJQ.take(P, want).sort(() => Math.random() - 0.5); const w = document.getElementById('tWrap'); w.innerHTML = '<div class="panel tr-panel"><div id="tRun"></div></div>';
         runTest(document.getElementById('tRun'), items, { mode: S.mode, title: `${SN(sj)} — ${L3('test', 'тест', 'test')} (${ready.length} ${L3('mavzu', 'тем', 'topics')})`, onNew: go, onBack: () => subjectTests(id, g), focus: true }); window.scrollTo({ top: 0 }); };
@@ -648,7 +651,7 @@
   async function loadSjPages(host, sj, b, n, tp) {
     if (!host) return;
     const uz = lang === 'uz', bid = `${sj.id}-${b.grade}-${b.part}`;
-    const open = !window.ZKAuth || ZKAuth.canPaid(sj.id) || ZKSub.lessonOpen(false, n, freeN());
+    const open = !window.ZKAuth || ZKAuth.canPaid(sj.id) || ZKSub.lessonOpen(false, gnum(b, n), freeN());
     if (!open) { host.innerHTML = paywall('lesson', sj); bindPaywall(); return; }
     const B = window.ZKAuth && ZKAuth.backend;
     if (!B) { host.innerHTML = `<div class="zk-lazy">${L3('Darslik sahifalari kirish bilan ochiladi.', 'Страницы учебника открываются после входа.', 'Sign in to see textbook pages.')}</div>`; return; }
