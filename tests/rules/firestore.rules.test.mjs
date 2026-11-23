@@ -331,3 +331,16 @@ test('bepul mavzu darsi o\'quvchiga ochiq, pullik — fan obunasi yoki shu fan o
   await assertSucceeds(getDoc(doc(teacher(), 'lessons/math-1-1-9')));
   await assertFails(getDoc(doc(teacher(), 'lessons/eng-1-1-9')));
 });
+
+// ---------- yangi fanlar: tasviriy san'at, jismoniy tarbiya, tarbiya ----------
+test('yangi fanlar: obuna, o\'qituvchiga biriktirish va dars mazmuni', async () => {
+  const S = { plan: 'month', until: Date.now() + 86400000 };
+  await assertSucceeds(setDoc(doc(admin(), 'users/stu1'), { subs: { art: S, sport: S, life: null } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'users/stu1'), { subs: { music: S } }, { merge: true }));
+  await assertSucceeds(setDoc(doc(admin(), 'users/teach1'), { subjects: ['chem', 'math', 'eng', 'rus', 'art', 'sport', 'life'] }, { merge: true }));
+  await assertSucceeds(setDoc(doc(admin(), 'lessons/art-1-1-5'), { s: 'art', g: 1, part: 1, n: 5, j: '{}', at: 1, by: 'admin1' }));
+  await assertSucceeds(setDoc(doc(admin(), 'lessons/life-1-1-5'), { s: 'life', g: 1, part: 1, n: 5, j: '{}', at: 1, by: 'admin1' }));
+  await assertFails(setDoc(doc(admin(), 'lessons/music-1-1-5'), { s: 'music', g: 1, part: 1, n: 5, j: '{}', at: 1, by: 'admin1' }));
+  await assertSucceeds(getDoc(doc(student(), 'lessons/art-1-1-5'))); // stu1da san'at obunasi bor
+  await assertFails(getDoc(doc(student(), 'lessons/life-1-1-5')));
+});

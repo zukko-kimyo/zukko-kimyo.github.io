@@ -7,7 +7,7 @@ test('fan tanlanmagan: tanlash oynasi → Matematika → Davom etish → bosh sa
   await page.evaluate(() => localStorage.setItem('zk_subj', '-'));
   await page.reload(); await waitReady(page);
   await expect(page.locator('.zk-pick h1')).toBeVisible();
-  await expect(page.locator('.zk-pcard')).toHaveCount(4);
+  await expect(page.locator('.zk-pcard')).toHaveCount(7);
   await expect(page.locator('header.top .zk-subject')).toBeHidden();
   await expect(page.locator('#pickGo')).toBeDisabled();
   await expect(page.locator('nav.main a[href="#lab"]')).toBeHidden();
