@@ -312,6 +312,8 @@ test('dars mazmunini faqat admin yozadi; noto\'g\'ri yozuv rad etiladi', async (
   await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-3'), { ...LES(3), s: 'music' }));
   await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-4'), { ...LES(4), extra: 1 }));
   await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-5'), { ...LES(5), j: 'x'.repeat(200001) }));
+  await assertSucceeds(setDoc(doc(admin(), 'lessons/rus-1-5-50'), { ...LES(250, 'rus'), part: 5 })); // 5-qism, global raqam 250
+  await assertFails(setDoc(doc(admin(), 'lessons/rus-1-11-1'), { ...LES(1, 'rus'), part: 11 }));
   await assertSucceeds(setDoc(doc(admin(), 'lessonIndex/eng-1-1'), { count: 50, at: 1, by: 'admin1', file: 'a.json' }));
   await assertFails(setDoc(doc(teacher(), 'lessonIndex/eng-1-1'), { count: 50, at: 1, by: 'x', file: 'a.json' }));
 });

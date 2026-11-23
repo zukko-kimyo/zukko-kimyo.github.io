@@ -81,7 +81,7 @@ service cloud.firestore {
     function validContent(d) {
       return d.keys().hasOnly(['s', 'g', 'part', 'p', 'n', 'img', 'w', 'h', 'at', 'by'])
         && d.s in ['math', 'eng', 'rus', 'art', 'sport', 'life'] && d.g is int && d.g >= 1 && d.g <= 11
-        && d.part is int && d.part >= 1 && d.part <= 4 && d.p is int && d.p >= 0 && d.p <= 400
+        && d.part is int && d.part >= 1 && d.part <= 10 && d.p is int && d.p >= 0 && d.p <= 400
         && d.n is int && d.n >= 0 && d.n <= 200
         && d.img is string && d.img.size() < 1000000 && d.img.matches('^data:image/(webp|jpeg);base64,.*');
     }
@@ -98,7 +98,7 @@ service cloud.firestore {
     function validLesson(d) {
       return d.keys().hasOnly(['s', 'g', 'part', 'n', 'j', 'at', 'by'])
         && d.s in ['math', 'eng', 'rus', 'art', 'sport', 'life'] && d.g is int && d.g >= 1 && d.g <= 11
-        && d.part is int && d.part >= 1 && d.part <= 4 && d.n is int && d.n >= 1 && d.n <= 200
+        && d.part is int && d.part >= 1 && d.part <= 10 && d.n is int && d.n >= 1 && d.n <= 600
         && d.j is string && d.j.size() < 200000;
     }
     match /lessons/{id} {
