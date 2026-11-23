@@ -4,6 +4,11 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Yangi fanlar: Tasviriy san'at, Jismoniy tarbiya, Tarbiya (2026-11-23)
+- 1-sinf darsliklari: «Zukko San'at olami», «Zukko Sport olami», «Zukko Hayot saboqlari» — har birida 40 mavzu, dars mazmuni (uz/ru/en), darslik sahifalari va 3 darajali test.
+- Bu fanlar o'zbek tilida: test savollari darslik asosida tuzilgan (har darsda 3 oson, 4 o'rtacha, 3 qiyin); xavfsizlik mavzularida to'g'ri javob — har doim xavfsiz xatti-harakat.
+- Obuna, o'qituvchiga biriktirish va Firestore qoidalari yangi fanlarni qo'llaydi (**Publish kerak**).
+
 ### Rus tili 1-sinf: 2-, 3- va 4-qismlar (2026-11-23)
 - 150 ta yangi mavzu (51–200): «Моя школа», «Моё тело и здоровье», «Животные вокруг меня», «Природа вокруг меня», «Еда, цвета и предметы», «Люди и профессии». Har birida dars mazmuni (uz/ru/en), darslik sahifalari va 3 darajali test.
 - Mavzu raqamlari kitobdagidek davom etadi; bepul mavzular faqat 1-qism boshidagilar. Fan sahifasida qismlarga tez o'tish tugmalari, testlar markazida qismlar bo'yicha guruhlash.

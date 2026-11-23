@@ -327,6 +327,7 @@
     const cs = curSubj(), ok = pickable();
     const items = SJ().list.filter((sj) => ok.includes(sj.id));
     const desc = (sj) => sj.native ? L3('3D tajribalar, darsliklar, testlar va davriy jadval', '3D-опыты, учебники, тесты и таблица Менделеева', '3D experiments, textbooks, quizzes and the periodic table')
+      : sj.tongue === 'uz' ? L3('Darslik, dars mazmuni va 3 darajali testlar', 'Учебник, уроки и тесты трёх уровней', 'Textbook, lessons and three-level quizzes')
       : L3('Darslik, so‘zlar talaffuzi bilan, dars mazmuni va testlar', 'Учебник, слова с произношением, уроки и тесты', 'Textbook, words with pronunciation, lessons and quizzes');
     // Fan bo'yicha qisqa raqamlar: kimyo — darslar va 3D tajribalar, boshqalar — tayyor mavzular
     const stat = (sj) => {
@@ -335,7 +336,7 @@
       const nT = sj.grades.reduce((a, g) => a + SJ().books(sj.id, g).reduce((b, k) => b + k.topics.length, 0), 0);
       return nT ? [[nT, L3('mavzu', 'тем', 'topics')], [3, L3('til', 'языка', 'languages')]] : [];
     };
-    const GL = { chem: ['H₂O', '⚗', 'O₂', 'NaCl', '⚛', 'CO₂'], math: ['+', '×', '÷', '7', '=', 'π'], eng: ['A', 'b', 'Hi!', 'C', 'cat', 'Z'], rus: ['А', 'Б', 'Я', 'Ж', 'мир', 'Ё'] };
+    const GL = { chem: ['H₂O', '⚗', 'O₂', 'NaCl', '⚛', 'CO₂'], math: ['+', '×', '÷', '7', '=', 'π'], eng: ['A', 'b', 'Hi!', 'C', 'cat', 'Z'], rus: ['А', 'Б', 'Я', 'Ж', 'мир', 'Ё'], art: ['🎨', '🖌', '✏', '🌈', '★', '◯'], sport: ['⚽', '🏃', '🏀', '🥇', '⏱', '🤸'], life: ['❤', '🏠', '🌳', '🤝', '☀', '🇺🇿'] };
     const glyphs = (id) => (GL[id] || []).map((g, k) => `<i style="--k:${k}">${g}</i>`).join('');
     const badge = (sj) => { const A = window.ZKAuth; if (!A || !A.user) return ''; if (A.isAdmin && A.isAdmin()) return ''; if (A.isStaff && A.isStaff()) return `<span class="zk-pk-b">${L3('Sizga biriktirilgan', 'Закреплён за вами', 'Assigned to you')}</span>`; return A.canPaid && A.canPaid(sj.id) ? `<span class="zk-pk-b on">${L3('Obuna faol', 'Подписка активна', 'Subscription active')}</span>` : ''; };
     const A = window.ZKAuth, nm = A && A.user && A.user.name ? String(A.user.name).split(' ')[0] : '';
@@ -501,8 +502,8 @@
   const sjL = (o) => (o == null ? '' : typeof o === 'string' ? o : (o[lang] || o.uz || o.en || ''));
   const arr = (x) => (Array.isArray(x) ? x : []);
   function sjContent(host, sj, b, n, tp, Ls, key) {
-    const sp = sjSpeech[sj.id] || 'en-GB', isLang = sj.id !== 'math';
-    const say = (w) => `<button type="button" class="zk-say" data-say="${esc(w)}" aria-label="${esc(L3('Tinglash: ', 'Слушать: ', 'Listen: ') + w)}"><span aria-hidden="true">🔊</span></button>`;
+    const sp = sjSpeech[sj.id] || 'en-GB', isLang = sj.id !== 'math' && sj.tongue !== 'uz', canSp = sj.tongue !== 'uz';
+    const say = (w) => !canSp ? '' : `<button type="button" class="zk-say" data-say="${esc(w)}" aria-label="${esc(L3('Tinglash: ', 'Слушать: ', 'Listen: ') + w)}"><span aria-hidden="true">🔊</span></button>`;
     let h = '';
     if (Ls.goal) h += `<div class="keyq"><div class="ic">🎯</div><div><b>${L3('Bugun o‘rganamiz', 'Сегодня узнаем', 'Today we learn')}</b>${esc(sjL(Ls.goal))}</div></div>`;
     const sm = arr(Ls.summary && (Ls.summary[lang] || Ls.summary.uz));
@@ -538,16 +539,17 @@
       const others = (extra || []).filter((x) => x && x !== L);
       const W = (L.words || []).filter((w) => w && w.w), allW = W.concat(...others.map((x) => (x.words || []).filter((w) => w && w.w)));
       const P = (L.phrases || []).filter((p) => p && p.t), allP = P.concat(...others.map((x) => (x.phrases || []).filter((p) => p && p.t)));
-      const lng = sjId === 'math' ? 'en' : sjId, canSay = typeof window !== 'undefined' && !!window.speechSynthesis; // ovoz yo'q brauzerda tinglash savollari tuzilmaydi
+      const sjo = SJ().get(sjId) || {}, uzs = sjo.tongue === 'uz'; // o'zbek tilidagi fan: tarjima va tinglash savollari yo'q, so'z — tushuntirish bilan
+      const lng = sjId === 'math' ? 'en' : sjId, canSay = !uzs && typeof window !== 'undefined' && !!window.speechSynthesis; // ovoz yo'q brauzerda tinglash savollari tuzilmaydi
       W.forEach((w) => {
         const tw = trOf(w, w.w), em = w.emoji ? w.emoji + ' ' : '';
         // oson: so'z → ma'nosi; rasm → so'z
         let r = opts(tw, allW.map((x) => trOf(x, x.w)), (x) => x.uz + '|' + x.ru);
-        if (r) easy.push({ q: T3(`${em}«${w.w}» so‘zining ma’nosi qaysi?`, `${em}Что означает «${w.w}»?`, `${em}What does «${w.w}» mean?`), o: r.o, a: r.a, d: 'easy' });
+        if (r) easy.push({ q: uzs ? T3(`${em}«${w.w}» — bu nima?`, `${em}Как по-русски «${w.w}»?`, `${em}What is «${w.w}» in English?`) : T3(`${em}«${w.w}» so‘zining ma’nosi qaysi?`, `${em}Что означает «${w.w}»?`, `${em}What does «${w.w}» mean?`), o: r.o, a: r.a, d: 'easy' });
         if (w.emoji) { r = opts(w.w, allW.filter((x) => x.emoji !== w.emoji).map((x) => x.w)); if (r) easy.push({ q: T3(`<span class="tr-em">${w.emoji}</span> Rasmga mos so‘zni toping`, `<span class="tr-em">${w.emoji}</span> Найди слово к картинке`, `<span class="tr-em">${w.emoji}</span> Find the word for the picture`), o: r.o, a: r.a, d: 'easy' }); }
         // o'rtacha: ma'nosi → so'z
         r = opts(w.w, allW.map((x) => x.w));
-        if (r) medium.push({ q: T3(`Qaysi so‘z «${tw.uz}» degani?`, `Какое слово значит «${tw.ru}»?`, `Which word means «${tw.en}»?`), o: r.o, a: r.a, d: 'medium' });
+        if (r) medium.push({ q: uzs ? T3(`Qaysi tushuncha: «${tw.uz}»?`, `Какое слово значит «${tw.ru}»?`, `Which word means «${tw.en}»?`) : T3(`Qaysi so‘z «${tw.uz}» degani?`, `Какое слово значит «${tw.ru}»?`, `Which word means «${tw.en}»?`), o: r.o, a: r.a, d: 'medium' });
         // qiyin: tinglab topish
         r = canSay && opts(w.w, allW.map((x) => x.w));
         if (r) hard.push({ q: T3('Tinglang va eshitgan so‘zingizni tanlang', 'Послушай и выбери услышанное слово', 'Listen and choose the word you hear'), o: r.o, a: r.a, d: 'hard', say: w.w, sayLang: lng });
@@ -555,12 +557,13 @@
       // o'rtacha: darsdagi tayyor savollar
       (L.quiz || []).filter((q) => q && Array.isArray(q.o) && q.a >= 0 && q.a < q.o.length).forEach((q) => {
         const o = q.o.map((x, i) => [x, i]); const numeric = o.every((x) => /^\s*\d+\s*$/.test(typeof x[0] === 'string' ? x[0] : (x[0].uz || '')));
-        const oo = numeric ? o : shuf(o); medium.push({ q: q.q, o: oo.map((x) => x[0]), a: oo.findIndex((x) => x[1] === q.a), d: 'medium' });
+        const oo = numeric ? o : shuf(o), dd = ['easy', 'medium', 'hard'].includes(q.d) ? q.d : 'medium'; // darslikdagi savolning darajasi (bo'lsa)
+        ({ easy, medium, hard })[dd].push({ q: q.q, o: oo.map((x) => x[0]), a: oo.findIndex((x) => x[1] === q.a), d: dd, cur: 1 });
       });
       P.forEach((p) => {
         const tp = trOf(p, p.t);
-        // o'rtacha: gap → tarjimasi
-        let r = opts(tp, allP.map((x) => trOf(x, x.t)), (x) => x.uz + '|' + x.ru);
+        // o'rtacha: gap → tarjimasi (o'zbek tilidagi fanda yo'q)
+        let r = !uzs && opts(tp, allP.map((x) => trOf(x, x.t)), (x) => x.uz + '|' + x.ru);
         if (r) medium.push({ q: T3(`«${p.t}» — tarjimasi qaysi?`, `«${p.t}» — какой перевод верный?`, `«${p.t}» — which translation is right?`), o: r.o, a: r.a, d: 'medium' });
         // qiyin: gapni to'ldirish (eng uzun so'z o'rniga ___)
         const tk = tokens(p.t).sort((a, b) => b.length - a.length)[0];
@@ -573,10 +576,10 @@
       return { easy, medium, hard };
     }
     // Kerakli miqdor: yetmasa qo'shni darajadan olinadi (kimyodagi QB.lessonTest kabi)
-    function take(P, counts) {
+    function take(P, counts, preferCur) { // preferCur — avval darslikdan tuzilgan savollar
       const out = [], used = new Set(), fb = { easy: ['medium', 'hard'], medium: ['easy', 'hard'], hard: ['medium', 'easy'] };
       ['easy', 'medium', 'hard'].forEach((d) => { let need = counts[d] || 0;
-        for (const src of [d].concat(fb[d])) { for (const x of shuf(P[src] || [])) { if (!need) break; if (used.has(x)) continue; used.add(x); out.push(Object.assign({}, x, { d: src })); need--; } if (!need) break; } });
+        for (const src of [d].concat(fb[d])) { for (const x of (preferCur ? shuf(P[src] || []).sort((a, b) => (b.cur || 0) - (a.cur || 0)) : shuf(P[src] || []))) { if (!need) break; if (used.has(x)) continue; used.add(x); out.push(Object.assign({}, x, { d: src })); need--; } if (!need) break; } });
       return out;
     }
     const merge = (Ps) => ({ easy: [].concat(...Ps.map((p) => p.easy)), medium: [].concat(...Ps.map((p) => p.medium)), hard: [].concat(...Ps.map((p) => p.hard)) });
@@ -588,7 +591,7 @@
     const ttl = `${SN(sj)} · ${b.grade}-${L3('sinf', 'класс', 'grade')} • ${gnum(b, n)}. ${tp.t}`, href = `#s/${sj.id}/${b.grade}/${b.part}/${n}`;
     const P = SJQ.pool(sj.id, Ls);
     host.innerHTML = `<div class="panel"><div id="quiz"></div></div><p class="zk-sjmore">${L3('Ko‘proq savol va bir nechta mavzu bo‘yicha test:', 'Больше вопросов и тест по нескольким темам:', 'More questions and tests across topics:')} <a href="#s/${sj.id}/${b.grade}/test">✅ ${L3('Testlar markazi', 'Центр тестов', 'Test centre')}</a></p>`;
-    const run = () => { const items = SJQ.take(P, { easy: 3, medium: 4, hard: 3 }).map((x) => Object.assign(x, { g: 's', n, ttl, href }));
+    const run = () => { const items = SJQ.take(P, { easy: 3, medium: 4, hard: 3 }, sj.tongue === 'uz').map((x) => Object.assign(x, { g: 's', n, ttl, href }));
       runTest(document.getElementById('quiz'), items, { mode: 'practice', compact: true, title: ttl, onNew: run, onFinish: (s, tot) => { sjBest(key, Math.round(100 * s / (tot || items.length || 1))); return 0; } }); };
     run();
   }

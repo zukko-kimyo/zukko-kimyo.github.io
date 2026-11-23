@@ -4,11 +4,11 @@ const go = (page, h) => page.evaluate((h) => { location.hash = '#' + h; }, h);
 
 test('fanlar menyusi: har fanning o\'z oynasi, bitta tanlangan sinf; sarlavhada fan nomi', async ({ page }) => {
   await bootstrapAdmin(page);
-  await expect(page.locator('.zk-sj-sec .zk-sjcard')).toHaveCount(4);
+  await expect(page.locator('.zk-sj-sec .zk-sjcard')).toHaveCount(7);
   const desktop = await page.evaluate(() => innerWidth > 900);
   if (desktop) {
     await page.click('#navSubjBtn');
-    await expect(page.locator('#navSubjMenu a[data-nav=fanlar]')).toHaveCount(4);
+    await expect(page.locator('#navSubjMenu a[data-nav=fanlar]')).toHaveCount(7);
     await page.locator('#navSubjMenu a', { hasText: 'Rus tili' }).click();
   } else await go(page, 's/rus');
   await expect(page.locator('header.top .zk-subject')).toHaveText('RUS TILI');

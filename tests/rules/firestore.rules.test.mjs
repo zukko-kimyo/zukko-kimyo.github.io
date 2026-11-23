@@ -277,7 +277,7 @@ test('kimyo natijalarini faqat kimyo fani biriktirilgan o\'qituvchi o\'qiydi', a
 test('har fanga alohida obuna (subs); noto\'g\'ri fan yoki yozuv rad etiladi', async () => {
   const S = { plan: 'quarter', until: Date.now() + 90 * 86400000, at: Date.now(), by: 'admin1' };
   await assertSucceeds(setDoc(doc(admin(), 'users/stu1'), { subs: { math: S, eng: null } }, { merge: true }));
-  await assertFails(setDoc(doc(admin(), 'users/stu1'), { subs: { art: S } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'users/stu1'), { subs: { music: S } }, { merge: true }));
   await assertFails(setDoc(doc(admin(), 'users/stu1'), { subs: { math: { plan: 'week', until: 1 } } }, { merge: true }));
   await assertFails(setDoc(doc(student(), 'users/stu1'), { subs: { math: S } }, { merge: true }));
 });
@@ -288,7 +288,7 @@ test('darslik sahifasini faqat admin yozadi; noto\'g\'ri yozuv rad etiladi', asy
   await assertSucceeds(setDoc(doc(admin(), 'content/eng-1-1-5'), PAGE(1)));
   await assertFails(setDoc(doc(teacher(), 'content/eng-1-1-6'), PAGE(1)));
   await assertFails(setDoc(doc(admin(), 'content/eng-1-1-7'), { ...PAGE(1), img: 'javascript:alert(1)' }));
-  await assertFails(setDoc(doc(admin(), 'content/eng-1-1-8'), { ...PAGE(1), s: 'art' }));
+  await assertFails(setDoc(doc(admin(), 'content/eng-1-1-8'), { ...PAGE(1), s: 'music' }));
 });
 test('bepul mavzu sahifasi o\'quvchiga ochiq, pullik — faqat fan obunasi bilan', async () => {
   await env.withSecurityRulesDisabled(async (ctx) => {
@@ -309,7 +309,7 @@ test('dars mazmunini faqat admin yozadi; noto\'g\'ri yozuv rad etiladi', async (
   await assertSucceeds(setDoc(doc(admin(), 'lessons/eng-1-1-1'), LES(1)));
   await assertFails(setDoc(doc(teacher(), 'lessons/eng-1-1-2'), LES(2)));
   await assertFails(setDoc(doc(student(), 'lessons/eng-1-1-2'), LES(2)));
-  await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-3'), { ...LES(3), s: 'art' }));
+  await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-3'), { ...LES(3), s: 'music' }));
   await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-4'), { ...LES(4), extra: 1 }));
   await assertFails(setDoc(doc(admin(), 'lessons/eng-1-1-5'), { ...LES(5), j: 'x'.repeat(200001) }));
   await assertSucceeds(setDoc(doc(admin(), 'lessonIndex/eng-1-1'), { count: 50, at: 1, by: 'admin1', file: 'a.json' }));
@@ -330,4 +330,17 @@ test('bepul mavzu darsi o\'quvchiga ochiq, pullik — fan obunasi yoki shu fan o
   await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/teach1'), { login: 'dilnoza.k', name: 'Dilnoza', role: 'teacher', cls: '', status: 'active', subjects: ['math'] }); });
   await assertSucceeds(getDoc(doc(teacher(), 'lessons/math-1-1-9')));
   await assertFails(getDoc(doc(teacher(), 'lessons/eng-1-1-9')));
+});
+
+// ---------- yangi fanlar: tasviriy san'at, jismoniy tarbiya, tarbiya ----------
+test('yangi fanlar: obuna, o\'qituvchiga biriktirish va dars mazmuni', async () => {
+  const S = { plan: 'month', until: Date.now() + 86400000 };
+  await assertSucceeds(setDoc(doc(admin(), 'users/stu1'), { subs: { art: S, sport: S, life: null } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'users/stu1'), { subs: { music: S } }, { merge: true }));
+  await assertSucceeds(setDoc(doc(admin(), 'users/teach1'), { subjects: ['chem', 'math', 'eng', 'rus', 'art', 'sport', 'life'] }, { merge: true }));
+  await assertSucceeds(setDoc(doc(admin(), 'lessons/art-1-1-5'), { s: 'art', g: 1, part: 1, n: 5, j: '{}', at: 1, by: 'admin1' }));
+  await assertSucceeds(setDoc(doc(admin(), 'lessons/life-1-1-5'), { s: 'life', g: 1, part: 1, n: 5, j: '{}', at: 1, by: 'admin1' }));
+  await assertFails(setDoc(doc(admin(), 'lessons/music-1-1-5'), { s: 'music', g: 1, part: 1, n: 5, j: '{}', at: 1, by: 'admin1' }));
+  await assertSucceeds(getDoc(doc(student(), 'lessons/art-1-1-5'))); // stu1da san'at obunasi bor
+  await assertFails(getDoc(doc(student(), 'lessons/life-1-1-5')));
 });
