@@ -877,3 +877,10 @@ body.zk-chemctx [data-nochem] {display:none !important}
   .zk-pick-bg span,.zk-pick-wave,.zk-pick-h > *,.zk-pcard,.zk-pk-gl i,.zk-pcard.pop .zk-pk-ic,.zk-pcard.pop .zk-pk-ok,#pickGo.ready,#pickGo.ready .zk-pick-arr,.zk-pick-bar {animation:none !important}
   .zk-pk-ic,.zk-pcard::after {transition:none}
 }
+
+/* ---------- Fan testlari: rasmli savol, tinglash tugmasi, testlar markaziga havola ---------- */
+.tr-q .tr-em {display:inline-block;font-size:2.2em;line-height:1;vertical-align:middle;margin-right:8px}
+.tr-q .tr-say {width:40px;height:40px;margin-left:8px;vertical-align:middle;font-size:17px}
+.zk-sjmore {margin:12px 2px 0;color:var(--zk-muted);font-size:14px}
+.zk-sjmore a {font-weight:700}
+.zk-sjact {margin:12px 0 0}

@@ -720,7 +720,7 @@ button,a,.ptcell{touch-action:manipulation}
         <button type="button" class="zk-ngrp-btn" id="navSubjBtn" aria-haspopup="true" aria-expanded="false" aria-controls="navSubjMenu"><span data-i="nav_subj"></span><svg class="zi zk-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="zk-ngrp-menu" id="navSubjMenu" role="group" hidden></div>
       </div>
-      <a href="#tests" data-nav="tests" data-i="nav_tests" data-chem></a>
+      <a href="#tests" data-nav="tests" data-i="nav_tests" data-chem></a><a href="#fanlar" data-nav="sjtest" data-i="nav_tests" data-nochem class="zk-sjtests"></a>
       <a href="#lab" data-nav="lab" data-i="nav_lab" data-chem></a>
       <a href="#ptable" data-nav="pt" data-i="nav_pt" data-chem></a>
       <a href="#book-g6" data-nav="book" data-i="nav_book" data-chem></a>
@@ -740,6 +740,7 @@ button,a,.ptcell{touch-action:manipulation}
   <a href="#lab" data-nav="lab" data-chem><i aria-hidden="true">🧪</i><span data-i="nav_lab"></span></a>
   <a href="#tests" data-nav="tests" data-chem><i aria-hidden="true">✅</i><span data-i="b_tests"></span></a>
   <a href="#fanlar" data-nav="fanlar" data-nochem><i aria-hidden="true">📚</i><span data-i="nav_subj"></span></a>
+  <a href="#fanlar" data-nav="sjtest" data-nochem class="zk-sjtests"><i aria-hidden="true">✅</i><span data-i="b_tests"></span></a>
   <a href="#me" data-nav="me" id="mobilePanelLink"><i id="mobilePanelIcon" aria-hidden="true">👤</i><span id="mobilePanelLabel">Profil</span></a>
   <div class="zk-mnav-menu" id="mobileGradesMenu" hidden role="group" aria-label="Sinflar">
     <div class="zk-mnav-menu-title" id="mobileGradesTitle">Sinflar</div>
@@ -754,7 +755,7 @@ button,a,.ptcell{touch-action:manipulation}
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-const VER = '20261118-pick-01';
+const VER = '20261123-tests-01';
 const load = (s) => new Promise((ok, no) => { const e = document.createElement('script'); e.src = s + '?v=' + VER; e.onload = ok; e.onerror = no; document.body.appendChild(e); });
 // Tezlik (2026-11-17): birinchi kirishda faqat sahifani chizish uchun kerakli fayllar yuklanadi (parallel preload,
 // keyin tartib bilan). 3D (three.js + lab-exps), testlar bazasi, darslik tarjimasi, davriy jadval va

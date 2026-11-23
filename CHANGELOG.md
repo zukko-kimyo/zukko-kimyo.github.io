@@ -4,6 +4,13 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Fan testlari: kimyodagi kabi 3 darajali savollar va testlar markazi (2026-11-23)
+- Matematika, ingliz va rus tili darsining testi endi 10 savol: **3 oson, 4 o'rtacha, 3 qiyin** (avval 5 ta tayyor savol).
+- Savollar dars mazmunidan tuziladi: oson — so'zning ma'nosi, rasmga mos so'z; o'rtacha — ma'nosiga mos so'z, gap tarjimasi, darsdagi tayyor savollar; qiyin — 🔊 tinglab so'z yoki gapni topish, gapni to'ldirish. Variantlar har safar aralashadi.
+- Har fanga **testlar markazi** (`#s/<fan>/<sinf>/test`): mavzularni tanlash, savollar soni (10/20/30/50), qiyinligi (aralash 3:4:3, oson, o'rtacha, qiyin), mashq yoki imtihon rejimi. Obunasiz faqat bepul mavzular tanlanadi.
+- Fan sahifasida «✅ Testlar markazi» tugmasi; boshqa fan ochilganda menyudagi «Testlar» shu fanning testlar markaziga olib boradi, kimyo bo'limlari yashiriladi.
+- Natija foizda saqlanadi; 70% va undan yuqori — ⭐ (eski natijalar foizga aylantiriladi).
+
 ### Fan tanlash oynasi (2026-11-18, ADR-0008 4-bosqich)
 - Kirgandan keyin «Qaysi fanni o'rganamiz?» oynasi: fanni tanlab, «Davom etish» bilan tasdiqlanadi. Bosh sahifa (logotip) tanlangan fanga olib boradi, sarlavhada shu fan nomi.
 - Menyu fanga moslashadi: kimyo bo'limlari (sinflar, testlar, 3D laboratoriya, davriy jadval, darslik) faqat kimyoda; boshqa fanlarda telefon menyusida «Fanlar».
