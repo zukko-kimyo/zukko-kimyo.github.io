@@ -409,12 +409,12 @@
         const n = i + 1, u = (b.units || []).find((x) => x.from === n);
         if (u) html += `<h3 class="zk-sjunit">${esc(uz ? u.t.uz : u.t.orig)}${uz ? ` <small>${esc(u.t.orig)}</small>` : ''}</h3>`;
         const lk = window.ZKAuth && !ZKAuth.canPaid(id) && !ZKSub.lessonOpen(false, n, freeN());
-        html += `<a class="zk-sjtopic${lk ? ' locked' : ''}" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}${lk ? lockIc : ''}${sjBest(`${id}-${g}-${b.part}-${n}`) >= 4 ? ' <span class="zk-sjstar" aria-label="' + L3('test topshirilgan', 'тест пройден', 'quiz passed') + '">⭐</span>' : ''}</b>${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? `<small>${esc(tp[lang] || tp.uz)}</small>` : ''}</span></a>`;
+        html += `<a class="zk-sjtopic${lk ? ' locked' : ''}" href="#s/${id}/${g}/${b.part}/${n}" style="--sj:${sj.color}"><span class="n">${n}</span><span class="tt"><b>${esc(tp.t)}${lk ? lockIc : ''}${sjBest(`${id}-${g}-${b.part}-${n}`) >= 70 ? ' <span class="zk-sjstar" aria-label="' + L3('test topshirilgan', 'тест пройден', 'quiz passed') + '">⭐</span>' : ''}</b>${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? `<small>${esc(tp[lang] || tp.uz)}</small>` : ''}</span></a>`;
       });
       return html + '</section>';
     }).join('') || `<div class="panel tc-empty zk-sjsoon">${L3(`${g}-sinf uchun ${SN(sj).toLowerCase()} darsligi tez orada qo‘shiladi.`, `Учебник «${SN(sj)}» для ${g} класса скоро появится.`, `The grade ${g} ${SN(sj)} textbook is coming soon.`)}</div>`;
     app.innerHTML = `<div class="page-h zk-sjhead" style="--sj:${sj.color}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / ${SN(sj)}</div>
-      <h1><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span> ${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</h1><p>${L3('Har bir mavzu: dars mazmuni, darslik sahifalari va test.', 'Каждая тема: содержание урока, страницы учебника и тест.', 'Each topic: the lesson, textbook pages and a quiz.')} <a class="zk-chg" href="#pick">⇄ ${t('b_pick')}</a></p>${picker}</div></div>
+      <h1><span class="zk-sj-ic" aria-hidden="true">${sj.icon}</span> ${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</h1><p>${L3('Har bir mavzu: dars mazmuni, darslik sahifalari va test.', 'Каждая тема: содержание урока, страницы учебника и тест.', 'Each topic: the lesson, textbook pages and a quiz.')} <a class="zk-chg" href="#pick">⇄ ${t('b_pick')}</a></p><p class="zk-sjact"><a class="btn pri sm" href="#s/${id}/${g}/test">✅ ${L3('Testlar markazi', 'Центр тестов', 'Test centre')}</a></p>${picker}</div></div>
       <div class="wrap" style="padding-bottom:48px">${parts}</div>`;
   }
   function subjectGrade(id, g) { return subjectPage(id, g); }
@@ -423,7 +423,8 @@
   const SJT = ['content', 'pages', 'quiz'];
   let sjTab = 'content', sjLast = null;
   const sjSpeech = { eng: 'en-GB', rus: 'ru-RU', math: 'en-GB' };
-  const sjBest = (k, v) => { try { const o = JSON.parse(localStorage.getItem('zk_sjp') || '{}'); if (v == null) return o[k]; if (!(o[k] >= v)) { o[k] = v; localStorage.setItem('zk_sjp', JSON.stringify(o)); } } catch (e) { } return null; };
+  // Eng yaxshi natija foizda (0–100); eski 5 savollik natijalar (0–5) foizga aylantiriladi. ⭐ — 70% va undan yuqori
+  const sjBest = (k, v) => { try { const o = JSON.parse(localStorage.getItem('zk_sjp') || '{}'); const cur = o[k] == null ? null : (o[k] <= 5 ? o[k] * 20 : o[k]); if (v == null) return cur; if (!(cur >= v)) { o[k] = v; localStorage.setItem('zk_sjp', JSON.stringify(o)); } } catch (e) { } return null; };
   function sjSay(txt, lng) {
     try { if (!window.speechSynthesis || !txt) return false; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(txt)); u.lang = lng; u.rate = 0.85; speechSynthesis.speak(u); return true; } catch (e) { return false; }
   }
@@ -446,10 +447,10 @@
     const col = sj.color, ucv = `--uc:${col};--uc-on:${onCol(col)};--sj:${col}`;
     app.innerHTML = `<div class="lesson-top zk-sjlesson" style="${ucv}"><div class="wrap">
         <div class="crumbs" style="color:var(--muted)"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</a> / ${n}</div>
-        <div class="lhead"><h1><span class="zk-sr">${L3(n + '-mavzu: ', 'Тема ' + n + ': ', 'Topic ' + n + ': ')}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${n}</span>${esc(tp.t)}${best >= 4 ? ' <span class="zk-sjstar" title="' + L3('Test topshirildi', 'Тест пройден', 'Quiz passed') + '">⭐</span>' : ''}</h1>
+        <div class="lhead"><h1><span class="zk-sr">${L3(n + '-mavzu: ', 'Тема ' + n + ': ', 'Topic ' + n + ': ')}</span><span class="lnum" aria-hidden="true" style="background:${col};color:${onCol(col)}">${n}</span>${esc(tp.t)}${best >= 70 ? ' <span class="zk-sjstar" title="' + L3('Test topshirildi', 'Тест пройден', 'Quiz passed') + '">⭐</span>' : ''}</h1>
           <div class="lnav">${prev ? `<a class="lnb" href="${base}${n - 1}" aria-label="${t('prev')}">‹</a>` : '<span class="lnb off">‹</span>'}<span class="lpos"><b>${n}</b> / ${nT}</span>${next ? `<a class="lnb" href="${base}${n + 1}" aria-label="${t('next')}">›</a>` : '<span class="lnb off">›</span>'}</div></div>
         ${sub(tp) ? `<p class="zk-sjsub">${esc(sub(tp))}</p>` : ''}
-        <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${ti}"></span>${SJT.map((k) => `<button data-tab="${k}" role="tab" id="ltab-${k}" aria-controls="lpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" class="${tab === k ? 'on' : ''}"><span aria-hidden="true">${TL[k][0]}</span> ${TL[k][1]}${k === 'quiz' ? ' <span class="cnt">5</span>' : ''}</button>`).join('')}</div>
+        <div class="tabs" role="tablist"><span class="tthumb" aria-hidden="true" style="--ti:${ti};--tp:${ti}"></span>${SJT.map((k) => `<button data-tab="${k}" role="tab" id="ltab-${k}" aria-controls="lpanel" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" class="${tab === k ? 'on' : ''}"><span aria-hidden="true">${TL[k][0]}</span> ${TL[k][1]}${k === 'quiz' ? ' <span class="cnt">10</span>' : ''}</button>`).join('')}</div>
       </div></div>
       <div class="wrap lesson-body" style="${ucv}">
         <div><div id="lpanel" role="tabpanel" aria-labelledby="ltab-${tab}"><div id="sjBody"></div></div>
@@ -510,18 +511,137 @@
     if (ps.length) h += `<div class="panel"><h3>💬 ${isLang ? L3('Gaplar', 'Фразы', 'Phrases') : L3('Eslab qoling', 'Запомни', 'Remember')}</h3><ul class="zk-phr">${ps.map((p) => `<li><div><b lang="${sp.slice(0, 2)}">${esc(p.t)}</b>${sjL(p) && sjL(p) !== p.t ? `<span>${esc(sjL(p))}</span>` : ''}</div>${say(p.t)}</li>`).join('')}</ul></div>`;
     const tk = arr(Ls.tasks);
     if (tk.length) h += `<div class="panel"><h3>✏️ ${L3('Darslikdagi topshiriqlar', 'Задания в учебнике', 'Textbook activities')}</h3><ol class="zk-tasks">${tk.map((x) => `<li>${esc(sjL(x))}</li>`).join('')}</ol></div>`;
-    h += `<div class="fact"><div class="ic">✅</div><div><b>${L3('Bilimingni sinab ko‘r', 'Проверь себя', 'Check yourself')}</b> ${L3('5 ta savoldan iborat testni yeching.', 'Пройди тест из 5 вопросов.', 'Take the 5-question quiz.')} <button type="button" class="btn pri sm" id="sjGoQuiz">${L3('Testni boshlash', 'Начать тест', 'Start quiz')}</button></div></div>`;
+    h += `<div class="fact"><div class="ic">✅</div><div><b>${L3('Bilimingni sinab ko‘r', 'Проверь себя', 'Check yourself')}</b> ${L3('10 ta savol: 3 ta oson, 4 ta o‘rtacha, 3 ta qiyin.', '10 вопросов: 3 лёгких, 4 средних, 3 трудных.', '10 questions: 3 easy, 4 medium, 3 hard.')} <button type="button" class="btn pri sm" id="sjGoQuiz">${L3('Testni boshlash', 'Начать тест', 'Start quiz')}</button></div></div>`;
     host.innerHTML = h;
     host.querySelectorAll('.zk-say').forEach((x) => (x.onclick = () => { if (!sjSay(x.dataset.say, sp)) x.disabled = true; }));
     if (!window.speechSynthesis) host.querySelectorAll('.zk-say').forEach((x) => x.remove());
     const gq = document.getElementById('sjGoQuiz'); if (gq) gq.onclick = () => { subjectTopic(sj.id, b.grade, b.part, n, 'quiz'); window.scrollTo({ top: 0 }); };
   }
+  // ---------- Fan testlari: har darsdan 3 darajali savollar (kimyodagi kabi 3 oson + 4 o'rtacha + 3 qiyin) ----------
+  // Savollar dars mazmunidan (so'zlar, gaplar, tayyor savollar) avtomatik tuziladi; variantlar har safar aralashtiriladi.
+  const SJQ = (() => {
+    const shuf = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const same = (a, b) => String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+    // So'zning tarjimasi har bir interfeys tilida; o'rganilayotgan til bilan bir xil bo'lsa — o'zbekchasi (yoki inglizchasi)
+    const trOf = (x, base) => { const o = {}; ['uz', 'ru', 'en'].forEach((L) => { let v = x[L]; if (!v || same(v, base)) v = L === 'uz' ? (same(x.en, base) ? x.ru : x.en) : x.uz; o[L] = v || x.uz || x.en || base; }); return o; };
+    const T3 = (uz, ru, en) => ({ uz, ru, en });
+    // Variantlar: to'g'ri javob + boshqa (takrorlanmaydigan) 3 ta; yetmasa — savol tuzilmaydi
+    const opts = (right, pool, key) => { const k = key || ((x) => (typeof x === 'string' ? x : x.uz)); const seen = new Set([String(k(right)).toLowerCase()]); const d = [];
+      for (const x of shuf(pool)) { const kk = String(k(x)).toLowerCase(); if (!kk || seen.has(kk)) continue; seen.add(kk); d.push(x); if (d.length === 3) break; }
+      if (d.length < 3) return null; const o = shuf([right].concat(d)); return { o, a: o.indexOf(right) }; };
+    const tokens = (t) => String(t).split(/\s+/).map((w) => w.replace(/^[«"'(]+|[.,!?;:»"')]+$/g, '')).filter((w) => /^[\p{L}-]{3,}$/u.test(w));
+    function pool(sjId, L, extra) {
+      const easy = [], medium = [], hard = [];
+      const others = (extra || []).filter((x) => x && x !== L);
+      const W = (L.words || []).filter((w) => w && w.w), allW = W.concat(...others.map((x) => (x.words || []).filter((w) => w && w.w)));
+      const P = (L.phrases || []).filter((p) => p && p.t), allP = P.concat(...others.map((x) => (x.phrases || []).filter((p) => p && p.t)));
+      const lng = sjId === 'math' ? 'en' : sjId, canSay = typeof window !== 'undefined' && !!window.speechSynthesis; // ovoz yo'q brauzerda tinglash savollari tuzilmaydi
+      W.forEach((w) => {
+        const tw = trOf(w, w.w), em = w.emoji ? w.emoji + ' ' : '';
+        // oson: so'z → ma'nosi; rasm → so'z
+        let r = opts(tw, allW.map((x) => trOf(x, x.w)), (x) => x.uz + '|' + x.ru);
+        if (r) easy.push({ q: T3(`${em}«${w.w}» so‘zining ma’nosi qaysi?`, `${em}Что означает «${w.w}»?`, `${em}What does «${w.w}» mean?`), o: r.o, a: r.a, d: 'easy' });
+        if (w.emoji) { r = opts(w.w, allW.filter((x) => x.emoji !== w.emoji).map((x) => x.w)); if (r) easy.push({ q: T3(`<span class="tr-em">${w.emoji}</span> Rasmga mos so‘zni toping`, `<span class="tr-em">${w.emoji}</span> Найди слово к картинке`, `<span class="tr-em">${w.emoji}</span> Find the word for the picture`), o: r.o, a: r.a, d: 'easy' }); }
+        // o'rtacha: ma'nosi → so'z
+        r = opts(w.w, allW.map((x) => x.w));
+        if (r) medium.push({ q: T3(`Qaysi so‘z «${tw.uz}» degani?`, `Какое слово значит «${tw.ru}»?`, `Which word means «${tw.en}»?`), o: r.o, a: r.a, d: 'medium' });
+        // qiyin: tinglab topish
+        r = canSay && opts(w.w, allW.map((x) => x.w));
+        if (r) hard.push({ q: T3('Tinglang va eshitgan so‘zingizni tanlang', 'Послушай и выбери услышанное слово', 'Listen and choose the word you hear'), o: r.o, a: r.a, d: 'hard', say: w.w, sayLang: lng });
+      });
+      // o'rtacha: darsdagi tayyor savollar
+      (L.quiz || []).filter((q) => q && Array.isArray(q.o) && q.a >= 0 && q.a < q.o.length).forEach((q) => {
+        const o = q.o.map((x, i) => [x, i]); const numeric = o.every((x) => /^\s*\d+\s*$/.test(typeof x[0] === 'string' ? x[0] : (x[0].uz || '')));
+        const oo = numeric ? o : shuf(o); medium.push({ q: q.q, o: oo.map((x) => x[0]), a: oo.findIndex((x) => x[1] === q.a), d: 'medium' });
+      });
+      P.forEach((p) => {
+        const tp = trOf(p, p.t);
+        // o'rtacha: gap → tarjimasi
+        let r = opts(tp, allP.map((x) => trOf(x, x.t)), (x) => x.uz + '|' + x.ru);
+        if (r) medium.push({ q: T3(`«${p.t}» — tarjimasi qaysi?`, `«${p.t}» — какой перевод верный?`, `«${p.t}» — which translation is right?`), o: r.o, a: r.a, d: 'medium' });
+        // qiyin: gapni to'ldirish (eng uzun so'z o'rniga ___)
+        const tk = tokens(p.t).sort((a, b) => b.length - a.length)[0];
+        if (tk) { const blank = p.t.replace(tk, '___'); const cand = allW.map((x) => x.w).concat(...allP.filter((x) => x !== p).map((x) => tokens(x.t))).filter((x) => /^[\p{L}-]+$/u.test(x) && !same(x, tk) && !tokens(p.t).some((y) => same(y, x)));
+          r = opts(tk, cand); if (r) hard.push({ q: T3(`Gapni to‘ldiring: «${blank}»`, `Вставь пропущенное слово: «${blank}»`, `Fill in the gap: «${blank}»`), o: r.o, a: r.a, d: 'hard' }); }
+        // qiyin: gapni tinglab topish
+        r = canSay && opts(p.t, allP.map((x) => x.t));
+        if (r) hard.push({ q: T3('Tinglang: qaysi gap aytildi?', 'Послушай: какая фраза прозвучала?', 'Listen: which sentence did you hear?'), o: r.o, a: r.a, d: 'hard', say: p.t, sayLang: lng });
+      });
+      return { easy, medium, hard };
+    }
+    // Kerakli miqdor: yetmasa qo'shni darajadan olinadi (kimyodagi QB.lessonTest kabi)
+    function take(P, counts) {
+      const out = [], used = new Set(), fb = { easy: ['medium', 'hard'], medium: ['easy', 'hard'], hard: ['medium', 'easy'] };
+      ['easy', 'medium', 'hard'].forEach((d) => { let need = counts[d] || 0;
+        for (const src of [d].concat(fb[d])) { for (const x of shuf(P[src] || [])) { if (!need) break; if (used.has(x)) continue; used.add(x); out.push(Object.assign({}, x, { d: src })); need--; } if (!need) break; } });
+      return out;
+    }
+    const merge = (Ps) => ({ easy: [].concat(...Ps.map((p) => p.easy)), medium: [].concat(...Ps.map((p) => p.medium)), hard: [].concat(...Ps.map((p) => p.hard)) });
+    const MIX = { easy: 0.3, medium: 0.4, hard: 0.3 };
+    function plan(total, mode) { if (mode !== 'mix') return { [mode]: total }; const e = Math.round(total * MIX.easy), h = Math.round(total * MIX.hard); return { easy: e, medium: total - e - h, hard: h }; }
+    return { pool, take, merge, plan, size: (P) => P.easy.length + P.medium.length + P.hard.length };
+  })();
   function sjQuiz(host, sj, b, n, tp, Ls, key) {
     const ttl = `${SN(sj)} · ${b.grade}-${L3('sinf', 'класс', 'grade')} • ${n}. ${tp.t}`, href = `#s/${sj.id}/${b.grade}/${b.part}/${n}`;
-    const mix = (q) => { const o = arr(q.o).map((x, i) => [x, i]); if (!o.every((x) => /^\s*\d+\s*$/.test(sjL(x[0])))) for (let i = o.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; } return { q: q.q, o: o.map((x) => x[0]), a: o.findIndex((x) => x[1] === q.a), d: 'easy', g: 's', n, ttl, href }; };
-    host.innerHTML = '<div class="panel"><div id="quiz"></div></div>';
-    const run = () => runTest(document.getElementById('quiz'), arr(Ls.quiz).filter((q) => q && arr(q.o).length && q.a >= 0 && q.a < q.o.length).map(mix), { mode: 'practice', compact: true, title: ttl, onNew: run, onFinish: (s) => { sjBest(key, s); return 0; } });
+    const P = SJQ.pool(sj.id, Ls);
+    host.innerHTML = `<div class="panel"><div id="quiz"></div></div><p class="zk-sjmore">${L3('Ko‘proq savol va bir nechta mavzu bo‘yicha test:', 'Больше вопросов и тест по нескольким темам:', 'More questions and tests across topics:')} <a href="#s/${sj.id}/${b.grade}/test">✅ ${L3('Testlar markazi', 'Центр тестов', 'Test centre')}</a></p>`;
+    const run = () => { const items = SJQ.take(P, { easy: 3, medium: 4, hard: 3 }).map((x) => Object.assign(x, { g: 's', n, ttl, href }));
+      runTest(document.getElementById('quiz'), items, { mode: 'practice', compact: true, title: ttl, onNew: run, onFinish: (s, tot) => { sjBest(key, Math.round(100 * s / (tot || items.length || 1))); return 0; } }); };
     run();
+  }
+  // Fan testlar markazi: mavzularni tanlash, savollar soni, qiyinligi va rejim (kimyodagi «Testlar markazi» kabi)
+  const SJTS = {};
+  function subjectTests(id, g) {
+    const sj = SJ().get(id); if (!sj || sj.native) return homeRoute();
+    { const mine = myGrade(); if (mine && mine !== g) return subjectTests(id, mine); }
+    const books = SJ().books(id, g); const S = SJTS[id + g] || (SJTS[id + g] = { sel: null, count: 10, diff: 'mix', mode: 'practice' });
+    const ok = (n) => !window.ZKAuth || ZKAuth.canPaid(id) || ZKSub.lessonOpen(false, n, freeN());
+    const all = []; books.forEach((b) => b.topics.forEach((tp, i) => all.push({ b, n: i + 1, tp, k: b.part + '-' + (i + 1) })));
+    if (!S.sel) S.sel = new Set(all.filter((x) => ok(x.n)).map((x) => x.k));
+    S.sel = new Set([...S.sel].filter((k) => { const x = all.find((y) => y.k === k); return x && ok(x.n); }));
+    const col = sj.color;
+    const seg = (name, opts) => `<div class="seg" data-seg="${name}">${opts.map(([v, l]) => `<button data-v="${v}" class="${String(S[name]) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    const list = books.map((b) => b.topics.map((tp, i) => { const n = i + 1, k = b.part + '-' + n, u = (b.units || []).find((x) => x.from === n), o = ok(n);
+      return `${u ? `<div class="tu-h">${esc(lang === 'uz' ? u.t.uz : u.t.orig)}</div>` : ''}<label class="tl${o ? '' : ' locked'}"><input type="checkbox" data-k="${k}" ${S.sel.has(k) ? 'checked' : ''} ${o ? '' : 'disabled'}><span class="lnum s" style="background:${col};color:${onCol(col)}">${n}</span><span>${esc(tp.t)}${(tp[lang] || tp.uz) && (tp[lang] || tp.uz) !== tp.t ? ` <small style="color:var(--muted)">· ${esc(tp[lang] || tp.uz)}</small>` : ''}</span>${o ? '' : lockIc}</label>`; }).join('')).join('');
+    app.innerHTML = `<div class="page-h tests zk-sjhead" style="--sj:${col}"><div class="wrap"><div class="crumbs"><a href="#home">${t('nav_home')}</a> / <a href="#s/${id}/${g}">${SN(sj)} · ${g}-${L3('sinf', 'класс', 'grade')}</a> / ${L3('Testlar', 'Тесты', 'Tests')}</div>
+      <h1>✅ ${SN(sj)}: ${L3('testlar markazi', 'центр тестов', 'test centre')}</h1><p>${L3('Mavzularni, savollar sonini va qiyinligini tanlang. Har bir darsdan oson, o‘rtacha va qiyin savollar tuziladi.', 'Выберите темы, количество и сложность вопросов. По каждому уроку составляются лёгкие, средние и трудные вопросы.', 'Choose topics, number and difficulty. Easy, medium and hard questions are made from every lesson.')}</p>
+      <div class="stats" style="margin-top:14px"><div><b>${all.length}</b><span>${t('t_topics')}</span></div><div><b>3 : 4 : 3</b><span>${t('easy')} : ${t('medium')} : ${t('hard')}</span></div><div><b>🔊</b><span>${L3('tinglab topish', 'на слух', 'listening')}</span></div></div></div></div>
+      <div class="wrap" id="tWrap"><div class="tsetup">
+        <div class="panel ts-l"><h3>📚 ${t('t_topics')} <small id="selc" style="font-weight:600;color:var(--muted);font-size:13px"></small></h3>
+          <div class="ts-row"><button class="btn sec sm" id="sa">${t('t_all')}</button><button class="btn sec sm" id="sn">${t('t_none')}</button></div>
+          ${all.some((x) => !ok(x.n)) ? `<div class="zk-lock-note">🔒 ${L3(`Obunasiz dastlabki ${freeN()} ta mavzu ochiq.`, `Без подписки открыты первые ${freeN()} темы.`, `Without a subscription the first ${freeN()} topics are open.`)}</div>` : ''}
+          <div class="tlist">${list}</div></div>
+        <div class="ts-r"><div class="panel"><h3>⚙️ ${L3('Sozlamalar', 'Настройки', 'Settings')}</h3>
+          <div class="ts-f" role="group" aria-labelledby="tsl1"><label id="tsl1">${t('t_count')}</label>${seg('count', [[10, '10'], [20, '20'], [30, '30'], [50, '50']])}</div>
+          <div class="ts-f" role="group" aria-labelledby="tsl2"><label id="tsl2">${t('t_diff')}</label>${seg('diff', [['mix', t('t_mix')], ['easy', t('easy')], ['medium', t('medium')], ['hard', t('hard')]])}</div>
+          <div class="ts-f" role="group" aria-labelledby="tsl3"><label id="tsl3">${t('t_mode')}</label><div class="modes"><label><input type="radio" name="md" value="practice" ${S.mode === 'practice' ? 'checked' : ''}> ${t('t_practice')}</label><label><input type="radio" name="md" value="exam" ${S.mode === 'exam' ? 'checked' : ''}> ${t('t_exam')}</label></div></div>
+          <button class="btn grn big" id="tgo">▶ ${t('t_start')}</button><div id="terr" class="terr" role="alert"></div></div></div></div></div>`;
+    const updC = () => (document.getElementById('selc').textContent = `(${S.sel.size} ${t('t_selected')})`); updC();
+    app.querySelectorAll('.tlist input').forEach((c) => (c.onchange = () => { c.checked ? S.sel.add(c.dataset.k) : S.sel.delete(c.dataset.k); updC(); }));
+    app.querySelectorAll('[data-seg]').forEach((sg) => sg.querySelectorAll('button').forEach((bt) => (bt.onclick = () => { const k = sg.dataset.seg; S[k] = k === 'count' ? +bt.dataset.v : bt.dataset.v; sg.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === bt)); })));
+    app.querySelectorAll('input[name=md]').forEach((r) => (r.onchange = () => (S.mode = r.value)));
+    document.getElementById('sa').onclick = () => { S.sel = new Set(all.filter((x) => ok(x.n)).map((x) => x.k)); app.querySelectorAll('.tlist input:not(:disabled)').forEach((c) => (c.checked = true)); updC(); };
+    document.getElementById('sn').onclick = () => { S.sel = new Set(); app.querySelectorAll('.tlist input').forEach((c) => (c.checked = false)); updC(); };
+    document.getElementById('tgo').onclick = async () => {
+      const err = document.getElementById('terr'), btn = document.getElementById('tgo');
+      const sel = all.filter((x) => S.sel.has(x.k)); if (!sel.length) { err.textContent = t('t_pick'); return; }
+      err.textContent = ''; btn.disabled = true; const txt = btn.textContent; btn.textContent = L3('Savollar tayyorlanmoqda…', 'Готовим вопросы…', 'Preparing questions…');
+      const got = await Promise.all(sel.map((x) => fetchSjLesson(sj, x.b, x.n).then((Ls) => (Ls ? { x, Ls } : null))));
+      const ready = got.filter(Boolean); btn.disabled = false; btn.textContent = txt;
+      if (!ready.length) { err.textContent = L3('Tanlangan mavzularning dars mazmuni hali yuklanmagan yoki ochilmadi.', 'Содержание выбранных тем ещё не загружено или недоступно.', 'The selected topics are not uploaded yet or are not available.'); return; }
+      const lessons = ready.map((r) => r.Ls);
+      const Ps = ready.map((r) => { const P = SJQ.pool(id, r.Ls, lessons); const meta = { g: 's', n: r.x.n, ttl: `${r.x.n}. ${r.x.tp.t}`, href: `#s/${id}/${g}/${r.x.b.part}/${r.x.n}` }; ['easy', 'medium', 'hard'].forEach((d) => P[d].forEach((q) => Object.assign(q, meta))); return P; });
+      const P = SJQ.merge(Ps), want = SJQ.plan(S.count, S.diff);
+      const go = () => { const items = SJQ.take(P, want).sort(() => Math.random() - 0.5); const w = document.getElementById('tWrap'); w.innerHTML = '<div class="panel tr-panel"><div id="tRun"></div></div>';
+        runTest(document.getElementById('tRun'), items, { mode: S.mode, title: `${SN(sj)} — ${L3('test', 'тест', 'test')} (${ready.length} ${L3('mavzu', 'тем', 'topics')})`, onNew: go, onBack: () => subjectTests(id, g), focus: true }); window.scrollTo({ top: 0 }); };
+      go();
+    };
+  }
+  // Bitta dars mazmuni (testlar markazi uchun): xato yoki ruxsat yo'q bo'lsa — null
+  async function fetchSjLesson(sj, b, n) {
+    const k = `${sj.id}-${b.grade}-${b.part}-${n}`; if (sjLessonCache[k]) return sjLessonCache[k];
+    const B = window.ZKAuth && ZKAuth.backend; if (!B) return null;
+    try { const d = await B.get('lessons', k); if (!d || !d.j) return null; return (sjLessonCache[k] = JSON.parse(d.j)); } catch (e) { return null; }
   }
   // Darslik sahifalari Firebase'dan (content/<fan>-<sinf>-<qism>-<sahifa>); ruxsat — firestore.rules (bepul mavzu, obuna, xodim)
   const sjPageCache = {};
@@ -757,7 +877,7 @@
       el.innerHTML = `<div class="tr-run">
         <div class="tr-top"><div class="tr-prog"><div style="width:${100 * answered / items.length}%"></div></div><span>${t('q_word')} ${st.i + 1} / ${items.length}</span>${exam ? `<span class="tm-box">⏱ <b class="tm">${tmText()}</b></span>` : ''}</div>
         <div class="tr-meta"><span class="dchip ${it.d}">${t(DL[it.d])}</span><a href="${it.href || `#${it.g}-${it.n}`}" class="tr-topic">${lessonTitle(it)}</a></div>
-        <div class="tr-q" id="trq" tabindex="-1">${it.tf ? `<small>${t('tf_hint')}</small>` : ''}${tr(it.q)}</div>
+        <div class="tr-q" id="trq" tabindex="-1">${it.tf ? `<small>${t('tf_hint')}</small>` : ''}${tr(it.q)}${it.say ? ` <button type="button" class="zk-say tr-say" aria-label="${L3('Qayta tinglash', 'Прослушать ещё раз', 'Listen again')}"><span aria-hidden="true">🔊</span></button>` : ''}</div>
         <div class="tr-opts ${it.tf ? 'tf' : ''}" role="radiogroup" aria-labelledby="trq">${it.o.map((o, k) => { let cls = ''; if (a === k) cls = 'sel'; if (reveal) { if (k === it.a) cls = 'ok'; else if (a === k) cls = 'bad'; } return `<button type="button" role="radio" aria-checked="${a === k}" tabindex="${(a == null ? k === 0 : a === k) ? 0 : -1}" data-k="${k}" class="${cls}" ${reveal ? 'aria-disabled="true"' : ''}><i>${it.tf ? (k ? '✗' : '✓') : letters[k]}</i><span>${tr(o)}</span></button>`; }).join('')}</div>
         ${reveal ? `<div class="tr-fb ${a === it.a ? 'ok' : 'bad'}">${a === it.a ? t('right') : t('wrong') + '<b>' + tr(it.o[it.a]) + '</b>'}${it.e ? ' — ' + tr(it.e) : ''}</div>` : ''}
         ${answered === items.length && !opts.compact ? `<div class="note" style="margin-top:12px">${t('finished_q')}</div>` : ''}
@@ -768,6 +888,7 @@
       // Klaviatura va ekran o'quvchilar: javobdan keyin natija e'lon qilinadi, fokus mantiqiy joyga o'tadi
       const fq = () => { const x = el.querySelector('#trq'); if (x) x.focus({ preventScroll: true }); };
       const say = (txt) => { const an = document.getElementById('zkAnnounce'); if (an) { an.textContent = ''; setTimeout(() => (an.textContent = txt), 40); } };
+      { const sb = el.querySelector('.tr-say'); if (sb) { const lc = { eng: 'en-GB', rus: 'ru-RU', en: 'en-GB' }[it.sayLang] || 'en-GB'; sb.onclick = () => sjSay(it.say, lc); if (!window.speechSynthesis) sb.remove(); else if (st.spoken !== st.i) { st.spoken = st.i; setTimeout(() => sjSay(it.say, lc), 250); } } }
       el.querySelectorAll('.tr-opts button').forEach((b) => (b.onclick = () => {
         if (b.getAttribute('aria-disabled') === 'true') return;
         st.ans[st.i] = +b.dataset.k; const was = st.i; if (exam && st.i < items.length - 1) { st.i++; } draw();
@@ -1068,7 +1189,12 @@
       const chip = document.querySelector('header.top .zk-subject'); const sm = h.match(/^s\/([a-z]+)/); const sj = sm && window.ZKSubjects ? ZKSubjects.get(sm[1]) : null;
       const chem = /^(kimyo|g[678](-\d+)?|lab(-.+)?|tests|ptable(-\d+)?|book-g[678])$/.test(h);
       const hs = (h === 'home' || h === '') && curSubj() ? SJ().get(curSubj()) : null; // bosh sahifa — tanlangan fan
-      applySubj(); document.body.classList.toggle('zk-chemctx', chem || curSubj() === 'chem');
+      applySubj(); const sjx = sj && !sj.native ? sj : null; document.body.classList.toggle('zk-chemctx', chem || (sj && sj.native) || (!sjx && curSubj() === 'chem'));
+      { // boshqa fan menyusidagi «Testlar» — shu fanning testlar markazi (o'quvchi — o'z sinfi)
+        const cur = sjx || (!chem && curSubj() && curSubj() !== 'chem' ? SJ().get(curSubj()) : null), gm = h.match(/^s\/[a-z]+\/(\d+)/);
+        const gg = cur ? (myGrade() || (gm ? +gm[1] : cur.grades[0])) : 0;
+        document.querySelectorAll('.zk-sjtests').forEach((a) => { a.href = cur ? `#s/${cur.id}/${gg}/test` : '#fanlar'; a.hidden = !cur; });
+      }
       if (chip) { const nm = sj ? SN(sj) : hs ? SN(hs) : chem ? L3('Kimyo', 'Химия', 'Chemistry') : ''; chip.hidden = !nm; chip.textContent = nm.toUpperCase(); if (nm) chip.setAttribute('aria-label', nm); else chip.removeAttribute('aria-label'); }
     }
     let lockR = null, lm;
@@ -1081,6 +1207,7 @@
     else if (h === 'kimyo') home();
     else if (h === 'pick') { pickPage(); navKey = 'pick'; }
     else if (h === 'fanlar') { subjectsPage(); navKey = 'fanlar'; }
+    else if ((m = h.match(/^s\/([a-z]+)\/(\d+)\/test$/))) { navKey = 'sjtest'; subjectTests(m[1], +m[2]); }
     else if ((m = h.match(/^s\/([a-z]+)(?:\/(\d+)(?:\/(\d+)\/(\d+))?)?$/))) {
       navKey = 'fanlar';
       if (m[4]) subjectTopic(m[1], +m[2], +m[3], +m[4]); else if (m[2]) subjectGrade(m[1], +m[2]); else subjectPage(m[1]);

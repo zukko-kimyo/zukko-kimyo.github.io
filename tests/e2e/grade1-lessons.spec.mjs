@@ -11,8 +11,10 @@ const lessonsFile = (book, count) => ({
     title: { orig: 'Topic ' + (i + 1), ...T3('Mavzu ' + (i + 1)) },
     goal: T3('Maqsad ' + (i + 1)),
     summary: { uz: ['Birinchi fikr', 'Ikkinchi fikr'], ru: ['Первая мысль', 'Вторая мысль'], en: ['First idea', 'Second idea'] },
-    words: [{ w: 'mother', uz: 'ona', ru: 'мама', en: 'mother', emoji: '👩' }, { w: 'father', uz: 'ota', ru: 'папа', en: 'father', emoji: '👨' }, { w: 'family', uz: 'oila', ru: 'семья', en: 'family', emoji: '' }],
-    phrases: [{ t: 'This is my mother.', uz: 'Bu mening onam.', ru: 'Это моя мама.', en: 'This is my mother.' }],
+    words: [{ w: 'mother', uz: 'ona', ru: 'мама', en: 'mother', emoji: '👩' }, { w: 'father', uz: 'ota', ru: 'папа', en: 'father', emoji: '👨' }, { w: 'family', uz: 'oila', ru: 'семья', en: 'family', emoji: '' },
+      { w: 'sister', uz: 'opa', ru: 'сестра', en: 'sister', emoji: '👧' }, { w: 'brother', uz: 'aka', ru: 'брат', en: 'brother', emoji: '👦' }],
+    phrases: [{ t: 'This is my mother.', uz: 'Bu mening onam.', ru: 'Это моя мама.', en: 'This is my mother.' }, { t: 'I love my family.', uz: 'Men oilamni sevaman.', ru: 'Я люблю свою семью.', en: 'I love my family.' },
+      { t: 'My brother is tall.', uz: 'Akam baland.', ru: 'Мой брат высокий.', en: 'My brother is tall.' }, { t: 'Her sister reads books.', uz: 'Uning opasi kitob o‘qiydi.', ru: 'Её сестра читает книги.', en: 'Her sister reads books.' }],
     tasks: [T3('Rasmga qarab ayt'), T3('Bo‘ya')],
     quiz: Array.from({ length: 5 }, (_, k) => ({ q: T3('Savol ' + (k + 1)), o: [T3('To‘g‘ri'), T3('Xato A'), T3('Xato B')], a: 0 })),
   })),
@@ -55,25 +57,51 @@ test('admin dars mazmunini yuklaydi; o\'quvchi bepul mavzuni o\'qiydi va test ye
   await expect(page.locator('.tabs button')).toHaveCount(3);
   await expect(page.locator('.tabs button[data-tab=content]')).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#sjBody .keyq')).toContainText('Maqsad 2 (uz)');
-  await expect(page.locator('#sjBody .zk-word')).toHaveCount(3);
+  await expect(page.locator('#sjBody .zk-word')).toHaveCount(5);
   await expect(page.locator('#sjBody .zk-word').first()).toContainText('mother');
   await expect(page.locator('#sjBody .zk-word').first()).toContainText('ona');
-  await expect(page.locator('#sjBody .zk-phr li')).toHaveCount(1);
+  await expect(page.locator('#sjBody .zk-phr li')).toHaveCount(4);
   await expect(page.locator('#sjBody .zk-tasks li')).toHaveCount(2);
 
-  // test: 5 savol, hammasiga to'g'ri javob → 5/5, mavzular ro'yxatida ⭐
+  // dars testi: kimyodagi kabi 10 savol — 3 oson, 4 o'rtacha, 3 qiyin
   await page.locator('#sjGoQuiz').click();
   await expect(page.locator('.tabs button[data-tab=quiz]')).toHaveAttribute('aria-selected', 'true');
-  for (let k = 0; k < 5; k++) {
-    await expect(page.locator('.tr-q')).toContainText(`Savol ${k + 1} (uz)`);
-    await page.locator('.tr-opts button', { hasText: 'To‘g‘ri (uz)' }).click();
-    await expect(page.locator('.tr-fb.ok')).toBeVisible();
-    await page.locator(k < 4 ? '#qn' : '#qf').click();
+  await expect(page.locator('.tabs button[data-tab=quiz] .cnt')).toHaveText('10');
+  const chips = [];
+  for (let k = 0; k < 10; k++) {
+    await expect(page.locator('.tr-top span').first()).toContainText(`${k + 1} / 10`);
+    chips.push(await page.locator('.tr-meta .dchip').getAttribute('class'));
+    expect(await page.locator('.tr-opts button').count()).toBeGreaterThanOrEqual(3);
+    await page.locator('.tr-opts button').first().click();
+    await expect(page.locator('.tr-fb')).toBeVisible();
+    await page.locator(k < 9 ? '#qn' : '#qf').click();
   }
-  await expect(page.locator('.tr-res h3')).toContainText('5 / 5');
+  const lv = (d) => chips.filter((c) => c.includes(d)).length;
+  expect([lv('easy'), lv('medium'), lv('hard')]).toEqual([3, 4, 3]);
+  await expect(page.locator('.tr-res h3')).toContainText('/ 10');
   await expect(page.locator('.tr-res')).not.toContainText('undefined');
+  // 70% va undan yuqori — mavzular ro'yxatida ⭐ (eski 5 balli natija ham foizga aylanadi)
+  await page.evaluate(() => localStorage.setItem('zk_sjp', JSON.stringify({ 'eng-1-1-2': 90, 'eng-1-1-3': 4, 'eng-1-1-1': 30 })));
   await go(page, 's/eng/1');
   await expect(page.locator('a.zk-sjtopic[href="#s/eng/1/1/2"] .zk-sjstar')).toHaveCount(1);
+  await expect(page.locator('a.zk-sjtopic[href="#s/eng/1/1/3"] .zk-sjstar')).toHaveCount(1);
+  await expect(page.locator('a.zk-sjtopic[href="#s/eng/1/1/1"] .zk-sjstar')).toHaveCount(0);
+
+  // fan testlar markazi: mavzular, soni va qiyinligi tanlanadi; yopiq mavzular tanlanmaydi
+  await page.locator('.zk-sjact a').click();
+  await expect(page.locator('.page-h h1')).toContainText('testlar markazi');
+  await expect(page.locator('.tlist input:not(:disabled)')).toHaveCount(3);
+  await expect(page.locator('.tlist input:disabled').first()).toBeVisible();
+  await page.locator('[data-seg=count] button[data-v="20"]').click();
+  await page.locator('[data-seg=diff] button[data-v="hard"]').click();
+  await page.locator('#tgo').click();
+  await expect(page.locator('.tr-top span').first()).toContainText('1 / 20');
+  for (let k = 0; k < 3; k++) { await expect(page.locator('.tr-meta .dchip')).toHaveClass(/hard/); await page.locator('.tr-pal button').nth(k + 1).click(); }
+  await go(page, 's/eng/1'); await expect(page.locator('.zk-sjact a')).toBeVisible();
+  await go(page, 's/eng/1/test');
+  await page.locator('#sn').click();
+  await page.locator('#tgo').click();
+  await expect(page.locator('#terr')).not.toBeEmpty();
 
   // rus tilida mazmun ruscha
   await page.locator('header .lang button[data-lang=ru]').click();
