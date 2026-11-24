@@ -177,13 +177,19 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
       const cv = document.createElement('canvas'), cx = cv.getContext('2d');
       for (let k = 0; k < printed.length; k++) {
         const p = printed[k], page = await pdf.getPage(p - b.offset), v1 = page.getViewport({ scale: 1 });
-        const vp = page.getViewport({ scale: 900 / v1.width });
-        cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
-        cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
-        await page.render({ canvasContext: cx, viewport: vp }).promise;
-        let q = 0.72, img = cv.toDataURL('image/webp', q);
-        if (!img.startsWith('data:image/webp')) img = cv.toDataURL('image/jpeg', 0.78); // Safari webp yoza olmaydi
-        while (img.length > 950000 && q > 0.35) { q -= 0.1; img = img.startsWith('data:image/webp') ? cv.toDataURL('image/webp', q) : cv.toDataURL('image/jpeg', q); }
+        // Tiniqroq sahifa: avval 1500 px enlikda, sifat 0.8 dan; hujjat 950 KB dan oshsa — sifat, keyin o'lcham pasaytiriladi
+        let img = '';
+        for (const W of [1500, 1250, 1050, 900]) {
+          const vp = page.getViewport({ scale: W / v1.width });
+          cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+          cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+          await page.render({ canvasContext: cx, viewport: vp }).promise;
+          let q = 0.8; img = cv.toDataURL('image/webp', q);
+          const webp = img.startsWith('data:image/webp');
+          if (!webp) { q = 0.82; img = cv.toDataURL('image/jpeg', q); } // Safari webp yoza olmaydi
+          while (img.length > 950000 && q > (W === 900 ? 0.35 : 0.55)) { q -= 0.1; img = cv.toDataURL(webp ? 'image/webp' : 'image/jpeg', q); }
+          if (img.length <= 950000) break;
+        }
         await B.set('content', `${row.id}-${p}`, { s: sj.id, g: b.grade, part: b.part, p, n: pageTopic[p], img, w: cv.width, h: cv.height, at: Date.now(), by: ZKAuth.user.uid });
         say(`<span class="ad-mut">${bk('go', { i: k + 1, n: printed.length })}</span><progress max="${printed.length}" value="${k + 1}"></progress>`);
       }
