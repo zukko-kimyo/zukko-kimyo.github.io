@@ -5,7 +5,7 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 ## [Chiqarilmagan]
 
 ### Firestore qoidalari: ko‘p qismli darsliklar (2026-11-23)
-- Darslik sahifalari va dars mazmuni uchun qism raqami 10 gacha, mavzu raqami 600 gacha ruxsat etiladi (rus tili 5-qismi uchun kerak). **Publish kerak**.
+- Darslik sahifalari va dars mazmuni uchun qism raqami 10 gacha, mavzu raqami 600 gacha ruxsat etiladi (rus tili 5-qismi uchun kerak; darslik sahifalaridagi mavzu raqami cheklovi ham tuzatildi). **Publish kerak**.
 
 ### Matematika 1-sinf: o‘zbek tilidagi darslik, 3 qism (2026-11-23)
 - Inglizcha 1-qism o‘rniga «Zukko Matematika» o‘zbekcha darsligi: 1–3-qism, 150 mavzu (narsalar va guruhlash, 1–10 sonlar, 10 ichida qo‘shish-ayirish, 11–20 sonlar, o‘nlikdan o‘tib hisoblash, 100 gacha sonlar).

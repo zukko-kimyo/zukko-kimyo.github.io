@@ -286,6 +286,7 @@ test('har fanga alohida obuna (subs); noto\'g\'ri fan yoki yozuv rad etiladi', a
 const PAGE = (n) => ({ s: 'eng', g: 1, part: 1, p: 5, n, img: 'data:image/webp;base64,AAAA', w: 900, h: 1273, at: 1, by: 'admin1' });
 test('darslik sahifasini faqat admin yozadi; noto\'g\'ri yozuv rad etiladi', async () => {
   await assertSucceeds(setDoc(doc(admin(), 'content/eng-1-1-5'), PAGE(1)));
+  await assertSucceeds(setDoc(doc(admin(), 'content/rus-1-5-200'), { ...PAGE(250), s: 'rus', part: 5, p: 200 })); // 5-qism: mavzu 201–250
   await assertFails(setDoc(doc(teacher(), 'content/eng-1-1-6'), PAGE(1)));
   await assertFails(setDoc(doc(admin(), 'content/eng-1-1-7'), { ...PAGE(1), img: 'javascript:alert(1)' }));
   await assertFails(setDoc(doc(admin(), 'content/eng-1-1-8'), { ...PAGE(1), s: 'music' }));
