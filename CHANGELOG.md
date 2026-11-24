@@ -4,6 +4,10 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Rus tili 3-sinf: 5 qism (2026-11-24)
+- «Zukko Russian Pathway 3» darsligi: 5 qism, 250 mavzu — oila va odob, yaxshi so‘zlar, halollik, mehribonlik, mahalla, an’analar, til va bilim, madaniyat, tabiat va sog‘lom hayot, Vatan va kelajak.
+- Har mavzuda dars mazmuni (uz/ru/en), darslik sahifalari va test; 1-qismdagi almashgan sahifalar to‘g‘ri juftlandi.
+
 ### Ingliz tili 1-sinf: 2–5-qismlar (2026-11-24)
 - «Zukko English Pathway 1» darsligining 2–5-qismlari: 200 ta yangi mavzu (51–250) — maktab, tana va salomatlik, hayvonlar, tabiat, ovqat va ranglar, kasblar, jamoa, odob va xavfsizlik.
 - Har mavzuda dars mazmuni (uz/ru/en), darslik sahifalari va 3 darajali test.

@@ -113,3 +113,14 @@ test('rus tili 1-sinf: 5 qism, mavzu raqamlari kitobdagidek (1–250), qismlarga
   await page.evaluate(() => { location.hash = '#s/rus/1/test'; });
   await expect(page.locator('.tlist .tg-h')).toHaveCount(5);
 });
+
+test('rus tili 3-sinf: 5 qism, 250 mavzu, sahifalar kitobdagidek', async ({ page }) => {
+  await page.goto('/index.html#s/rus/3'); await waitReady(page);
+  await expect(page.locator('.zk-sjparts button')).toHaveCount(5);
+  await expect(page.locator('.zk-sjtopic')).toHaveCount(250);
+  await expect(page.locator('a.zk-sjtopic[href="#s/rus/3/3/1"] .n')).toHaveText('101');
+  await expect(page.locator('a.zk-sjtopic[href="#s/rus/3/5/50"] .n')).toHaveText('250');
+  await page.evaluate(() => { location.hash = '#s/rus/3/4/1'; });
+  await expect(page.locator('.lesson-top .lnum')).toHaveText('151');
+  await expect(page.locator('.zk-sjref')).toContainText('55, 56');
+});
