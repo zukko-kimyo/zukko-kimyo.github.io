@@ -20,6 +20,8 @@ test('admin darslik PDF\'ini yuklaydi; o\'quvchi bepul mavzu sahifalarini ko\'ra
   expect(doc[0]).toBe(100);
   expect(doc[1]).toMatchObject({ s: 'eng', g: 1, part: 1, p: 5, n: 1 });
   expect(doc[1].img).toMatch(/^data:image\/(webp|jpeg);base64,/);
+  expect(doc[1].w).toBe(1500); // tiniq sahifa: 1500 px enlik
+  expect(doc[1].img.length).toBeLessThan(950001);
   expect(doc[2].pages).toBe(100);
 
   // admin: mavzu sahifalari ko'rinadi

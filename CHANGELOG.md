@@ -4,6 +4,9 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Darslik sahifalari tiniqroq (2026-11-25)
+- Admin panel PDF sahifalarini 900 o‘rniga 1500 piksel enlikda saqlaydi (hajm chegarasidan oshsa sifat, keyin o‘lcham avtomatik pasayadi). Yangi sifat uchun darsliklarni qayta yuklash kerak.
+
 ### Rus tili 3-sinf: 5 qism (2026-11-24)
 - «Zukko Russian Pathway 3» darsligi: 5 qism, 250 mavzu — oila va odob, yaxshi so‘zlar, halollik, mehribonlik, mahalla, an’analar, til va bilim, madaniyat, tabiat va sog‘lom hayot, Vatan va kelajak.
 - Har mavzuda dars mazmuni (uz/ru/en), darslik sahifalari va test; 1-qismdagi almashgan sahifalar to‘g‘ri juftlandi.
