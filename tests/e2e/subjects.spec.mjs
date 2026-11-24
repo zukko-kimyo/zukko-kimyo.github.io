@@ -50,7 +50,9 @@ test('o\'quvchi fan oynasida faqat o\'z sinfini ko\'radi', async ({ page }) => {
   await go(page, 's/eng');
   await expect(page.locator('.page-h h1')).toContainText('Ingliz tili · 1-sinf');
   await expect(page.locator('.zk-sjpick')).toHaveCount(0);
-  await expect(page.locator('.zk-sjtopic')).toHaveCount(50);
+  await expect(page.locator('.zk-sjtopic')).toHaveCount(250);
+  await expect(page.locator('.zk-sjparts button')).toHaveCount(5);
+  await expect(page.locator('a.zk-sjtopic[href="#s/eng/1/5/50"] .n')).toHaveText('250');
   await go(page, 's/eng/5');
   await expect(page.locator('.page-h h1')).toContainText('1-sinf');
 });
