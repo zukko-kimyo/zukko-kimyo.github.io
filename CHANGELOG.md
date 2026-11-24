@@ -4,6 +4,10 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Ingliz tili 1-sinf: 2–5-qismlar (2026-11-24)
+- «Zukko English Pathway 1» darsligining 2–5-qismlari: 200 ta yangi mavzu (51–250) — maktab, tana va salomatlik, hayvonlar, tabiat, ovqat va ranglar, kasblar, jamoa, odob va xavfsizlik.
+- Har mavzuda dars mazmuni (uz/ru/en), darslik sahifalari va 3 darajali test.
+
 ### Firestore qoidalari: ko‘p qismli darsliklar (2026-11-23)
 - Darslik sahifalari va dars mazmuni uchun qism raqami 10 gacha, mavzu raqami 600 gacha ruxsat etiladi (rus tili 5-qismi uchun kerak; darslik sahifalaridagi mavzu raqami cheklovi ham tuzatildi). **Publish kerak**.
 
