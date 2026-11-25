@@ -144,9 +144,9 @@
     rows.forEach((r, i) => {
       r = (r || []).map((x) => String(x == null ? '' : x).trim()); if (!r.some(Boolean)) return;
       if (i === 0 && r.some((c) => /^(savol|savollar|question|вопрос|топшириқ|topshiriq)/i.test(c))) return;
-      const [t, A1, B1, C1, D1, ans, lv, v] = r, o = [A1 || '', B1 || '', C1 || '', D1 || ''], s = String(ans || '').trim();
+      const [t, A1, B1, C1, D1, ans, lv, v] = r; let o = [A1 || '', B1 || '', C1 || '', D1 || '']; while (o.length > 2 && !o[o.length - 1]) o.pop(); const s = String(ans || '').trim();
       let a = /^[1-4]$/.test(s) ? +s - 1 : s.length === 1 && ANS[s.toUpperCase()] != null ? ANS[s.toUpperCase()] : o.findIndex((x) => x && x.toLowerCase() === s.toLowerCase());
-      const why = !t ? "savol matni yo'q" : o.some((x) => !x) ? "A, B, C, D javoblardan biri bo'sh" : a < 0 ? "to'g'ri javob ko'rsatilmagan (A, B, C yoki D yozing)" : '';
+      const why = !t ? "savol matni yo'q" : o.some((x) => !x) ? "javoblardan biri bo'sh (kamida A va B kerak, oraliqda bo'sh qoldirmang)" : a < 0 || a >= o.length ? "to'g'ri javob ko'rsatilmagan (A, B, C yoki D yozing)" : '';
       if (why) { bad.push(`${i + 1}-qator: ${why}`); return; }
       out.push({ q: { id: rid(), t: t.slice(0, 1500), img: '', o: o.map((x) => x.slice(0, 400)), a, l: lvOf(lv) || defLv }, v: String(v || '').trim() === '2' ? 1 : String(v || '').trim() === '1' ? 0 : null });
     });
@@ -204,17 +204,40 @@
       const page = await pdf.getPage(pn); const tc = await page.getTextContent();
       const bold = {}; try { await page.getOperatorList(); } catch (e) { }
       const isBold = (fn) => { if (bold[fn] != null) return bold[fn]; let b = false; try { const f = page.commonObjs.has(fn) && page.commonObjs.get(fn); b = !!(f && /bold|black|heavy|semibold|demi/i.test(f.name || '')); } catch (e) { } return (bold[fn] = b); };
+      const W = (page.view && page.view[2]) || 600;
       const items = tc.items.filter((it) => it.str !== undefined && (it.str.trim() || it.str === ' ')).map((it) => ({ s: it.str, x: it.transform[4], y: it.transform[5], h: Math.abs(it.transform[3]) || it.height || 10, w: it.width || 0, b: isBold(it.fontName) }));
       const lines = [];
       items.forEach((it) => { const L = lines.find((l) => Math.abs(l.y - it.y) < Math.max(l.h, it.h) * 0.55); if (L) { L.it.push(it); if (it.h > L.h) { L.h = it.h; L.y = it.y; } } else lines.push({ y: it.y, h: it.h, it: [it] }); });
-      lines.sort((a, b) => b.y - a.y).forEach((L) => {
-        L.it.sort((a, b) => a.x - b.x); let text = '', st = [], end = null;
-        L.it.forEach((it) => { let t = it.s; const small = it.h < L.h * 0.8 && t.trim();
+      lines.sort((a, b) => b.y - a.y);
+      const emit = (L, list) => {
+        list = list.slice().sort((a, b) => a.x - b.x); let text = '', end = null; const st = [];
+        list.forEach((it) => { let t = it.s; const small = it.h < L.h * 0.8 && t.trim() && t.trim().length <= 4 && end != null && it.x - end < L.h * 0.3;
           if (small && it.y > L.y + L.h * 0.15) t = '^{' + t.trim() + '}'; else if (small && it.y < L.y + L.h * 0.02) t = '_{' + t.trim() + '}';
           else if (end != null && it.x - end > L.h * 0.18 && !/\s$/.test(text) && !/^\s/.test(t)) { text += ' '; st.push(0); }
           text += t; for (let i = 0; i < t.length; i++) st.push(it.b ? 1 : 0); end = it.x + it.w; });
-        chars += text.trim().length; paras.push({ text, st, imgs: [], num: null });
-      });
+        if (text.trim()) { chars += text.trim().length; paras.push({ text, st, imgs: [], num: null }); }
+      };
+      // Ikki ustunli sahifa: o'rtadagi eng keng bo'sh «yo'lak» (ozgina kesib o'tuvchi qatorga ruxsat)
+      const real = items.filter((it) => it.s.trim()); let g = null;
+      if (real.length >= 12) {
+        const B = 2, n = Math.ceil(W / B), cov = new Array(n).fill(0);
+        real.forEach((it) => { for (let k = Math.max(0, Math.floor(it.x / B)); k <= Math.min(n - 1, Math.floor((it.x + it.w) / B)); k++) cov[k]++; });
+        const lim = Math.max(1, Math.floor(real.length * 0.05)); let best = null, run = null;
+        for (let k = Math.floor(n * 0.25); k <= Math.ceil(n * 0.75); k++) { if (cov[k] <= lim) { run = run || { a: k, b: k }; run.b = k; } else run = null; if (run && (!best || run.b - run.a > best.b - best.a)) best = { a: run.a, b: run.b }; }
+        if (best && (best.b - best.a + 1) * B >= 12) { const gx = (best.a + best.b + 1) * B / 2, left = real.filter((it) => it.x < gx).length; if (left >= real.length * 0.15 && real.length - left >= real.length * 0.15) g = gx; }
+      }
+      if (g == null) { lines.forEach((L) => emit(L, L.it)); continue; }
+      const parts = lines.map((L) => ({ L, l: L.it.filter((it) => it.x < g), r: L.it.filter((it) => it.x >= g) }));
+      const colStart = /^\s*(\d{1,3}\s*[.)]|[A-EА-Д]\s*[).]|\d\s*[-–]?\s*(variant|вариант))/i;
+      const rx = parts.filter((p) => p.r.length && colStart.test(p.r.slice().sort((a, b) => a.x - b.x).map((i) => i.s).join(' '))).map((p) => Math.min(...p.r.map((i) => i.x))).sort((a, b) => a - b);
+      if (!rx.length) { lines.forEach((L) => emit(L, L.it)); continue; }
+      const rStart = rx[Math.floor(rx.length / 2)];
+      const isCol = (p) => p.r.length && Math.min(...p.r.map((i) => i.x)) <= rStart + 40;
+      const first = parts.findIndex(isCol), last = parts.length - 1 - parts.slice().reverse().findIndex(isCol);
+      parts.slice(0, first).forEach((p) => emit(p.L, p.L.it));          // sarlavha — butun qator
+      parts.slice(first, last + 1).forEach((p) => p.l.length && emit(p.L, p.l)); // chap ustun
+      parts.slice(first, last + 1).forEach((p) => p.r.length && emit(p.L, p.r)); // o'ng ustun
+      parts.slice(last + 1).forEach((p) => emit(p.L, p.L.it));          // pastki qism
     }
     return { paras, chars };
   }
@@ -243,10 +266,10 @@
     for (const p of paras) {
       const text = p.text.replace(/ /g, ' ').replace(/\s+/g, ' ').trim(); if (!text && !p.imgs.length) continue;
       const vm = text.length < 45 && !/\?/.test(text) && text.match(/(?:^|\s)([12])\s*[-–]?\s*(?:variant|вариант)|(?:variant|вариант)\s*[-–№]?\s*([12])/i);
-      if (vm && !/^\s*[A-EА-Д]\s*[).]/i.test(text)) { close(); v = +(vm[1] || vm[2]) - 1; const ms = [...text.replace(vm[0], ' ').matchAll(KEYP)]; if (ms.length) setKey(ms); keyMode = ms.length > 0 || /javob|kalit|ответ|ключ|answer/i.test(text); continue; }
+      if (vm && !/^\s*[A-EА-Д]\s*[).]/i.test(text)) { close(); v = +(vm[1] || vm[2]) - 1; const ms = [...text.replace(vm[0], ' ').matchAll(KEYP)]; if (ms.length) setKey(ms); keyMode = keyMode || ms.length > 0 || /javob|kalit|ответ|ключ|answer/i.test(text); continue; }
       const kl = keyLine(text); if (kl) { close(); setKey(kl); continue; }
       if (text.length < 60 && !/\?/.test(text) && /^(to.?g.?ri\s+)?(javob|kalit|ответ|ключ|answer)/i.test(text)) { close(); keyMode = true; setKey([...text.matchAll(KEYP)]); continue; }
-      if (keyMode) { const ms = [...text.matchAll(KEYP)]; if (ms.length && text.replace(KEYP, '').replace(/[\s,;.|]/g, '').length <= 6) { setKey(ms); continue; } keyMode = false; }
+      if (keyMode) { const m1 = !/\?\s*$/.test(text) && text.match(/^\s*(\d{1,3})\s*[-–.):=]?\s*([A-EА-Д])(?![A-Za-zА-Яа-я])/i); if (m1) { const ms = [...text.matchAll(KEYP)]; setKey(text.replace(KEYP, '').replace(/[\s,;.|]/g, '').length <= 6 ? ms : [m1]); continue; } if (!/^\s*\d{1,3}\s*[.)]/.test(text) && !/^\s*[A-EА-Д]\s*[).]/i.test(text)) continue; keyMode = false; }
       let opts = splitOpts(Object.assign({}, p, { text: p.text.replace(/ /g, ' ').trim(), st: p.st.slice(p.text.length - p.text.replace(/^[\s ]+/, '').length) }));
       if (!opts && p.num === 'let' && cur && !/\?$/.test(text)) { let tx = text, star = false; if (STAR.test(tx)) { star = true; tx = tx.replace(STAR, ''); } const seg = p.st.filter((_, j) => /\S/.test(p.text[j])); opts = [{ text: tx.trim(), star, b: seg.length > 0 && seg.every((f) => f & 1), hi: seg.some((f) => f & 2), col: seg.some((f) => f & 4), u: seg.length > 0 && seg.every((f) => f & 8) }]; }
       if (opts) { if (!cur) { bad.push(`«${text.slice(0, 50)}» — savolsiz javob qatori`); continue; } opts.forEach((o) => cur.o.push(o)); if (!cur.img && p.imgs[0]) cur.img = p.imgs[0]; continue; }
@@ -260,7 +283,7 @@
     qs.filter((q) => q.o.length).forEach((q, i) => { // javobsiz qatorlar (sarlavha, «Ism: ___») savol emas
       const n = q.n || i + 1, label = `${n}-savol`;
       if (!q.t.trim() && !q.img) { bad.push(`${label}: savol matni yo'q`); return; }
-      if (q.o.length < 4) { bad.push(`${label}: ${q.o.length} ta javob (A, B, C, D kerak)`); return; }
+      if (q.o.length < 2) { bad.push(`${label}: javob variantlari topilmadi`); return; }
       let a = key[`${q.v}:${n}`] ?? key[`null:${n}`] ?? key[`*:${n}`];
       if (a == null || a >= q.o.length) { a = null; for (const f of ['star', 'hi', 'col', 'b', 'u']) { const hit = q.o.map((o, j) => (o[f] ? j : -1)).filter((j) => j >= 0); if (hit.length === 1) { a = hit[0]; break; } } }
       let o = q.o.map((x) => x.text);
@@ -359,7 +382,7 @@
         <ol class="ex-qs">${qs.map((q, i) => `<li class="ex-q" data-i="${i}"><div class="ex-q-h"><b>${i + 1}-savol</b>${q.nk ? '<span class="ex-nk">⚠️ To\'g\'ri javobni belgilang</span>' : ''}<select data-f="l" aria-label="Savol darajasi">${Object.entries(LV).map(([k, [n]]) => `<option value="${k}" ${q.l === k ? 'selected' : ''}>${n}</option>`).join('')}</select><span class="ex-sp"></span><button type="button" data-q="up" title="Yuqoriga" ${i ? '' : 'disabled'}>↑</button><button type="button" data-q="dup" title="Nusxa">⧉</button><button type="button" data-q="del" title="O'chirish" class="ex-danger" ${qs.length > 1 ? '' : 'disabled'}>🗑</button></div>
           <textarea data-f="t" rows="2" maxlength="1500" placeholder="Savol matni" aria-label="${i + 1}-savol matni">${esc(q.t)}</textarea>
           <div class="ex-img">${q.img ? `<img src="${q.img}" alt="Savol rasmi"><button type="button" data-q="noimg">Rasmni olib tashlash</button>` : `<label class="btn sec sm">🖼 Rasm qo'shish<input type="file" accept="image/*" data-q="img" hidden></label>`}</div>
-          <div class="ex-opts">${q.o.map((o, j) => `<label class="ex-opt ${q.a === j ? 'ok' : ''}"><input type="radio" name="a${i}" value="${j}" ${q.a === j ? 'checked' : ''} data-f="a" aria-label="${'ABCD'[j]} to'g'ri javob"><b>${'ABCD'[j]}</b><input data-f="o" data-j="${j}" maxlength="400" value="${esc(o)}" placeholder="${'ABCD'[j]} javob"></label>`).join('')}</div></li>`).join('')}</ol>
+          <div class="ex-opts">${q.o.map((o, j) => `<label class="ex-opt ${q.a === j ? 'ok' : ''}"><input type="radio" name="a${i}" value="${j}" ${q.a === j ? 'checked' : ''} data-f="a" aria-label="${'ABCD'[j]} to'g'ri javob"><b>${'ABCD'[j]}</b><input data-f="o" data-j="${j}" maxlength="400" value="${esc(o)}" placeholder="${'ABCD'[j]} javob"></label>`).join('')}</div><div class="ex-optn">${q.o.length < 4 ? `<button type="button" data-q="addo">➕ ${'ABCD'[q.o.length]} javob</button>` : ''}${q.o.length > 2 ? `<button type="button" data-q="delo">➖ ${'ABCD'[q.o.length - 1]} javobni olib tashlash</button>` : ''}</div></li>`).join('')}</ol>
         <div class="ex-acts"><button type="button" class="btn sec" data-addq>➕ Savol qo'shish</button><button type="button" class="btn sec" data-bank>📚 Saytdagi testlardan</button><label class="btn sec" tabindex="0">📄 Word, PDF, Excel yoki CSV dan<input type="file" accept=".docx,.pdf,.xlsx,.csv,.txt" data-xl hidden></label><button type="button" class="btn sec" data-paste>📋 Matndan joylash</button><button type="button" class="btn sec sm" data-tpl>⬇️ Excel namunasi</button></div>
         <p class="ex-hint">Word: «1. Savol» va «A) … B) … C) … D) …» ko'rinishida; to'g'ri javob — oxiridagi «Javoblar: 1-A, 2-C…» kaliti, javob oldidagi * yoki +, yoxud qalin/rangli/belgilangan javob. Excel ustunlari: Savol · A · B · C · D · To'g'ri javob (A–D) · Daraja · Variant (1 yoki 2). PDF — faqat matnli (Word'dan saqlangan); skanerlangan PDF o'qilmaydi. Eski .doc/.xls faylni avval .docx/.xlsx qilib saqlang.</p>
         <div class="ex-acts ex-sticky"><button type="submit" class="btn">💾 Saqlash</button><button type="button" class="btn sec" data-prev>👁 Ko'rib chiqish</button><span class="ex-mut" id="exSz"></span></div></form>`;
@@ -417,13 +440,13 @@
       f.querySelectorAll('[data-q]').forEach((b) => {
         const i = +b.closest('.ex-q').dataset.i, k = b.dataset.q;
         if (k === 'img') b.onchange = async () => { sync(); if (!b.files[0]) return; try { qs[i].img = await shrink(b.files[0]); draw(); } catch (e) { toast('Rasm o\'qilmadi'); } };
-        else b.onclick = () => { sync(); if (k === 'up') [qs[i - 1], qs[i]] = [qs[i], qs[i - 1]]; else if (k === 'dup') qs.splice(i + 1, 0, Object.assign(JSON.parse(JSON.stringify(qs[i])), { id: rid() })); else if (k === 'del') qs.splice(i, 1); else if (k === 'noimg') qs[i].img = ''; draw(); };
+        else b.onclick = () => { sync(); if (k === 'up') [qs[i - 1], qs[i]] = [qs[i], qs[i - 1]]; else if (k === 'dup') qs.splice(i + 1, 0, Object.assign(JSON.parse(JSON.stringify(qs[i])), { id: rid() })); else if (k === 'del') qs.splice(i, 1); else if (k === 'noimg') qs[i].img = ''; else if (k === 'addo' && qs[i].o.length < 4) qs[i].o.push(''); else if (k === 'delo' && qs[i].o.length > 2) { qs[i].o.pop(); if (qs[i].a >= qs[i].o.length) qs[i].a = 0; } draw(); };
       });
       f.querySelector('[data-prev]').onclick = () => { sync(); preview(t); };
       f.onsubmit = async (e) => {
         e.preventDefault(); const sz = sync();
         const nkN = t.vars.reduce((n, v) => n + v.qs.filter((q) => q.nk).length, 0);
-        const bad = !t.title ? 'Test nomini kiriting' : nkN ? `${nkN} ta savolda to'g'ri javob belgilanmagan (⚠️ belgili savollar)` : t.vars.some((v) => v.qs.some((q) => !q.t.trim() && !q.img)) ? "Har bir savolga matn yoki rasm kiriting" : t.vars.some((v) => v.qs.some((q) => q.o.some((o) => !o.trim()))) ? "Barcha A, B, C, D javoblarni to'ldiring" : sz > 900000 ? "Test juda katta (rasmlar ko'p). Rasmlarni kamaytiring yoki testni ikkiga bo'ling" : '';
+        const bad = !t.title ? 'Test nomini kiriting' : nkN ? `${nkN} ta savolda to'g'ri javob belgilanmagan (⚠️ belgili savollar)` : t.vars.some((v) => v.qs.some((q) => !q.t.trim() && !q.img)) ? "Har bir savolga matn yoki rasm kiriting" : t.vars.some((v) => v.qs.some((q) => q.o.some((o) => !o.trim()))) ? "Barcha javob variantlarini to'ldiring" : sz > 900000 ? "Test juda katta (rasmlar ko'p). Rasmlarni kamaytiring yoki testni ikkiga bo'ling" : '';
         if (bad) { toast(bad); return; }
         const id = (t0 && t0.id) || rid(); const doc = { owner: A().user.uid, title: t.title, subj: t.subj, topic: t.topic, level: t.level, vars: t.vars.map((v) => ({ qs: v.qs.map(({ nk, ...q }) => q) })), created: (t0 && t0.created) || Date.now(), updated: Date.now() };
         try { await B().set('examTests', id, doc); toast('Saqlandi'); st.tab = 'tests'; st.edit = null; teacherPage(app); } catch (err) { toast('Saqlanmadi: ' + (err.code || err.message)); }
@@ -436,7 +459,7 @@
   }
   function preview(t) {
     let vi = 0;
-    const html = () => `<div class="ex-card-h"><h3>👁 ${esc(t.title || 'Test')}</h3><button class="ex-x" data-x aria-label="Yopish">✕</button></div><p class="ex-mut">${esc(subjName(t.subj))}${t.topic ? ' · ' + esc(t.topic) : ''} · ${lvTag(t.level)}</p>${t.vars.length > 1 ? `<div class="ex-vars">${t.vars.map((_, i) => `<button type="button" data-pv="${i}" class="${i === vi ? 'on' : ''}">${i + 1}-variant</button>`).join('')}</div>` : ''}<div class="ex-scroll">${t.vars[vi].qs.map((q, i) => qView(q, i + 1, [0, 1, 2, 3], -1, { c: q.a, ro: true })).join('')}</div>`;
+    const html = () => `<div class="ex-card-h"><h3>👁 ${esc(t.title || 'Test')}</h3><button class="ex-x" data-x aria-label="Yopish">✕</button></div><p class="ex-mut">${esc(subjName(t.subj))}${t.topic ? ' · ' + esc(t.topic) : ''} · ${lvTag(t.level)}</p>${t.vars.length > 1 ? `<div class="ex-vars">${t.vars.map((_, i) => `<button type="button" data-pv="${i}" class="${i === vi ? 'on' : ''}">${i + 1}-variant</button>`).join('')}</div>` : ''}<div class="ex-scroll">${t.vars[vi].qs.map((q, i) => qView(q, i + 1, q.o.map((_, j) => j), -1, { c: q.a, ro: true })).join('')}</div>`;
     modal(html(), (w) => { const wire = () => w.querySelectorAll('[data-pv]').forEach((b) => { b.onclick = () => { vi = +b.dataset.pv; w.querySelector('.ex-card').innerHTML = html(); wire(); }; }); wire(); });
   }
   const dtLocal = (ms) => { const d = new Date(ms - new Date(ms).getTimezoneOffset() * 60000); return d.toISOString().slice(0, 16); };
@@ -613,7 +636,7 @@
       <div class="ex-big ex-${g[1]}"><b>${r.pct}%</b><span>${g[0]}</span></div>
       <div class="ex-cards sm"><div class="ex-kpi"><b>${r.total}</b><span>Jami</span></div><div class="ex-kpi"><b>${r.answered}</b><span>Ishlangan</span></div><div class="ex-kpi ok"><b>${r.correct}</b><span>To'g'ri</span></div><div class="ex-kpi bad"><b>${r.wrong}</b><span>Noto'g'ri</span></div><div class="ex-kpi"><b>${r.blank}</b><span>Javobsiz</span></div><div class="ex-kpi"><b>${fmtT(r.spent)}</b><span>Vaqt</span></div></div>
       <p class="ex-mut">${r.v + 1}-variant · ${(LV[r.level] || LV.m)[0]}</p>
-      ${r.reveal ? `<div class="ex-scroll">${qs.map((q, i) => { const d = (r.detail || []).find((x) => x.id === q.id) || {}; return qView(q, i + 1, [0, 1, 2, 3], d.a, { c: d.c, ro: true }); }).join('')}</div>` : '<p class="ex-warn">To\'g\'ri javoblar o\'qituvchi ruxsat bergandan keyin ochiladi.</p>'}`);
+      ${r.reveal ? `<div class="ex-scroll">${qs.map((q, i) => { const d = (r.detail || []).find((x) => x.id === q.id) || {}; return qView(q, i + 1, q.o.map((_, j) => j), d.a, { c: d.c, ro: true }); }).join('')}</div>` : '<p class="ex-warn">To\'g\'ri javoblar o\'qituvchi ruxsat bergandan keyin ochiladi.</p>'}`);
   }
 
   /* ---------- Test ishlash sahifasi ---------- */
@@ -632,7 +655,7 @@
     const id = at.id || `${aid}_${uid}_${at.n || 1}`;
     if (typeof at.startedAt !== 'number') { const f = await b.getT('examAttempts', id); if (f) at = Object.assign(f, { id }); }
     const qs = QS(as, at.v || 0), r = rng(id);
-    const order = shuffled(qs.length, r), optOrd = qs.map(() => shuffled(4, r));
+    const order = shuffled(qs.length, r), optOrd = qs.map((q) => shuffled(q.o.length, r));
     const deadline = Math.min(at.startedAt + as.dur * 60000, as.end);
     const LS = 'zk_ex_ans_' + id; let ans = Object.assign({}, at.ans || {}); try { Object.assign(ans, JSON.parse(localStorage.getItem(LS) || '{}')); } catch (e) { }
     let cur = 0, ended = at.done || Date.now() > deadline + 20000, saving = 0, pending = false, net = navigator.onLine;
@@ -701,7 +724,7 @@ a.ex-tc:hover{border-color:var(--brand,#6d28d9)}.ex-tc-h{display:flex;gap:8px;al
 .ex-ch{display:flex;flex-direction:column;gap:8px}.ex-cb{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--line,#e5e7eb);background:var(--card,#fff);color:inherit;border-radius:12px;padding:12px;font:inherit;cursor:pointer;min-height:48px}.ex-cb b{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--line,#eef0f3);flex:none}
 .ex-cb.on{border-color:var(--brand,#6d28d9);background:rgba(109,40,217,.07)}.ex-cb.on b{background:var(--brand,#6d28d9);color:#fff}.ex-cb.ok{border-color:var(--ex-g);background:rgba(22,163,74,.08)}.ex-cb.no{border-color:var(--ex-r);background:rgba(220,38,38,.08)}.ex-cb:disabled{cursor:default}
 .ex-warn{background:#fef3c7;color:#92400e;border-radius:10px;padding:10px 12px;font-size:.92rem}.ex-dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:10px 0;font-size:.92rem}.ex-dl dt{color:var(--muted,#6b7280)}.ex-dl dd{margin:0;font-weight:600}
-.ex-stu{border:1px solid var(--line,#e5e7eb);border-radius:12px;padding:10px;margin-bottom:10px;max-height:260px;overflow:auto}.ex-stl{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;margin-top:8px}.ex-tpl{grid-template-columns:1fr}.ex-nk{background:#fef3c7;color:#92400e;border-radius:8px;padding:2px 8px;font-size:.8rem;font-weight:700}.ex-r3{flex-wrap:nowrap}.ex-r3 label{min-width:0!important}.ex-r3 input{width:100%;box-sizing:border-box}.ex-col{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}.ex-form [hidden]{display:none!important}.ex-stl label,.ex-all{flex-direction:row!important;align-items:center;gap:6px!important;font-weight:500!important;min-width:0!important}
+.ex-stu{border:1px solid var(--line,#e5e7eb);border-radius:12px;padding:10px;margin-bottom:10px;max-height:260px;overflow:auto}.ex-stl{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;margin-top:8px}.ex-tpl{grid-template-columns:1fr}.ex-optn{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.ex-optn button{border:1px dashed var(--line,#d1d5db);background:none;color:inherit;border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:.85rem}.ex-nk{background:#fef3c7;color:#92400e;border-radius:8px;padding:2px 8px;font-size:.8rem;font-weight:700}.ex-r3{flex-wrap:nowrap}.ex-r3 label{min-width:0!important}.ex-r3 input{width:100%;box-sizing:border-box}.ex-col{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}.ex-form [hidden]{display:none!important}.ex-stl label,.ex-all{flex-direction:row!important;align-items:center;gap:6px!important;font-weight:500!important;min-width:0!important}
 .ex-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:8px 0 16px}.ex-cards.sm{grid-template-columns:repeat(3,1fr)}.ex-kpi{background:var(--card,#fff);border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px}.ex-kpi b{font-size:1.35rem}.ex-kpi span{color:var(--muted,#6b7280);font-size:.82rem}.ex-kpi.on{border-color:#93c5fd}.ex-kpi.ok{border-color:#86efac}.ex-kpi.bad{border-color:#fca5a5}
 .ex-tbl-w{overflow-x:auto;border:1px solid var(--line,#e5e7eb);border-radius:14px}.ex-tbl{width:100%;border-collapse:collapse;font-size:.92rem}.ex-tbl th,.ex-tbl td{padding:9px 10px;border-bottom:1px solid var(--line,#eef0f3);text-align:left;white-space:nowrap}.ex-tbl th{background:var(--soft,#f8fafc);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em}
 .ex-donut-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.ex-donut{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}.ex-donut span{background:var(--card,#fff);width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem}
@@ -740,6 +763,6 @@ html[data-theme=dark] .ex-g,body.dark .ex-g{background:rgba(22,163,74,.2);color:
       else { startWatch(); setTimeout(bell, 500); }
     }).catch(() => { });
   }
-  window.ZKExam = { render, boot, _grade: gradeAttempt, _rng: rng, _fx: fx, _rows: rowsToQs, _csv: parseCsv, _toQ: toQ, _paras: parseTestParas };
+  window.ZKExam = { render, boot, _grade: gradeAttempt, _rng: rng, _fx: fx, _rows: rowsToQs, _csv: parseCsv, _toQ: toQ, _paras: parseTestParas, _pdf: readPdf };
   boot();
 })();

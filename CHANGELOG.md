@@ -9,6 +9,8 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 - To'g'ri javob: «Javoblar: 1-A, 2-C…» kaliti (variantlar bo'yicha ham), javob oldidagi * yoki +, yoxud qalin / sariq / rangli / tagiga chizilgan javob. Topilmasa savol ⚠️ bilan belgilanadi va to'g'ri javob tanlanmaguncha test saqlanmaydi.
 - Matnli PDF (pdf.js bilan); skanerlangan PDF haqida tushuntirish chiqadi.
 - «📋 Matndan joylash»: Word'dan nusxa olib to'g'ridan-to'g'ri joylash.
+- Ikki ustunli PDF (chapda 1–10, o'ngda 11–20) va yonma-yon variant kalitlari; «1. Б — izoh» ko'rinishidagi kalit.
+- Savolda 2–4 ta javob varianti (A–B … A–D): tahrirlashda javob qo'shish / olib tashlash, Excel'da C/D ustunlari bo'sh qolishi mumkin.
 
 ### Testga savollarni tez qo'shish (2026-11-25)
 - «📚 Saytdagi testlardan»: o'qituvchi fan, sinf, qism va mavzularni belgilaydi, oson/o'rtacha/qiyin sonini tanlaydi — savollar saytdagi test bazasidan (kimyo) va yuklangan dars mazmunidan (boshqa fanlar) avtomatik qo'shiladi; 1 va 2-variantga takrorlanmaydigan alohida savollar.
