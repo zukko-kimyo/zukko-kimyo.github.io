@@ -353,8 +353,8 @@ const H = 3600000;
 async function seedExam(over = {}) {
   await env.withSecurityRulesDisabled(async (ctx) => {
     const db = ctx.firestore();
-    await setDoc(doc(db, 'examAssign/a1'), Object.assign({ owner: 'teach1', title: 'T', uids: ['stu1'], vmap: { stu1: 1 }, dur: 10, tries: 1, start: Timestamp.fromMillis(Date.now() - H), end: Timestamp.fromMillis(Date.now() + H), vars: [[{ id: 'q1' }], [{ id: 'q2' }]], reveal: false }, over));
-    await setDoc(doc(db, 'examKeys/a1'), { owner: 'teach1', keys: [[0], [2]] });
+    await setDoc(doc(db, 'examAssign/a1'), Object.assign({ owner: 'teach1', title: 'T', uids: ['stu1'], vmap: { stu1: 1 }, dur: 10, tries: 1, start: Timestamp.fromMillis(Date.now() - H), end: Timestamp.fromMillis(Date.now() + H), vars: [{ qs: [{ id: 'q1' }] }, { qs: [{ id: 'q2' }] }], reveal: false }, over));
+    await setDoc(doc(db, 'examKeys/a1'), { owner: 'teach1', keys: [{ k: [0] }, { k: [2] }] });
   });
 }
 const attempt = (o = {}) => Object.assign({ aid: 'a1', uid: 'stu1', n: 1, v: 1, startedAt: serverTimestamp(), ans: {}, done: false, doneAt: null, saved: serverTimestamp() }, o);
@@ -368,7 +368,7 @@ test('exam: o\'qituvchi test yaratadi; o\'quvchi yarata olmaydi; boshqa o\'qituv
   await assertSucceeds(getDoc(doc(admin(), 'examTests/t1')));
 });
 test('exam: yuborish — muddat, vaqt va urinishlar tekshiriladi; kalitni o\'quvchi o\'qiy olmaydi', async () => {
-  const base = { owner: 'teach1', title: 'T', uids: ['stu1'], vmap: {}, dur: 10, tries: 1, start: Timestamp.fromMillis(Date.now()), end: Timestamp.fromMillis(Date.now() + H), vars: [[]] };
+  const base = { owner: 'teach1', title: 'T', uids: ['stu1'], vmap: {}, dur: 10, tries: 1, start: Timestamp.fromMillis(Date.now()), end: Timestamp.fromMillis(Date.now() + H), vars: [{ qs: [] }] };
   await assertSucceeds(setDoc(doc(teacher(), 'examAssign/x1'), base));
   await assertFails(setDoc(doc(teacher(), 'examAssign/x2'), Object.assign({}, base, { dur: 0 })));
   await assertFails(setDoc(doc(teacher(), 'examAssign/x3'), Object.assign({}, base, { end: base.start })));
@@ -380,7 +380,7 @@ test('exam: yuborish — muddat, vaqt va urinishlar tekshiriladi; kalitni o\'quv
   await assertFails(getDoc(doc(student(), 'examKeys/a1')));
   await assertSucceeds(getDoc(doc(teacher(), 'examKeys/a1')));
   // yuborilgan savollarni o'zgartirib bo'lmaydi, muddatni (yopish) o'zgartirsa bo'ladi
-  await assertFails(setDoc(doc(teacher(), 'examAssign/a1'), { vars: [[]] }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'examAssign/a1'), { vars: [{ qs: [] }] }, { merge: true }));
   await assertSucceeds(setDoc(doc(teacher(), 'examAssign/a1'), { end: Timestamp.fromMillis(Date.now()), reveal: true }, { merge: true }));
 });
 test('exam: urinish — faqat o\'zi, server vaqti, o\'z varianti, muddat ichida, urinishlar soni', async () => {

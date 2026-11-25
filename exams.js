@@ -42,9 +42,12 @@
     });
   }
 
+  // Firestore ichma-ich massivni saqlamaydi: variantlar [{qs:[...]}], kalitlar [{k:[...]}]
+  const QS = (as, v) => ((as.vars || [])[v] || {}).qs || [];
+  const KS = (key, v) => ((key.keys || [])[v] || {}).k || [];
   /* ================= BAHOLASH (xodim brauzerida) ================= */
   function gradeAttempt(at, as, key) {
-    const v = at.v || 0, qs = (as.vars[v] || []), k = (key.keys[v] || []), ans = at.ans || {};
+    const v = at.v || 0, qs = QS(as, v), k = KS(key, v), ans = at.ans || {};
     let correct = 0, wrong = 0, blank = 0; const detail = [];
     qs.forEach((q, i) => { const g = ans[q.id]; const c = k[i]; if (g == null) blank++; else if (g === c) correct++; else wrong++; const d = { id: q.id, a: g == null ? null : g, ok: g != null && g === c }; if (as.reveal) d.c = c; detail.push(d); });
     const total = qs.length, end = Math.min(at.startedAt + as.dur * 60000, as.end);
@@ -180,9 +183,9 @@
         const vmap = {}; const vm = t.vars.length > 1 ? f.vm.value : '1';
         uids.forEach((u, i) => { vmap[u] = vm === 'auto' ? i % 2 : vm === '2' ? 1 : vm === 'man' ? +(box.querySelector(`[data-vu="${u}"]`) || { value: 0 }).value : 0; });
         const aid = rid(), me = A().user;
-        const vars = t.vars.map((v) => v.qs.map((q) => ({ id: q.id, t: q.t, img: q.img || '', o: q.o, l: q.l })));
-        const keys = t.vars.map((v) => v.qs.map((q) => q.a));
-        const doc = { owner: me.uid, ownerName: me.name || me.login || "O'qituvchi", testId: t.id, title: t.title, subj: t.subj, topic: t.topic || '', level: t.level, nq: vars[0].length, dur, start: new Date(start), end: new Date(end), tries: +f.tries.value, cls: f.cls.value, uids, vmap, vars, reveal: false, created: B().NOW };
+        const vars = t.vars.map((v) => ({ qs: v.qs.map((q) => ({ id: q.id, t: q.t, img: q.img || '', o: q.o, l: q.l })) }));
+        const keys = t.vars.map((v) => ({ k: v.qs.map((q) => q.a) }));
+        const doc = { owner: me.uid, ownerName: me.name || me.login || "O'qituvchi", testId: t.id, title: t.title, subj: t.subj, topic: t.topic || '', level: t.level, nq: vars[0].qs.length, dur, start: new Date(start), end: new Date(end), tries: +f.tries.value, cls: f.cls.value, uids, vmap, vars, reveal: false, created: B().NOW };
         const sb = f.querySelector('[type=submit]'); sb.disabled = true;
         try { await B().set('examKeys', aid, { owner: me.uid, keys }); await B().put('examAssign', aid, doc); close(); toast(`Yuborildi: ${uids.length} o'quvchi`); st.tab = 'sent'; teacherPage(app); } catch (err) { sb.disabled = false; toast('Yuborilmadi: ' + (err.code || err.message)); }
       };
@@ -213,8 +216,8 @@
       const avg = pcts.length ? Math.round(pcts.reduce((a, c) => a + c, 0) / pcts.length * 10) / 10 : 0;
       const cnt = (s) => rows.filter((x) => x.s === s).length;
       const miss = {}; done.forEach((x) => (x.r.detail || []).forEach((d) => { if (!d.ok) { const k = x.r.v + ':' + d.id; miss[k] = (miss[k] || 0) + 1; } }));
-      const top = Object.entries(miss).sort((a, c) => c[1] - a[1]).slice(0, 5).map(([k, n]) => { const [v, id] = k.split(':'); const i = as.vars[+v].findIndex((q) => q.id === id); const q = as.vars[+v][i]; return q ? `<li><b>${+v + 1}-v, ${i + 1}-savol</b> — ${n} ta xato: ${fx(q.t).slice(0, 140)}</li>` : ''; }).join('');
-      const vstat = [0, 1].filter((v) => as.vars[v]).map((v) => { const p = done.filter((x) => x.r.v === v).map((x) => x.r.pct); return p.length ? `<span>${v + 1}-variant: o'rtacha ${pctTag(Math.round(p.reduce((a, c) => a + c, 0) / p.length * 10) / 10)} (${p.length} ta)</span>` : ''; }).join(' ');
+      const top = Object.entries(miss).sort((a, c) => c[1] - a[1]).slice(0, 5).map(([k, n]) => { const [v, id] = k.split(':'); const i = QS(as, +v).findIndex((q) => q.id === id); const q = QS(as, +v)[i]; return q ? `<li><b>${+v + 1}-v, ${i + 1}-savol</b> — ${n} ta xato: ${fx(q.t).slice(0, 140)}</li>` : ''; }).join('');
+      const vstat = [0, 1].filter((v) => QS(as, v).length).map((v) => { const p = done.filter((x) => x.r.v === v).map((x) => x.r.pct); return p.length ? `<span>${v + 1}-variant: o'rtacha ${pctTag(Math.round(p.reduce((a, c) => a + c, 0) / p.length * 10) / 10)} (${p.length} ta)</span>` : ''; }).join(' ');
       const S = { sent: ['Boshlamagan', 'wait'], work: ['Ishlayapti', 'on'], grading: ['Tekshirilmoqda', 'wait'], done: ['Yakunlagan', 'ok'], missed: ["Qatnashmadi", 'off'] };
       app.innerHTML = `<div class="page-h"><div class="wrap"><div class="crumbs"><a href="#exams">Testlar</a> / Monitoring</div><h1>${esc(as.title)}</h1><p class="sub">${esc(subjName(as.subj))}${as.topic ? ' · ' + esc(as.topic) : ''} · ${esc(as.cls)} · ${as.nq} savol · ${as.dur} daqiqa · ${fmtD(as.start)} — ${fmtD(as.end)}</p></div></div>
         <div class="wrap ex-wrap"><div class="ex-cards"><div class="ex-kpi"><b>${as.uids.length}</b><span>Yuborilgan</span></div><div class="ex-kpi"><b>${cnt('sent')}</b><span>Boshlamagan</span></div><div class="ex-kpi on"><b>${cnt('work')}</b><span>Ishlayapti</span></div><div class="ex-kpi ok"><b>${done.length}</b><span>Yakunlagan</span></div><div class="ex-kpi"><b>${pcts.length ? pctTag(avg) : '—'}</b><span>Sinf o'rtachasi</span></div><div class="ex-kpi"><b>${pcts.length ? Math.max(...pcts) + '% / ' + Math.min(...pcts) + '%' : '—'}</b><span>Eng yuqori / past</span></div></div>
@@ -318,7 +321,7 @@
     app.querySelectorAll('[data-res]').forEach((b) => { b.onclick = () => resultModal(S2.res[b.dataset.res]); });
   }
   function resultModal(r) {
-    if (!r) return; const as = S2.assigns.find((x) => x.id === r.aid); const qs = as ? as.vars[r.v] || [] : [];
+    if (!r) return; const as = S2.assigns.find((x) => x.id === r.aid); const qs = as ? QS(as, r.v) : [];
     const g = grade(r.pct);
     modal(`<div class="ex-card-h"><h3>${esc(r.title)}</h3><button class="ex-x" data-x aria-label="Yopish">✕</button></div>
       <div class="ex-big ex-${g[1]}"><b>${r.pct}%</b><span>${g[0]}</span></div>
@@ -342,7 +345,7 @@
     if (!at) { app.innerHTML = '<div class="wrap"><p class="ex-warn">Bu test hali boshlanmagan.</p><a class="btn" href="#exams">Mening testlarim</a></div>'; return; }
     const id = at.id || `${aid}_${uid}_${at.n || 1}`;
     if (typeof at.startedAt !== 'number') { const f = await b.getT('examAttempts', id); if (f) at = Object.assign(f, { id }); }
-    const qs = as.vars[at.v || 0] || [], r = rng(id);
+    const qs = QS(as, at.v || 0), r = rng(id);
     const order = shuffled(qs.length, r), optOrd = qs.map(() => shuffled(4, r));
     const deadline = Math.min(at.startedAt + as.dur * 60000, as.end);
     const LS = 'zk_ex_ans_' + id; let ans = Object.assign({}, at.ans || {}); try { Object.assign(ans, JSON.parse(localStorage.getItem(LS) || '{}')); } catch (e) { }

@@ -51,7 +51,7 @@ test('test tizimi: to\'liq jarayon (o\'qituvchi → o\'quvchi → baholash → n
   const aid = Object.keys(col.examAssign)[0];
   // javob kaliti o'quvchiga boradigan nusxada yo'q
   expect(JSON.stringify(col.examAssign[aid].vars)).not.toContain('"a":');
-  expect(col.examKeys[aid].keys).toEqual([[0, 1]]);
+  expect(col.examKeys[aid].keys).toEqual([{ k: [0, 1] }]);
 
   // ---- O'quvchi 1: bildirishnoma → ogohlantirish → boshlash ----
   await as(page, 's1', 'home');
@@ -133,7 +133,7 @@ test('test tizimi: muddat tashqarisida boshlab bo\'lmaydi, boshqa o\'quvchiga ko
   await page.goto(MOCK + '#home'); await page.evaluate(seed);
   await page.evaluate(() => {
     const d = JSON.parse(localStorage.getItem('zk_mock_db'));
-    d.col.examAssign = { a1: { owner: 't1', ownerName: 'Dilnoza', title: 'Eski test', subj: 'chem', topic: '', level: 'e', nq: 1, dur: 10, start: Date.now() - 2 * 864e5, end: Date.now() - 864e5, tries: 1, cls: '7A', uids: ['s1'], vmap: { s1: 0 }, vars: [[{ id: 'q1', t: 'Savol', img: '', o: ['a', 'b', 'c', 'd'], l: 'e' }]], reveal: false, created: Date.now() - 2 * 864e5 } };
+    d.col.examAssign = { a1: { owner: 't1', ownerName: 'Dilnoza', title: 'Eski test', subj: 'chem', topic: '', level: 'e', nq: 1, dur: 10, start: Date.now() - 2 * 864e5, end: Date.now() - 864e5, tries: 1, cls: '7A', uids: ['s1'], vmap: { s1: 0 }, vars: [{ qs: [{ id: 'q1', t: 'Savol', img: '', o: ['a', 'b', 'c', 'd'], l: 'e' }] }], reveal: false, created: Date.now() - 2 * 864e5 } };
     localStorage.setItem('zk_mock_db', JSON.stringify(d));
   });
   await as(page, 's1', 'exams');
