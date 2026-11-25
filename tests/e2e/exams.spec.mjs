@@ -233,3 +233,66 @@ test('test importi: Excel (.xlsx) va CSV fayldan, xato qatorlar ko\'rsatiladi', 
   const dl = page.waitForEvent('download'); await page.locator('[data-tpl]').click();
   expect((await dl).suggestedFilename()).toBe('test-namunasi.csv');
 });
+
+test('test importi: Word (.docx) — formula, rasm, qalin/sariq/qizil javob, kalit, jadval; matndan joylash', async ({ page }) => {
+  await newTest(page);
+  await page.locator('[data-xl]').setInputFiles('tests/fixtures/exam-word.docx');
+  await expect(page.locator('.ex-card h3')).toContainText('5 ta savol qo\'shildi');
+  await expect(page.locator('.ex-card .ex-warn')).toContainText('1 ta savolda');
+  await page.locator('.ex-card [data-x]').click();
+  const qs = page.locator('.ex-q');
+  await expect(qs).toHaveCount(5);
+  await expect(qs.nth(0).locator('[data-f=o][data-j="0"]')).toHaveValue('H_{2}O');           // pastki indeks
+  await expect(qs.nth(0).locator('[data-f=a][value="0"]')).toBeChecked();                    // qalin
+  await expect(qs.nth(1).locator('.ex-img img')).toBeVisible();                             // rasm
+  await expect(qs.nth(1).locator('[data-f=a][value="1"]')).toBeChecked();                    // sariq
+  await expect(qs.nth(2).locator('[data-f=o][data-j="3"]')).toHaveValue('7');                // bir qatorda
+  await expect(qs.nth(2).locator('[data-f=a][value="1"]')).toBeChecked();                    // qizil
+  await expect(qs.nth(3).locator('[data-f=a][value="0"]')).toBeChecked();                    // kalit
+  await expect(qs.nth(4).locator('.ex-nk')).toBeVisible();                                  // kalitsiz
+  // belgilanmagan javob bilan saqlab bo'lmaydi
+  await page.locator('.ex-form [type=submit]').click();
+  await expect(page.locator('#exToast')).toContainText("to'g'ri javob belgilanmagan");
+  await qs.nth(4).locator('[data-f=a][value="2"]').check();
+  await expect(qs.nth(4).locator('.ex-nk')).toHaveCount(0);
+  // jadval ko'rinishidagi Word
+  await page.locator('[data-xl]').setInputFiles('tests/fixtures/exam-word-table.docx');
+  await expect(page.locator('#exToast')).toContainText('2 ta savol');
+  await expect(qs).toHaveCount(7);
+  await expect(qs.nth(6).locator('[data-f=a][value="1"]')).toBeChecked();
+  // Word'dan nusxa olib joylash
+  await page.locator('[data-paste]').click();
+  await page.locator('#exPaste').fill('1. Qaysi metall?\nA) Kislorod\n*B) Temir\nC) Azot\nD) Vodorod');
+  await page.locator('#exPasteOk').click();
+  await expect(qs).toHaveCount(8);
+  await expect(qs.nth(7).locator('[data-f=a][value="1"]')).toBeChecked();
+  await page.locator('.ex-form [type=submit]').click();
+  await expect(page.locator('.ex-tc')).toContainText('8 ta savol');
+  const col = await db(page); const t = Object.values(col.examTests)[0];
+  expect(JSON.stringify(t)).not.toContain('"nk"');
+  expect(t.vars[0].qs[1].img).toMatch(/^data:image\//);
+});
+
+test('test importi: Word avtomatik raqamlangan savollar', async ({ page }) => {
+  await newTest(page);
+  await page.locator('[data-xl]').setInputFiles('tests/fixtures/exam-word-autonum.docx');
+  await expect(page.locator('#exToast')).toContainText('2 ta savol');
+  await expect(page.locator('.ex-q').nth(0).locator('textarea')).toHaveValue('Suv nimadan iborat?');
+  await expect(page.locator('.ex-q').nth(0).locator('[data-f=a][value="0"]')).toBeChecked();
+  await expect(page.locator('.ex-q').nth(1).locator('[data-f=a][value="1"]')).toBeChecked();
+});
+
+test('test importi: matnli PDF o\'qiladi, skanerlangan PDF haqida tushuntirish', async ({ page }) => {
+  await newTest(page);
+  await page.locator('[data-xl]').setInputFiles('tests/fixtures/exam-word.pdf');
+  await expect(page.locator('.ex-card h3')).toContainText('5 ta savol qo\'shildi');
+  await page.locator('.ex-card [data-x]').click();
+  const qs = page.locator('.ex-q');
+  await expect(qs.nth(0).locator('textarea')).toHaveValue('Suvning formulasi qaysi?');
+  await expect(qs.nth(0).locator('[data-f=o][data-j="0"]')).toHaveValue('H_{2}O');
+  await expect(qs.nth(0).locator('[data-f=a][value="0"]')).toBeChecked();   // qalin shrift
+  await expect(qs.nth(2).locator('[data-f=o][data-j="3"]')).toHaveValue('7');
+  await expect(qs.nth(3).locator('[data-f=a][value="0"]')).toBeChecked();   // kalit
+  await page.locator('[data-xl]').setInputFiles('tests/fixtures/exam-scan.pdf');
+  await expect(page.locator('.ex-card h3')).toContainText("PDF ichida matn yo'q");
+});

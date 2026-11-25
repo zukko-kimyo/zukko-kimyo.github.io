@@ -4,6 +4,12 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Word, PDF va matndan test yuklash (2026-11-25)
+- «📄 Word, PDF, Excel yoki CSV dan»: .docx o'qiladi (tashqi kutubxonasiz) — «1. Savol / A) … D) …», bir qatordagi javoblar, Word avtomatik raqamlash, jadval ko'rinishidagi testlar, 1/2-variant sarlavhalari, pastki/yuqori indeks (H₂O, x²), formulalar va rasmlar.
+- To'g'ri javob: «Javoblar: 1-A, 2-C…» kaliti (variantlar bo'yicha ham), javob oldidagi * yoki +, yoxud qalin / sariq / rangli / tagiga chizilgan javob. Topilmasa savol ⚠️ bilan belgilanadi va to'g'ri javob tanlanmaguncha test saqlanmaydi.
+- Matnli PDF (pdf.js bilan); skanerlangan PDF haqida tushuntirish chiqadi.
+- «📋 Matndan joylash»: Word'dan nusxa olib to'g'ridan-to'g'ri joylash.
+
 ### Testga savollarni tez qo'shish (2026-11-25)
 - «📚 Saytdagi testlardan»: o'qituvchi fan, sinf, qism va mavzularni belgilaydi, oson/o'rtacha/qiyin sonini tanlaydi — savollar saytdagi test bazasidan (kimyo) va yuklangan dars mazmunidan (boshqa fanlar) avtomatik qo'shiladi; 1 va 2-variantga takrorlanmaydigan alohida savollar.
 - «📊 Excel yoki CSV dan»: Savol · A · B · C · D · To'g'ri javob · Daraja · Variant ustunli jadvalni yuklash (.xlsx va .csv; tashqi kutubxonasiz). Xato qatorlar sababi bilan ko'rsatiladi; «⬇️ Excel namunasi» yuklab olinadi.
