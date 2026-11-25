@@ -141,8 +141,28 @@
       async set(c, id, data, merge) { fail(c, 'set'); const d = db(); d.col[c] = d.col[c] || {}; d.col[c][id] = merge ? Object.assign({}, d.col[c][id] || {}, data) : data; put(d); return wait(true); },
       async del(c, id) { const d = db(); if (d.col[c]) delete d.col[c][id]; put(d); return wait(true); },
       async list(c, field, val) { const d = db(); return wait(Object.entries(d.col[c] || {}).filter(([, v]) => !field || v[field] === val).map(([id, v]) => Object.assign({ id }, v))); },
+      // Test tizimi uchun: server vaqti (NOW), so'rov (==, array-contains) va real vaqt kuzatuvi (sinov rejimida — so'rov bilan)
+      NOW: MOCK_NOW,
+      async put(c, id, data, merge) { return this.set(c, id, mockVals(data), merge); },
+      async getT(c, id) { return this.get(c, id); },
+      async query(c, field, op, val) { fail(c, 'get'); const d = db(); return wait(Object.entries(d.col[c] || {}).filter(([, v]) => match(v, field, op, val)).map(([id, v]) => Object.assign({ id }, v))); },
+      watch(c, field, op, val, cb) {
+        let last = '', stop = false;
+        const tick = () => { if (stop) return; const d = db(); const rows = Object.entries(d.col[c] || {}).filter(([, v]) => match(v, field, op, val)).map(([id, v]) => Object.assign({ id }, v)); const j = JSON.stringify(rows); if (j !== last) { last = j; try { cb(rows); } catch (e) { console.error(e); } } };
+        tick(); const iv = setInterval(tick, 1200); const on = () => tick(); window.addEventListener('storage', on);
+        return () => { stop = true; clearInterval(iv); window.removeEventListener('storage', on); };
+      },
+      watchDoc(c, id, cb) {
+        let last = '', stop = false;
+        const tick = () => { if (stop) return; const v = (db().col[c] || {})[id] || null; const j = JSON.stringify(v); if (j !== last) { last = j; try { cb(v); } catch (e) { console.error(e); } } };
+        tick(); const iv = setInterval(tick, 1200); return () => { stop = true; clearInterval(iv); };
+      },
     };
+    function match(v, field, op, val) { if (!field) return true; if (field === '__id') return false; const x = v[field]; return op === 'array-contains' ? Array.isArray(x) && x.includes(val) : x === val; }
   }
+  // Sinov rejimi: server vaqti o'rniga brauzer vaqti; Date — millisekund
+  const MOCK_NOW = { __now: 1 };
+  function mockVals(o) { const r = {}; for (const k in o) { const v = o[k]; r[k] = v === MOCK_NOW ? Date.now() : v instanceof Date ? v.getTime() : v; } return r; }
 
   function firebaseBackend() {
     let A, F, app, auth, fs, sec, secAuth;
@@ -171,9 +191,26 @@
       async get(c, id) { await load(); const s = await F.getDoc(F.doc(fs, c, id)); return s.exists() ? s.data() : null; },
       async set(c, id, data, merge) { await load(); await F.setDoc(F.doc(fs, c, id), data, { merge: !!merge }); return true; },
       async del(c, id) { await load(); await F.deleteDoc(F.doc(fs, c, id)); return true; },
-      async list(c, field, val) { await load(); const q = field ? F.query(F.collection(fs, c), F.where(field, '==', val)) : F.collection(fs, c); const s = await F.getDocs(q); return s.docs.map((d) => Object.assign({ id: d.id }, d.data())); },
+      async list(c, field, val) { await load(); const q = field ? F.query(F.collection(fs, c), F.where(field, '==', val)) : F.collection(fs, c); const s = await F.getDocs(q); return s.docs.map((d) => ms(Object.assign({ id: d.id }, d.data()))); },
+      // Test tizimi: NOW — server vaqti; o'qishda Timestamp → millisekund
+      NOW: FB_NOW,
+      async put(c, id, data, merge) { await load(); const o = {}; for (const k in data) o[k] = data[k] === FB_NOW ? F.serverTimestamp() : data[k]; await F.setDoc(F.doc(fs, c, id), o, { merge: !!merge }); return true; },
+      async query(c, field, op, val) { await load(); const s = await F.getDocs(F.query(F.collection(fs, c), F.where(field, op, val))); return s.docs.map((d) => ms(Object.assign({ id: d.id }, d.data()))); },
+      async getT(c, id) { await load(); const s = await F.getDoc(F.doc(fs, c, id)); return s.exists() ? ms(s.data({ serverTimestamps: 'estimate' })) : null; },
+      watch(c, field, op, val, cb) {
+        let un = null, stop = false;
+        load().then(() => { if (stop) return; un = F.onSnapshot(F.query(F.collection(fs, c), F.where(field, op, val)), (s) => cb(s.docs.map((d) => ms(Object.assign({ id: d.id }, d.data({ serverTimestamps: 'estimate' }))))), (e) => console.warn('watch', c, e && e.code)); });
+        return () => { stop = true; if (un) un(); };
+      },
+      watchDoc(c, id, cb) {
+        let un = null, stop = false;
+        load().then(() => { if (stop) return; un = F.onSnapshot(F.doc(fs, c, id), (s) => cb(s.exists() ? ms(s.data({ serverTimestamps: 'estimate' })) : null), (e) => console.warn('watchDoc', c, e && e.code)); });
+        return () => { stop = true; if (un) un(); };
+      },
     };
+    function ms(o) { for (const k in o) { const v = o[k]; if (v && typeof v.toMillis === 'function') o[k] = v.toMillis(); } return o; }
   }
+  const FB_NOW = { __now: 1 };
 
   const B = ON ? (MOCK ? mockBackend() : firebaseBackend()) : null;
   const errMsg = (e) => {

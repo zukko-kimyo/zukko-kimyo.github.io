@@ -4,6 +4,13 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### O'qituvchi yuboradigan testlar (2026-11-25)
+- O'qituvchi: test bazasi (yaratish, tahrirlash, nusxa, o'chirish), 1/2-variant, savol darajasi, A–D javoblar, rasm va formula (`H_2O`, `x^2`), ko'rib chiqish; sinf yoki tanlangan o'quvchilarga yuborish (vaqt, sana oralig'i, urinishlar soni).
+- O'quvchi: 🔔 real vaqt bildirishnomasi, ogohlantirish va «Boshlash», server vaqti bo'yicha taymer, har javobda avtomatik saqlash, internetsiz rejimda qurilmada saqlab keyin yuborish, vaqt tugaganda avtomatik yakunlash, har o'quvchiga alohida tartib.
+- Baholash o'qituvchi brauzerida (javob kaliti o'quvchiga yuborilmaydi); natija ranglari: 80–100% yashil, 70–79% sariq, 70% dan past qizil.
+- Monitoring: kim boshlagan/ishlayapti/yakunlagan, sinf o'rtachasi, eng ko'p xato qilingan savollar, to'g'ri javoblarni ochish, testni erta yopish, qayta ishlashga ruxsat; Excel (CSV) va PDF eksport.
+- Firestore qoidalari: muddatdan keyin javob qabul qilinmaydi, natijani faqat testni yuborgan o'qituvchi yozadi. **Firebase konsolida qoidalarni yangilash kerak.**
+
 ### Darslik sahifalari tiniqroq (2026-11-25)
 - Admin panel PDF sahifalarini 900 o‘rniga 1500 piksel enlikda saqlaydi (hajm chegarasidan oshsa sifat, keyin o‘lcham avtomatik pasayadi). Yangi sifat uchun darsliklarni qayta yuklash kerak.
 

@@ -1226,6 +1226,7 @@
     else if (h === 'certificate') { if (window.ZKCertificate && XPok()) ZKCertificate.render(app, { lang, B }); else home(); navKey = 'me'; }
     else if (h === 'admin' && window.ZKAuth && ZKAuth.isAdmin()) { if (window.ZKA) ZKA.render(app, { t, tr, B, lang, GC }); else { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('staff', renderRoute); } navKey = 'admin'; }
     else if (h === 'teacher' && window.ZKAuth && ZKAuth.isStaff()) { if (window.ZKT) ZKT.render(app, { t, tr, B, lang, GC }); else { app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; need('staff', renderRoute); } navKey = 'teacher'; }
+    else if (h === 'exams' || h.startsWith('exams/') || h.startsWith('exam/')) { if (window.ZKExam) ZKExam.render(app, h); else app.innerHTML = `<div class="wrap">${lazyBox()}</div>`; navKey = 'exams'; }
     else if (h === 'lab') { labList(); navKey = 'lab'; }
     else if ((m = h.match(/^lab-(.+)$/))) { labPage(m[1]); navKey = 'lab'; }
     else if ((m = h.match(/^book-(g[678])$/))) { book(m[1], bookPos[m[1]]); navKey = 'book'; }

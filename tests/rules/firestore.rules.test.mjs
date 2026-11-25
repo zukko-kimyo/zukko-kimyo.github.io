@@ -3,7 +3,7 @@
 import { test, before, after, beforeEach } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc, collection, getDocs, query, where, serverTimestamp, Timestamp } from 'firebase/firestore';
 
 const D = '@zukko-kimyo.uz';
 let env;
@@ -346,4 +346,76 @@ test('yangi fanlar: obuna, o\'qituvchiga biriktirish va dars mazmuni', async () 
   await assertFails(setDoc(doc(admin(), 'lessons/music-1-1-5'), { s: 'music', g: 1, part: 1, n: 5, j: '{}', at: 1, by: 'admin1' }));
   await assertSucceeds(getDoc(doc(student(), 'lessons/art-1-1-5'))); // stu1da san'at obunasi bor
   await assertFails(getDoc(doc(student(), 'lessons/life-1-1-5')));
+});
+
+// ---------- o'qituvchi yuboradigan testlar (exam*) ----------
+const H = 3600000;
+async function seedExam(over = {}) {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore();
+    await setDoc(doc(db, 'examAssign/a1'), Object.assign({ owner: 'teach1', title: 'T', uids: ['stu1'], vmap: { stu1: 1 }, dur: 10, tries: 1, start: Timestamp.fromMillis(Date.now() - H), end: Timestamp.fromMillis(Date.now() + H), vars: [[{ id: 'q1' }], [{ id: 'q2' }]], reveal: false }, over));
+    await setDoc(doc(db, 'examKeys/a1'), { owner: 'teach1', keys: [[0], [2]] });
+  });
+}
+const attempt = (o = {}) => Object.assign({ aid: 'a1', uid: 'stu1', n: 1, v: 1, startedAt: serverTimestamp(), ans: {}, done: false, doneAt: null, saved: serverTimestamp() }, o);
+
+test('exam: o\'qituvchi test yaratadi; o\'quvchi yarata olmaydi; boshqa o\'qituvchi o\'qiy olmaydi', async () => {
+  await assertSucceeds(setDoc(doc(teacher(), 'examTests/t1'), { owner: 'teach1', title: 'Atom', vars: [] }));
+  await assertFails(setDoc(doc(student(), 'examTests/t2'), { owner: 'stu1', title: 'X', vars: [] }));
+  await assertFails(setDoc(doc(teacher(), 'examTests/t3'), { owner: 'admin1', title: 'X', vars: [] }));
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/teach2'), { login: 'otabek.t', name: 'O', role: 'teacher', cls: '' }); });
+  await assertFails(getDoc(doc(as('teach2', 'otabek.t'), 'examTests/t1')));
+  await assertSucceeds(getDoc(doc(admin(), 'examTests/t1')));
+});
+test('exam: yuborish — muddat, vaqt va urinishlar tekshiriladi; kalitni o\'quvchi o\'qiy olmaydi', async () => {
+  const base = { owner: 'teach1', title: 'T', uids: ['stu1'], vmap: {}, dur: 10, tries: 1, start: Timestamp.fromMillis(Date.now()), end: Timestamp.fromMillis(Date.now() + H), vars: [[]] };
+  await assertSucceeds(setDoc(doc(teacher(), 'examAssign/x1'), base));
+  await assertFails(setDoc(doc(teacher(), 'examAssign/x2'), Object.assign({}, base, { dur: 0 })));
+  await assertFails(setDoc(doc(teacher(), 'examAssign/x3'), Object.assign({}, base, { end: base.start })));
+  await assertFails(setDoc(doc(student(), 'examAssign/x4'), Object.assign({}, base, { owner: 'stu1' })));
+  await seedExam();
+  await assertSucceeds(getDoc(doc(student(), 'examAssign/a1')));
+  await assertFails(getDoc(doc(as('stu2', 'malika.k.7a'), 'examAssign/a1')));
+  await assertSucceeds(getDocs(query(collection(student(), 'examAssign'), where('uids', 'array-contains', 'stu1'))));
+  await assertFails(getDoc(doc(student(), 'examKeys/a1')));
+  await assertSucceeds(getDoc(doc(teacher(), 'examKeys/a1')));
+  // yuborilgan savollarni o'zgartirib bo'lmaydi, muddatni (yopish) o'zgartirsa bo'ladi
+  await assertFails(setDoc(doc(teacher(), 'examAssign/a1'), { vars: [[]] }, { merge: true }));
+  await assertSucceeds(setDoc(doc(teacher(), 'examAssign/a1'), { end: Timestamp.fromMillis(Date.now()), reveal: true }, { merge: true }));
+});
+test('exam: urinish — faqat o\'zi, server vaqti, o\'z varianti, muddat ichida, urinishlar soni', async () => {
+  await seedExam();
+  await assertFails(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), attempt({ startedAt: Timestamp.fromMillis(Date.now() - H) }))); // vaqtni orqaga surib bo'lmaydi
+  await assertFails(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), attempt({ v: 0 }))); // boshqa variant
+  await assertFails(setDoc(doc(student(), 'examAttempts/a1_stu1_2'), attempt({ n: 2 }))); // 1 ta urinish
+  await assertFails(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), attempt({ ans: { q2: 2 } }))); // javob bilan boshlab bo'lmaydi
+  await assertFails(setDoc(doc(as('stu2', 'malika.k.7a'), 'examAttempts/a1_stu2_1'), attempt({ uid: 'stu2' }))); // yuborilmagan
+  await assertSucceeds(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), attempt()));
+  await assertSucceeds(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), { ans: { q2: 2 }, saved: serverTimestamp() }, { merge: true }));
+  await assertFails(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), { v: 0, saved: serverTimestamp() }, { merge: true }));
+  await assertFails(setDoc(doc(as('stu2', 'malika.k.7a'), 'examAttempts/a1_stu1_1'), { ans: {}, saved: serverTimestamp() }, { merge: true }));
+  await assertSucceeds(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), { done: true, doneAt: serverTimestamp(), saved: serverTimestamp() }, { merge: true }));
+  await assertFails(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), { ans: { q2: 0 }, saved: serverTimestamp() }, { merge: true })); // yakunlangandan keyin
+  await assertFails(getDoc(doc(as('stu2', 'malika.k.7a'), 'examAttempts/a1_stu1_1')));
+  await assertSucceeds(getDoc(doc(teacher(), 'examAttempts/a1_stu1_1')));
+});
+test('exam: muddat tugagach javob qabul qilinmaydi; tugagan testni boshlab bo\'lmaydi', async () => {
+  await seedExam({ end: Timestamp.fromMillis(Date.now() - 60000) });
+  await assertFails(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), attempt()));
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'examAttempts/a1_stu1_1'), { aid: 'a1', uid: 'stu1', n: 1, v: 1, startedAt: Timestamp.fromMillis(Date.now() - 20 * 60000), ans: {}, done: false, doneAt: null, saved: Timestamp.fromMillis(Date.now() - 20 * 60000) }); });
+  await assertFails(setDoc(doc(student(), 'examAttempts/a1_stu1_1'), { ans: { q2: 2 }, saved: serverTimestamp() }, { merge: true }));
+});
+test('exam: natijani faqat testni yuborgan o\'qituvchi yozadi; o\'quvchi faqat o\'zinikini o\'qiydi', async () => {
+  await seedExam();
+  const r = { aid: 'a1', uid: 'stu1', n: 1, pct: 100, total: 1, correct: 1 };
+  await assertFails(setDoc(doc(student(), 'examResults/a1_stu1_1'), r));
+  await env.withSecurityRulesDisabled(async (ctx) => { await setDoc(doc(ctx.firestore(), 'users/teach2'), { login: 'otabek.t', name: 'O', role: 'teacher', cls: '' }); });
+  await assertFails(setDoc(doc(as('teach2', 'otabek.t'), 'examResults/a1_stu1_1'), r));
+  await assertFails(setDoc(doc(teacher(), 'examResults/zzz'), r)); // id urinishga mos bo'lishi kerak
+  await assertSucceeds(setDoc(doc(teacher(), 'examResults/a1_stu1_1'), r));
+  await assertSucceeds(getDoc(doc(student(), 'examResults/a1_stu1_1')));
+  await assertSucceeds(getDocs(query(collection(student(), 'examResults'), where('uid', '==', 'stu1'))));
+  await assertFails(getDoc(doc(as('stu2', 'malika.k.7a'), 'examResults/a1_stu1_1')));
+  await assertFails(deleteDoc(doc(as('teach2', 'otabek.t'), 'examResults/a1_stu1_1')));
+  await assertSucceeds(deleteDoc(doc(teacher(), 'examResults/a1_stu1_1')));
 });
