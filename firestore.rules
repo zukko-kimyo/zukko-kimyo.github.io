@@ -196,6 +196,69 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ---------- O'qituvchi yuboradigan testlar (ADR-0010) ----------
+    // examTests — o'qituvchining test bazasi (to'g'ri javoblar bilan), faqat egasi va administrator.
+    // examAssign — yuborilgan nusxa (to'g'ri javobsiz), examKeys — shu nusxaning javob kaliti (faqat xodim).
+    // examAttempts — o'quvchi urinishi: boshlanish vaqti server vaqti (request.time), muddatdan keyin javob qabul qilinmaydi.
+    // examResults — baholash natijasi (o'qituvchi tomonida hisoblanadi), o'quvchi faqat o'zinikini o'qiydi.
+    function ownerOrAdmin(d) { return isStaff() && (d.owner == request.auth.uid || isAdmin()); }
+    function assignDoc(aid) { return get(/databases/$(db)/documents/examAssign/$(aid)).data; }
+    match /examTests/{id} {
+      allow read, delete: if ownerOrAdmin(resource.data);
+      allow create: if isStaff() && request.resource.data.owner == request.auth.uid && request.resource.data.title is string;
+      allow update: if ownerOrAdmin(resource.data) && request.resource.data.owner == resource.data.owner;
+    }
+    match /examAssign/{aid} {
+      allow read: if isStaff() || (signedIn() && request.auth.uid in resource.data.uids);
+      allow create: if isStaff() && request.resource.data.owner == request.auth.uid
+        && request.resource.data.uids is list && request.resource.data.uids.size() <= 300
+        && request.resource.data.dur is int && request.resource.data.dur >= 1 && request.resource.data.dur <= 300
+        && request.resource.data.tries is int && request.resource.data.tries >= 1 && request.resource.data.tries <= 5
+        && request.resource.data.start is timestamp && request.resource.data.end is timestamp
+        && request.resource.data.end > request.resource.data.start;
+      allow update: if ownerOrAdmin(resource.data) && request.resource.data.owner == resource.data.owner
+        && request.resource.data.vars == resource.data.vars;
+      allow delete: if ownerOrAdmin(resource.data);
+    }
+    match /examKeys/{aid} {
+      allow read, delete: if ownerOrAdmin(resource.data);
+      allow create: if isStaff() && request.resource.data.owner == request.auth.uid;
+      allow update: if ownerOrAdmin(resource.data) && request.resource.data.keys == resource.data.keys;
+    }
+    match /examAttempts/{id} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isStaff());
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['aid', 'uid', 'n', 'v', 'startedAt', 'ans', 'done', 'doneAt', 'saved'])
+        && request.resource.data.n is int && request.resource.data.n >= 1
+        && id == request.resource.data.aid + '_' + request.auth.uid + '_' + string(request.resource.data.n)
+        && request.resource.data.startedAt == request.time && request.resource.data.saved == request.time
+        && request.resource.data.done == false && request.resource.data.doneAt == null
+        && request.resource.data.ans is map && request.resource.data.ans.size() == 0
+        && request.auth.uid in assignDoc(request.resource.data.aid).uids
+        && request.resource.data.n <= assignDoc(request.resource.data.aid).tries
+        && request.resource.data.v == assignDoc(request.resource.data.aid).vmap.get(request.auth.uid, 0)
+        && request.time >= assignDoc(request.resource.data.aid).start
+        && request.time < assignDoc(request.resource.data.aid).end;
+      // Javob saqlash/yakunlash: faqat o'zi, yakunlanmagan bo'lsa va vaqt tugamagan bo'lsa (20 s tarmoq zaxirasi)
+      allow update: if signedIn() && resource.data.uid == request.auth.uid && resource.data.done == false
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ans', 'done', 'doneAt', 'saved'])
+        && request.resource.data.ans is map && request.resource.data.ans.size() <= 300
+        && request.resource.data.saved == request.time
+        && (request.resource.data.done == false || request.resource.data.doneAt == request.time)
+        && request.time <= resource.data.startedAt + duration.value(assignDoc(resource.data.aid).dur * 60 + 20, 's')
+        && request.time <= assignDoc(resource.data.aid).end + duration.value(20, 's');
+      // Qayta ishlashga ruxsat: urinishni faqat testni yuborgan o'qituvchi (yoki admin) o'chiradi
+      allow delete: if ownerOrAdmin(assignDoc(resource.data.aid));
+    }
+    // Natijani faqat testni yuborgan o'qituvchi (yoki admin) brauzeri yozadi; id = urinish id
+    match /examResults/{id} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isStaff());
+      allow create, update: if request.resource.data.aid is string && request.resource.data.uid is string
+        && ownerOrAdmin(assignDoc(request.resource.data.aid))
+        && id.matches('^' + request.resource.data.aid + '_' + request.resource.data.uid + '_[0-9]+$');
+      allow delete: if ownerOrAdmin(assignDoc(resource.data.aid));
+    }
+
     match /{document=**} { allow read, write: if false; }
   }
 }
