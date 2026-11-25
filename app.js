@@ -587,6 +587,7 @@
     function plan(total, mode) { if (mode !== 'mix') return { [mode]: total }; const e = Math.round(total * MIX.easy), h = Math.round(total * MIX.hard); return { easy: e, medium: total - e - h, hard: h }; }
     return { pool, take, merge, plan, size: (P) => P.easy.length + P.medium.length + P.hard.length };
   })();
+  window.ZKSJQ = SJQ; // o'qituvchi testlari (exams.js) mavzu savollaridan foydalanadi
   function sjQuiz(host, sj, b, n, tp, Ls, key) {
     const ttl = `${SN(sj)} · ${b.grade}-${L3('sinf', 'класс', 'grade')} • ${gnum(b, n)}. ${tp.t}`, href = `#s/${sj.id}/${b.grade}/${b.part}/${n}`;
     const P = SJQ.pool(sj.id, Ls);

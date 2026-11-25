@@ -74,6 +74,126 @@
     } catch (e) { console.warn('bgGrade', e); }
   }
 
+  /* ================= SAVOL IMPORTI: saytdagi testlar va Excel/CSV ================= */
+  const plain = (s) => String(s == null ? '' : typeof s === 'object' ? s.uz || s.en || s.ru || '' : s).replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+  const LVK = { easy: 'e', medium: 'm', hard: 'h' };
+  // Sayt testidagi savol → o'qituvchi testi savoli (4 ta variant shart; tinglash savollari olinmaydi)
+  function toQ(it) {
+    if (!it || it.say || !Array.isArray(it.o) || !(it.a >= 0 && it.a < it.o.length)) return null;
+    let o = it.o.map(plain), a = it.a; if (o.length < 4) return null;
+    if (o.length > 4) { const keep = [a].concat(o.map((_, i) => i).filter((i) => i !== a).slice(0, 3)).sort((x, y) => x - y); a = keep.indexOf(a); o = keep.map((i) => o[i]); }
+    const t = plain(it.q); if (!t || o.some((x) => !x) || new Set(o.map((x) => x.toLowerCase())).size < 4) return null;
+    return { id: rid(), t, img: '', o, a, l: LVK[it.d] || 'm' };
+  }
+  const shuf = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  function bankGrades(subj) { if (subj === 'chem') return [6, 7, 8].filter((g) => window.BOOKS && BOOKS['g' + g]); const s = window.ZKSubjects && ZKSubjects.get(subj); return s ? [...new Set(s.books.map((b) => b.grade))].sort((a, b) => a - b) : []; }
+  function bankTopics(subj, g, part) {
+    if (subj === 'chem') { const bk = window.BOOKS && BOOKS['g' + g]; return bk ? bk.lessons.map((L, i) => ({ n: i + 1, num: i + 1, t: plain(L.t && (L.t[0] || L.t)) })) : []; }
+    const b = ZKSubjects.book(subj, g, part); return b ? b.topics.map((tp, i) => ({ n: i + 1, num: (b.first || 1) + i, t: plain(tp.uz || tp.t) + (tp.uz && tp.t && tp.uz !== tp.t ? ` (${plain(tp.t)})` : '') })) : [];
+  }
+  async function bankPool(subj, g, part, ns) {
+    const P = { easy: [], medium: [], hard: [] }; let missing = 0;
+    const add = (p) => ['easy', 'medium', 'hard'].forEach((d) => (p[d] || []).forEach((x) => P[d].push(Object.assign({}, x, { d }))));
+    if (subj === 'chem') { if (!window.QB && window.ZKLazy) await ZKLazy.tests(); ns.forEach((n) => add(QB.pool('g' + g, n))); return { P, missing }; }
+    const Ls = [];
+    for (const n of ns) { try { const d = await B().get('lessons', `${subj}-${g}-${part}-${n}`); if (d && d.j) Ls.push(JSON.parse(d.j)); else missing++; } catch (e) { if (/permission/i.test(e.code || e.message || '')) throw Object.assign(new Error('perm'), { code: 'perm' }); missing++; } }
+    if (!window.ZKSJQ) throw new Error('sjq');
+    Ls.forEach((L) => add(ZKSJQ.pool(subj, L, Ls)));
+    return { P, missing };
+  }
+  // Har darajadan kerakli son; yetmasa qo'shni darajadan; bir test ichida savol takrorlanmaydi
+  function pickQs(P, counts, used) {
+    const conv = {}; ['easy', 'medium', 'hard'].forEach((d) => { conv[d] = shuf(P[d]).map(toQ).filter(Boolean); });
+    const out = [], fb = { easy: ['medium', 'hard'], medium: ['easy', 'hard'], hard: ['medium', 'easy'] };
+    ['easy', 'medium', 'hard'].forEach((d) => { let need = counts[d] || 0;
+      for (const src of [d].concat(fb[d])) { for (const q of conv[src]) { if (!need) break; const k = q.t.toLowerCase() + '|' + q.o[q.a].toLowerCase(); if (used.has(k)) continue; used.add(k); out.push(Object.assign(q, { l: LVK[d] })); need--; } if (!need) break; } });
+    return out;
+  }
+  // ---- Excel (.xlsx) va CSV o'qish: tashqi kutubxonasiz (brauzerning DecompressionStream'i) ----
+  async function unzip(buf) {
+    const dv = new DataView(buf); let e = buf.byteLength - 22; while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--; if (e < 0) throw new Error('zip');
+    const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true); const files = {}, td = new TextDecoder();
+    for (let i = 0; i < n; i++) { const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true); files[td.decode(new Uint8Array(buf, p + 46, nl))] = { method, csize, off }; p += 46 + nl + el + cl; }
+    const read = async (name) => { const f = files[name]; if (!f) return null; const ln = dv.getUint16(f.off + 26, true), lx = dv.getUint16(f.off + 28, true); const data = new Uint8Array(buf, f.off + 30 + ln + lx, f.csize); if (f.method === 0) return td.decode(data); if (f.method !== 8 || typeof DecompressionStream === 'undefined') throw new Error('zipm'); return new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text(); };
+    return { names: Object.keys(files), read };
+  }
+  async function readXlsx(buf) {
+    const z = await unzip(buf), X = (s) => new DOMParser().parseFromString(s, 'application/xml');
+    const ss = []; const sx = await z.read('xl/sharedStrings.xml'); if (sx) [...X(sx).getElementsByTagName('si')].forEach((si) => ss.push([...si.getElementsByTagName('t')].map((t) => t.textContent).join('')));
+    const sheet = z.names.filter((n) => /^xl\/worksheets\/sheet\d+\.xml$/.test(n)).sort((a, b) => parseInt(a.match(/\d+/)[0]) - parseInt(b.match(/\d+/)[0]))[0];
+    if (!sheet) throw new Error('sheet');
+    const rows = [];
+    [...X(await z.read(sheet)).getElementsByTagName('row')].forEach((r) => { const row = []; [...r.getElementsByTagName('c')].forEach((c) => { const ref = (c.getAttribute('r') || '').replace(/\d+/g, ''); let col = 0; for (const ch of ref) col = col * 26 + ch.charCodeAt(0) - 64; col = col ? col - 1 : row.length; const tp = c.getAttribute('t'); const v = c.getElementsByTagName('v')[0]; let val = tp === 's' ? ss[+(v && v.textContent)] : tp === 'inlineStr' ? [...c.getElementsByTagName('t')].map((t) => t.textContent).join('') : v ? v.textContent : ''; row[col] = val == null ? '' : val; }); rows[(+r.getAttribute('r') || rows.length + 1) - 1] = row; });
+    return rows.filter(Boolean);
+  }
+  function parseCsv(txt) {
+    txt = txt.replace(/^﻿/, ''); const first = txt.split(/\r?\n/)[0] || '';
+    const d = [';', '\t', ','].map((c) => [c, first.split(c).length]).sort((a, b) => b[1] - a[1])[0][0];
+    const rows = []; let row = [], cur = '', q = false;
+    for (let i = 0; i < txt.length; i++) { const ch = txt[i];
+      if (q) { if (ch === '"') { if (txt[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+      else if (ch === '"') q = true; else if (ch === d) { row.push(cur); cur = ''; } else if (ch === '\n' || ch === '\r') { if (ch === '\r' && txt[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; } else cur += ch; }
+    if (cur || row.length) { row.push(cur); rows.push(row); }
+    return rows;
+  }
+  const lvOf = (s) => { s = String(s || '').trim().toLowerCase(); return !s ? '' : /^(e|oson|easy|лёгк|легк|прост)/.test(s) ? 'e' : /^(h|qiyin|hard|трудн|сложн)/.test(s) ? 'h' : /^(m|o.?rta|medium|средн)/.test(s) ? 'm' : ''; };
+  const ANS = { A: 0, B: 1, C: 2, D: 3, 'А': 0, 'Б': 1, 'В': 2, 'Г': 3 };
+  // Ustunlar: Savol | A | B | C | D | To'g'ri javob (A–D, 1–4 yoki javob matni) | Daraja | Variant
+  function rowsToQs(rows, defLv) {
+    const out = [], bad = [];
+    rows.forEach((r, i) => {
+      r = (r || []).map((x) => String(x == null ? '' : x).trim()); if (!r.some(Boolean)) return;
+      if (i === 0 && /savol|question|вопрос/i.test(r[0])) return;
+      const [t, A1, B1, C1, D1, ans, lv, v] = r, o = [A1 || '', B1 || '', C1 || '', D1 || ''], s = String(ans || '').trim();
+      let a = /^[1-4]$/.test(s) ? +s - 1 : s.length === 1 && ANS[s.toUpperCase()] != null ? ANS[s.toUpperCase()] : o.findIndex((x) => x && x.toLowerCase() === s.toLowerCase());
+      const why = !t ? "savol matni yo'q" : o.some((x) => !x) ? "A, B, C, D javoblardan biri bo'sh" : a < 0 ? "to'g'ri javob ko'rsatilmagan (A, B, C yoki D yozing)" : '';
+      if (why) { bad.push(`${i + 1}-qator: ${why}`); return; }
+      out.push({ q: { id: rid(), t: t.slice(0, 1500), img: '', o: o.map((x) => x.slice(0, 400)), a, l: lvOf(lv) || defLv }, v: String(v || '').trim() === '2' ? 1 : String(v || '').trim() === '1' ? 0 : null });
+    });
+    return { out, bad };
+  }
+  function downloadTemplate() {
+    const lines = ["Savol;A;B;C;D;To'g'ri javob;Daraja;Variant", 'Suvning formulasi qaysi?;H_2O;CO_2;O_2;NaCl;A;oson;1', '2 + 3 nechaga teng?;4;5;6;7;B;o\'rtacha;1', 'x^2 = 9 bo\'lsa, musbat x = ?;1;3;9;81;3;qiyin;2'];
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' })); a.download = 'test-namunasi.csv'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function bankModal(t, vi, onAdd) {
+    const mine = (A().mySubjects ? A().mySubjects() : ['chem']); const subs = subjects().filter(([id]) => mine.includes(id) && bankGrades(id).length);
+    if (!subs.length) { toast("Sizga biriktirilgan fanlarda tayyor test yo'q"); return; }
+    const s0 = subs.find(([id]) => id === t.subj) ? t.subj : subs[0][0];
+    modal(`<div class="ex-card-h"><h3>📚 Saytdagi testlardan qo'shish</h3><button class="ex-x" data-x aria-label="Yopish">✕</button></div>
+      <form class="ex-form" novalidate><div class="ex-row"><label>Fan<select name="s">${subs.map(([id, nm]) => `<option value="${id}" ${id === s0 ? 'selected' : ''}>${esc(nm)}</option>`).join('')}</select></label><label>Sinf<select name="g"></select></label><label class="ex-part">Qism<select name="p"></select></label></div>
+      <div class="ex-stu"><label class="ex-all"><input type="checkbox" id="exTAll"> Hammasini belgilash</label><div class="ex-stl ex-tpl" id="exTl"></div></div>
+      <div class="ex-row ex-r3"><label>Oson<input name="ce" type="number" min="0" max="50" value="3"></label><label>O'rtacha<input name="cm" type="number" min="0" max="50" value="4"></label><label>Qiyin<input name="ch" type="number" min="0" max="50" value="3"></label></div>
+      <div class="ex-col"><label class="ex-all"><input type="radio" name="tv" value="cur" checked> ${vi + 1}-variantga qo'shish</label><label class="ex-all"><input type="radio" name="tv" value="both"> 1 va 2-variantga (har biriga alohida savollar)</label></div>
+      <p class="ex-mut" id="exBk"></p><div class="ex-acts"><button type="submit" class="btn">➕ Qo'shish</button><button type="button" class="btn sec" data-x>Bekor qilish</button></div></form>`, (w, close) => {
+      const f = w.querySelector('form'), tl = w.querySelector('#exTl'), info = w.querySelector('#exBk');
+      const fillG = () => { const gs = bankGrades(f.s.value); f.g.innerHTML = gs.map((g) => `<option value="${g}">${g}-sinf</option>`).join(''); fillP(); };
+      const fillP = () => { const chem = f.s.value === 'chem'; w.querySelector('.ex-part').hidden = chem; f.p.innerHTML = chem ? '<option value="1">1</option>' : ZKSubjects.books(f.s.value, +f.g.value).map((b) => `<option value="${b.part}">${b.part}-qism</option>`).join(''); fillT(); };
+      const fillT = () => { const tp = bankTopics(f.s.value, +f.g.value, +f.p.value); tl.innerHTML = tp.length ? tp.map((x) => `<label><input type="checkbox" value="${x.n}"> ${x.num}. ${esc(x.t)}</label>`).join('') : '<p class="ex-mut">Mavzu yo\'q.</p>'; w.querySelector('#exTAll').checked = false; };
+      f.s.onchange = fillG; f.g.onchange = fillP; f.p.onchange = fillT; fillG();
+      w.querySelector('#exTAll').onchange = (e) => tl.querySelectorAll('input').forEach((c) => { c.checked = e.target.checked; });
+      f.onsubmit = async (e) => {
+        e.preventDefault();
+        const ns = [...tl.querySelectorAll('input:checked')].map((c) => +c.value); const counts = { easy: Math.max(0, +f.ce.value | 0), medium: Math.max(0, +f.cm.value | 0), hard: Math.max(0, +f.ch.value | 0) };
+        if (!ns.length) { toast('Kamida bitta mavzuni belgilang'); return; } if (!(counts.easy + counts.medium + counts.hard)) { toast('Savollar sonini kiriting'); return; }
+        const sb = f.querySelector('[type=submit]'); sb.disabled = true; info.textContent = 'Savollar tayyorlanmoqda…';
+        try {
+          const { P, missing } = await bankPool(f.s.value, +f.g.value, +f.p.value, ns);
+          const used = new Set(); t.vars.forEach((v) => v.qs.forEach((q) => used.add(String(q.t).toLowerCase() + '|' + String(q.o[q.a] || '').toLowerCase())));
+          const both = f.tv.value === 'both', want = counts.easy + counts.medium + counts.hard;
+          const res = both ? [pickQs(P, counts, used), pickQs(P, counts, used)] : [pickQs(P, counts, used)];
+          const got = res.reduce((a, l) => a + l.length, 0);
+          if (!got) { sb.disabled = false; info.textContent = missing ? "Tanlangan mavzularning dars mazmuni hali yuklanmagan — savol topilmadi." : "Bu mavzularda mos savol topilmadi."; return; }
+          if (!t.subj || t.subj === 'chem') t.subj = f.s.value;
+          onAdd(res, both);
+          close();
+          const short = res.some((l) => l.length < want);
+          toast(`${got} ta savol qo'shildi${short ? " (mavzularda savol kamroq ekan)" : ''}${missing ? ` · ${missing} ta mavzu hali yuklanmagan` : ''}`);
+        } catch (err) { sb.disabled = false; info.textContent = err.code === 'perm' ? "Bu fan darslariga ruxsat yo'q (administrator fanni sizga biriktirishi kerak)." : 'Savollar yuklanmadi: ' + (err.code || err.message); }
+      };
+    });
+  }
+
   /* ================= O'QITUVCHI ================= */
   const st = { tab: 'tests', edit: null };
   function teacherPage(app) {
@@ -120,7 +240,8 @@
           <textarea data-f="t" rows="2" maxlength="1500" placeholder="Savol matni" aria-label="${i + 1}-savol matni">${esc(q.t)}</textarea>
           <div class="ex-img">${q.img ? `<img src="${q.img}" alt="Savol rasmi"><button type="button" data-q="noimg">Rasmni olib tashlash</button>` : `<label class="btn sec sm">🖼 Rasm qo'shish<input type="file" accept="image/*" data-q="img" hidden></label>`}</div>
           <div class="ex-opts">${q.o.map((o, j) => `<label class="ex-opt ${q.a === j ? 'ok' : ''}"><input type="radio" name="a${i}" value="${j}" ${q.a === j ? 'checked' : ''} data-f="a" aria-label="${'ABCD'[j]} to'g'ri javob"><b>${'ABCD'[j]}</b><input data-f="o" data-j="${j}" maxlength="400" value="${esc(o)}" placeholder="${'ABCD'[j]} javob"></label>`).join('')}</div></li>`).join('')}</ol>
-        <button type="button" class="btn sec" data-addq>➕ Savol qo'shish</button>
+        <div class="ex-acts"><button type="button" class="btn sec" data-addq>➕ Savol qo'shish</button><button type="button" class="btn sec" data-bank>📚 Saytdagi testlardan</button><label class="btn sec" tabindex="0">📊 Excel yoki CSV dan<input type="file" accept=".xlsx,.csv,.txt" data-xl hidden></label><button type="button" class="btn sec sm" data-tpl>⬇️ Excel namunasi</button></div>
+        <p class="ex-hint">Excel ustunlari: Savol · A · B · C · D · To'g'ri javob (A–D) · Daraja (oson / o'rtacha / qiyin) · Variant (1 yoki 2). Eski .xls faylni avval .xlsx qilib saqlang.</p>
         <div class="ex-acts ex-sticky"><button type="submit" class="btn">💾 Saqlash</button><button type="button" class="btn sec" data-prev>👁 Ko'rib chiqish</button><span class="ex-mut" id="exSz"></span></div></form>`;
       const f = body.querySelector('form');
       const sync = () => { t.title = f.title.value.trim(); t.subj = f.subj.value; t.topic = f.topic.value.trim(); t.level = f.level.value; f.querySelectorAll('.ex-q').forEach((el) => { const q = qs[+el.dataset.i]; q.t = el.querySelector('[data-f=t]').value; q.l = el.querySelector('[data-f=l]').value; el.querySelectorAll('[data-f=o]').forEach((x) => { q.o[+x.dataset.j] = x.value; }); const r = el.querySelector('[data-f=a]:checked'); q.a = r ? +r.value : 0; }); const sz = JSON.stringify(t).length; body.querySelector('#exSz').textContent = `Hajm: ${Math.round(sz / 1024)} KB / 900 KB`; return sz; };
@@ -129,6 +250,26 @@
       const av = f.querySelector('[data-addv]'); if (av) av.onclick = () => { sync(); t.vars.push({ qs: [blankQ()] }); vi = 1; draw(); };
       const dv = f.querySelector('[data-delv]'); if (dv) dv.onclick = () => { sync(); t.vars = [t.vars[0]]; vi = 0; draw(); };
       f.querySelector('[data-addq]').onclick = () => { sync(); qs.push(blankQ()); draw(); const l = body.querySelectorAll('.ex-q'); l[l.length - 1].querySelector('textarea').focus(); };
+      const isBlank = (q) => !String(q.t).trim() && !q.img && q.o.every((o) => !String(o).trim());
+      const addTo = (v, list) => { while (t.vars.length <= v) t.vars.push({ qs: [] }); const L = t.vars[v].qs; if (L.length === 1 && isBlank(L[0])) L.length = 0; list.forEach((q) => L.push(q)); };
+      f.querySelector('[data-bank]').onclick = () => { sync(); bankModal(t, vi, (res, both) => { if (both) { addTo(0, res[0]); addTo(1, res[1]); } else addTo(vi, res[0]); draw(); }); };
+      f.querySelector('[data-tpl]').onclick = downloadTemplate;
+      const xl = f.querySelector('[data-xl]'); xl.closest('label').onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); xl.click(); } };
+      xl.onchange = async () => {
+        sync(); const file = xl.files[0]; if (!file) return;
+        try {
+          const buf = await file.arrayBuffer(); const isZip = new Uint8Array(buf, 0, 2)[0] === 0x50 && new Uint8Array(buf, 0, 2)[1] === 0x4b;
+          if (!isZip && /\.xls$/i.test(file.name)) { toast("Eski .xls format o'qilmaydi — faylni .xlsx yoki .csv qilib saqlang"); return; }
+          const rows = isZip ? await readXlsx(buf) : parseCsv(new TextDecoder().decode(buf));
+          const { out, bad } = rowsToQs(rows, t.level || 'm');
+          if (!out.length) { modal(`<h3>Savol topilmadi</h3><p>Faylda to'g'ri to'ldirilgan qator yo'q.</p>${bad.length ? `<ul class="ex-top">${bad.slice(0, 15).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}<p class="ex-hint">«⬇️ Excel namunasi» tugmasidan namunani yuklab, shu ko'rinishda to'ldiring.</p><div class="ex-acts"><button class="btn" data-x>Tushunarli</button></div>`); return; }
+          [0, 1].forEach((v) => { const l = out.filter((x) => (x.v == null ? vi : x.v) === v).map((x) => x.q); if (l.length) addTo(v, l); });
+          draw();
+          if (bad.length) modal(`<h3>${out.length} ta savol qo'shildi</h3><p>${bad.length} ta qator o'tkazib yuborildi:</p><ul class="ex-top">${bad.slice(0, 15).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>${bad.length > 15 ? `<p class="ex-mut">… va yana ${bad.length - 15} ta</p>` : ''}<div class="ex-acts"><button class="btn" data-x>Tushunarli</button></div>`);
+          else toast(`${out.length} ta savol qo'shildi`);
+        } catch (e) { console.warn('xlsx', e); toast("Fayl o'qilmadi. .xlsx yoki .csv faylni tanlang"); }
+        finally { xl.value = ''; }
+      };
       f.querySelectorAll('[data-q]').forEach((b) => {
         const i = +b.closest('.ex-q').dataset.i, k = b.dataset.q;
         if (k === 'img') b.onchange = async () => { sync(); if (!b.files[0]) return; try { qs[i].img = await shrink(b.files[0]); draw(); } catch (e) { toast('Rasm o\'qilmadi'); } };
@@ -415,7 +556,7 @@ a.ex-tc:hover{border-color:var(--brand,#6d28d9)}.ex-tc-h{display:flex;gap:8px;al
 .ex-ch{display:flex;flex-direction:column;gap:8px}.ex-cb{display:flex;gap:10px;align-items:center;text-align:left;border:2px solid var(--line,#e5e7eb);background:var(--card,#fff);color:inherit;border-radius:12px;padding:12px;font:inherit;cursor:pointer;min-height:48px}.ex-cb b{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--line,#eef0f3);flex:none}
 .ex-cb.on{border-color:var(--brand,#6d28d9);background:rgba(109,40,217,.07)}.ex-cb.on b{background:var(--brand,#6d28d9);color:#fff}.ex-cb.ok{border-color:var(--ex-g);background:rgba(22,163,74,.08)}.ex-cb.no{border-color:var(--ex-r);background:rgba(220,38,38,.08)}.ex-cb:disabled{cursor:default}
 .ex-warn{background:#fef3c7;color:#92400e;border-radius:10px;padding:10px 12px;font-size:.92rem}.ex-dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:10px 0;font-size:.92rem}.ex-dl dt{color:var(--muted,#6b7280)}.ex-dl dd{margin:0;font-weight:600}
-.ex-stu{border:1px solid var(--line,#e5e7eb);border-radius:12px;padding:10px;margin-bottom:10px;max-height:260px;overflow:auto}.ex-stl{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;margin-top:8px}.ex-stl label,.ex-all{flex-direction:row!important;align-items:center;gap:6px!important;font-weight:500!important;min-width:0!important}
+.ex-stu{border:1px solid var(--line,#e5e7eb);border-radius:12px;padding:10px;margin-bottom:10px;max-height:260px;overflow:auto}.ex-stl{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;margin-top:8px}.ex-tpl{grid-template-columns:1fr}.ex-r3{flex-wrap:nowrap}.ex-r3 label{min-width:0!important}.ex-r3 input{width:100%;box-sizing:border-box}.ex-col{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}.ex-form [hidden]{display:none!important}.ex-stl label,.ex-all{flex-direction:row!important;align-items:center;gap:6px!important;font-weight:500!important;min-width:0!important}
 .ex-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:8px 0 16px}.ex-cards.sm{grid-template-columns:repeat(3,1fr)}.ex-kpi{background:var(--card,#fff);border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px}.ex-kpi b{font-size:1.35rem}.ex-kpi span{color:var(--muted,#6b7280);font-size:.82rem}.ex-kpi.on{border-color:#93c5fd}.ex-kpi.ok{border-color:#86efac}.ex-kpi.bad{border-color:#fca5a5}
 .ex-tbl-w{overflow-x:auto;border:1px solid var(--line,#e5e7eb);border-radius:14px}.ex-tbl{width:100%;border-collapse:collapse;font-size:.92rem}.ex-tbl th,.ex-tbl td{padding:9px 10px;border-bottom:1px solid var(--line,#eef0f3);text-align:left;white-space:nowrap}.ex-tbl th{background:var(--soft,#f8fafc);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em}
 .ex-donut-row{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.ex-donut{width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}.ex-donut span{background:var(--card,#fff);width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem}
@@ -454,6 +595,6 @@ html[data-theme=dark] .ex-g,body.dark .ex-g{background:rgba(22,163,74,.2);color:
       else { startWatch(); setTimeout(bell, 500); }
     }).catch(() => { });
   }
-  window.ZKExam = { render, boot, _grade: gradeAttempt, _rng: rng, _fx: fx };
+  window.ZKExam = { render, boot, _grade: gradeAttempt, _rng: rng, _fx: fx, _rows: rowsToQs, _csv: parseCsv, _toQ: toQ };
   boot();
 })();

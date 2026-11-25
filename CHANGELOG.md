@@ -4,6 +4,10 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Testga savollarni tez qo'shish (2026-11-25)
+- «📚 Saytdagi testlardan»: o'qituvchi fan, sinf, qism va mavzularni belgilaydi, oson/o'rtacha/qiyin sonini tanlaydi — savollar saytdagi test bazasidan (kimyo) va yuklangan dars mazmunidan (boshqa fanlar) avtomatik qo'shiladi; 1 va 2-variantga takrorlanmaydigan alohida savollar.
+- «📊 Excel yoki CSV dan»: Savol · A · B · C · D · To'g'ri javob · Daraja · Variant ustunli jadvalni yuklash (.xlsx va .csv; tashqi kutubxonasiz). Xato qatorlar sababi bilan ko'rsatiladi; «⬇️ Excel namunasi» yuklab olinadi.
+
 ### O'qituvchi yuboradigan testlar (2026-11-25)
 - O'qituvchi: test bazasi (yaratish, tahrirlash, nusxa, o'chirish), 1/2-variant, savol darajasi, A–D javoblar, rasm va formula (`H_2O`, `x^2`), ko'rib chiqish; sinf yoki tanlangan o'quvchilarga yuborish (vaqt, sana oralig'i, urinishlar soni).
 - O'quvchi: 🔔 real vaqt bildirishnomasi, ogohlantirish va «Boshlash», server vaqti bo'yicha taymer, har javobda avtomatik saqlash, internetsiz rejimda qurilmada saqlab keyin yuborish, vaqt tugaganda avtomatik yakunlash, har o'quvchiga alohida tartib.
