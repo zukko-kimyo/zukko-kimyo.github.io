@@ -4,6 +4,9 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### O'quvchiga faqat obuna berilgan fanlar (2026-11-26)
+- O'quvchiga «Fanlar» menyusi, fanlar sahifasi va bosh sahifada faqat admin obuna bergan fanlar ko'rinadi (faol yoki tugagan — tugaganda uzaytirish xabari bilan); boshqa fan manziliga kirsa o'z faniga qaytariladi. Hech qaysi fanga obunasi yo'q o'quvchi hamma fanlarning bepul mavzularini ko'radi.
+
 ### Sinflar uchun darslik darajasi (2026-11-26)
 - Admin paneli → «📚 Sinflar uchun darslik darajasi»: har sinf va fan uchun qaysi sinf darsligi ochilishini belgilash (masalan, 5-SINF → rus tili 3-sinf darsligi). O'quvchiga o'sha darslik darslari, sahifalari va testlari ochiladi; belgilanmasa — o'z sinfi. **Firebase konsolida qoidalarni yangilash kerak.**
 
