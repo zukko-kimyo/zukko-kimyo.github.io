@@ -91,7 +91,7 @@ test('admin o\'qituvchiga fan biriktiradi; matematika o\'qituvchisi kimyo natija
   await login(page, 'dilnoza.k', 'teach99');
   await waitReady(page);
   await go(page, 'teacher');
-  await expect(page.locator('.tc-empty')).toContainText('Matematika');
+  await expect(page.locator('.tc-overview')).toContainText('Matematika'); // fan o'quvchilari ko'rinishi
   await expect(page.locator('.tc-name')).toHaveCount(0);
 });
 

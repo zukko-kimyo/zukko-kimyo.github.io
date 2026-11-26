@@ -419,3 +419,16 @@ test('exam: natijani faqat testni yuborgan o\'qituvchi yozadi; o\'quvchi faqat o
   await assertFails(deleteDoc(doc(as('teach2', 'otabek.t'), 'examResults/a1_stu1_1')));
   await assertSucceeds(deleteDoc(doc(teacher(), 'examResults/a1_stu1_1')));
 });
+
+test('fan o\'qituvchisi o\'z fani darslarini o\'qiydi; yuklanmagan dars xato emas, «topilmadi»', async () => {
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'users/teach1'), { subjects: ['rus'] }, { merge: true });
+    await setDoc(doc(ctx.firestore(), 'lessons/rus-3-1-1'), { ...LES(5, 'rus'), g: 3 });
+    await setDoc(doc(ctx.firestore(), 'lessons/eng-1-1-9'), LES(9));
+  });
+  const got = await assertSucceeds(getDoc(doc(teacher(), 'lessons/rus-3-1-1')));
+  if (!got.exists()) throw new Error('dars ko\'rinmadi');
+  const miss = await assertSucceeds(getDoc(doc(teacher(), 'lessons/rus-3-1-2')));
+  if (miss.exists()) throw new Error('yo\'q dars bor deb chiqdi');
+  await assertFails(getDoc(doc(teacher(), 'lessons/eng-1-1-9'))); // boshqa fan pullik darsi yopiq
+});

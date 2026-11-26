@@ -19,7 +19,8 @@
   const fmtD = (ms) => { if (!ms) return '—'; const d = new Date(ms); return d.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }); };
   const rid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const subjName = (id) => { if (id === 'chem') return 'Kimyo'; const s = window.ZKSubjects && ZKSubjects.get(id); return s ? (s.name && (s.name.uz || s.name)) || id : id || '—'; };
-  const subjects = () => { const l = [['chem', 'Kimyo']]; try { (ZKSubjects.list || []).forEach((s) => l.push([s.id, subjName(s.id)])); } catch (e) { } const seen = {}; return l.filter(([id]) => (seen[id] ? 0 : (seen[id] = 1))); };
+  const allSubjects = () => { const l = [['chem', 'Kimyo']]; try { (ZKSubjects.list || []).forEach((s) => l.push([s.id, subjName(s.id)])); } catch (e) { } const seen = {}; return l.filter(([id]) => (seen[id] ? 0 : (seen[id] = 1))); };
+  const subjects = () => { const a = A(); const l = allSubjects(); if (!a || !a.user || a.isAdmin() || !a.mySubjects) return l; const mine = a.mySubjects(); const f = l.filter(([id]) => mine.includes(id)); return f.length ? f : l; };
   // Urug'li tasodif: bir o'quvchi uchun tartib har safar bir xil (sahifa yangilansa ham)
   function rng(seed) { let h = 1779033703 ^ seed.length; for (let i = 0; i < seed.length; i++) { h = Math.imul(h ^ seed.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); } return () => { h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
   function shuffled(n, r) { const a = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -96,7 +97,11 @@
     const add = (p) => ['easy', 'medium', 'hard'].forEach((d) => (p[d] || []).forEach((x) => P[d].push(Object.assign({}, x, { d }))));
     if (subj === 'chem') { if (!window.QB && window.ZKLazy) await ZKLazy.tests(); ns.forEach((n) => add(QB.pool('g' + g, n))); return { P, missing }; }
     const Ls = [];
-    for (const n of ns) { try { const d = await B().get('lessons', `${subj}-${g}-${part}-${n}`); if (d && d.j) Ls.push(JSON.parse(d.j)); else missing++; } catch (e) { if (/permission/i.test(e.code || e.message || '')) throw Object.assign(new Error('perm'), { code: 'perm' }); missing++; } }
+    let denied = 0;
+    for (const n of ns) { try { const d = await B().get('lessons', `${subj}-${g}-${part}-${n}`); if (d && d.j) Ls.push(JSON.parse(d.j)); else missing++; } catch (e) { if (/permission/i.test(e.code || e.message || '')) denied++; else missing++; } }
+    // Hammasi rad etilsa — haqiqatan ruxsat yo'q; bir qismi — o'sha mavzular hali yuklanmagan (eski qoidada yo'q hujjat ham «ruxsat yo'q» qaytaradi)
+    if (denied && !Ls.length) throw Object.assign(new Error('perm'), { code: 'perm' });
+    missing += denied;
     if (!window.ZKSJQ) throw new Error('sjq');
     Ls.forEach((L) => add(ZKSJQ.pool(subj, L, Ls)));
     return { P, missing };
@@ -332,7 +337,7 @@
           close();
           const short = res.some((l) => l.length < want);
           toast(`${got} ta savol qo'shildi${short ? " (mavzularda savol kamroq ekan)" : ''}${missing ? ` · ${missing} ta mavzu hali yuklanmagan` : ''}`);
-        } catch (err) { sb.disabled = false; info.textContent = err.code === 'perm' ? "Bu fan darslariga ruxsat yo'q (administrator fanni sizga biriktirishi kerak)." : 'Savollar yuklanmadi: ' + (err.code || err.message); }
+        } catch (err) { sb.disabled = false; info.textContent = err.code === 'perm' ? "Tanlangan mavzularning darslari ochilmadi: ular hali yuklanmagan yoki fan sizga biriktirilmagan. Boshqa qism yoki mavzuni tanlab ko'ring." : 'Savollar yuklanmadi: ' + (err.code || err.message); }
       };
     });
   }
@@ -370,7 +375,7 @@
   }
   function blankQ() { return { id: rid(), t: '', img: '', o: ['', '', '', ''], a: 0, l: 'm' }; }
   function editor(body, t0, app) {
-    const t = t0 ? JSON.parse(JSON.stringify(t0)) : { title: '', subj: 'chem', topic: '', level: 'm', vars: [{ qs: [blankQ()] }] };
+    const t = t0 ? JSON.parse(JSON.stringify(t0)) : { title: '', subj: (subjects()[0] || ['chem'])[0], topic: '', level: 'm', vars: [{ qs: [blankQ()] }] };
     let vi = 0;
     const draw = () => {
       const qs = t.vars[vi].qs;
@@ -466,9 +471,11 @@
   async function assignForm(t, app) {
     let users = []; try { users = (await B().list('users', 'role', 'student')).filter((u) => u.status !== 'pending' && !u.disabled); } catch (e) { toast("O'quvchilar ro'yxati yuklanmadi"); return; }
     const classes = [...new Set(users.map((u) => u.cls || '—'))].sort();
+    const subOn = (u) => !!(window.ZKSub && ZKSub.status(ZKSub.subOf(u, t.subj), Date.now()).active);
+    const subbers = users.filter(subOn);
     const now = Date.now();
     modal(`<div class="ex-card-h"><h3>📤 «${esc(t.title)}» ni yuborish</h3><button class="ex-x" data-x aria-label="Yopish">✕</button></div>
-      <form class="ex-form" novalidate><div class="ex-row"><label>Sinf<select name="cls"><option value="">— tanlang —</option>${classes.map((c) => `<option>${esc(c)}</option>`).join('')}</select></label><label>Vaqt (daqiqa)<input name="dur" type="number" min="1" max="300" value="20"></label></div>
+      <form class="ex-form" novalidate><div class="ex-row"><label>Sinf<select name="cls"><option value="">— tanlang —</option>${subbers.length ? `<option value="__sub">⭐ ${esc(subjName(t.subj))} obunachilari (${subbers.length})</option>` : ''}${classes.map((c) => `<option>${esc(c)}</option>`).join('')}</select></label><label>Vaqt (daqiqa)<input name="dur" type="number" min="1" max="300" value="20"></label></div>
       <div id="exStu" class="ex-stu"><p class="ex-mut">Avval sinfni tanlang.</p></div>
       <div class="ex-row"><label>Boshlanishi<input name="start" type="datetime-local" value="${dtLocal(now)}"></label><label>Yakunlanishi<input name="end" type="datetime-local" value="${dtLocal(now + 7 * 864e5)}"></label></div>
       <div class="ex-row"><label>Urinishlar soni<select name="tries">${[1, 2, 3, 5].map((n) => `<option value="${n}">${n === 1 ? '1 (qayta ishlash yo\'q)' : n + ' ta'}</option>`).join('')}</select></label><label>Variantlar<select name="vm" ${t.vars.length > 1 ? '' : 'disabled'}><option value="auto">Avtomatik (navbat bilan)</option><option value="1">Hammasiga 1-variant</option>${t.vars.length > 1 ? '<option value="2">Hammasiga 2-variant</option><option value="man">O\'qituvchi tanlaydi</option>' : ''}</select></label></div>
@@ -476,10 +483,10 @@
       <div class="ex-acts"><button type="submit" class="btn">📤 Yuborish</button><button type="button" class="btn sec" data-x>Bekor qilish</button></div></form>`, (w, close) => {
       const f = w.querySelector('form'), box = w.querySelector('#exStu');
       const drawStu = () => {
-        const list = users.filter((u) => (u.cls || '—') === f.cls.value).sort((a, b) => String(a.name).localeCompare(String(b.name)));
+        const list = (f.cls.value === '__sub' ? subbers : users.filter((u) => (u.cls || '—') === f.cls.value)).sort((a, b) => String(a.cls || '').localeCompare(String(b.cls || '')) || String(a.name).localeCompare(String(b.name)));
         if (!list.length) { box.innerHTML = '<p class="ex-mut">Bu sinfda o\'quvchi yo\'q.</p>'; return; }
         const man = f.vm.value === 'man';
-        box.innerHTML = `<label class="ex-all"><input type="checkbox" id="exAll" checked> Butun sinf (${list.length})</label><div class="ex-stl">${list.map((u, i) => `<label><input type="checkbox" value="${u.id}" checked> ${esc(u.name || u.login)}${man ? ` <select data-vu="${u.id}"><option value="0" ${i % 2 ? '' : 'selected'}>1-v</option><option value="1" ${i % 2 ? 'selected' : ''}>2-v</option></select>` : ''}</label>`).join('')}</div>`;
+        box.innerHTML = `<label class="ex-all"><input type="checkbox" id="exAll" checked> Butun sinf (${list.length})</label><div class="ex-stl">${list.map((u, i) => `<label><input type="checkbox" value="${u.id}" checked> ${esc(u.name || u.login)}${f.cls.value === '__sub' ? ` <span class="ex-mut">(${esc(u.cls || '—')})</span>` : ''}${man ? ` <select data-vu="${u.id}"><option value="0" ${i % 2 ? '' : 'selected'}>1-v</option><option value="1" ${i % 2 ? 'selected' : ''}>2-v</option></select>` : ''}</label>`).join('')}</div>`;
         box.querySelector('#exAll').onchange = (e) => box.querySelectorAll('.ex-stl input').forEach((c) => { c.checked = e.target.checked; });
       };
       f.cls.onchange = drawStu; f.vm.onchange = drawStu;
@@ -494,7 +501,7 @@
         const aid = rid(), me = A().user;
         const vars = t.vars.map((v) => ({ qs: v.qs.map((q) => ({ id: q.id, t: q.t, img: q.img || '', o: q.o, l: q.l })) }));
         const keys = t.vars.map((v) => ({ k: v.qs.map((q) => q.a) }));
-        const doc = { owner: me.uid, ownerName: me.name || me.login || "O'qituvchi", testId: t.id, title: t.title, subj: t.subj, topic: t.topic || '', level: t.level, nq: vars[0].qs.length, dur, start: new Date(start), end: new Date(end), tries: +f.tries.value, cls: f.cls.value, uids, vmap, vars, reveal: false, created: B().NOW };
+        const doc = { owner: me.uid, ownerName: me.name || me.login || "O'qituvchi", testId: t.id, title: t.title, subj: t.subj, topic: t.topic || '', level: t.level, nq: vars[0].qs.length, dur, start: new Date(start), end: new Date(end), tries: +f.tries.value, cls: f.cls.value === '__sub' ? subjName(t.subj) + ' obunachilari' : f.cls.value, uids, vmap, vars, reveal: false, created: B().NOW };
         const sb = f.querySelector('[type=submit]'); sb.disabled = true;
         try { await B().set('examKeys', aid, { owner: me.uid, keys }); await B().put('examAssign', aid, doc); close(); toast(`Yuborildi: ${uids.length} o'quvchi`); st.tab = 'sent'; teacherPage(app); } catch (err) { sb.disabled = false; toast('Yuborilmadi: ' + (err.code || err.message)); }
       };

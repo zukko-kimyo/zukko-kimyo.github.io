@@ -347,3 +347,58 @@ test('3 javobli savol: o\'quvchi ishlaydi va baholanadi', async ({ page }) => {
   await as(page, 't1', 'exams/a/a3');
   await expect(page.locator('.ex-tbl tbody tr')).toContainText('100%', { timeout: 20_000 });
 });
+
+test('rus tili o\'qituvchisi: obunachilar ro\'yxati, qisman yuklangan darslardan test, obunachilarga yuborish', async ({ page }) => {
+  await page.goto(MOCK + '#home');
+  await page.evaluate(() => {
+    const M = Date.now() + 20 * 864e5, auth = { t2: { email: 'diyora.u@zukko-kimyo.uz', pw: 'x' } };
+    const users = {
+      t2: { login: 'diyora.u', name: 'Diyora Usmonova', role: 'teacher', cls: '', subjects: ['rus'] },
+      s1: { login: 'vali.a', name: 'Vali Aliyev', role: 'student', cls: '3A', subs: { rus: { plan: 'month', until: M } } },
+      s2: { login: 'malika.k', name: 'Malika Karimova', role: 'student', cls: '3B', subs: { rus: { plan: 'month', until: Date.now() - 864e5 } } },
+      s3: { login: 'olim.s', name: 'Olim Saidov', role: 'student', cls: '3A' },
+    };
+    const W = (w, uz) => ({ w, uz, ru: w, en: w });
+    const L = { words: [W('дом', 'uy'), W('мама', 'ona'), W('папа', 'ota'), W('кот', 'mushuk'), W('сад', "bog'"), W('лес', "o'rmon")], phrases: [], quiz: [] };
+    const lessons = { 'rus-3-1-1': { s: 'rus', g: 3, part: 1, n: 5, j: JSON.stringify(L), at: 1, by: 'admin' } };
+    const examResults = { 'x_s1_1': { aid: 'x', uid: 's1', n: 1, owner: 't2', subj: 'rus', pct: 90, total: 10, correct: 9 } };
+    localStorage.setItem('zk_mock_db', JSON.stringify({ auth, col: { users, lessons, examResults } }));
+  });
+  await as(page, 't2', 'teacher');
+  await expect(page.locator('.tc-overview')).toContainText('Rus tili');
+  const rows = page.locator('table.tc tbody tr');
+  await expect(rows).toHaveCount(2); // faol + tugagan obuna
+  await expect(rows.filter({ hasText: 'Vali' })).toContainText('Faol');
+  await expect(rows.filter({ hasText: 'Vali' })).toContainText('90%');
+  await expect(rows.filter({ hasText: 'Malika' })).toContainText('Tugagan');
+  await page.locator('[data-sa="1"]').click();
+  await expect(rows).toHaveCount(3);
+  // faqat biriktirilgan fan ko'rinadi: «Fanlar» menyusi, fanlar sahifasi, boshqa fan sahifasi yopiq
+  await expect(page.locator('#navSubjMenu a[data-nav="fanlar"]')).toHaveCount(1);
+  await expect(page.locator('#navSubjMenu a[data-nav="fanlar"]')).toContainText('Rus tili');
+  await page.goto(MOCK + '#s/eng/1'); await waitReady(page);
+  await expect(page).toHaveURL(/#s\/rus/);
+  // test: 1-mavzu yuklangan, 2-si yo'q — baribir savollar qo'shiladi
+  await page.goto(MOCK + '#exams'); await waitReady(page);
+  await page.locator('.ex-tabs [data-t=new]').click();
+  await expect(page.locator('.ex-form [name=subj] option')).toHaveCount(1);
+  await expect(page.locator('.ex-form [name=subj]')).toHaveValue('rus');
+  await page.locator('.ex-form [name=title]').fill('Rus tili 3');
+  await page.locator('[data-bank]').click();
+  const m = page.locator('.ex-card');
+  await expect(m.locator('[name=s] option')).toHaveCount(1);
+  await m.locator('[name=g]').selectOption('3');
+  await m.locator('#exTl input').nth(0).check(); await m.locator('#exTl input').nth(1).check();
+  await m.locator('[name=ce]').fill('2'); await m.locator('[name=cm]').fill('2'); await m.locator('[name=ch]').fill('0');
+  await m.locator('[type=submit]').click();
+  await expect(page.locator('#exToast')).toContainText('4 ta savol');
+  await expect(page.locator('#exToast')).toContainText('1 ta mavzu hali yuklanmagan');
+  await page.locator('.ex-form [type=submit]').click();
+  // obunachilarga yuborish
+  await page.locator('.ex-tc [data-a=send]').click();
+  await page.locator('.ex-card [name=cls]').selectOption('__sub');
+  await expect(page.locator('.ex-card .ex-stl label')).toHaveCount(1);
+  await expect(page.locator('.ex-card .ex-stl')).toContainText('Vali');
+  await page.locator('.ex-card [type=submit]').click();
+  await expect(page.locator('a.ex-tc')).toContainText('Rus tili obunachilari');
+});

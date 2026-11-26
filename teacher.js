@@ -344,11 +344,53 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
         <td class="act">${ZKAuth.isAdmin() ? `<div class="tc-act"><button data-pw="${u.id}" aria-label="${esc(t('pw') + ' — ' + (u.name || u.login))}">${t('pw')}</button><button data-del="${u.id}" aria-label="${esc(t('del') + ' — ' + (u.name || u.login))}">${t('del')}</button></div>` : ''}</td></tr>`;
     }).join('');
   }
+  // Fan tanlash: o'qituvchiga biriktirilgan fanlar (admin — hammasi). Kimyo — batafsil progress jadvali,
+  // boshqa fanlar — shu fan obunachilari va o'qituvchi testlari natijalari.
+  const mySj = () => (ZKAuth.isAdmin() ? (window.ZKSubjects ? ZKSubjects.ids : ['chem']) : (ZKAuth.mySubjects ? ZKAuth.mySubjects() : ['chem']));
+  function sjBar() {
+    const l = mySj(); if (l.length < 2) return '';
+    return `<div class="tc-chips tc-sj" role="group" aria-label="${L3('Fan', 'Предмет', 'Subject')}">${l.map((id) => `<button data-sj="${esc(id)}" class="${st.sj === id ? 'on' : ''}" aria-pressed="${st.sj === id}">${esc(sjName(id))}</button>`).join('')}</div>`;
+  }
+  function wireSj() { body().querySelectorAll('.tc-sj button').forEach((b) => (b.onclick = () => { st.sj = b.dataset.sj; st.cls = ''; results(); })); }
+  async function loadExr() {
+    if (st.exr) return st.exr; const B = ZKAuth.backend;
+    try { st.exr = ZKAuth.isAdmin() ? await B.list('examResults') : await B.list('examResults', 'owner', ZKAuth.user.uid); } catch (e) { st.exr = []; }
+    return st.exr;
+  }
+  function subjResults() {
+    const sj = st.sj, now = Date.now(), all = students();
+    const subSt = (u) => (window.ZKSub ? ZKSub.status(ZKSub.subOf(u, sj), now) : { active: false, expired: false });
+    const subbed = all.filter((u) => { const x = subSt(u); return x.active || x.expired; });
+    const scope = st.sjAll || !subbed.length ? all : subbed;
+    const cs = [...new Set(scope.map((u) => u.cls || '—'))].sort(sortCls); if (st.cls && !cs.includes(st.cls)) st.cls = '';
+    const list = scope.filter((u) => !st.cls || (u.cls || '—') === st.cls).sort((a, b) => sortCls(a.cls || '', b.cls || '') || String(a.name).localeCompare(String(b.name)));
+    const ex = (st.exr || []).filter((r) => (r.subj || 'chem') === sj); const byU = {}; ex.forEach((r) => { (byU[r.uid] = byU[r.uid] || []).push(Number(r.pct) || 0); });
+    const pcol = (p) => (p >= 80 ? '#16a34a' : p >= 70 ? '#d97706' : '#dc2626');
+    const active = subbed.filter((u) => subSt(u).active).length;
+    const allAvg = ex.length ? Math.round(ex.reduce((a, r) => a + (Number(r.pct) || 0), 0) / ex.length * 10) / 10 : null;
+    const subCell = (u) => { const x = subSt(u); return x.active ? `<span class="tc-q g">✓ ${L3('Faol', 'Активна', 'Active')}</span> <span class="tc-mut">· ${x.daysLeft} ${L3('kun', 'дн.', 'days')}</span>` : x.expired ? `<span class="tc-q b">${L3('Tugagan', 'Истекла', 'Expired')}</span> <span class="tc-mut">· ${window.ZKSub ? ZKSub.fmtDate(x.until) : ''}</span>` : '<span class="tc-mut">—</span>'; };
+    const exCell = (u) => { const l = byU[u.id]; if (!l) return '<span class="tc-mut">—</span>'; const a = Math.round(l.reduce((x, y) => x + y, 0) / l.length * 10) / 10; return `${l.length} · <b style="color:${pcol(a)}">${a}%</b>`; };
+    body().innerHTML = sjBar() + `<section class="tc-overview" aria-label="${L3('O‘quvchilar statistikasi', 'Статистика учеников', 'Student summary')}">
+       <div class="tc-metric"><span>📚 ${esc(sjName(sj))}</span><b>${subbed.length}</b><small class="tc-mut">${L3('obunachi', 'подписчиков', 'subscribers')}</small></div>
+       <div class="tc-metric"><span>✅ ${L3('Faol obuna', 'Активные', 'Active')}</span><b>${active}</b></div>
+       <div class="tc-metric"><span>📝 ${L3('Test natijalari', 'Результатов тестов', 'Test results')}</span><b>${ex.length}</b></div>
+       <div class="tc-metric"><span>📈 ${L3('O‘rtacha natija', 'Средний результат', 'Average')}</span><b>${allAvg == null ? '—' : allAvg + '%'}</b></div></section>
+      <div class="tc-chips"><button data-sa="0" class="${!st.sjAll && subbed.length ? 'on' : ''}" ${subbed.length ? '' : 'disabled'}>⭐ ${L3('Fan obunachilari', 'Подписчики предмета', 'Subject subscribers')}<small>${subbed.length}</small></button><button data-sa="1" class="${st.sjAll || !subbed.length ? 'on' : ''}">👥 ${L3('Barcha o‘quvchilar', 'Все ученики', 'All students')}<small>${all.length}</small></button></div>
+      ${!subbed.length ? `<p class="tc-mut">${L3(`${esc(sjName(sj))} fanidan obunasi bor o‘quvchi hali yo‘q — barcha o‘quvchilar ko‘rsatilmoqda (bepul mavzular hammaga ochiq).`, `Подписчиков по предмету «${esc(sjName(sj))}» пока нет — показаны все ученики.`, `No ${esc(sjName(sj))} subscribers yet — showing all students.`)}</p>` : ''}
+      <div class="tc-chips"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${scope.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${scope.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
+      <div class="tc-tools"><button class="btn sec sm" id="tcRe">${t('reload')}</button><div class="sp"></div><a class="btn sm" href="#exams">📝 ${L3('Test yuborish', 'Отправить тест', 'Send a test')}</a></div>
+      ${list.length ? `<div class="tc-wrap"><table class="tc resp"><thead><tr><th>${t('c_n')}</th><th>${t('c_name')}</th><th>${L3('Sinf', 'Класс', 'Class')}</th><th>${L3('Obuna', 'Подписка', 'Subscription')}</th><th>${L3('Testlar · o‘rtacha', 'Тесты · средний', 'Tests · average')}</th></tr></thead><tbody>${list.map((u, i) => `<tr><td data-l="${t('c_n')}">${i + 1}</td><td data-l="${t('c_name')}"><b>${esc(u.name || u.login)}</b></td><td data-l="${L3('Sinf', 'Класс', 'Class')}">${esc(u.cls || '—')}</td><td data-l="${L3('Obuna', 'Подписка', 'Subscription')}">${subCell(u)}</td><td data-l="${L3('Testlar', 'Тесты', 'Tests')}">${exCell(u)}</td></tr>`).join('')}</tbody></table></div>` : `<div class="panel tc-empty">${t('none')}</div>`}`;
+    wireSj();
+    body().querySelectorAll('[data-sa]').forEach((b) => (b.onclick = () => { st.sjAll = b.dataset.sa === '1'; st.cls = ''; results(); }));
+    body().querySelectorAll('.tc-chips button[data-c]').forEach((b) => (b.onclick = () => { st.cls = b.dataset.c; results(); }));
+    document.getElementById('tcRe').onclick = async () => { body().style.opacity = 0.5; try { st.exr = null; await loadAll(); await loadExr(); } finally { body().style.opacity = 1; } results(); };
+  }
   function results() {
-    if (st.chemOk === false) {
-      const mine = (ZKAuth.mySubjects ? ZKAuth.mySubjects() : []).map(sjName).join(', ') || '—';
-      body().innerHTML = `<div class="panel tc-empty">${L3(`Sizga biriktirilgan fanlar: <b>${esc(mine)}</b>. Bu fanlar bo‘yicha o‘quvchilar natijalari darslar joylangach shu yerda ko‘rinadi.`, `Ваши предметы: <b>${esc(mine)}</b>. Результаты учеников по этим предметам появятся здесь, когда уроки будут размещены.`, `Your subjects: <b>${esc(mine)}</b>. Student results for these subjects will appear here once their lessons are online.`)}</div>`;
-      return;
+    const sjs = mySj(); if (!st.sj || !sjs.includes(st.sj)) st.sj = st.chemOk !== false && sjs.includes('chem') ? 'chem' : sjs[0] || 'chem';
+    if (st.sj !== 'chem' || st.chemOk === false) {
+      if (st.chemOk === false && st.sj === 'chem') st.sj = sjs.find((x) => x !== 'chem') || 'chem';
+      if (!st.exr) { body().innerHTML = sjBar() + `<div class="zk-lazy" role="status"><span class="zk-lazy-spin"></span></div>`; loadExr().then(() => { if (st.tab === 'res') results(); }); return; }
+      return subjResults();
     }
     const cs = classes(); if (st.cls && !cs.includes(st.cls)) st.cls = '';
     const all = students();
@@ -365,10 +407,11 @@ table.tc.resp .tc-act{justify-content:flex-start}table.tc.resp .tc-bar{width:cal
        <div class="tc-metric"><span>✅ ${L3('7 kunda faol', 'Активны за 7 дней', 'Active in 7 days')}</span><b>${active7}</b></div>
        <div class="tc-metric"><span>⭐ ${L3('Jami XP', 'Всего XP', 'Total XP')}</span><b>${totalXp}</b></div>
     </section>`;
-    body().innerHTML = summaryHtml + `<div class="tc-chips"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
+    body().innerHTML = sjBar() + summaryHtml + `<div class="tc-chips"><button data-c="" class="${!st.cls ? 'on' : ''}">${t('all')}<small>${all.length}</small></button>${cs.map((c) => `<button data-c="${esc(c)}" class="${st.cls === c ? 'on' : ''}">${esc(c)}<small>${all.filter((u) => (u.cls || '—') === c).length}</small></button>`).join('')}</div>
       <div class="tc-tools"><button class="btn sec sm" id="tcRe">${t('reload')}</button>${ZKAuth.isAdmin() ? `<button class="btn sec sm" id="tcPw">${st.showPw ? t('hide_pw') : t('show_pw')}</button>` : ''}<div class="sp"></div><button class="btn sec sm" id="tcCsv">${t('csv')}</button>${ZKAuth.isAdmin() ? `<button class="btn sec sm" id="tcCards">${t('print_cards')}</button>` : ''}</div>
       <div class="tc-wrap"><table class="tc resp"><thead><tr><th>${t('c_n')}</th><th>${t('c_name')}</th><th>${t('c_login')}</th><th>${t('c_xp')}</th><th>${t('c_quiz')}</th><th>${t('c_g6')}</th><th>${t('c_g7')}</th><th>${t('c_g8')}</th><th>${t('c_last')}</th><th></th></tr></thead><tbody>${rows(list)}</tbody></table></div>`;
-    body().querySelectorAll('.tc-chips button').forEach((b) => (b.onclick = () => { st.cls = b.dataset.c; results(); }));
+    body().querySelectorAll('.tc-chips button[data-c]').forEach((b) => (b.onclick = () => { st.cls = b.dataset.c; results(); }));
+    wireSj();
     document.getElementById('tcRe').onclick = async () => { body().style.opacity = 0.5; try { await loadAll(); } finally { body().style.opacity = 1; } results(); };
     const pwb = document.getElementById('tcPw'); if (pwb) pwb.onclick = () => { st.showPw = !st.showPw; results(); };
     document.getElementById('tcCsv').onclick = () => csv(list);

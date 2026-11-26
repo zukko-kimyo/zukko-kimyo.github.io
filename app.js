@@ -289,8 +289,9 @@
   const SJ = () => window.ZKSubjects || { list: [], get: () => null, books: () => [], book: () => null };
   const SN = (sj) => (sj ? sj.name[lang] || sj.name.uz : '');
   const gradeRange = (sj) => (sj.grades.length > 1 ? `${sj.grades[0]}–${sj.grades[sj.grades.length - 1]}` : `${sj.grades[0]}`);
+  const visibleSj = () => { const ok = pickable(); return SJ().list.filter((sj) => ok.includes(sj.id)); }; // o'qituvchi — faqat biriktirilgan fanlari
   function subjectCards() {
-    return SJ().list.map((sj) => {
+    return visibleSj().map((sj) => {
       const ready = sj.native ? sj.grades : [...new Set((sj.books || []).map((b) => b.grade))];
       const href = sj.native ? sj.home : `#s/${sj.id}`;
       const note = sj.native ? (L3('3D tajribalar, testlar, darsliklar', '3D-опыты, тесты, учебники', '3D experiments, tests, textbooks'))
@@ -320,6 +321,7 @@
   function setSubj(id) { try { localStorage.setItem('zk_subj', id); } catch (e) { } applySubj(); }
   // Menyu: kimyoga oid bo'limlar (sinflar, testlar, 3D, davriy jadval, darslik) faqat kimyo tanlanganda
   function applySubj() {
+    const m = document.getElementById('navSubjMenu'); if (m && m._k !== visibleSj().map((x) => x.id).join() + lang) buildSubjMenu();
     const cs = curSubj(); SJ().ids.forEach((id) => document.body.classList.toggle('zk-subj-' + id, cs === id));
     document.body.classList.toggle('zk-subj-none', !cs);
   }
@@ -384,7 +386,8 @@
   }
   function buildSubjMenu() {
     const m = document.getElementById('navSubjMenu'); if (!m || !window.ZKSubjects) return;
-    m.innerHTML = ZKSubjects.list.map((sj) => `<a href="${sj.native ? sj.home : '#s/' + sj.id}" data-nav="fanlar"><span class="zk-ngrp-n zk-sj-n" style="--sj:${sj.color}" aria-hidden="true">${sj.icon}</span><span class="zk-ngrp-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${L3('sinf', 'класс', 'grade')}</small></span></a>`).join('')
+    const vis = visibleSj(); m._k = vis.map((x) => x.id).join() + lang;
+    m.innerHTML = vis.map((sj) => `<a href="${sj.native ? sj.home : '#s/' + sj.id}" data-nav="fanlar"><span class="zk-ngrp-n zk-sj-n" style="--sj:${sj.color}" aria-hidden="true">${sj.icon}</span><span class="zk-ngrp-t"><b>${SN(sj)}</b><small>${gradeRange(sj)}-${L3('sinf', 'класс', 'grade')}</small></span></a>`).join('')
       + `<a href="#pick" data-nav="pick" class="zk-ngrp-pick"><span class="zk-ngrp-n" aria-hidden="true">⇄</span><span class="zk-ngrp-t"><b>${t('b_pick')}</b><small>${L3('Bosh sahifa tanlangan fanga moslashadi', 'Главная подстроится под предмет', 'Home adapts to the chosen subject')}</small></span></a>`;
   }
   // O'quvchining sinfi (profil: "7A" → 7). Xodim yoki sinfi noma'lum — null (sinf tanlanadi)
@@ -397,6 +400,7 @@
   function subjectPage(id, gArg) {
     const sj = SJ().get(id);
     if (!sj) return home();
+    if (!pickable().includes(id)) { location.replace('#' + (pickable()[0] === 'chem' ? 'home' : 's/' + pickable()[0])); return; } // boshqa fan o'qituvchiga ko'rinmaydi
     const mine = myGrade();
     if (sj.native) { location.replace(mine >= 6 && mine <= 8 ? `#g${mine}` : '#g6'); return; }
     const uz = lang === 'uz', withBook = sj.grades.filter((g) => SJ().books(id, g).length);
