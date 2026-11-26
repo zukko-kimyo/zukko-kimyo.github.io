@@ -37,3 +37,17 @@ test('admin 5-SINF uchun rus tilida 3-sinf darsligini belgilaydi — o\'quvchiga
   await page.goto(MOCK + '#s/rus/1'); await waitReady(page);
   await expect(page.locator('h1')).toContainText('3-sinf');
 });
+
+test('o\'quvchiga faqat obuna berilgan fanlar ko\'rinadi; obunasiz o\'quvchi — hamma fanlar', async ({ page }) => {
+  await page.goto(MOCK + '#home'); await page.evaluate(seed);
+  await page.evaluate(() => { const d = JSON.parse(localStorage.getItem('zk_mock_db')); d.auth.s2 = { email: 'madina@zukko-kimyo.uz', pw: 'x' }; d.col.users.s2 = { login: 'madina', name: 'Madinaxon', role: 'student', cls: '5-SINF' }; localStorage.setItem('zk_mock_db', JSON.stringify(d)); });
+  await as(page, 's1', 'home');
+  await expect(page.locator('#navSubjMenu a[data-nav="fanlar"]')).toHaveCount(1);
+  await expect(page.locator('#navSubjMenu a[data-nav="fanlar"]')).toContainText('Rus tili');
+  await page.goto(MOCK + '#s/eng/1'); await waitReady(page);
+  await expect(page).toHaveURL(/#s\/rus/);
+  await page.goto(MOCK + '#fanlar'); await waitReady(page);
+  await expect(page.locator('.zk-sjcard')).toHaveCount(1);
+  await as(page, 's2', 'home');
+  expect(await page.locator('#navSubjMenu a[data-nav="fanlar"]').count()).toBeGreaterThan(3);
+});

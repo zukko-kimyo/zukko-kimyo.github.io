@@ -310,6 +310,10 @@
   function pickable() {
     const A = window.ZKAuth, all = SJ().ids;
     if (A && A.isStaff && A.isStaff() && !A.isAdmin() && A.mySubjects) { const mine = A.mySubjects().filter((x) => all.includes(x)); return mine.length ? mine : all; }
+    // O'quvchi — faqat admin obuna bergan fanlar (faol yoki tugagan: tugaganida uzaytirish xabari ko'rinadi).
+    // Hech qaysi fanga obunasi yo'q o'quvchi — hamma fanlarning bepul mavzularini ko'radi.
+    const u = A && A.user;
+    if (u && u.role === 'student' && window.ZKSub) { const mine = all.filter((id) => ZKSub.subOf(u, id)); if (mine.length) return mine; }
     return all;
   }
   function curSubj() {
