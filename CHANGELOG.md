@@ -4,6 +4,12 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Fan o'qituvchilari uchun tuzatishlar (2026-11-26)
+- O'qituvchiga faqat biriktirilgan fan(lar) ko'rinadi: «Fanlar» menyusi, fanlar sahifasi, test tahriridagi fan ro'yxati; boshqa fan sahifasiga kirsa o'z faniga qaytariladi.
+- O'qituvchi paneli: kimyodan boshqa fan o'qituvchilariga ham o'quvchilar ro'yxati — fan obunachilari (faol / tugagan, qolgan kun), «Barcha o'quvchilar», sinf bo'yicha saralash, o'qituvchi testlari natijalari (soni va o'rtacha %). Bir nechta fan biriktirilgan o'qituvchi fanni almashtiradi.
+- Test yuborishda «⭐ <Fan> obunachilari» guruhi.
+- «Saytdagi testlardan»: bitta yuklanmagan mavzu butun jarayonni «ruxsat yo'q» bilan to'xtatmaydi; Firestore qoidasi yo'q dars hujjatiga «topilmadi» qaytaradi. **Firebase konsolida qoidalarni yangilash kerak.**
+
 ### Word, PDF va matndan test yuklash (2026-11-25)
 - «📄 Word, PDF, Excel yoki CSV dan»: .docx o'qiladi (tashqi kutubxonasiz) — «1. Savol / A) … D) …», bir qatordagi javoblar, Word avtomatik raqamlash, jadval ko'rinishidagi testlar, 1/2-variant sarlavhalari, pastki/yuqori indeks (H₂O, x²), formulalar va rasmlar.
 - To'g'ri javob: «Javoblar: 1-A, 2-C…» kaliti (variantlar bo'yicha ham), javob oldidagi * yoki +, yoxud qalin / sariq / rangli / tagiga chizilgan javob. Topilmasa savol ⚠️ bilan belgilanadi va to'g'ri javob tanlanmaguncha test saqlanmaydi.

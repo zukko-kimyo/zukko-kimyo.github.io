@@ -102,7 +102,8 @@ service cloud.firestore {
         && d.j is string && d.j.size() < 200000;
     }
     match /lessons/{id} {
-      allow get: if activeProfile() && (isAdmin() || teacherOf(resource.data.s)
+      // Yo'q hujjat (dars hali yuklanmagan) — xato emas, «topilmadi» qaytadi: hech narsa oshkor qilmaydi
+      allow get: if activeProfile() && (resource == null || isAdmin() || teacherOf(resource.data.s)
                    || resource.data.n <= freeN() || hasSubjectSub(resource.data.s));
       allow list: if false;
       allow create, update: if isAdmin() && validLesson(request.resource.data);
