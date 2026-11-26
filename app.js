@@ -391,8 +391,10 @@
       + `<a href="#pick" data-nav="pick" class="zk-ngrp-pick"><span class="zk-ngrp-n" aria-hidden="true">⇄</span><span class="zk-ngrp-t"><b>${t('b_pick')}</b><small>${L3('Bosh sahifa tanlangan fanga moslashadi', 'Главная подстроится под предмет', 'Home adapts to the chosen subject')}</small></span></a>`;
   }
   // O'quvchining sinfi (profil: "7A" → 7). Xodim yoki sinfi noma'lum — null (sinf tanlanadi)
-  function myGrade() {
+  // Fan bo'yicha darslik darajasi (admin belgilaydi, settings/site.levels): masalan «5-SINF → rus tili 3-sinf darsligi»
+  function myGrade(id) {
     const u = window.ZKAuth && ZKAuth.user; if (!u || u.role !== 'student') return null;
+    if (id) { let L = null; try { L = JSON.parse((ZKAuth.site && ZKAuth.site.levels) || '{}'); } catch (e) { } const x = L && L[u.cls || ''] && +L[u.cls || ''][id]; if (x >= 1 && x <= 11) return x; }
     const g = parseInt(String(u.cls || ''), 10); return g >= 1 && g <= 11 ? g : null;
   }
   const sjPick = {}; // xodim tanlagan sinf (fan bo'yicha)
@@ -401,7 +403,7 @@
     const sj = SJ().get(id);
     if (!sj) return home();
     if (!pickable().includes(id)) { location.replace('#' + (pickable()[0] === 'chem' ? 'home' : 's/' + pickable()[0])); return; } // boshqa fan o'qituvchiga ko'rinmaydi
-    const mine = myGrade();
+    const mine = myGrade(id);
     if (sj.native) { location.replace(mine >= 6 && mine <= 8 ? `#g${mine}` : '#g6'); return; }
     const uz = lang === 'uz', withBook = sj.grades.filter((g) => SJ().books(id, g).length);
     const g = mine || gArg || sjPick[id] || withBook[0] || sj.grades[0];
@@ -437,7 +439,7 @@
     try { if (!window.speechSynthesis || !txt) return false; speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(txt)); u.lang = lng; u.rate = 0.85; speechSynthesis.speak(u); return true; } catch (e) { return false; }
   }
   function subjectTopic(id, g, part, n, tab) {
-    { const mine = myGrade(); if (mine && mine !== g) return subjectPage(id); }
+    { const mine = myGrade(id); if (mine && mine !== g) return subjectPage(id); }
     const sj = SJ().get(id); const b = SJ().book(id, g, part); const tp = b && b.topics[n - 1]; if (!tp) return subjectGrade(id, g);
     const key = `${id}-${g}-${part}-${n}`;
     if (!tab) tab = sjLast === key ? sjTab : 'content';
@@ -604,7 +606,7 @@
   const SJTS = {};
   function subjectTests(id, g) {
     const sj = SJ().get(id); if (!sj || sj.native) return homeRoute();
-    { const mine = myGrade(); if (mine && mine !== g) return subjectTests(id, mine); }
+    { const mine = myGrade(id); if (mine && mine !== g) return subjectTests(id, mine); }
     const books = SJ().books(id, g); const S = SJTS[id + g] || (SJTS[id + g] = { sel: null, count: 10, diff: 'mix', mode: 'practice' });
     const ok = (b, n) => !window.ZKAuth || ZKAuth.canPaid(id) || ZKSub.lessonOpen(false, gnum(b, n), freeN());
     const all = []; books.forEach((b) => b.topics.forEach((tp, i) => all.push({ b, n: i + 1, tp, k: b.part + '-' + (i + 1) })));
@@ -1203,7 +1205,7 @@
       applySubj(); const sjx = sj && !sj.native ? sj : null; document.body.classList.toggle('zk-chemctx', chem || (sj && sj.native) || (!sjx && curSubj() === 'chem'));
       { // boshqa fan menyusidagi «Testlar» — shu fanning testlar markazi (o'quvchi — o'z sinfi)
         const cur = sjx || (!chem && curSubj() && curSubj() !== 'chem' ? SJ().get(curSubj()) : null), gm = h.match(/^s\/[a-z]+\/(\d+)/);
-        const gg = cur ? (myGrade() || (gm ? +gm[1] : cur.grades[0])) : 0;
+        const gg = cur ? (myGrade(cur.id) || (gm ? +gm[1] : cur.grades[0])) : 0;
         document.querySelectorAll('.zk-sjtests').forEach((a) => { a.href = cur ? `#s/${cur.id}/${gg}/test` : '#fanlar'; a.hidden = !cur; });
       }
       if (chip) { const nm = sj ? SN(sj) : hs ? SN(hs) : chem ? L3('Kimyo', 'Химия', 'Chemistry') : ''; chip.hidden = !nm; chip.textContent = nm.toUpperCase(); if (nm) chip.setAttribute('aria-label', nm); else chip.removeAttribute('aria-label'); }
