@@ -4,6 +4,9 @@ Format: har bir birlashtirilgan PR uchun qisqa yozuv. Eng yangisi tepada.
 
 ## [Chiqarilmagan]
 
+### Sinflar uchun darslik darajasi (2026-11-26)
+- Admin paneli → «📚 Sinflar uchun darslik darajasi»: har sinf va fan uchun qaysi sinf darsligi ochilishini belgilash (masalan, 5-SINF → rus tili 3-sinf darsligi). O'quvchiga o'sha darslik darslari, sahifalari va testlari ochiladi; belgilanmasa — o'z sinfi. **Firebase konsolida qoidalarni yangilash kerak.**
+
 ### Fan o'qituvchilari uchun tuzatishlar (2026-11-26)
 - O'qituvchiga faqat biriktirilgan fan(lar) ko'rinadi: «Fanlar» menyusi, fanlar sahifasi, test tahriridagi fan ro'yxati; boshqa fan sahifasiga kirsa o'z faniga qaytariladi.
 - O'qituvchi paneli: kimyodan boshqa fan o'qituvchilariga ham o'quvchilar ro'yxati — fan obunachilari (faol / tugagan, qolgan kun), «Barcha o'quvchilar», sinf bo'yicha saralash, o'qituvchi testlari natijalari (soni va o'rtacha %). Bir nechta fan biriktirilgan o'qituvchi fanni almashtiradi.

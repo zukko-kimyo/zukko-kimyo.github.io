@@ -432,3 +432,11 @@ test('fan o\'qituvchisi o\'z fani darslarini o\'qiydi; yuklanmagan dars xato ema
   if (miss.exists()) throw new Error('yo\'q dars bor deb chiqdi');
   await assertFails(getDoc(doc(teacher(), 'lessons/eng-1-1-9'))); // boshqa fan pullik darsi yopiq
 });
+
+test('sinflar uchun darslik darajasi (settings/site.levels): faqat admin, matn, cheklangan hajm', async () => {
+  await assertSucceeds(setDoc(doc(admin(), 'settings/site'), { levels: JSON.stringify({ '5-SINF': { rus: 3 } }) }, { merge: true }));
+  await assertFails(setDoc(doc(teacher(), 'settings/site'), { levels: '{}' }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'settings/site'), { levels: { '5-SINF': { rus: 3 } } }, { merge: true }));
+  await assertFails(setDoc(doc(admin(), 'settings/site'), { levels: 'x'.repeat(4001) }, { merge: true }));
+  await assertSucceeds(getDoc(doc(student(), 'settings/site')));
+});

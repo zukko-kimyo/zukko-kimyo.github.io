@@ -275,6 +275,7 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
         <div class="panel"><h3>📦 ${t('exp_h')}</h3><div class="ad-sub" style="margin-top:0">${t('exp_p')}</div>
           <div class="btns"><button class="btn sec sm" id="adCsv">${t('exp_csv')}</button><button class="btn sec sm" id="adJson">${t('exp_json')}</button></div></div>
       </div>
+      <div class="panel" id="adLevels" style="margin-top:18px"></div>
       <div class="panel ad-form" style="margin-top:18px;max-width:560px"><h3>🔐 ${t('sec_h')}</h3><div class="ad-sub" style="margin-top:0">${t('sec_p')}</div>
         <form id="adPw" autocomplete="on"><input type="text" name="username" autocomplete="username" value="${esc(ZKAuth.user.login)}" hidden>
         <label for="adOld">${t('old_pw')}</label><input type="password" id="adOld" autocomplete="current-password">
@@ -291,9 +292,32 @@ table.ad td{padding:8px;border-bottom:1px solid var(--zk-hair,#e5ecea)}table.ad 
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
   }
 
+  // Sinf → fan → darslik darajasi (masalan, 5-sinf o'quvchilari rus tilidan 3-sinf kitobini o'qiydi)
+  function levelsPanel() {
+    const box = APP.querySelector('#adLevels'); if (!box || !window.ZKSubjects) return;
+    let lv = {}; try { lv = JSON.parse((st.settings && st.settings.levels) || '{}') || {}; } catch (e) { lv = {}; }
+    const classes = [...new Set(st.users.filter((u) => u.role === 'student' && u.status !== 'pending').map((u) => u.cls || '').filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }));
+    const sjs = ZKSubjects.list.filter((sj) => !sj.native && sj.grades.some((g) => ZKSubjects.books(sj.id, g).length));
+    const nm = (sj) => sj.name[L] || sj.name.uz;
+    const own = (c) => { const g = parseInt(c, 10); return g >= 1 && g <= 11 ? g : null; };
+    box.innerHTML = `<h3>📚 ${L3('Sinflar uchun darslik darajasi', 'Уровень учебника для классов', 'Textbook level per class')}</h3>
+      <div class="ad-sub" style="margin-top:0">${L3('Odatda o‘quvchi o‘z sinfining darsligini ko‘radi. Agar sinf boshqa darslik bilan o‘qisa (masalan, 5-sinf rus tilidan 3-sinf kitobini o‘qiydi), shu yerda belgilang — o‘quvchilarga o‘sha darslik darslari, darslik sahifalari va testlari ochiladi.', 'Обычно ученик видит учебник своего класса. Если класс занимается по другому учебнику (например, 5 класс — по учебнику русского для 3 класса), укажите это здесь.', 'By default a student sees their own grade’s textbook. If a class uses another book (e.g. grade 5 studies Russian with the grade 3 book), set it here.')}</div>
+      ${classes.length ? `<div class="tc-wrap" style="overflow-x:auto"><table class="tc" style="min-width:${200 + sjs.length * 150}px"><thead><tr><th>${L3('Sinf', 'Класс', 'Class')}</th>${sjs.map((sj) => `<th>${sj.icon} ${esc(nm(sj))}</th>`).join('')}</tr></thead><tbody>${classes.map((c) => `<tr><td><b>${esc(c)}</b></td>${sjs.map((sj) => { const cur = lv[c] && lv[c][sj.id], og = own(c), have = sj.grades.filter((g) => ZKSubjects.books(sj.id, g).length);
+        return `<td><select data-lc="${esc(c)}" data-ls="${sj.id}" aria-label="${esc(c + ' — ' + nm(sj))}"><option value="">${og ? L3(`O‘z sinfi (${og})`, `Свой класс (${og})`, `Own grade (${og})`) : L3('O‘z sinfi', 'Свой класс', 'Own grade')}${og && !have.includes(og) ? ' — ' + L3('darslik yo‘q', 'нет учебника', 'no book') : ''}</option>${have.map((g) => `<option value="${g}" ${+cur === g ? 'selected' : ''}>${g}-${L3('sinf darsligi', 'класс', 'grade book')}</option>`).join('')}</select></td>`; }).join('')}</tr>`).join('')}</tbody></table></div>
+        <button class="btn pri sm" id="adLvSave" style="margin-top:12px">${t('save')}</button><div class="ad-msg" id="adLvMsg"></div>` : `<p class="tc-mut">${L3('Hali o‘quvchilar yo‘q.', 'Учеников пока нет.', 'No students yet.')}</p>`}`;
+    const sb = box.querySelector('#adLvSave'); if (!sb) return;
+    sb.onclick = async () => {
+      const out = {}; box.querySelectorAll('select[data-lc]').forEach((s) => { if (s.value) (out[s.dataset.lc] = out[s.dataset.lc] || {})[s.dataset.ls] = +s.value; });
+      const msg = box.querySelector('#adLvMsg'); msg.className = 'ad-msg'; msg.textContent = ''; sb.disabled = true;
+      const doc = { levels: JSON.stringify(out), updated: Date.now(), by: ZKAuth.user.uid };
+      try { await ZKAuth.backend.set('settings', 'site', doc, true); st.settings = Object.assign({}, st.settings, doc); ZKAuth.applySettings && ZKAuth.applySettings(st.settings); msg.className = 'ad-msg ok'; msg.textContent = t('saved'); }
+      catch (e) { msg.className = 'ad-msg er'; msg.textContent = '⚠ ' + ZKAuth.errMsg(e); }
+      sb.disabled = false;
+    };
+  }
   function wire() {
     const $ = (id) => APP.querySelector('#' + id);
-    booksPanel();
+    booksPanel(); levelsPanel();
     $('adSave').onclick = async () => {
       const msg = $('adSetMsg'); msg.className = 'ad-msg'; msg.textContent = '';
       const fv = Math.round(Number($('adFreeN').value)); const freeN = Number.isFinite(fv) ? Math.max(0, Math.min(50, fv)) : 3;
